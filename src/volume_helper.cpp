@@ -18,3 +18,19 @@ std::ostream& operator<<(std::ostream& os, const Polytope& p) {
 
     return os;
 }
+
+
+Polytope* Polytope_new_box(int n, int r) {
+   Polytope* p = Polytope_new(n, 2*n);
+
+   for(int i=0; i<n; i++) {// for each dim
+      Polytope_set_b(p, i,   r);
+      Polytope_set_b(p, i+n, r);
+      for(int x=0; x<n; x++) {
+         Polytope_set_a(p, i,   x, (x==i)?1:0);
+         Polytope_set_a(p, i+n, x, (x==i)?-1:0);
+      }
+   }
+
+   return p;
+}

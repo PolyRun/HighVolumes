@@ -42,7 +42,8 @@ inline FT Polytope_get_a(const Polytope* p, int i, int x) {
    return p->data[i * (p->n+1) + x];
 }
 inline FT Polytope_get_b(const Polytope* p, int i) {
-   p->data[i * (p->n+1) + p->n];
+   return p->data[i * (p->n+1) + p->n];
 }
+
 
 #endif // HEADER_VOLUMES_H
