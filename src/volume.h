@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef HEADER_VOLUMES_H
 #define HEADER_VOLUMES_H
@@ -16,6 +17,8 @@ struct Polytope {
    // ...
    // basically always normal vector plus b adjacent
    // this is hopefully good for cache, right?
+   
+   //  A*x <= b
 
    int n; // dimensions
    int m; // constraints
@@ -44,6 +47,10 @@ inline FT Polytope_get_a(const Polytope* p, int i, int x) {
 inline FT Polytope_get_b(const Polytope* p, int i) {
    return p->data[i * (p->n+1) + p->n];
 }
+
+// Geometric functions:
+bool Polytope_inside(const Polytope* p, const FT* v);
+// v: vector of length p->n
 
 
 #endif // HEADER_VOLUMES_H
