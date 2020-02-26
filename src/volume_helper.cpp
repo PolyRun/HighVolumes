@@ -1,9 +1,3 @@
-#include <iostream>
-
-extern "C" { // must be included C stlye
-#include "volume.h"
-}
-
 #include "volume_helper.hpp"
 
 std::ostream& operator<<(std::ostream& os, const Polytope* p) {

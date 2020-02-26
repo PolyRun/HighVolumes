@@ -1,9 +1,3 @@
-#include <iostream>
-
-extern "C" { // must be included C stlye
-#include "volume.h"
-}
-
 #include "peterem.hpp"
 
 int main() {
