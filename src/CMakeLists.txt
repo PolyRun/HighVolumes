@@ -17,10 +17,10 @@ add_library(volume ${VOLUME_SOURCE_FILES} ${VOLUME_HEADER_FILES})
 
 # ----------------------- volume_helper
 set(VOLUME_HELPER_SOURCE_FILES
-   volume_helper.cpp
+   poly/volume_helper.cpp
 )
 set(VOLUME_HELPER_HEADER_FILES
-   volume_helper.hpp
+   poly/volume_helper.hpp
 )
 add_library(volume_helper ${VOLUME_HELPER_SOURCE_FILES} ${VOLUME_HELPER_HEADER_FILES})
 

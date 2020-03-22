@@ -30,8 +30,6 @@ Polytope* Polytope_new(int n, int m);
 // Destroctor
 void Polytope_free(Polytope* p);
 
-void Polytope_print(Polytope *p);
-
 // Setters:
 inline void Polytope_set_a(Polytope* p, int i, int x, FT a) {
    // for constraint i set coefficient for variable x to a

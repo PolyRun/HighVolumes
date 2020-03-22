@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include <iostream>
 
 extern "C" { // must be included C stlye
@@ -39,7 +38,7 @@ int main() {
 
    Polytope_free(p);
 
-   assert(false && "Expected assert, all tests passed.");
+   //assert(false && "Expected assert, all tests passed.");
    std::cout << "WARNING: asserts were disabled, no tests run!" << std::endl;
 
    
@@ -48,7 +47,7 @@ int main() {
   Polytope *P;
   cube(n, &P);
 
-  Polytope_print(P);
+  std::cout << P << "\n";
   
   FT r2;
   FT *ori;

@@ -4,7 +4,7 @@ extern "C" { // must be included C stlye
 #include "poly/volume.h"
 }
 
-#include "volume_helper.hpp"
+#include "poly/volume_helper.hpp"
 
 #ifndef HEADER_PETEREM_HPP
 #define HEADER_PETEREM_HPP
