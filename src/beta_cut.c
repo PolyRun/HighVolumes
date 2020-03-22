@@ -7,7 +7,7 @@
 
 
 /**
- * \brief get initial estimate for the outer (?) ellipsoid around A
+ * \brief get initial estimate for the outer (?) ellipsoid around A.
  *
  * \param n dimension of space
  * \param m number of hyperplanes
@@ -89,4 +89,9 @@ void initEllipsoid(Polytope *Pol, FT *R2, FT **Ori){
 	
     glp_delete_prob(lp);
 }
+
+
+
+
+
 
