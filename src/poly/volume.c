@@ -16,6 +16,18 @@ void Polytope_free(Polytope* p) {
 }
 
 
+bool Polytope_inside(const Polytope* p, const FT* v) {
+   for(int i=0; i<p->n; i++) {
+      FT sum = 0;
+      for(int x=0; x<p->n; x++) { sum+= v[x] * Polytope_get_a(p, i, x);}
+      if(sum > Polytope_get_b(p, i)) {return false;}
+   }
+   return true; // passed all inequalities
+}
+
+
+
+
 void Polytope_print(Polytope *p){
     int n = p->n;
     int m = p->m;
