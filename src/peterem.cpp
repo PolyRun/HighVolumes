@@ -1,16 +1,33 @@
 #include <iostream>
 
 extern "C" { // must be included C stlye
-#include "volume.h"
+#include "poly/volume.h"
+#include "poly/cube.h"
+#include "beta_cut.h"
 }
 
 #include "peterem.hpp"
 
 int main() {
-   Polytope* p = Polytope_new(3,6);
+  int n = 10;
+  
+  Polytope *P;
+  cube(n, &P);
 
-   hello(p);
+  Polytope_print(P);
+  
+  FT r2;
+  FT *ori;
+  
+  initEllipsoid(P,&r2,&ori);
 
-   Polytope_free(p);
+  printf("R2 is %f\nOri is ", r2);
+
+  for (int i = 0; i < n; i++){
+    printf("%f ", ori[i]);
+  }
+  printf("\n");
+
+  Polytope_free(P);
 }
 

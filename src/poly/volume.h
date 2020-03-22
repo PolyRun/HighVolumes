@@ -4,7 +4,7 @@
 #ifndef HEADER_VOLUMES_H
 #define HEADER_VOLUMES_H
 
-typedef float FT;
+typedef double FT;
 
 typedef struct Polytope Polytope;
 
@@ -17,6 +17,8 @@ struct Polytope {
 Polytope* Polytope_new(int n, int m);
 
 void Polytope_free(Polytope* p);
+
+void Polytope_print(Polytope *p);
 
 //Polytope* Polytope_new(int n, int m) {
 //   Polytope* o = (Polytope*) malloc(sizeof(Polytope));

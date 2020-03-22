@@ -1,7 +1,7 @@
 #include <iostream>
 
 extern "C" { // must be included C stlye
-#include "volume.h"
+#include "poly/volume.h"
 }
 
 #ifndef HEADER_PETEREM_HPP
