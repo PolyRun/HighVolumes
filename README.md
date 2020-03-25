@@ -2,6 +2,9 @@
 
 ASL group project
 
+# dependencies
+
+You must install: GLPK
 
 # how to build:
 
