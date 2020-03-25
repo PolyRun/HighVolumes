@@ -52,3 +52,32 @@ set_target_properties(peterem PROPERTIES
    CXX_EXTENSIONS NO
 )
 
+
+# ----------------------- prng
+set(PRNG_SOURCE_FILES
+   random/prng.c
+)
+set(PRNG_HEADER_FILES
+   random/prng.h
+)
+add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
+
+
+# ----------------------- silaeubl
+project(silaeubl)
+
+set(SILAEUBL_HEADER_FILES
+   silaeubl.hpp
+)
+set(SILAEUBL_SOURCE_FILE
+   silaeubl.cpp
+)
+add_executable(silaeubl ${SILAEUBL_SOURCE_FILE} ${SILAEUBL_HEADER_FILES})
+
+target_link_libraries(silaeubl PUBLIC prng)
+
+set_target_properties(silaeubl PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
