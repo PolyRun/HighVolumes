@@ -5,7 +5,7 @@
 /**
  * \brief Initializes the prng
  **/
-double prng_init();
+void prng_init();
 
 /**
  * \brief Returns a new random double
