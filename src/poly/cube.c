@@ -1,12 +1,5 @@
-#include "volume.h"
+#include "cube.h"
 
-
-
-/**
- * \brief initialized P to a dim dimensional hypercube
- * \param dim the dimension
- * \param P a polytope double-pointer that is initialized and filled
- **/
 void cube(int dim, Polytope **P){
     int n = dim;
     int m = 2*dim;
