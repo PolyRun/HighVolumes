@@ -5,6 +5,17 @@ cmake_minimum_required(VERSION 3.6)
 # MB: maybe not needed?
 # LINK_DIRECTORIES(/usr/include)
 
+
+# ----------------------- prng
+set(PRNG_SOURCE_FILES
+   random/prng.c
+)
+set(PRNG_HEADER_FILES
+   random/prng.h
+)
+add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
+
+
 # ----------------------- volume
 set(VOLUME_SOURCE_FILES
    poly/volume.c beta_cut.c poly/cube.c
@@ -13,7 +24,7 @@ set(VOLUME_HEADER_FILES
    poly/volume.h beta_cut.h poly/cube.h
 )
 add_library(volume ${VOLUME_SOURCE_FILES} ${VOLUME_HEADER_FILES})
-target_link_libraries(volume PUBLIC glpk)
+target_link_libraries(volume PUBLIC glpk prng)
 
 
 # ----------------------- volume_helper
@@ -51,16 +62,6 @@ set_target_properties(peterem PROPERTIES
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
 )
-
-
-# ----------------------- prng
-set(PRNG_SOURCE_FILES
-   random/prng.c
-)
-set(PRNG_HEADER_FILES
-   random/prng.h
-)
-add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
 
 
 # ----------------------- silaeubl

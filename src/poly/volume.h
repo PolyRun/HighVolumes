@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <float.h>
+#include <math.h>
+
+#include "../random/prng.h"
+
 
 #ifndef HEADER_VOLUMES_H
 #define HEADER_VOLUMES_H
@@ -11,11 +15,20 @@ typedef double FT;
 #define FT_MAX DBL_MAX
 #define FT_MIN DBL_MIN
 
-// --------------------------------------------- Vectors
+// --------------------------------------------- Vectors / General
 
 // simple vector product
 //   assume no memory allignment!
 FT dotProduct(const FT* u, const FT* v, const int n);
+
+// intersect line x + t*d
+//           with ball(0,r)
+// assume x is in ball
+// return t0,t1 for intersections
+void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1);
+
+// calculate volume exactly for n-dim ball with radius r
+FT Ball_volume(const int n, const FT r);
 
 // --------------------------------------------- Polytope
 
@@ -72,6 +85,9 @@ bool Polytope_inside(const Polytope* p, const FT* v);
 //                                           and direction d
 // returns intersections: x+d*t0, x+d*t1
 void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT* t1);
+// Note: if we want coordinate-directions only, could implement a bit faster...
+
+
 
 // --------------------------------------------- Volume estimation
 
@@ -79,7 +95,7 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
 //   n: dimensions
 //   r0, r1: inner and outer radius
 //   body: convex body, guaranteed to contain B(0,r0) and be contained by B(0,r1)
-
-FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const void* body);
+FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Polytope* body);
+// Note: for now the body is just a polytope, we could make this more generic later!
 
 #endif // HEADER_VOLUMES_H

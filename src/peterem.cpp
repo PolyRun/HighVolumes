@@ -48,11 +48,23 @@ int main() {
 
       std::cout << "intersect box and line t0: " << t0 << ", t1=" << t1 << "\n";
    }
+   
+   {
+      std::cout << "Test ball volume:\n";
+      for(int i=1; i<13; i++) {
+         std::cout << "  n=" << i << " " << Ball_volume(i,1.0) << "\n";
+      }
+   }
+
+   {
+      FT v = volumeEstimateNormalizedBody(4,1.0,5.0,box);
+      std::cout << "estimated volume of box: " << v << " (exact: 256).\n";
+   }
 
    Polytope_free(p);
    
 
-   std::cout << "-------------- Test initEllipsoid:\n";
+   std::cout << "\n-------------- Test initEllipsoid:\n";
 
    int n = 10;
    
