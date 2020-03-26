@@ -2,7 +2,7 @@
 
 ASL group project
 
-[Sources we use for the Algorithm.](./README.md)
+[Sources we use for the Algorithm.](./papers/README.md)
 
 # dependencies
 
