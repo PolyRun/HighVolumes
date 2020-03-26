@@ -2,6 +2,8 @@
 
 ASL group project
 
+[Sources we use for the Algorithm.](./README.md)
+
 # dependencies
 
 You must install: GLPK
