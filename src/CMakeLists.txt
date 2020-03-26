@@ -13,6 +13,7 @@ set(VOLUME_HEADER_FILES
    poly/volume.h beta_cut.h poly/cube.h
 )
 add_library(volume ${VOLUME_SOURCE_FILES} ${VOLUME_HEADER_FILES})
+target_link_libraries(volume PUBLIC glpk)
 
 
 # ----------------------- volume_helper
@@ -43,7 +44,6 @@ set(PETEREM_SOURCE_FILE
 )
 add_executable(peterem ${PETEREM_SOURCE_FILE} ${PETEREM_HEADER_FILES})
 
-target_link_libraries(peterem PUBLIC volume glpk)
 target_link_libraries(peterem PUBLIC volume_helper)
 
 set_target_properties(peterem PROPERTIES
