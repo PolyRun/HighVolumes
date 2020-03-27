@@ -117,41 +117,43 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
    *t1 = t11;
 }
 
-FT volumeEstimateNormalizedBody(const int n, const FT r0_, const FT r1_, const Polytope* body) {
-   const int nx = 100000; // number of points sampled
-   const int nw = 10; // number of steps for walk
+FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Polytope* body) {
+   const int step_size = 10; // number of points sampled
+   const int walk_size = 10; // number of steps for walk
    
    
-   FT* xVec = (FT*) malloc(sizeof(FT)*n*nx);// nx vectors of size n, for sample points x
+   // init x:
+   FT* x = (FT*) malloc(sizeof(FT)*n);// sample point x
+   for(int j=0;j<n;j++) {x[j]=0.0;}// origin
+
    FT* d = (FT*) malloc(sizeof(FT)*n); // vector for random direction
 
-   const FT volFac = pow(2,1.0/(FT)n);
+   const int l = ceil(n*log(r1/r0) / log(2.0));
+   printf("steps: %d\n",l);
+   int t[l+1];// counts how many were thrown into Bi
+   for(int i=0;i<l;i++){t[i]=0;}
    
    // volume up to current step
    // start with B(0,r0)
    // multiply with estimated factor each round
-   FT volume = Ball_volume(n, r0_);
+   FT volume = Ball_volume(n, r0);
    
-   FT r0 = r0_; // radii for current step
-   FT r1 = r0*volFac;
-
-   do{
-      printf("radii: %f %f\n",r0,r1);
-      
-      int count = 0;
-
-      for(int i=0; i<nx; i++) {// for each point x
-         // init x:
-	 FT* x = xVec+n*i;
-	 for(int j=0;j<n;j++) {x[j]=0.0;}// origin
-
-	 for(int w=0; w<nw;w++) {// for each walk step
+   const FT stepFac = pow(2,-1.0/(FT)n);
+   
+   int count = 0;
+   FT rk = r0*pow(stepFac,-l+1);
+   for(int k=l-1;k>=0;k--,rk*=stepFac) { // for each Bk
+      FT kk = log(rk/r0)/(-log(stepFac));
+      printf("rk: %f kk: %f step: %f\n",rk,kk,log(stepFac));
+      for(int i=count; i<step_size; i++) { // sample required amount of points
+         // x = Walk(x,k):
+	 for(int w=0;w<walk_size;w++) { // take some random steps for x
 	    int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
 	    for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
 	    
             FT t0,t1, bt0,bt1;
             Polytope_intersect(body, x, d, &t0, &t1);
-            Ball_intersect(n, r1, x, d, &bt0, &bt1);
+            Ball_intersect(n, rk, x, d, &bt0, &bt1);
             
             // ensure do not walk outside of outer ball:
 	    t0 = (t0>bt0)?t0:bt0; // max
@@ -162,21 +164,30 @@ FT volumeEstimateNormalizedBody(const int n, const FT r0_, const FT r1_, const P
 	    FT t = prng_get_random_double_in_range(t0,t1);
 	    for(int j=0;j<n;j++) {x[j] += d[j]*t;}
 	 }
-
-	 // check if is inside/outside inner sphere -> count
-         FT x2 = dotProduct(x,x,n);
-         if(x2 < r0*r0) {
-	    count++;
-	 }
+         
+         // find right Bm:
+         FT x2 = dotProduct(x,x,n)/(r0*r0); // normalized radius
+	 FT mft = log(x2/r0)/(-log(stepFac)*2.0);
+	 int m = ceil(mft);
+	 int mm = (m>0)?m:0;
+	 printf("x %f mft %f k %d  m %d\n",sqrt(x2),mft,k,mm);
+	 assert(mm <= k);
+	 t[m]++;
       }
-      
-      // multiply size:
-      volume *= (FT)nx / (FT)count;
 
-      // prep for next iteration:
-      r0 = r1;
-      r1 = r1*volFac;
-   } while(r0<r1_);
+      // update count:
+      count = 0;
+      for(int i=0;i<=k;i++){count+=t[i];}
+      
+
+      FT ak = (FT)step_size / (FT)count;
+      volume *= ak;
+
+      printf("count: %d, volume: %f\n",count,volume);
+
+      // x = stepFac * x
+      for(int j=0;j<n;j++) {x[j] *= stepFac;}
+   }
 
    return volume;
 }
