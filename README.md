@@ -6,7 +6,9 @@ ASL group project
 
 # dependencies
 
-You must install: GLPK
+You must install: GLPK and
+[Armadillo](http://arma.sourceforge.net/download.html)
+
 
 # how to build:
 
