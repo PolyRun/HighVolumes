@@ -9,6 +9,8 @@
  * \param dim the dimension
  * \param P a polytope double-pointer that is initialized and filled
  **/
-void cube(int dim, Polytope **P);
+void polycube(int dim, Polytope **P);
+ 
+
 
 #endif // HEADER_CUBE_H

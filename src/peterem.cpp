@@ -64,6 +64,10 @@ int main() {
    Polytope_free(p);
    
 
+   Polytope *P;
+   polycube(10, &P);
+   std::cout << *P << std::endl;
+   Polytope_free(P);
    
 
    #ifdef NDEBUG

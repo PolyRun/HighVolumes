@@ -38,10 +38,11 @@ class Polyvest_p{
 public:
 	Polyvest_p(int rows, int cols);
 	~Polyvest_p();
-	double 	matA(double val, int i, int j){ A(i, j) = val; }
+	void 	matA(double val, int i, int j){ A(i, j) = val; }
 	double 	matA(int i, int j){ return A(i, j); }
-	double 	vecb(double val, int i){	b(i) = val; }
+	void 	vecb(double val, int i){	b(i) = val; }
 	double 	vecb(int i){ return b(i); }
+	void 	genInitE(double &R2, vec &Ori);
 	void 	Preprocess();
 	double 	EstimateVol(int coef);
 	double 	Volume() const { return vol; }
@@ -51,7 +52,6 @@ public:
 private:
 	double 	walk(int k);
 	void	checkHPs();
-	void 	genInitE(double &R2, vec &Ori);
 
 	double 	randd(double u){ return rand() * u / RAND_MAX; }
 	int 	randi(int u){ return rand() % u; }

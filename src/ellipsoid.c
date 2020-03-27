@@ -14,11 +14,12 @@ int cholesky(FT *A, FT *D, int n);
 inline int cholesky(FT *A, FT *D, int n){
     int i, j, k;
     FT sum;
-    for (i = 1; i <= n; i++){
-        for (j = i; j <= n; j++){
-            for (sum = A[i*n+j], k = i-1; k >= 1; k--){
+    for (i = 0; i < n; i++){
+        for (j = 0; j <= i; j++){
+            for (sum = A[i*n+j], k = i-1; k >= 0; k--){
                 sum -= A[i*n+k] * A[j*n+k];
             }
+            printf("sum is: %f\n", sum);
             if (i == j){
                 // A is not positive definite (maybe due to rounding errors)
                 if (sum <= 0){
@@ -27,12 +28,13 @@ inline int cholesky(FT *A, FT *D, int n){
                 D[i] = sqrt(sum);
             }
             else {
-                A[j*n + i] = sum/D[i];
+                A[i*n + j] = sum/D[j];
             }
         }
     }
-
+    return 0;
 }
+
 
 
 
@@ -68,6 +70,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     }
 
 #ifdef DEBUG_MSG
+    printf("--------------- HIGHVOLUMES\n");
     printf("First ellipsoid approximation\n");
     printf("\nT:\n");
     for (int i = 0; i < n; i++){
@@ -158,7 +161,9 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     }
 
 
+    
 #ifdef DEBUG_MSG
+    printf("--------------- HIGHVOLUMES\n");
     printf("Final ellipsoid\n");
     printf("\nT:\n");
     for (int i = 0; i < n; i++){
@@ -182,6 +187,28 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
         printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
         exit(1);		
     }
+
+
+#ifdef DEBUG_MSG
+    printf("\nTrans:\n");
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            //printf("i is: %d, j is: %d\n", i , j);
+            if (i == j){
+                printf("%f ", D[i]);
+            }
+            else if (i > j){
+                printf("%f ", T[i*n + j]);
+            }
+            else {
+                printf("%f ", 0.0);
+            }
+        }
+        printf("\n");
+    }
+#endif
+    
+    
 
     /*cout << Trans << endl;*/
     // b = beta_r * (b - A * ori);
