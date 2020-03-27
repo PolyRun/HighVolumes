@@ -76,14 +76,15 @@ int main() {
    std::cout << "ok.\n\n";
    
    {
-      std::cout << "Test ball volume:\n";
+      std::cout << "Print ball volumes, r=1:\n";
       for(int i=1; i<13; i++) {
          std::cout << "  n=" << i << " " << Ball_volume(i,1.0) << "\n";
       }
    }
 
    {
-      FT v = volumeEstimateNormalizedBody(4,1.0,5.0,box);
+      std::cout << "\nEstimate volume of 4dim r=2 box. r0=1.5, r1 = 5:\n";
+      FT v = volumeEstimateNormalizedBody(4,1.5,5.0,box);
       std::cout << "estimated volume of box: " << v << " (exact: 256).\n";
    }
 
