@@ -92,9 +92,9 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
       const FT dai = dotProduct(d,ai,n);
       // Note: if base-vector: could just pick i'th entry!
       
-      //printf("dai: %f\n",dai);
+      //printf("dai: %f %f\n",dai,FT_EPS);
 
-      if(abs(dai) <= FT_EPS) {continue;} // orthogonal
+      if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
 
       // find intersections y of line with all planes:
       //   y = x + d*t
@@ -103,6 +103,7 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
       //   t = (b - ai*x)/(d*ai)
       
       FT t = (b - dotProduct(ai,x,n)) / dai;
+      //printf("t: %f\n",t);
       
       if(dai < 0.0) {
          t00 = (t00>t)?t00:t; // max
