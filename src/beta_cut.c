@@ -6,15 +6,6 @@
 
 
 
-/**
- * \brief get initial estimate for the outer (?) ellipsoid around A.
- *
- * \param n dimension of space
- * \param m number of hyperplanes
- * \param A the polytope as specified in volume.h
- * \R2 return value ...
- * \Ori return value: Ori
- **/
 void initEllipsoid(Polytope *Pol, FT *R2, FT **Ori){
     int n = Pol->n;
     int m = Pol->m;

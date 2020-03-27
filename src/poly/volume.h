@@ -15,6 +15,8 @@ typedef double FT;
 #define FT_MAX DBL_MAX
 #define FT_MIN DBL_MIN
 
+#define DEBUG_MSG
+
 // --------------------------------------------- Vectors / General
 
 // simple vector product

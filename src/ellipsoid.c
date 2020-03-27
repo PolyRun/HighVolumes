@@ -1,17 +1,22 @@
 #include "beta_cut.h"
 
 
-
 /**
  * \brief almost in-place cholesky factorization (from the book numerical recipes in c)
  * \param A a symmetric, positive definite matrix, the lower part of A will hold the subdiagonal entries of L
  * \param D will hold the diagonal of L
  * \param n the number of rows and cols of A
  **/
+int cholesky(FT *A, FT *D, int n);
+
+
+
 inline int cholesky(FT *A, FT *D, int n){
-    for (int i = 1; i <= n; i++){
-        for (int j = i; j <= n; j++){
-            for (FT sum = A[i*n+j], int k = i-1; k >= 1; k--){
+    int i, j, k;
+    FT sum;
+    for (i = 1; i <= n; i++){
+        for (j = i; j <= n; j++){
+            for (sum = A[i*n+j], k = i-1; k >= 1; k--){
                 sum -= A[i*n+k] * A[j*n+k];
             }
             if (i == j){
@@ -32,7 +37,7 @@ inline int cholesky(FT *A, FT *D, int n){
 
 
 
-void Preprocess(Polytope *P, Polytope *Q, double *det){
+void preprocess(Polytope *P, Polytope **Q, FT *det){
 
     // MB: maybe implement this function as in PolyVest
     //checkHPs();
@@ -40,6 +45,7 @@ void Preprocess(Polytope *P, Polytope *Q, double *det){
     int n = P->n;
     int m = P->m;
 
+    *Q = Polytope_new(n, m);
     
     double beta_r = 2*n;    
     double c3 = beta_r * beta_r;
@@ -53,12 +59,29 @@ void Preprocess(Polytope *P, Polytope *Q, double *det){
     FT *ori;
     initEllipsoid(P, &R2, &ori);
 
+
     // initialize T to diag(R2)
     // T is out initial guess to the ellipsoid around Poly
     FT *T = (FT *) calloc(n*n, sizeof(FT));
     for (int i = 0; i < n; i++){
         T[i * n + i] = R2;
     }
+
+#ifdef DEBUG_MSG
+    printf("First ellipsoid approximation\n");
+    printf("\nT:\n");
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            printf("%f ", T[i*n + j]);
+        }
+        printf("\n");
+    }
+    printf("\ncenter:\n");
+    for (int i = 0; i < n; i++){
+        printf("%f ", ori[i]);
+    }
+    printf("\n");
+#endif
 
     FT *distance = (FT *) calloc(m, sizeof(FT));
     FT *tm = (FT *) calloc(m, sizeof(FT));
@@ -68,15 +91,19 @@ void Preprocess(Polytope *P, Polytope *Q, double *det){
     int counter = 0;
     while (++counter > 0){
         int i;
-		
+
+        // distance = b - A * ori
+        for (int i = 0; i < m; i++){
+            distance[i] = Polytope_get_b(P,i);
+            for(int x=0; x < n; x++) {
+                distance[i] -= ori[x] * Polytope_get_a(P, i, x);
+            }
+        }
+        
         //check if ori in polytope
         for(i = 0; i < m; i++) {
-            FT sum = 0;
-            for(int x=0; x < n; x++) {
-                sum += ori[x] * Polytope_get_a(P, i, x);
-            }
             // sum = (A * ori)_i > b_i (constraint not satisfied)
-            if(sum > Polytope_get_b(P, i)) {
+            if(distance[i] < 0) {
                 // tm[i] = row_i(A)*T*row_i(A)^t
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
@@ -111,7 +138,7 @@ void Preprocess(Polytope *P, Polytope *Q, double *det){
             break;
         }
 
-        vec t = T * A.row(i).t() / sqrt(tm(i));
+        // else update ellipsoid (ori, T)
         FT *t = (FT *) malloc(n*sizeof(FT));
         for (int k = 0; k < n; k++){
             t[k] = 0;
@@ -131,36 +158,63 @@ void Preprocess(Polytope *P, Polytope *Q, double *det){
     }
 
 
-    /*
-    if (!msg_off){ 
-        cout << "R^2: " << R2 << endl << "Origin: " << endl;
-    	ori.print();
+#ifdef DEBUG_MSG
+    printf("Final ellipsoid\n");
+    printf("\nT:\n");
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            printf("%f ", T[i*n + j]);
+        }
+        printf("\n");
     }
-    */	
+    printf("\ncenter:\n");
+    for (int i = 0; i < n; i++){
+        printf("%f ", ori[i]);
+    }
+    printf("\n");
+#endif
 
     
     //apply affine transformation in-place on Poly
     FT *D = (FT *) malloc(n*sizeof(FT));
     int err = cholesky(T, D, n);
     if (err > 0){
-        printf("The input polytope is degenerated or non-existed and the volume is 0.\n");
+        printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
         exit(1);		
     }
 
-    // TODO from here down is not yet ported
     /*cout << Trans << endl;*/
-    b = beta_r * (b - A * ori);
-    A = A * Trans.t();
+    // b = beta_r * (b - A * ori);
+    for (int i = 0; i < m; i++){
+        Polytope_set_b(*Q, i, beta_r * distance[i]);
+    }
+    // A = A * Trans;
+    for (int i = 0; i < m; i++){
+        for (int j = 0; j < n; j++){
+            FT sum = Polytope_get_a(P, i, j) * D[j];
+            for (int k = j+1; k < n; k++){
+                sum += Polytope_get_a(P, i, k) * T[k*n + j];
+            }
+            Polytope_set_a(*Q, i, j, sum);
+        }
+    }
+    
 
     
     printf("The number of iterations in shallow beta-cut: %d\n", counter);
 
+    /*
     rowvec exp(n);
     exp.ones();
     for (int i = 0; i < n; i++){
         B[i] = b / A.col(i);
         Ai[i] = A / (A.col(i) * exp);
     }
-	
-    determinant = det(Trans) / pow(beta_r, n);
+    */
+
+    *det = 0;
+    for (int i = 0; i < n; i++){
+        *det *= D[i];
+    }
+    *det /= pow(beta_r, n);
 }

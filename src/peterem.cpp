@@ -64,28 +64,6 @@ int main() {
    Polytope_free(p);
    
 
-   std::cout << "\n-------------- Test initEllipsoid:\n";
-
-   int n = 10;
-   
-   Polytope *P;
-   cube(n, &P);
-
-   std::cout << P << "\n";
-   
-   FT r2;
-   FT *ori;
-   
-   initEllipsoid(P,&r2,&ori);
-
-   printf("R2 is %f\nOri is ", r2);
-
-   for (int i = 0; i < n; i++){
-     printf("%f ", ori[i]);
-   }
-   printf("\n");
-
-   Polytope_free(P);
    
 
    #ifdef NDEBUG
