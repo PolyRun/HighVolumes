@@ -86,17 +86,17 @@ set_target_properties(silaeubl PROPERTIES
 
 
 # ----------------------- test_preprocess
-project(test_preprocess)
+#project(test_preprocess)
 
-set(TEST_PREPROCESS_SOURCE_FILE
-   test_preprocess.cpp
-)
-add_executable(test_preprocess ${TEST_PREPROCESS_SOURCE_FILE})
+#set(TEST_PREPROCESS_SOURCE_FILE
+#   test_preprocess.cpp
+#)
+#add_executable(test_preprocess ${TEST_PREPROCESS_SOURCE_FILE})
 
-target_link_libraries(test_preprocess PUBLIC volume volume_helper)
+#target_link_libraries(test_preprocess PUBLIC volume volume_helper)
 
-set_target_properties(test_preprocess PROPERTIES
-   CXX_STANDARD 11
-   CXX_STANDARD_REQUIRED YES
-   CXX_EXTENSIONS NO
-)
+#set_target_properties(test_preprocess PROPERTIES
+#   CXX_STANDARD 11
+#   CXX_STANDARD_REQUIRED YES
+#   CXX_EXTENSIONS NO
+#)

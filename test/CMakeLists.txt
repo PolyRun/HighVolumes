@@ -5,7 +5,7 @@ project(test)
 
 add_executable(test test_preprocess.cpp)
 
-target_link_libraries(test PUBLIC ../src ../polyvest)
+target_link_libraries(test PUBLIC volume_helper polyvest_lib)
 
 set_target_properties(test PROPERTIES
    CXX_STANDARD 11
