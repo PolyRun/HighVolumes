@@ -79,8 +79,8 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
    const int n = p->n;
    const int m = p->m;
    
-   FT t00 = FT_MAX;// tmp variables for t0, t1
-   FT t11 = -FT_MAX;
+   FT t00 = -FT_MAX;// tmp variables for t0, t1
+   FT t11 = FT_MAX;
 
    for(int i=0; i<m; i++) {
       // check orientation of plane vs direction of line:
@@ -105,9 +105,9 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
       FT t = (b - dotProduct(ai,x,n)) / dai;
       
       if(dai < 0.0) {
-         t00 = (t00<t)?t00:t; // min
+         t00 = (t00>t)?t00:t; // max
       } else {
-         t11 = (t11>t)?t11:t; // max
+         t11 = (t11<t)?t11:t; // min
       }
    }
    
