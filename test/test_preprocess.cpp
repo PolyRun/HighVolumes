@@ -5,6 +5,7 @@ extern "C" { // must be included C stlye
 #include "../src/poly/volume.h"
 #include "../src/poly/cube.h"
 #include "../src/ellipsoid.h"
+#include "../src/beta_cut.h"
 }
 
 
@@ -18,7 +19,7 @@ void polyvest_convert(Polytope *P, Polyvest_p **Q){
 
   for (int i = 0; i < m; i++){
     for (int j = 0; j < n; j++){
-      p.matA(Polytope_get_a(P, i, j), i, j);
+      q.matA(Polytope_get_a(P, i, j), i, j);
     }
     q.vecb(Polytope_get_b(P, i), i);
   }
