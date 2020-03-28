@@ -79,8 +79,8 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
    const int n = p->n;
    const int m = p->m;
    
-   FT t00 = FT_MAX;// tmp variables for t0, t1
-   FT t11 = -FT_MAX;
+   FT t00 = -FT_MAX;// tmp variables for t0, t1
+   FT t11 = FT_MAX;
 
    for(int i=0; i<m; i++) {
       // check orientation of plane vs direction of line:
@@ -92,9 +92,9 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
       const FT dai = dotProduct(d,ai,n);
       // Note: if base-vector: could just pick i'th entry!
       
-      //printf("dai: %f\n",dai);
+      //printf("dai: %f %f\n",dai,FT_EPS);
 
-      if(abs(dai) <= FT_EPS) {continue;} // orthogonal
+      if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
 
       // find intersections y of line with all planes:
       //   y = x + d*t
@@ -103,11 +103,12 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
       //   t = (b - ai*x)/(d*ai)
       
       FT t = (b - dotProduct(ai,x,n)) / dai;
+      //printf("t: %f\n",t);
       
       if(dai < 0.0) {
-         t00 = (t00<t)?t00:t; // min
+         t00 = (t00>t)?t00:t; // max
       } else {
-         t11 = (t11>t)?t11:t; // max
+         t11 = (t11<t)?t11:t; // min
       }
    }
    
@@ -116,66 +117,90 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
    *t1 = t11;
 }
 
-FT volumeEstimateNormalizedBody(const int n, const FT r0_, const FT r1_, const Polytope* body) {
-   const int nx = 100000; // number of points sampled
-   const int nw = 10; // number of steps for walk
+FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Polytope* body) {
+   const int step_size = 100000; // number of points sampled
+   const int walk_size = 10; // number of steps for walk
    
-   
-   FT* xVec = (FT*) malloc(sizeof(FT)*n*nx);// nx vectors of size n, for sample points x
+   // init x:
+   FT* x = (FT*) malloc(sizeof(FT)*n);// sample point x
+   for(int j=0;j<n;j++) {x[j]=0.0;}// origin
+
    FT* d = (FT*) malloc(sizeof(FT)*n); // vector for random direction
 
-   const FT volFac = pow(2,1.0/(FT)n);
+   const int l = ceil(n*log(r1/r0) / log(2.0));
+   printf("steps: %d\n",l);
+   int t[l+1];// counts how many were thrown into Bi
+   for(int i=0;i<=l;i++){t[i]=0;}
    
    // volume up to current step
    // start with B(0,r0)
    // multiply with estimated factor each round
-   FT volume = Ball_volume(n, r0_);
+   FT volume = Ball_volume(n, r0);
    
-   FT r0 = r0_; // radii for current step
-   FT r1 = r0*volFac;
+   // Idea:
+   //   last round must end in rk = r0/stepFac
+   //   first round must start with rk >= r1
+   const FT stepFac = pow(2,-1.0/(FT)n);
+   
+   FT rk = r0*pow(stepFac,-l);
+   int count = 0;
+   for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
+      FT kk = log(rk/r0)/(-log(stepFac));
+      printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
-   do{
-      printf("radii: %f %f\n",r0,r1);
-      
-      int count = 0;
-
-      for(int i=0; i<nx; i++) {// for each point x
-         // init x:
-	 FT* x = xVec+n*i;
-	 for(int j=0;j<n;j++) {x[j]=0.0;}// origin
-
-	 for(int w=0; w<nw;w++) {// for each walk step
-	    int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
-	    for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
-	    
+      //{
+      //   FT rtest = (rk*rk)*0.99;
+      //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
+      //   printf("m: %f\n",m);
+      //}
+      //{
+      //   FT rtest = (r0*r0)*0.99;
+      //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
+      //   printf("m: %f\n",m);
+      //}
+      for(int i=count; i<step_size; i++) { // sample required amount of points
+         for(int w=0;w<walk_size;w++) { // take some random steps for x
+            int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
+            for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
+            
             FT t0,t1, bt0,bt1;
             Polytope_intersect(body, x, d, &t0, &t1);
-            Ball_intersect(n, r1, x, d, &bt0, &bt1);
+            Ball_intersect(n, rk, x, d, &bt0, &bt1);
             
             // ensure do not walk outside of outer ball:
-	    t0 = (t0>bt0)?t0:bt0; // max
-	    t1 = (t1<bt1)?t1:bt1; // min
+            t0 = (t0>bt0)?t0:bt0; // max
+            t1 = (t1<bt1)?t1:bt1; // min
 
             //printf("%f %f %f %f\n",bt0,bt1,t0,t1);
 
-	    FT t = prng_get_random_double_in_range(t0,t1);
-	    for(int j=0;j<n;j++) {x[j] += d[j]*t;}
-	 }
+            FT t = prng_get_random_double_in_range(t0,t1);
+            for(int j=0;j<n;j++) {x[j] += d[j]*t;}
+         }
+         
+         // find right Bm:
+         const FT x2 = dotProduct(x,x,n); // normalized radius
+         const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));
+         const int mm = ceil(mmm);
+	 const int m = (mm>0)?mm:0; // find index of balls
 
-	 // check if is inside/outside inner sphere -> count
-         FT x2 = dotProduct(x,x,n);
-         if(x2 < r0*r0) {
-	    count++;
-	 }
+	 //printf("k %d  m %d\n",k,m);
+         assert(m <= k);
+         t[m]++;
       }
-      
-      // multiply size:
-      volume *= (FT)nx / (FT)count;
 
-      // prep for next iteration:
-      r0 = r1;
-      r1 = r1*volFac;
-   } while(r0<r1_);
+      // update count:
+      count = 0;
+      for(int i=0;i<k;i++){count+=t[i];}
+      // all that fell into lower balls
+
+      FT ak = (FT)step_size / (FT)count;
+      volume *= ak;
+
+      printf("count: %d, volume: %f\n",count,volume);
+
+      // x = stepFac * x   -> guarantee that in next smaller ball
+      for(int j=0;j<n;j++) {x[j] *= stepFac;}
+   }
 
    return volume;
 }
