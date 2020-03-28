@@ -46,6 +46,8 @@ public:
 	void 	Preprocess();
 	double 	EstimateVol(int coef);
 	double 	Volume() const { return vol; }
+	mat A;
+	vec b;
 
 	bool 	msg_off;
 	bool 	check_planes_off;
@@ -58,8 +60,6 @@ private:
 
 //polytope denoted by: Ax<=b, A is an (m x n) matrix.
 	int m, n;
-	mat A;
-	vec b;
 
 //approximating volume variables
 	vec x;
@@ -75,7 +75,7 @@ private:
 };
 
 inline Polyvest_p::Polyvest_p(int rows, int cols) :
-	msg_off(false),
+	msg_off(true),
 	check_planes_off(false),
 	m(rows),
 	n(cols),

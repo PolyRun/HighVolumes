@@ -1,17 +1,18 @@
 #include "beta_cut.h"
+#include <assert.h>
 
 
 /**
- * \brief almost in-place cholesky factorization (from the book numerical recipes in c)
- * \param A a symmetric, positive definite matrix, the lower part of A will hold the subdiagonal entries of L
- * \param D will hold the diagonal of L
+ * \brief cholesky factorization
+ * \param A a symmetric, positive definite matrix
+ * \param Trans will be lower diagonal matrix holding L
  * \param n the number of rows and cols of A
  **/
-int cholesky(FT *A, FT *D, int n);
+int cholesky(FT *A, FT *Trans, int n);
 
 
-
-inline int cholesky(FT *A, FT *D, int n){
+/*
+inline int cholesky(FT *A, FT *Trans, int n){
     int i, j, k;
     FT sum;
     for (i = 0; i < n; i++){
@@ -19,23 +20,46 @@ inline int cholesky(FT *A, FT *D, int n){
             for (sum = A[i*n+j], k = i-1; k >= 0; k--){
                 sum -= A[i*n+k] * A[j*n+k];
             }
-            printf("sum is: %f\n", sum);
             if (i == j){
                 // A is not positive definite (maybe due to rounding errors)
                 if (sum <= 0){
                     return 1;
                 }
-                D[i] = sqrt(sum);
+                Trans[i*n+i] = sqrt(sum);
             }
             else {
-                A[i*n + j] = sum/D[j];
+                Trans[i*n + j] = sum/Trans[j*n+j];
             }
         }
     }
     return 0;
 }
+*/
 
 
+inline int cholesky(FT *A, FT *Trans, int n){
+    
+    // Decomposing a matrix into Lower Triangular 
+    for (int i = 0; i < n; i++) { 
+        for (int j = 0; j <= i; j++) { 
+            FT sum = 0; 
+  
+            if (j == i) { 
+                for (int k = 0; k < j; k++) {
+                    sum += Trans[j*n+k] * Trans[j*n+k];
+                }
+                Trans[j*n+j] = sqrt(A[j*n+j] - sum); 
+            }
+            else { 
+                for (int k = 0; k < j; k++) {
+                    sum += (Trans[i*n+k] * Trans[j*n+k]);
+                }
+                Trans[i*n+j] = (A[i*n+j] - sum) / Trans[j*n+j]; 
+            } 
+        } 
+    }
+    return 0;
+}
 
 
 
@@ -90,13 +114,15 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     FT *tm = (FT *) calloc(m, sizeof(FT));
 
     // update T until x^t*T*x <= 1
-    //
+
     int counter = 0;
     while (++counter > 0){
         int i;
 
+        
+
         // distance = b - A * ori
-        for (int i = 0; i < m; i++){
+        for (i = 0; i < m; i++){
             distance[i] = Polytope_get_b(P,i);
             for(int x=0; x < n; x++) {
                 distance[i] -= ori[x] * Polytope_get_a(P, i, x);
@@ -110,18 +136,20 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
                 // tm[i] = row_i(A)*T*row_i(A)^t
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
+                    FT tmi_tmp = 0;
                     for (int k = 0; k < n; k++){
-                        tm[i] += T[j*n + k] * Polytope_get_a(P, i, k);
+                        tmi_tmp += T[j*n + k] * Polytope_get_a(P, i, k);
                     }
-                    tm[i] *= Polytope_get_a(P, i, j);
+                    tm[i] += tmi_tmp * Polytope_get_a(P, i, j);
                 }
                 break;
             }
         }
-
+        
         // check if small ellipsoid is contained in polytope
         if (i == m) {
             for (i = 0; i < m; i++){
+                //printf("modify tm[%d] in second loop\n", i);
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
                     FT tmi_tmp = 0;
@@ -130,12 +158,13 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
                     }
                     tm[i] += tmi_tmp * Polytope_get_a(P, i, j);
                 }
+                //printf("%f*%f*%f-%f < 0\n", c3, distance[i], distance[i], tm[i]);
                 if (c3 * distance[i] * distance[i] - tm[i] < 0){
                     break;
                 }
             }
         }
-		
+        
         //terminate if E satisfies the two criteria 
         if (i == m){
             break;
@@ -148,6 +177,14 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
             for (int j = 0; j < n; j++){
                 t[k] += T[k*n+j] * Polytope_get_a(P, i, j);
             }
+            if (tm[i] <= 0){
+
+                printf("tmi <= 0 for i = %d\nprinting tm\n", i);
+                for (int l = 0; l < n; l++){
+                    printf("%f ", tm[i]);
+                }
+                printf("\n");
+            }
             t[k] /= sqrt(tm[i]);
         }
         for (int k = 0; k < n; k++){
@@ -158,12 +195,11 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
                 T[k*n + j] = c1 * (T[k*n + j] - c4 * t[k] * t[j]);  
             }
         }
+        
     }
-
 
     
 #ifdef DEBUG_MSG
-    printf("--------------- HIGHVOLUMES\n");
     printf("Final ellipsoid\n");
     printf("\nT:\n");
     for (int i = 0; i < n; i++){
@@ -181,8 +217,8 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
 
     
     //apply affine transformation in-place on Poly
-    FT *D = (FT *) malloc(n*sizeof(FT));
-    int err = cholesky(T, D, n);
+    FT *Trans = (FT *) calloc(n*n, sizeof(FT));
+    int err = cholesky(T, Trans, n);
     if (err > 0){
         printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
         exit(1);		
@@ -193,24 +229,21 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     printf("\nTrans:\n");
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
-            //printf("i is: %d, j is: %d\n", i , j);
-            if (i == j){
-                printf("%f ", D[i]);
-            }
-            else if (i > j){
-                printf("%f ", T[i*n + j]);
-            }
-            else {
-                printf("%f ", 0.0);
-            }
+            printf("%f ", Trans[i*n + j]);
+        }
+        printf("\n");
+    }
+    
+    printf("\nA:\n");
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            printf("%f ", Polytope_get_a(P, i, j));
         }
         printf("\n");
     }
 #endif
     
     
-
-    /*cout << Trans << endl;*/
     // b = beta_r * (b - A * ori);
     for (int i = 0; i < m; i++){
         Polytope_set_b(*Q, i, beta_r * distance[i]);
@@ -218,19 +251,17 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     // A = A * Trans;
     for (int i = 0; i < m; i++){
         for (int j = 0; j < n; j++){
-            FT sum = Polytope_get_a(P, i, j) * D[j];
-            for (int k = j+1; k < n; k++){
-                sum += Polytope_get_a(P, i, k) * T[k*n + j];
+            FT sum = 0;
+            for (int k = 0; k < n; k++){
+                sum += Polytope_get_a(P, i, k) * Trans[k*n + j];
             }
             Polytope_set_a(*Q, i, j, sum);
         }
     }
-    
-
-    
-    printf("The number of iterations in shallow beta-cut: %d\n", counter);
 
     /*
+      don't know what that's supposed to do
+
     rowvec exp(n);
     exp.ones();
     for (int i = 0; i < n; i++){
@@ -239,9 +270,32 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     }
     */
 
-    *det = 0;
+    *det = 1;
     for (int i = 0; i < n; i++){
-        *det *= D[i];
+        *det *= Trans[i*n+i];
     }
     *det /= pow(beta_r, n);
+
+
+        
+#ifdef DEBUG_MSG
+    printf("\nTransformed Poly:\n");
+    for (int i = 0; i < m; i++){
+        for (int j = 0; j < n; j++){
+            printf("%f ", Polytope_get_a(*Q, i, j));
+        }
+        printf("| %f\n", Polytope_get_b(*Q, i));
+    }
+
+    printf("\n");
+
+    printf("\nDeterminant:\n%f\n", *det);
+    
+    printf("\nNumber of iterations of shallow beta-cut: %d\n", counter);
+
+    printf("\n^^^^^^^^^^^^^^^^^ END HIGHVOLUMES\n");
+    
+#endif
+
+    
 }

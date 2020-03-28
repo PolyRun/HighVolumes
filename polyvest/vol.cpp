@@ -169,7 +169,7 @@ void Polyvest_p::genInitE(double &R2, vec &Ori){
 **/
 void Polyvest_p::Preprocess(){
 
-    checkHPs();
+    //checkHPs();
 
     double c1 = (2 * pow(n, 2) + pow(1 - n / beta_r, 2)) * (1 - 1.0 / pow(beta_r, 2)) / (2 * pow(n, 2) - 2);
     //double c1 = pow(n, 2) * (1 - 1.0 / pow(beta_r, 2)) / (pow(n, 2) - 1);
@@ -210,6 +210,8 @@ void Polyvest_p::Preprocess(){
                 tm(i) = as_scalar(A.row(i) * T * A.row(i).t());
                 break;
             }
+
+        
         if (i == m){
             //check if small ellipsoid contained in polytope
             for (i = 0; i < m; i++){
@@ -217,14 +219,17 @@ void Polyvest_p::Preprocess(){
                 if (c3 * distance(i) * distance(i) - tm(i) < 0) break;
             }
         }
-		
+        
         //terminate if E satisfies two criterions
         if (i == m) break;
 		
         vec t = T * A.row(i).t() / sqrt(tm(i));
         ori = ori - t * c2;
         T = c1 * (T - c4 * t * t.t());
+
     }
+
+    
 	
 
 	
@@ -241,8 +246,7 @@ void Polyvest_p::Preprocess(){
 
 
     if (!msg_off){
-        std::cout << "--------------- POLYVEST\n"
-                  << "Final ellipsoid\n"
+        std::cout << "Final ellipsoid\n"
                   << "T:\n";
         T.print();
         std::cout << "\ncenter:\n";
@@ -255,7 +259,6 @@ void Polyvest_p::Preprocess(){
     b = beta_r * (b - A * ori);
     A = A * Trans.t();
 
-    if (!msg_off) cout << "The number of iterations: " << counter << endl;
 
     rowvec exp(n);
     exp.ones();
@@ -265,6 +268,19 @@ void Polyvest_p::Preprocess(){
     }
 	
     determinant = det(Trans) / pow(beta_r, n);
+
+
+    if (!msg_off){
+        std::cout << "Transformed Poly:\n";
+        A.print();
+        b.print();
+        std::cout << "\nDeterminant:" << std::endl
+                  << determinant << std::endl
+                  << "The number of iterations: " << counter << std::endl
+                  << "^^^^^^^^^^^^^^^^^ END POLYVEST" << std::endl;
+    }
+
+    
 }
 
 
