@@ -21,9 +21,13 @@
 
 #include "vol.h"
 #include "glpk.h"
+#include <iomanip>
 
 #define PI 3.1415926536
-
+#define FLOATWIDTH 15
+//#define DEBUG_MSG
+//#define DEBUG
+#define PRINT_T
 using namespace vol;
 
 //double abs(double x){
@@ -169,6 +173,8 @@ void Polyvest_p::genInitE(double &R2, vec &Ori){
 **/
 void Polyvest_p::Preprocess(){
 
+    std::cout << std::fixed << setprecision(FLOATWIDTH);
+    
     //checkHPs();
 
     double c1 = (2 * pow(n, 2) + pow(1 - n / beta_r, 2)) * (1 - 1.0 / pow(beta_r, 2)) / (2 * pow(n, 2) - 2);
@@ -190,9 +196,9 @@ void Polyvest_p::Preprocess(){
         std::cout << "--------------- POLYVEST\n"
                   << "First ellipsoid approximation\n"
                   << "T:\n";
-        T.print();
+        T.raw_print();
         std::cout << "\ncenter:\n";
-        ori.print();
+        ori.raw_print();
     }
 
     
@@ -205,9 +211,19 @@ void Polyvest_p::Preprocess(){
 		
         //check if ori in polytope
         distance = b - A * ori;
+
+#ifdef DEBUG
+        cout << counter << " | ";
+        distance.t().raw_print();
+#endif
+
         for (i = 0; i < m; i++)
             if (distance(i) < 0){
+#ifdef DEBUG
+                cout << "modify tm[" << i << "] in first loop" << endl;
+#endif
                 tm(i) = as_scalar(A.row(i) * T * A.row(i).t());
+                //cout << "tm" << i << ": " << tm(i) << endl;
                 break;
             }
 
@@ -215,6 +231,9 @@ void Polyvest_p::Preprocess(){
         if (i == m){
             //check if small ellipsoid contained in polytope
             for (i = 0; i < m; i++){
+#ifdef DEBUG
+                cout << "modify tm[" << i << "] in second loop" << endl;
+#endif
                 tm(i) = as_scalar(A.row(i) * T * A.row(i).t());
                 if (c3 * distance(i) * distance(i) - tm(i) < 0) break;
             }
@@ -226,6 +245,13 @@ void Polyvest_p::Preprocess(){
         vec t = T * A.row(i).t() / sqrt(tm(i));
         ori = ori - t * c2;
         T = c1 * (T - c4 * t * t.t());
+
+#ifdef PRINT_T
+        ori.raw_print();
+        cout << endl;
+        T.raw_print();
+        cout << endl;
+#endif
 
     }
 
@@ -248,11 +274,11 @@ void Polyvest_p::Preprocess(){
     if (!msg_off){
         std::cout << "Final ellipsoid\n"
                   << "T:\n";
-        T.print();
+        T.raw_print();
         std::cout << "\ncenter:\n";
-        ori.print();
+        ori.raw_print();
         std::cout << "\nTrans:\n";
-        Trans.print();
+        Trans.raw_print();
     }
 
     
@@ -272,8 +298,8 @@ void Polyvest_p::Preprocess(){
 
     if (!msg_off){
         std::cout << "Transformed Poly:\n";
-        A.print();
-        b.print();
+        A.raw_print();
+        b.raw_print();
         std::cout << "\nDeterminant:" << std::endl
                   << determinant << std::endl
                   << "The number of iterations: " << counter << std::endl
