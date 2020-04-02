@@ -13,6 +13,63 @@ extern "C" { // must be included C stlye
 
 
 
+bool polytope_contains_scaled_ball(Polytope *P){
+
+    // setup scaled unit ball for ellipsoid_inside_poly method
+    int n = P->n;
+
+    FT *c = (FT *) calloc(n, sizeof(FT));
+    FT *E = (FT *) calloc(n*n, sizeof(FT));
+    for (int i = 0; i < n; i++){
+        // note beta = 2n^{-1}
+        E[i*n+i] = 1.0/(2*n);
+    }
+
+    return ellipsoid_inside_poly(P, E, c);
+    
+}
+
+
+bool ellipsoid_inside_poly(Polytope *P, FT *E, FT *c){
+
+    // we maximize each linear constraint of P inside the ellipsoid and see if it is satisfied
+    // note that the linear function f(x) = a.transpose() * x is maximized in (E,c) by a.transpose() * c + sqrt(a.transpose() * E * a)
+    // note this wasn't obvious to me but i read it in the shallow beta-cut paper P. 69
+
+    int n = P->n;
+    int m = P->m;
+    
+    for (int i = 0; i < m; i++){
+        
+        // bi <- b[i] - Ai * c
+        FT bi = Polytope_get_b(P, i);
+        for (int j = 0; j < n; j++){
+            bi -= Polytope_get_a(P, i, j) * c[j];
+        }
+
+        // at_e_a <- Ai * E * Ai.transpose()
+        FT at_e_a = 0;
+        for (int j = 0; j < n; j++){
+            FT e_a = 0;
+            for (int k = 0; k < n; k++){
+                e_a += E[j*n+k] * Polytope_get_a(P, i, k);
+            }
+            at_e_a += Polytope_get_a(P, i, j) * e_a;
+        }
+
+        //  Ai * c + sqrt(Ai * E * Ai.transpose()) > bi 
+        if (at_e_a > bi*bi){
+            return false;
+        }
+        
+    }
+    
+    return true;
+    
+}
+
+
+
 void polyvest_convert(Polytope *P, vol::Polyvest_p *Q){
 
     int n = P->n;
@@ -108,7 +165,12 @@ void test_preprocess_against_polyvest(Polytope *P){
     //Q.A.print();
     //Q.b.print();
 
+
     Q.Preprocess();
+
+    cout << endl << endl;
+    
+    //cout << endl << "highvolumes" << endl << endl;
 
     Polytope *R;
     FT det;
@@ -117,13 +179,31 @@ void test_preprocess_against_polyvest(Polytope *P){
 
     std::pair<FT, FT> diff = matrix_diff(R, &Q);
 
-    std::cout << "2-Frobenius of A_P - A_Q:" << std::endl
+    std::cout << "2-Frobenius of A_P - A_Q: "
               << diff.first << std::endl
-              << "2-norm of b_P - b_Q:" << std::endl
-              << diff.second << std::endl;
-             
-    
+              << "2-norm of b_P - b_Q:      "
+              << diff.second << std::endl;    
   
+}
+
+/**
+ *\brief test if the scaled polytope contains scaled unit ball B(0, 1/(2n))
+ **/
+void test_preprocess_circumscription(Polytope *P){
+    
+    Polytope *R;
+    FT det;
+    preprocess(P, &R, &det);
+
+    bool is_correct = polytope_contains_scaled_ball(R);
+
+    if (is_correct){
+        std::cout << "Polytope contains B(0, 1/(2n))" << std::endl;
+    }
+    else {
+        std::cout << "ERROR: Polytope doesn't contain B(0, 1/(2n))" << std::endl;
+    }
+    
 }
 
 
@@ -171,9 +251,11 @@ int main(){
     paths[32] = POLYEXP_BASE + "simplex_20";
 
 
-    for (int i = 0; i < 33; i++){
+    int failing_tests[4] = {2,3,4,21};
 
-        std::cout << endl << "TESTING " << paths[i] << std::endl;
+    for (int i = 0; i < 1; i++){
+
+        std::cout << endl << endl << "TESTING " << paths[i] << std::endl;
         
         int err = read_polyvest_p(paths[i], &P);
         if (err){
@@ -185,7 +267,9 @@ int main(){
         //test_init_against_polyvest(P);
         
         test_preprocess_against_polyvest(P);
-   
+
+        //test_preprocess_circumscription(P);
+        
     //preprocess(P, &Q, &det);
    
         Polytope_free(P);

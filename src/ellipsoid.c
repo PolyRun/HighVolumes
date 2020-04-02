@@ -1,6 +1,8 @@
 #include "beta_cut.h"
 #include <assert.h>
 
+#define FLOATWIDTH 15
+
 
 /**
  * \brief cholesky factorization
@@ -9,32 +11,6 @@
  * \param n the number of rows and cols of A
  **/
 int cholesky(FT *A, FT *Trans, int n);
-
-
-/*
-inline int cholesky(FT *A, FT *Trans, int n){
-    int i, j, k;
-    FT sum;
-    for (i = 0; i < n; i++){
-        for (j = 0; j <= i; j++){
-            for (sum = A[i*n+j], k = i-1; k >= 0; k--){
-                sum -= A[i*n+k] * A[j*n+k];
-            }
-            if (i == j){
-                // A is not positive definite (maybe due to rounding errors)
-                if (sum <= 0){
-                    return 1;
-                }
-                Trans[i*n+i] = sqrt(sum);
-            }
-            else {
-                Trans[i*n + j] = sum/Trans[j*n+j];
-            }
-        }
-    }
-    return 0;
-}
-*/
 
 
 inline int cholesky(FT *A, FT *Trans, int n){
@@ -73,12 +49,18 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
 
     *Q = Polytope_new(n, m);
     
-    double beta_r = 2*n;    
+    double beta_r = 2*n; 
+    double c1 = (2 * pow(n, 2) + pow(1 - n / beta_r, 2)) * (1 - 1.0 / pow(beta_r, 2)) / (2 * pow(n, 2) - 2);
+    //double c1 = pow(n, 2) * (1 - 1.0 / pow(beta_r, 2)) / (pow(n, 2) - 1);
+    double c2 = (1 - n / beta_r) / (n + 1);
+    double c3 = beta_r * beta_r;
+    double c4 = 2 * c2 / (1 - 1.0 / beta_r);
+    /*
     double c3 = beta_r * beta_r;
     double c1 = (2 * n*n + (1-n/beta_r)*(1-n/beta_r)) * (1 - 1.0 / c3) / (2 * n*n - 2);
     double c2 = (1 - n / beta_r) / (n + 1);
     double c4 = 2 * c2 / (1 - 1.0 / beta_r);
-
+    */
     //init E(R2I, 0), T = R2I, ori = 0.
     
     FT R2;
@@ -99,13 +81,13 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     printf("\nT:\n");
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
-            printf("%f ", T[i*n + j]);
+            printf("%0.*f ",FLOATWIDTH, T[i*n + j]);
         }
         printf("\n");
     }
     printf("\ncenter:\n");
     for (int i = 0; i < n; i++){
-        printf("%f ", ori[i]);
+        printf("%0.*f ", FLOATWIDTH, ori[i]);
     }
     printf("\n");
 #endif
@@ -122,26 +104,41 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
         
 
         // distance = b - A * ori
+#ifdef DEBUG
+        printf("%d | ", counter);
+#endif
         for (i = 0; i < m; i++){
             distance[i] = Polytope_get_b(P,i);
             for(int x=0; x < n; x++) {
                 distance[i] -= ori[x] * Polytope_get_a(P, i, x);
             }
+#ifdef DEBUG
+            printf("%0.*f ", FLOATWIDTH, distance[i]);
+#endif
         }
+#ifdef DEBUG        
+        printf("\n");
+#endif
+     
         
         //check if ori in polytope
         for(i = 0; i < m; i++) {
             // sum = (A * ori)_i > b_i (constraint not satisfied)
             if(distance[i] < 0) {
                 // tm[i] = row_i(A)*T*row_i(A)^t
+#ifdef DEBUG
+                printf("LOOP 1 tm[%d]\n", i);
+#endif
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
                     FT tmi_tmp = 0;
                     for (int k = 0; k < n; k++){
                         tmi_tmp += T[j*n + k] * Polytope_get_a(P, i, k);
+                        //printf("tmi_tmp: %0.*f\n", FLOATWIDTH, tmi_tmp);
                     }
                     tm[i] += tmi_tmp * Polytope_get_a(P, i, j);
                 }
+                //printf("tm%d: %0.*f\n", i, FLOATWIDTH, tm[i]);
                 break;
             }
         }
@@ -149,7 +146,9 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
         // check if small ellipsoid is contained in polytope
         if (i == m) {
             for (i = 0; i < m; i++){
-                //printf("modify tm[%d] in second loop\n", i);
+#ifdef DEBUG
+                printf("LOOP 2 tm[%d]\n", i);
+#endif
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
                     FT tmi_tmp = 0;
@@ -158,7 +157,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
                     }
                     tm[i] += tmi_tmp * Polytope_get_a(P, i, j);
                 }
-                //printf("%f*%f*%f-%f < 0\n", c3, distance[i], distance[i], tm[i]);
+  
                 if (c3 * distance[i] * distance[i] - tm[i] < 0){
                     break;
                 }
@@ -179,22 +178,45 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
             }
             if (tm[i] <= 0){
 
+#ifdef DEBUG
                 printf("tmi <= 0 for i = %d\nprinting tm\n", i);
                 for (int l = 0; l < n; l++){
-                    printf("%f ", tm[i]);
+                    printf("%0.*f ", FLOATWIDTH, tm[i]);
                 }
                 printf("\n");
+#endif
             }
             t[k] /= sqrt(tm[i]);
         }
         for (int k = 0; k < n; k++){
             ori[k] -= t[k] * c2;
+#ifdef PRINT_T
+            printf("%0.*f ", FLOATWIDTH, ori[k]);
+#endif      
         }
+
+#ifdef PRINT_T
+        printf("\n\n");
+#endif  
+        
         for (int k = 0; k < n; k++){
             for (int j = 0; j < n; j++){
-                T[k*n + j] = c1 * (T[k*n + j] - c4 * t[k] * t[j]);  
+                T[k*n + j] = c1 * (T[k*n + j] - c4 * t[k] * t[j]);
+#ifdef PRINT_T
+                printf("%0.*f ", FLOATWIDTH, T[k*n + j]);
+#endif
             }
+#ifdef PRINT_T
+            printf("\n");
+#endif
+            
         }
+
+#ifdef PRINT_T
+        printf("\n");
+#endif  
+
+        
         
     }
 
@@ -204,13 +226,13 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     printf("\nT:\n");
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
-            printf("%f ", T[i*n + j]);
+            printf("%0.*f ", FLOATWIDTH, T[i*n + j]);
         }
         printf("\n");
     }
     printf("\ncenter:\n");
     for (int i = 0; i < n; i++){
-        printf("%f ", ori[i]);
+        printf("%0.*f ", FLOATWIDTH, ori[i]);
     }
     printf("\n");
 #endif
@@ -229,7 +251,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     printf("\nTrans:\n");
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
-            printf("%f ", Trans[i*n + j]);
+            printf("%0.*f ",FLOATWIDTH, Trans[i*n + j]);
         }
         printf("\n");
     }
@@ -237,7 +259,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     printf("\nA:\n");
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
-            printf("%f ", Polytope_get_a(P, i, j));
+            printf("%0.*f ", FLOATWIDTH, Polytope_get_a(P, i, j));
         }
         printf("\n");
     }
@@ -282,14 +304,14 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     printf("\nTransformed Poly:\n");
     for (int i = 0; i < m; i++){
         for (int j = 0; j < n; j++){
-            printf("%f ", Polytope_get_a(*Q, i, j));
+            printf("%0.*f ", FLOATWIDTH, Polytope_get_a(*Q, i, j));
         }
-        printf("| %f\n", Polytope_get_b(*Q, i));
+        printf("| %0.*f\n", FLOATWIDTH, Polytope_get_b(*Q, i));
     }
 
     printf("\n");
 
-    printf("\nDeterminant:\n%f\n", *det);
+    printf("\nDeterminant:\n%0.*f\n", FLOATWIDTH, *det);
     
     printf("\nNumber of iterations of shallow beta-cut: %d\n", counter);
 
