@@ -8,12 +8,18 @@
 
 #include "split.hpp"
 
+// -------------------- Idea:
+//
+// Takes input from argc, argv
+// can be configured to interpret it as flags, options (strings) or parameters (dictionary)
+// can set default values
+//
 // -------------------- How to use:
 //
 // CLI cli(argc,argv,"AppName");
 //
 // cli.addFlag('v',false,"verbose"); // cli.flag('v')
-// cli.addFlag('n',"default","size"); // cli.option('n')
+// cli.addOption('n',"default","size"); // cli.option('n')
 // 
 // CLIParameters clip;
 // clip.set("p1","param_value");
