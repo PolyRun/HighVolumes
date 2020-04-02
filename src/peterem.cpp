@@ -8,7 +8,27 @@ extern "C" { // must be included C stlye
 
 #include "peterem.hpp"
 
-int main() {
+#include "util/timer.hpp"
+#include "util/cli.hpp"
+
+int main(int argc, char** argv) {
+   Timer t;
+   t.start();
+   t.stop();
+   std::cout << "T0: " << t.millisecs() <<"\n";
+   
+   CLI cli(argc,argv,"peterem");
+   cli.addFlag('v',false,"verbose");
+   cli.addOption('n',"100","size of data");
+   CLIParameters clip;
+   clip.set("c","asdfasdf");
+   cli.addParameters('p',clip,"somee extra parameters");
+   if (!cli.parse()) {return -1;}
+   std::cout << "v flag: " << cli.flag('v') << ", n: " << cli.option('n') << std::endl;
+   std::cout << "Print parameters p:\n";
+   std::cout << cli.parameters('p') << std::endl;
+   std::cout << "And for c: " << cli.parameters('p').get("c","") << "\n\n";
+   
    std::cout << "Generate new polytope:\n";
    Polytope* p = Polytope_new(3,6);
    hello(p);
