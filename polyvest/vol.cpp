@@ -27,7 +27,8 @@
 #define FLOATWIDTH 15
 //#define DEBUG_MSG
 //#define DEBUG
-#define PRINT_T
+//#define PRINT_T
+//#define PRINT_TMI
 using namespace vol;
 
 //double abs(double x){
@@ -192,14 +193,14 @@ void Polyvest_p::Preprocess(){
     T = R2 * T;
 
 
-    if (!msg_off){
+#ifdef DEBUG_MSG
         std::cout << "--------------- POLYVEST\n"
                   << "First ellipsoid approximation\n"
                   << "T:\n";
         T.raw_print();
         std::cout << "\ncenter:\n";
         ori.raw_print();
-    }
+#endif
 
     
     vec distance = zeros<vec>(m);
@@ -213,14 +214,14 @@ void Polyvest_p::Preprocess(){
         distance = b - A * ori;
 
 #ifdef DEBUG
-        cout << counter << " | ";
+        //cout << "ROUND " << counter << endl;
         distance.t().raw_print();
 #endif
 
         for (i = 0; i < m; i++)
             if (distance(i) < 0){
 #ifdef DEBUG
-                cout << "modify tm[" << i << "] in first loop" << endl;
+                //cout << i << " in LOOP 1, distance[" << i << "] = " << distance(i) << " < 0" << endl;
 #endif
                 tm(i) = as_scalar(A.row(i) * T * A.row(i).t());
                 //cout << "tm" << i << ": " << tm(i) << endl;
@@ -232,13 +233,31 @@ void Polyvest_p::Preprocess(){
             //check if small ellipsoid contained in polytope
             for (i = 0; i < m; i++){
 #ifdef DEBUG
-                cout << "modify tm[" << i << "] in second loop" << endl;
+                //cout << i << " in LOOP 2" << endl;
 #endif
                 tm(i) = as_scalar(A.row(i) * T * A.row(i).t());
-                if (c3 * distance(i) * distance(i) - tm(i) < 0) break;
+                if (c3 * distance(i) * distance(i) - tm(i) < 0) {
+#ifdef DEBUG
+                    //cout << c3 << "*" << distance(i) << "*" << distance(i) << "-" << tm(i) << "=" << c3*distance(i)*distance(i)-tm(i) << "< 0" << endl;
+#endif
+                    break;
+                }
+                else {
+#ifdef DEBUG
+                    //cout << c3 << "*" << distance(i) << "*" << distance(i) << "-" << tm(i) << "=" << c3*distance(i)*distance(i)-tm(i) << ">= 0" << endl;
+#endif
+                }
             }
         }
         
+
+        
+#ifdef PRINT_TMI
+        //printf("ROUND %d\n", counter);
+        tm.t().raw_print();
+#endif
+
+
         //terminate if E satisfies two criterions
         if (i == m) break;
 		
@@ -270,17 +289,6 @@ void Polyvest_p::Preprocess(){
         exit(1);		
     }
 
-
-    if (!msg_off){
-        std::cout << "Final ellipsoid\n"
-                  << "T:\n";
-        T.raw_print();
-        std::cout << "\ncenter:\n";
-        ori.raw_print();
-        std::cout << "\nTrans:\n";
-        Trans.raw_print();
-    }
-
     
     b = beta_r * (b - A * ori);
     A = A * Trans.t();
@@ -296,15 +304,30 @@ void Polyvest_p::Preprocess(){
     determinant = det(Trans) / pow(beta_r, n);
 
 
-    if (!msg_off){
-        std::cout << "Transformed Poly:\n";
+#ifdef DEBUG_MSG
+    
+        std::cout << "Final ellipsoid\n"
+                  << "T:\n";
+        T.raw_print();
+        
+        std::cout << "\ncenter:\n";
+        ori.raw_print();
+        
+        std::cout << "\nTrans:\n";
+        Trans.raw_print();
+        
+        std::cout << "Transformed Poly:\n"
+                  << "A:\n";
         A.raw_print();
+
+        std::cout << "b:\n";
         b.raw_print();
-        std::cout << "\nDeterminant:" << std::endl
-                  << determinant << std::endl
-                  << "The number of iterations: " << counter << std::endl
+        
+        std::cout << "Determinant:\n"
+                  << determinant << std::endl;
+        std::cout << "The number of iterations: " << counter << std::endl
                   << "^^^^^^^^^^^^^^^^^ END POLYVEST" << std::endl;
-    }
+#endif
 
     
 }
@@ -340,10 +363,8 @@ double Polyvest_p::EstimateVol(int coef = 1600){
     }
 
     vol = uballVol(n) * determinant;
-    if (!msg_off) cout << "k\tr^2\t\tvol(k+1)/vol(k)" << endl;
 
     for (i = 0; alpha[i] > 1 && i < l - 1; i++){
-        if (!msg_off) cout << i << "\t" << r2[i] << "\t\t" << alpha[i] << endl;
         vol *= alpha[i];
     }
 

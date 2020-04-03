@@ -20,7 +20,7 @@ typedef double FT;
 //#define DEBUG_MSG
 //#define DEBUG
 //#define PRINT_T
-
+//#define PRINT_TMI
 // --------------------------------------------- Vectors / General
 
 // simple vector product

@@ -251,9 +251,9 @@ int main(){
     paths[32] = POLYEXP_BASE + "simplex_20";
 
 
-    int failing_tests[4] = {2,3,4,21};
+    int failing_test = 21;
 
-    for (int i = 0; i < 1; i++){
+    for (int i = 0; i < 33; i++){
 
         std::cout << endl << endl << "TESTING " << paths[i] << std::endl;
         

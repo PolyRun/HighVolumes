@@ -75,7 +75,7 @@ private:
 };
 
 inline Polyvest_p::Polyvest_p(int rows, int cols) :
-	msg_off(true),
+    msg_off(true),
 	check_planes_off(false),
 	m(rows),
 	n(cols),

@@ -3,7 +3,6 @@
 
 #define FLOATWIDTH 15
 
-
 /**
  * \brief cholesky factorization
  * \param A a symmetric, positive definite matrix
@@ -51,16 +50,11 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     
     double beta_r = 2*n; 
     double c1 = (2 * pow(n, 2) + pow(1 - n / beta_r, 2)) * (1 - 1.0 / pow(beta_r, 2)) / (2 * pow(n, 2) - 2);
-    //double c1 = pow(n, 2) * (1 - 1.0 / pow(beta_r, 2)) / (pow(n, 2) - 1);
     double c2 = (1 - n / beta_r) / (n + 1);
     double c3 = beta_r * beta_r;
     double c4 = 2 * c2 / (1 - 1.0 / beta_r);
-    /*
-    double c3 = beta_r * beta_r;
-    double c1 = (2 * n*n + (1-n/beta_r)*(1-n/beta_r)) * (1 - 1.0 / c3) / (2 * n*n - 2);
-    double c2 = (1 - n / beta_r) / (n + 1);
-    double c4 = 2 * c2 / (1 - 1.0 / beta_r);
-    */
+
+    
     //init E(R2I, 0), T = R2I, ori = 0.
     
     FT R2;
@@ -105,13 +99,14 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
 
         // distance = b - A * ori
 #ifdef DEBUG
-        printf("%d | ", counter);
+        //printf("ROUND %d\n", counter);
 #endif
         for (i = 0; i < m; i++){
-            distance[i] = Polytope_get_b(P,i);
+            FT sum = 0;
             for(int x=0; x < n; x++) {
-                distance[i] -= ori[x] * Polytope_get_a(P, i, x);
+                sum += ori[x] * Polytope_get_a(P, i, x);
             }
+            distance[i] = Polytope_get_b(P, i) - sum;
 #ifdef DEBUG
             printf("%0.*f ", FLOATWIDTH, distance[i]);
 #endif
@@ -127,7 +122,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
             if(distance[i] < 0) {
                 // tm[i] = row_i(A)*T*row_i(A)^t
 #ifdef DEBUG
-                printf("LOOP 1 tm[%d]\n", i);
+                //printf("%d in LOOP 1, distance[%d] = %0.15f < 0\n", i, i, distance[i]);
 #endif
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
@@ -136,7 +131,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
                         tmi_tmp += T[j*n + k] * Polytope_get_a(P, i, k);
                         //printf("tmi_tmp: %0.*f\n", FLOATWIDTH, tmi_tmp);
                     }
-                    tm[i] += tmi_tmp * Polytope_get_a(P, i, j);
+                    tm[i] += Polytope_get_a(P, i, j) * tmi_tmp;
                 }
                 //printf("tm%d: %0.*f\n", i, FLOATWIDTH, tm[i]);
                 break;
@@ -147,7 +142,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
         if (i == m) {
             for (i = 0; i < m; i++){
 #ifdef DEBUG
-                printf("LOOP 2 tm[%d]\n", i);
+                //printf("%d in LOOP 2\n", i);
 #endif
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
@@ -155,15 +150,31 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
                     for (int k = 0; k < n; k++){
                         tmi_tmp += T[j*n + k] * Polytope_get_a(P, i, k);
                     }
-                    tm[i] += tmi_tmp * Polytope_get_a(P, i, j);
+                    tm[i] += Polytope_get_a(P, i, j) * tmi_tmp;
                 }
   
                 if (c3 * distance[i] * distance[i] - tm[i] < 0){
+#ifdef DEBUG
+                    //printf("%0.15f * %0.15f * %0.15f - %0.15f = %0.15f < 0\n", c3, distance[i], distance[i], tm[i], c3*distance[i]*distance[i]-tm[i]);
+#endif
                     break;
+                }
+                else {
+#ifdef DEBUG
+                    //printf("%0.15f * %0.15f * %0.15f - %0.15f = %0.15f >= 0\n", c3, distance[i], distance[i], tm[i], c3*distance[i]*distance[i]-tm[i]);
+#endif
                 }
             }
         }
-        
+
+#ifdef PRINT_TMI
+        //printf("ROUND %d\n", counter);
+        for (int j = 0; j < m; j++){
+            printf("%0.*f ", FLOATWIDTH, tm[j]);
+        }
+        printf("\n");
+#endif
+
         //terminate if E satisfies the two criteria 
         if (i == m){
             break;
@@ -219,24 +230,6 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
         
         
     }
-
-    
-#ifdef DEBUG_MSG
-    printf("Final ellipsoid\n");
-    printf("\nT:\n");
-    for (int i = 0; i < n; i++){
-        for (int j = 0; j < n; j++){
-            printf("%0.*f ", FLOATWIDTH, T[i*n + j]);
-        }
-        printf("\n");
-    }
-    printf("\ncenter:\n");
-    for (int i = 0; i < n; i++){
-        printf("%0.*f ", FLOATWIDTH, ori[i]);
-    }
-    printf("\n");
-#endif
-
     
     //apply affine transformation in-place on Poly
     FT *Trans = (FT *) calloc(n*n, sizeof(FT));
@@ -245,25 +238,6 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
         printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
         exit(1);		
     }
-
-
-#ifdef DEBUG_MSG
-    printf("\nTrans:\n");
-    for (int i = 0; i < n; i++){
-        for (int j = 0; j < n; j++){
-            printf("%0.*f ",FLOATWIDTH, Trans[i*n + j]);
-        }
-        printf("\n");
-    }
-    
-    printf("\nA:\n");
-    for (int i = 0; i < n; i++){
-        for (int j = 0; j < n; j++){
-            printf("%0.*f ", FLOATWIDTH, Polytope_get_a(P, i, j));
-        }
-        printf("\n");
-    }
-#endif
     
     
     // b = beta_r * (b - A * ori);
@@ -301,6 +275,26 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
 
         
 #ifdef DEBUG_MSG
+    printf("Final ellipsoid\n");
+    printf("\nT:\n");
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            printf("%0.*f ", FLOATWIDTH, T[i*n + j]);
+        }
+        printf("\n");
+    }
+    printf("\ncenter:\n");
+    for (int i = 0; i < n; i++){
+        printf("%0.*f ", FLOATWIDTH, ori[i]);
+    }
+    printf("\n");
+    printf("\nTrans:\n");
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            printf("%0.*f ",FLOATWIDTH, Trans[i*n + j]);
+        }
+        printf("\n");
+    }
     printf("\nTransformed Poly:\n");
     for (int i = 0; i < m; i++){
         for (int j = 0; j < n; j++){
