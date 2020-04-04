@@ -221,6 +221,6 @@ FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Pol
 
 
 
-FT xyz_f1(const Polytope* body, const FT r, const int n) {return r;}
-FT xyz_f2(const Polytope* body, const FT r, const int n) {return Polytope_get_b(body,0);}
+FT xyz_f1(const Polytope* body, const FT r, const int n) {return body->n;}
+FT xyz_f2(const Polytope* body, const FT r, const int n) {return n;}
 xyz_f_t xyz_f = xyz_f1;

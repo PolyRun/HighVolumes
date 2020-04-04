@@ -41,24 +41,24 @@ class CLIF_Option : public CLIF_OptionBase {
 public:
    CLIF_Option(F_t* var, const signed char opt, const std::string &name, const std::string &val,
 	       const std::map<std::string, F_t> &m)
-   : var_(var), CLIF_OptionBase(opt,name,val), m_(m) {}
+   : var_(var), CLIF_OptionBase(opt,name,val), fmap(m) {}
    
    void virtual postParse(CLI &cli) {
       std::string key = cli.parameters(opt_).get(name_,"");
-      const auto it = m_.find(key);
-      if(it==m_.end()) {
+      const auto it = fmap.find(key);
+      if(it==fmap.end()) {
          std::cout << "Error: bad function name for: " << opt_ << " " << name_ << "\n";
 	 std::cout << "       viable options:\n";
-	 for(const auto it : m_) {
+	 for(const auto it : fmap) {
 	    std::cout << "           " << it.first << "\n";
 	 }
 	 std::exit(0);
       }
-      *var_ = m_.at(cli.parameters(opt_).get(name_,""));
+      *var_ = fmap.at(cli.parameters(opt_).get(name_,""));
    }
+   const std::map<std::string, F_t> fmap; // map holding all the options
 private:
    F_t* var_; // global variable that will hold final choice
-   const std::map<std::string, F_t> m_;
 };
 
 class CLIFunctions {
@@ -110,6 +110,14 @@ public:
 	 cli_.addParameters(it.first,it.second, "Function configuration");
       }
    }
+
+   CLIF_OptionBase* getOption(const std::string &name) {
+      for(auto it : options_) {
+         if(it->name_ == name) {return it;}
+      }
+      return NULL;
+   }
+
 private:
    CLI &cli_;
    std::map<signed char,CLIParameters> params_; // assembled parameters for opt
