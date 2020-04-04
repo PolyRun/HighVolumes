@@ -62,22 +62,15 @@ Polytope* Polytope_new(int n, int m);
 void Polytope_free(Polytope* p);
 
 // Setters:
-inline void Polytope_set_a(Polytope* p, int i, int x, FT a) {
-   // for constraint i set coefficient for variable x to a
-   p->data[i * (p->n+1) + x] = a;
-}
-inline void Polytope_set_b(Polytope* p, int i, FT b) {
-   // for constraint i set b
-   p->data[i * (p->n+1) + p->n] = b;
-}
+void Polytope_set_a(Polytope* p, int i, int x, FT a);
+// for constraint i set coefficient for variable x to a
+void Polytope_set_b(Polytope* p, int i, FT b);
+// for constraint i set b
 
 // Getters
-inline FT Polytope_get_a(const Polytope* p, int i, int x) {
-   return p->data[i * (p->n+1) + x];
-}
-inline FT Polytope_get_b(const Polytope* p, int i) {
-   return p->data[i * (p->n+1) + p->n];
-}
+FT Polytope_get_a(const Polytope* p, int i, int x);
+FT Polytope_get_b(const Polytope* p, int i);
+
 // get pointer to ai
 FT* Polytope_get_aV(const Polytope* p, int i);
 

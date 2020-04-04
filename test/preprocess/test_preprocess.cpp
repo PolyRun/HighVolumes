@@ -1,9 +1,9 @@
 #include <iostream>
-#include "../src/poly/volume_helper.hpp"
+#include "../../src/poly/volume_helper.hpp"
 #include "test_preprocess.hpp"
 
 extern "C" { // must be included C stlye
-#include "../src/poly/preprocess.h"
+#include "../../src/poly/preprocess.h"
 }
 
 

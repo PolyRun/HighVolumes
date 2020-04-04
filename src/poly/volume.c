@@ -65,6 +65,20 @@ FT* Polytope_get_aV(const Polytope* p, int i) {
    return &(p->data[i * (p->n+1)]);
 }
 
+inline void Polytope_set_a(Polytope* p, int i, int x, FT a) {
+   p->data[i * (p->n+1) + x] = a;
+}
+inline void Polytope_set_b(Polytope* p, int i, FT b) {
+   p->data[i * (p->n+1) + p->n] = b;
+}
+
+inline FT Polytope_get_a(const Polytope* p, int i, int x) {
+   return p->data[i * (p->n+1) + x];
+}
+inline FT Polytope_get_b(const Polytope* p, int i) {
+   return p->data[i * (p->n+1) + p->n];
+}
+
 bool Polytope_inside(const Polytope* p, const FT* v) {
    for(int i=0; i<p->n; i++) {
       FT sum = 0;

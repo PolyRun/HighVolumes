@@ -1,9 +1,9 @@
 
-#include "../polyvest/vol.h"
+#include "../../polyvest/vol.h"
 #include <cmath>
 
 extern "C" { // must be included C stlye
-#include "../src/poly/volume.h"
+#include "../../src/poly/volume.h"
 }
 
 
