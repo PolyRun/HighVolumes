@@ -4,9 +4,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <sstream>
 #include <getopt.h>
-
-#include "split.hpp"
 
 // -------------------- Idea:
 //
@@ -42,6 +41,10 @@ public:
       for(std::string m : parts) {
          std::vector<std::string> pp = split(m,'=');
 	 assert(pp.size()==2 && "parameter list must have correct form!");
+	 if(! (pp.size()==2 && "parameter list must have correct form!")) {
+	    std::cout << "Parameter list had bad form:\n" << in_ << "\n";
+	    std::exit(0);
+	 }
 	 params_[pp[0]] = pp[1];
       }
    }
@@ -66,14 +69,20 @@ public:
       return ret;
    }
 
+   bool isUsed(const std::string &name) {return params_.find(name)!=params_.end();}
 private:
    std::map<std::string,std::string> params_;
+   
+   std::vector<std::string> split(std::string &s, char separator =',') {
+       std::vector<std::string> res;
+       std::istringstream f(s);
+       std::string tmp;
+       while (getline(f, tmp, separator)) {
+           res.push_back(tmp);
+       }
+       return res;
+   }
 };
-
-std::ostream& operator<<(std::ostream& os, const CLIParameters &p) {
-   os << p.tostring();
-   return os;
-}
 
 class CLI {
 public:
@@ -200,6 +209,8 @@ public:
 	 return nullParams;
       }
    }
+
+   bool isUsed(signed char opt) {return desc_.find(opt)!=desc_.end();}
 protected:
    const int argc_;
    char** argv_;

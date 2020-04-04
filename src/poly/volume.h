@@ -104,4 +104,17 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
 FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Polytope* body);
 // Note: for now the body is just a polytope, we could make this more generic later!
 
+
+// ---------- proof of concept:
+
+typedef FT (*xyz_f_t)(const Polytope*,const FT,const int);
+FT xyz_f1(const Polytope* body, const FT r, const int n);
+FT xyz_f2(const Polytope* body, const FT r, const int n);
+
+extern xyz_f_t xyz_f;
+
+// --- end proof of concept.
+
+
+
 #endif // HEADER_VOLUMES_H
