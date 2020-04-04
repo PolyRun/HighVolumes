@@ -18,10 +18,10 @@ add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
 
 # ----------------------- volume
 set(VOLUME_SOURCE_FILES
-   poly/volume.c beta_cut.c poly/cube.c ellipsoid.c
+   poly/volume.c poly/preprocess/init_ellipsoid.c poly/preprocess/preprocess.c
 )
 set(VOLUME_HEADER_FILES
-   poly/volume.h beta_cut.h poly/cube.h ellipsoid.h
+   poly/volume.h poly/preprocess.h
 )
 add_library(volume ${VOLUME_SOURCE_FILES} ${VOLUME_HEADER_FILES})
 target_link_libraries(volume PUBLIC glpk prng)

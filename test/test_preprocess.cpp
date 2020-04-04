@@ -3,9 +3,7 @@
 #include "test_preprocess.hpp"
 
 extern "C" { // must be included C stlye
-#include "../src/poly/cube.h"
-#include "../src/ellipsoid.h"
-#include "../src/beta_cut.h"
+#include "../src/poly/preprocess.h"
 }
 
 
@@ -139,7 +137,7 @@ void test_init_against_polyvest(Polytope *P){
   
     FT R2;
     FT *ori;
-    initEllipsoid(P, &R2, &ori);
+    init_ellipsoid(P, &R2, &ori);
 
   
     std::cout << "----------------- Highvolumes\n";
@@ -211,7 +209,23 @@ int main(){
     std::cout << "\n-------------- Test initEllipsoid:\n";
 
     int n = 5;
-   
+
+
+    // test it we can use makepoly here
+    vector<double> ell(n);
+    for (int i = 0; i < n; i++){
+        ell[i] = 1;
+    }
+    
+    int nhyperplanes = 6;
+
+    Polytope *R;
+    make_random_poly(ell, nhyperplanes, &R);
+
+    // write polytope, ellipsoid and scaled ellipsoid to out stdout
+    cout << *R << endl;
+
+    
     //Polytope *P = Polytope_new_box(n, 3);
 
     Polytope *P;

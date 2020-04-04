@@ -2,8 +2,7 @@
 
 extern "C" { // must be included C stlye
 #include "poly/volume.h"
-#include "poly/cube.h"
-#include "beta_cut.h"
+    #include "poly/preprocess.h"
 }
 
 #include "peterem.hpp"
@@ -130,11 +129,6 @@ int main(int argc, char** argv) {
    std::cout << "ok.\n\n";
    
 
-   Polytope *P;
-   polycube(10, &P);
-   std::cout << *P << std::endl;
-   Polytope_free(P);
-   
 
    #ifdef NDEBUG
    std::cout<< "## WARNING: DEBUG DISABLED!\n";

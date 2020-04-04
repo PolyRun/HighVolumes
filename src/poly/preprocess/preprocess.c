@@ -1,4 +1,5 @@
-#include "beta_cut.h"
+//#include "beta_cut.h"
+#include "../preprocess.h"
 #include <assert.h>
 
 #define FLOATWIDTH 15
@@ -65,7 +66,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     
     FT R2;
     FT *ori;
-    initEllipsoid(P, &R2, &ori);
+    init_ellipsoid(P, &R2, &ori);
 
 
     // initialize T to diag(R2)

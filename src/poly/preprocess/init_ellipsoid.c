@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glpk.h>
-#include "beta_cut.h"
+//#include "beta_cut.h"
+#include "../preprocess.h"
 
 
 
-void initEllipsoid(Polytope *Pol, FT *R2, FT **Ori){
+void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori){
     int n = Pol->n;
     int m = Pol->m;
     

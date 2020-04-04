@@ -1,5 +1,12 @@
 #include <iostream>
 #include <cassert>
+#include <vector>
+#include <random>
+#include <fstream>
+#include <glpk.h>
+#include <chrono>
+
+
 
 extern "C" { // must be included C stlye
 #include "volume.h"
@@ -35,6 +42,17 @@ public:
 
    }
 };
+
+
+
+
+/**
+ *\brief this function allow creating a random polytope around an ellipsoid given by ell
+ * \param ell an n vector standing for a diagonal matrix (note dimension n is implicit in length of ell)
+ * \param m the number of constraints
+ * \param ret the return polytope
+**/
+void make_random_poly(const std::vector<double> &ell, int m, Polytope **ret);
 
 
 
