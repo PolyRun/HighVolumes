@@ -26,7 +26,7 @@
 #define PI 3.1415926536
 #define FLOATWIDTH 15
 //#define DEBUG_MSG
-//#define DEBUG
+#define DEBUG
 //#define PRINT_T
 //#define PRINT_TMI
 using namespace vol;
@@ -184,6 +184,15 @@ void Polyvest_p::Preprocess(){
     double c3 = beta_r * beta_r;
     double c4 = 2 * c2 / (1 - 1.0 / beta_r);
 
+
+    
+#ifdef DEBUG
+    cout << "c1: " << c1 << "\n" << endl;
+    cout << "c2: " << c2 << "\n" << endl;
+    cout << "c3: " << c3 << "\n" << endl;
+    cout << "c4: " << c4 << "\n" << endl;
+#endif
+    
     //init E(R2I, 0), T = R2I, ori = 0.
     mat T;
     vec ori(n);
@@ -215,7 +224,7 @@ void Polyvest_p::Preprocess(){
 
 #ifdef DEBUG
         //cout << "ROUND " << counter << endl;
-        distance.t().raw_print();
+        //distance.t().raw_print();
 #endif
 
         for (i = 0; i < m; i++)

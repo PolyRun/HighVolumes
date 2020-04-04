@@ -253,7 +253,7 @@ int main(){
 
     int failing_test = 21;
 
-    for (int i = 0; i < 33; i++){
+    for (int i = 21; i < 22; i++){
 
         std::cout << endl << endl << "TESTING " << paths[i] << std::endl;
         

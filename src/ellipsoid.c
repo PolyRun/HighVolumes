@@ -54,6 +54,12 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     double c3 = beta_r * beta_r;
     double c4 = 2 * c2 / (1 - 1.0 / beta_r);
 
+#ifdef DEBUG
+    printf("c1: %0.*f\n", FLOATWIDTH, c1);
+    printf("c2: %0.*f\n", FLOATWIDTH, c2);
+    printf("c3: %0.*f\n", FLOATWIDTH, c3);
+    printf("c4: %0.*f\n", FLOATWIDTH, c4);
+#endif
     
     //init E(R2I, 0), T = R2I, ori = 0.
     
@@ -108,11 +114,11 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
             }
             distance[i] = Polytope_get_b(P, i) - sum;
 #ifdef DEBUG
-            printf("%0.*f ", FLOATWIDTH, distance[i]);
+            //printf("%0.*f ", FLOATWIDTH, distance[i]);
 #endif
         }
 #ifdef DEBUG        
-        printf("\n");
+        //printf("\n");
 #endif
      
         
