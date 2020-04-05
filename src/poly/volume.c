@@ -48,9 +48,12 @@ FT Ball_volume(const int n, const FT r) {
 
 Polytope* Polytope_new(int n, int m) {
    Polytope* o = (Polytope*) malloc(sizeof(Polytope));
-   o->data = (FT*) malloc(sizeof(FT)*(n+1)*m);
    o->n = n;
    o->m = m;
+   const int ftPerVec = 32/sizeof(FT); // number FT per Vector
+   o->line = (n+1 + ftPerVec-1)/ftPerVec * ftPerVec;
+   //o->data = (FT*) malloc(sizeof(FT)*(n+1)*m);
+   o->data = (FT*)(aligned_alloc(32, o->line*m*sizeof(FT))); // align this to 32
 
    return o;
 }
@@ -61,22 +64,22 @@ void Polytope_free(Polytope* p) {
    free(p);
 }
 
-FT* Polytope_get_aV(const Polytope* p, int i) {
-   return &(p->data[i * (p->n+1)]);
+inline FT* Polytope_get_aV(const Polytope* p, int i) {
+   return &(p->data[i * (p->line)]);
 }
 
 inline void Polytope_set_a(Polytope* p, int i, int x, FT a) {
-   p->data[i * (p->n+1) + x] = a;
+   p->data[i * (p->line) + x] = a;
 }
 inline void Polytope_set_b(Polytope* p, int i, FT b) {
-   p->data[i * (p->n+1) + p->n] = b;
+   p->data[i * (p->line) + p->n] = b;
 }
 
 inline FT Polytope_get_a(const Polytope* p, int i, int x) {
-   return p->data[i * (p->n+1) + x];
+   return p->data[i * (p->line) + x];
 }
 inline FT Polytope_get_b(const Polytope* p, int i) {
-   return p->data[i * (p->n+1) + p->n];
+   return p->data[i * (p->line) + p->n];
 }
 
 bool Polytope_inside(const Polytope* p, const FT* v) {

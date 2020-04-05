@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
    // -- prototype:
    auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
    for(auto it : o->fmap) {
-      assert(it.second(box,0.1,box->n));
+      assert(it.second(box,0.1,box->n) == box->n);
       std::cout << "fname: " << it.first << " fcall: " << it.second(box,0.1,4) << std::endl;
    }
    // -- end prototype.

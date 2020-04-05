@@ -47,8 +47,12 @@ int main(int argc, char** argv) {
    // ----- end proof of concept
 
    std::cout << "\nGenerate new polytope:\n";
-   Polytope* p = Polytope_new(3,6);
+   Polytope* p = Polytope_new(10,6);
    hello(p);
+
+   std::cout << "n: " << p->n << " m: " << p->m << " line: " << p->line << "\n";
+   
+   Polytope_free(p);
 
    std::cout << "Generate new polytope box, 4 dim, 2 radius:\n";
    Polytope* box = Polytope_new_box(4,2);
@@ -60,7 +64,6 @@ int main(int argc, char** argv) {
       std::cout << "estimated volume of box: " << v << " (exact: 256).\n";
    }
 
-   Polytope_free(p);
    Polytope_free(box);
    std::cout << "ok.\n\n";
    
