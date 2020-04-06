@@ -190,14 +190,18 @@ void Sphere_print(const void* o) {
 }
 
 bool Sphere_inside_ref(const void* o, const FT* v) {
-   assert(!" not implemented! ");
-   return false; // TODO
+   const Sphere* s = (Sphere*)o;
+   FT d2 = 0.0;
+   for(int i=0; i<s->n; i++) { FT d = s->center[i] - v[i]; d2 += d*d;}
+   return d2 <= s->r*s->r;
 }
 
 void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1) {
-   assert(!" not implemented! ");
-   t0 = 0; // TODO
-   t1 = 0;
+   const Sphere* s = (Sphere*)o;
+   const int n = s->n;
+   FT diff[n]; // probably a terrible idea, besides not vector alligned!
+   for(int i=0;i<n;i++) {diff[i] = x[i] - s->center[i];}
+   Ball_intersect(n, s->r, diff, d, t0,t1);
 }
 
 

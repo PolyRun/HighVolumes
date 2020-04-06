@@ -91,6 +91,64 @@ int main(int argc, char** argv) {
    assert(std::abs(Ball_volume(10,1.0) - 2.550) <= 0.01);
    assert(std::abs(Ball_volume(11,1.0) - 1.884) <= 0.01);
 
+   // -------------- Sphere:
+   FT center[4] = {0,1,0,0};
+   Sphere* s = Sphere_new(4,3.0,center);
+
+   //Sphere_T.print(s);
+   
+   {
+      FT v[4] = {-1,0,0,0};
+      assert(Sphere_T.inside(s, (FT*)&v));
+   }
+   {
+      FT v[4] = {-3,0,0,0};
+      assert(!Sphere_T.inside(s, (FT*)&v));
+   }
+   {
+      FT v[4] = {0,3.99,0,0};
+      assert(Sphere_T.inside(s, (FT*)&v));
+   }
+   {
+      FT v[4] = {0,4.01,0,0};
+      assert(!Sphere_T.inside(s, (FT*)&v));
+   }
+
+   
+   {
+      FT x[4] = {0.0,1.0,0.0,0.0};
+      FT d[4] = {1.0,0.0,0.0,0.0};
+      FT t0,t1;
+      Sphere_T.intersect(s, x, d, &t0, &t1);
+      assert(t0==-3.0 && t1==3.0);
+   }
+   {
+      FT x[4] = {0.0,0.0,0.0,0.0};
+      FT d[4] = {0.0,1.0,0.0,0.0};
+      FT t0,t1;
+      Sphere_T.intersect(s, x, d, &t0, &t1);
+      assert(t0==-2.0 && t1==4.0);
+   }
+   {
+      FT x[4] = {0.0,3.0,0.0,0.0};
+      FT d[4] = {0.0,1.0,0.0,0.0};
+      FT t0,t1;
+      Sphere_T.intersect(s, x, d, &t0, &t1);
+      assert(t0==-5.0 && t1==1.0);
+   }
+   {
+      FT x[4] = {0.0,1.0,0.0,0.0};
+      FT d[4] = {1.0,1.0,1.0,1.0};
+      FT t0,t1;
+      Sphere_T.intersect(s, x, d, &t0, &t1);
+      assert(t0==-1.5 && t1==1.5);
+   }
+ 
+   
+
+
+
+   Sphere_T.free(s);
 
    // -------------------------------- end tests
 
