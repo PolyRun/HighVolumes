@@ -36,6 +36,36 @@ void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, F
 // calculate volume exactly for n-dim ball with radius r
 FT Ball_volume(const int n, const FT r);
 
+// --------------------------------------------- Sub-body Member functions
+
+// input body
+typedef void (*print_f_t)(const void*);
+
+// input body
+typedef void (*free_f_t)(const void*);
+
+// input: body, point x
+typedef bool (*inside_f_t)(const void*,const FT*);
+
+// input: body, point x, direction d  -  output t0, t1
+// intersections: x+d*t0, x+d*t1
+typedef void (*intersect_f_t)(const void*,const FT*,const FT*,FT*,FT*);
+
+// input: body, point x, cooordinate i  -  output t0, t1
+typedef void (*intersectCoord_f_t)(const void*,const FT*,const int,FT*,FT*);
+
+typedef struct Body_T Body_T;
+struct Body_T {
+   print_f_t print;
+   free_f_t free;
+   inside_f_t inside;
+   intersect_f_t intersect;
+   intersectCoord_f_t intersectCoord;
+};
+
+extern Body_T Polytope_T;
+extern Body_T Sphere_T;
+
 // --------------------------------------------- Polytope
 
 typedef struct Polytope Polytope;
@@ -59,8 +89,10 @@ struct Polytope {
 // Constructor
 Polytope* Polytope_new(int n, int m);
 
-// Destroctor
-void Polytope_free(Polytope* p);
+void Polytope_free(const void* o);
+void Polytope_print(const void* o);
+bool Polytope_inside_ref(const void* o, const FT* v);
+void Polytope_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
 
 // Setters:
 void Polytope_set_a(Polytope* p, int i, int x, FT a);
@@ -75,17 +107,22 @@ FT Polytope_get_b(const Polytope* p, int i);
 // get pointer to ai
 FT* Polytope_get_aV(const Polytope* p, int i);
 
+// --------------------------------------------- Sphere
 
-// Geometric functions:
-bool Polytope_inside(const Polytope* p, const FT* v);
-// v: vector of length p->n
+typedef struct Sphere Sphere;
 
+struct Sphere {
+   FT* center; // size n
+   FT r; // radius
+   int n; // dimensions
+};
 
-// intersect Polytope p with line defined by point x (inside p)
-//                                           and direction d
-// returns intersections: x+d*t0, x+d*t1
-void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT* t1);
-// Note: if we want coordinate-directions only, could implement a bit faster...
+Sphere* Sphere_new(int n, FT r, const FT* c);
+
+void Sphere_free(const void* o);
+void Sphere_print(const void* o);
+bool Sphere_inside_ref(const void* o, const FT* v);
+void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
 
 
 

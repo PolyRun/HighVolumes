@@ -46,6 +46,21 @@ FT Ball_volume(const int n, const FT r) {
    return pinhalf * rn / fact;
 }
 
+Body_T Polytope_T = {
+	.print = Polytope_print,
+        .free = Polytope_free,
+        .inside = Polytope_inside_ref,
+        .intersect = Polytope_intersect_ref,
+        .intersectCoord = NULL,
+};
+Body_T Sphere_T = {
+        .print = Sphere_print,
+	.free = Sphere_free,
+	.inside = Sphere_inside_ref,
+	.intersect = Sphere_intersect_ref,
+	.intersectCoord = NULL,
+};
+
 Polytope* Polytope_new(int n, int m) {
    Polytope* o = (Polytope*) malloc(sizeof(Polytope));
    o->n = n;
@@ -59,9 +74,22 @@ Polytope* Polytope_new(int n, int m) {
 }
 
 
-void Polytope_free(Polytope* p) {
+void Polytope_free(const void* o) {
+   Polytope* p = (Polytope*)o;
    free(p->data);
    free(p);
+}
+
+
+void Polytope_print(const void* o) {
+   const Polytope* p = (Polytope*)o;
+   printf("Polytope: n=%d, m=%d\n",p->n,p->m);
+   for(int i=0; i<p->m; i++) {
+      for(int j=0; j<p->n; j++) {
+         printf(" %.3f",Polytope_get_a(p,i,j));
+      }
+      printf(" | %.3f\n",Polytope_get_b(p,i));
+   }
 }
 
 inline FT* Polytope_get_aV(const Polytope* p, int i) {
@@ -82,7 +110,8 @@ inline FT Polytope_get_b(const Polytope* p, int i) {
    return p->data[i * (p->line) + p->n];
 }
 
-bool Polytope_inside(const Polytope* p, const FT* v) {
+bool Polytope_inside_ref(const void* o, const FT* v) {
+   const Polytope* p = (Polytope*)o;
    for(int i=0; i<p->n; i++) {
       FT sum = 0;
       for(int x=0; x<p->n; x++) { sum+= v[x] * Polytope_get_a(p, i, x);}
@@ -92,7 +121,8 @@ bool Polytope_inside(const Polytope* p, const FT* v) {
 }
 
 
-void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT* t1) {
+void Polytope_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1) {
+   const Polytope* p = (Polytope*)o;
    const int n = p->n;
    const int m = p->m;
    
@@ -133,6 +163,44 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
    *t0 = t00;
    *t1 = t11;
 }
+
+
+Sphere* Sphere_new(int n, FT r, const FT* c) {
+   Sphere* o = (Sphere*) malloc(sizeof(Sphere));
+   o->n = n;
+   o->r = r;
+   o->center = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   for(int i=0; i<n; i++) {o->center[i] = c[i];}
+   return o;
+}
+
+void Sphere_free(const void* o) {
+   Sphere* s = (Sphere*)o;
+   free(s->center);
+   free(s);
+}
+
+void Sphere_print(const void* o) {
+   const Sphere* s = (Sphere*)o;
+   printf("Sphere: n=%d, r=%.3f, c=[",s->n,s->r);
+   for(int i=0; i<s->n; i++) {
+      printf(" %.3f",s->center[i]);
+   }
+   printf("]\n");
+}
+
+bool Sphere_inside_ref(const void* o, const FT* v) {
+   assert(!" not implemented! ");
+   return false; // TODO
+}
+
+void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1) {
+   assert(!" not implemented! ");
+   t0 = 0; // TODO
+   t1 = 0;
+}
+
+
 
 FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Polytope* body) {
    //
@@ -189,7 +257,7 @@ FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Pol
             for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
             
             FT t0,t1, bt0,bt1;
-            Polytope_intersect(body, x, d, &t0, &t1);
+            Polytope_T.intersect(body, x, d, &t0, &t1);
             Ball_intersect(n, rk, x, d, &bt0, &bt1);
             
             // ensure do not walk outside of outer ball:

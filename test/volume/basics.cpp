@@ -34,52 +34,52 @@ int main(int argc, char** argv) {
 
    {
       FT v[4] = {0,0,0,0};
-      assert(Polytope_inside(box, (FT*)&v));
+      assert(Polytope_T.inside(box, (FT*)&v));
    }
    {
       FT v[4] = {0,0,0,3};
-      assert(!Polytope_inside(box, (FT*)&v));
+      assert(!Polytope_T.inside(box, (FT*)&v));
    }
    {
       FT v[4] = {2,2,2,2};
-      assert(Polytope_inside(box, (FT*)&v));
+      assert(Polytope_T.inside(box, (FT*)&v));
    }
    {
       FT v[4] = {1,-1,1,-1};
-      assert(Polytope_inside(box, (FT*)&v));
+      assert(Polytope_T.inside(box, (FT*)&v));
    }
    {
       FT v[4] = {-3,0,0,0};
-      assert(Polytope_inside(box, (FT*)&v));
+      assert(Polytope_T.inside(box, (FT*)&v));
    }
 
-   // Test Polytope_intersect:
+   // Test Polytope_T.intersect:
    {
       FT x[4] = {0.0,0.0,0.0,0.0};
       FT d[4] = {0.1,-1.0,-0.9,0.2};
       FT t0,t1;
-      Polytope_intersect(box, x, d, &t0, &t1);
+      Polytope_T.intersect(box, x, d, &t0, &t1);
       assert(t0==-2.0 && t1==2.0);
    }
    {
       FT x[4] = {0.0,0.0,1.0,0.0};
       FT d[4] = {0.0,0.0,-1.0,0.0};
       FT t0,t1;
-      Polytope_intersect(box, x, d, &t0, &t1);
+      Polytope_T.intersect(box, x, d, &t0, &t1);
       assert(t0==-1.0 && t1==3.0);
    }
    {
       FT x[4] = {0.0,0.0,1.0,-1.5};
       FT d[4] = {0.0,0.1,0.1,0.5};
       FT t0,t1;
-      Polytope_intersect(box, x, d, &t0, &t1);
+      Polytope_T.intersect(box, x, d, &t0, &t1);
       assert(t0==-1.0 && t1==7.0);
    }
    {
       FT x[4] = {1.5,1.5,0.0,0.0};
       FT d[4] = {1.0,-1.0,0.0,0.0};
       FT t0,t1;
-      Polytope_intersect(box, x, d, &t0, &t1);
+      Polytope_T.intersect(box, x, d, &t0, &t1);
       assert(t0==-0.5 && t1==0.5);
    }
    
