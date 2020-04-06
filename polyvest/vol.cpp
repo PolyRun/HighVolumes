@@ -26,7 +26,7 @@
 #define PI 3.1415926536
 #define FLOATWIDTH 15
 //#define DEBUG_MSG
-#define DEBUG
+//#define DEBUG
 //#define PRINT_T
 //#define PRINT_TMI
 using namespace vol;
