@@ -40,9 +40,9 @@ public:
       std::vector<std::string> parts = split(in_, ',');
       for(std::string m : parts) {
          std::vector<std::string> pp = split(m,'=');
-	 assert(pp.size()==2 && "parameter list must have correct form!");
+	 //assert(pp.size()==2 && "parameter list must have correct form!");
 	 if(! (pp.size()==2 && "parameter list must have correct form!")) {
-	    std::cout << "Parameter list had bad form:\n" << in_ << "\n";
+	    std::cout << "Parameter list had bad form (expect comma seperated list of var=val):\n" << in_ << "\n";
 	    std::exit(0);
 	 }
 	 params_[pp[0]] = pp[1];

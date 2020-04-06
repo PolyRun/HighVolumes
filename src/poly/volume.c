@@ -135,6 +135,14 @@ void Polytope_intersect(const Polytope* p, const FT* x, const FT* d, FT* t0, FT*
 }
 
 FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Polytope* body) {
+   //
+   // Ideas:
+   //  try unit vector
+   //  	 -> simplification in computation
+   //  	 -> store dotProd for each ineq.
+   //  try random direction
+   //    -> require random from normal distr.
+   //
    const int step_size = 100000; // number of points sampled
    const int walk_size = 10; // number of steps for walk
    
