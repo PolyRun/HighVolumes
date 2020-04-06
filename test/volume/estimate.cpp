@@ -19,10 +19,6 @@ int main(int argc, char** argv) {
    cliFun.postParse();
    
    // -------------------------------- start tests
- 
-   Polytope* box = Polytope_new_box(4,2);
-   
-   Polytope_T.print(box);
 
    //// -- prototype:
    //auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
@@ -31,10 +27,39 @@ int main(int argc, char** argv) {
    //   std::cout << "fname: " << it.first << " fcall: " << it.second(box,0.1,4) << std::endl;
    //}
    //// -- end prototype.
-
-
-   Polytope_free(box);
+ 
+   Polytope* box = Polytope_new_box(4,2);
+   Polytope_T.print(box);
    
+   FT s_center[4] = {0,0,0,0};
+   Sphere* s = Sphere_new(4,3,s_center);
+   Sphere_T.print(s);
+
+   // set up arrays to put in the sub-bodies:
+   void* body[2] = {box, s};
+   Body_T* type[2] = {&Polytope_T, &Sphere_T};
+   
+   for(int i=0; i<5; i++) {
+      FT rx = 0.1*i;
+      FT r0 = 1.5 - rx;
+      FT r1 = 5.0 + rx;
+      FT vbox = volume_ref(4,r0,r1,  1,(const void**)&box,  (const Body_T**)&type);
+      FT vs   = volume_ref(4,r0,r1,  1,(const void**)&s,    (const Body_T**)&type[1]);
+      FT v    = volume_ref(4,r0,r1,  2,(const void**)&body, (const Body_T**)&type);
+      
+      std::cout << "\nbox: " << vbox << " vs 256\n";
+      FT vs_ref = Ball_volume(4,3.0);
+      std::cout << "sphere: " << vs << " vs " << vs_ref << "\n";
+      std::cout << "intersection: " << v << "\n";
+
+      assert(std::abs(vbox - 256) <= 10); // Not great, want to get more accuracy
+      assert(std::abs(vs_ref - vs) <= 10);
+      assert(vbox > v && vs > v);
+   }
+
+
+   Polytope_T.free(box);
+   Sphere_T.free(s);
 
    // -------------------------------- end tests
 

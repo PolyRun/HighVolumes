@@ -206,7 +206,7 @@ void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t
 
 
 
-FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Polytope* body) {
+FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** body, const Body_T** type) {
    //
    // Ideas:
    //  try unit vector
@@ -260,13 +260,16 @@ FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Pol
             int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
             for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
             
-            FT t0,t1, bt0,bt1;
-            Polytope_T.intersect(body, x, d, &t0, &t1);
-            Ball_intersect(n, rk, x, d, &bt0, &bt1);
-            
+            FT t0,t1;
             // ensure do not walk outside of outer ball:
-            t0 = (t0>bt0)?t0:bt0; // max
-            t1 = (t1<bt1)?t1:bt1; // min
+            Ball_intersect(n, rk, x, d, &t0, &t1);
+            
+	    for(int c=0;c<bcount;c++) {
+	       FT bt0, bt1;
+	       type[c]->intersect(body[c], x, d, &bt0, &bt1);
+               t0 = (t0>bt0)?t0:bt0; // max
+               t1 = (t1<bt1)?t1:bt1; // min
+	    }
 
             //printf("%f %f %f %f\n",bt0,bt1,t0,t1);
 

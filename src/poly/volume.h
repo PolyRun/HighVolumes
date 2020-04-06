@@ -128,12 +128,15 @@ void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t
 
 // --------------------------------------------- Volume estimation
 
+
 // input:
 //   n: dimensions
 //   r0, r1: inner and outer radius
-//   body: convex body, guaranteed to contain B(0,r0) and be contained by B(0,r1)
-FT volumeEstimateNormalizedBody(const int n, const FT r0, const FT r1, const Polytope* body);
-// Note: for now the body is just a polytope, we could make this more generic later!
+//   bodies: convex body, guaranteed to contain B(0,r0) and be contained by B(0,r1)
+//   last 3 arguments: count of bodies, list of bodies, list of body types (member functions)
+typedef FT (*volume_f_t)(const int, const FT, const FT, const int, const void**,const Body_T*);
+
+FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** body, const Body_T** type);
 
 
 // ---------- proof of concept:

@@ -54,20 +54,6 @@ int main(int argc, char** argv) {
    
    Polytope_free(p);
 
-   std::cout << "Generate new polytope box, 4 dim, 2 radius:\n";
-   Polytope* box = Polytope_new_box(4,2);
-   hello(box);
-   
-   {
-      std::cout << "\nEstimate volume of 4dim r=2 box. r0=1.5, r1 = 5:\n";
-      FT v = volumeEstimateNormalizedBody(4,1.5,5.0,box);
-      std::cout << "estimated volume of box: " << v << " (exact: 256).\n";
-   }
-
-   Polytope_free(box);
-   std::cout << "ok.\n\n";
-   
-
 
    #ifdef NDEBUG
    std::cout<< "## WARNING: DEBUG DISABLED!\n";
