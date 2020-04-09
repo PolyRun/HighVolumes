@@ -9,6 +9,9 @@
 #include "../src/poly/volume_helper.hpp"
 #include "../polyvest/vol.h"
 
+#include "../src/util/cli.hpp"
+#include "../src/util/cli_functions.hpp"
+
 extern "C" { // must be included C stlye
 #include "../src/random/prng.h"
 }
@@ -62,20 +65,86 @@ void polyvest_convert(Polytope *P, vol::Polyvest_p *Q){
 }
 
 
-typedef void(*fun)(Timer &timer, double &min_time, double &max_time, double &mean_time, double &std_dev);
+typedef void(*macro_fun)(Timer &timer, double &min_time, double &max_time, double &mean_time, double &std_dev);
+
+typedef void(*mini_fun)(Timer &selected_timer, double &selected_min_time, double &selected_max_time, double &selected_mean_time, double &selected_std_dev, bool benchmark_all, CLIFunctionsVolume &cliFun);
 
 int macro_functions_count = 0;
-std::vector<fun> macro_functions;
+std::vector<macro_fun> macro_functions;
 std::vector<std::string> macro_functions_names;
 
-void add_macro_function(fun f, std::string name);
+void add_macro_function(macro_fun f, std::string name);
 
 
-/**
- * \brief Benchmarks for smaller functions in order to compare different versions
- **/
-void run_mini_benchmarks(){
-    // TODO
+int mini_functions_count = 0;
+std::vector<mini_fun> mini_functions;
+std::vector<std::string> mini_functions_names;
+std::vector<bool> mini_functions_benchmark_all;
+
+void add_mini_function(mini_fun f, std::string name);
+
+void mini_benchmark_xyz_f(Timer &timer, double &selected_min_time, double &selected_max_time, double &selected_mean_time, double &selected_std_dev, bool benchmark_all, CLIFunctionsVolume &cliFun) {
+    /* Prepare input */
+    // Generate new polytope box, 4 dim, 2 radius
+    Polytope* box = Polytope_new_box(4,2);
+
+    /* Benchmark selected version */
+    double selected_total_time = 0;
+    double selected_measured_times[MINI_REPS];
+    for (int i = 0; i < MINI_REPS; ++i) {
+
+        // Run benchmark
+        timer.start();
+        xyz_f(box,0.1,4);
+        timer.stop();
+        
+        selected_measured_times[i] = timer.millisecs();            
+        selected_total_time += selected_measured_times[i];
+        selected_min_time = std::min(selected_min_time, selected_measured_times[i]);
+        selected_max_time = std::max(selected_max_time, selected_measured_times[i]);
+
+    }
+    
+    selected_mean_time = selected_total_time/MINI_REPS;
+    for (int i = 0; i < MINI_REPS; ++i) {
+        selected_std_dev += pow(selected_measured_times[i] - selected_mean_time, 2.0);
+    }
+    selected_std_dev = sqrt(selected_std_dev/MINI_REPS);
+
+    /* Benchmark all versions */
+    if(benchmark_all) {
+        auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
+        for(auto it : o->fmap) {
+            double opt_min_time = std::numeric_limits<double>::max();
+            double opt_max_time = -1;
+            double opt_mean_time;
+            double opt_std_dev = 0.0;
+
+            double opt_total_time = 0;
+            double opt_measured_times[MINI_REPS];
+            for (int i = 0; i < MINI_REPS; ++i) {
+
+                // Run benchmark
+                timer.start();
+                it.second(box,0.1,4);
+                timer.stop();
+                
+                opt_measured_times[i] = timer.millisecs();            
+                opt_total_time += opt_measured_times[i];
+                opt_min_time = std::min(opt_min_time, opt_measured_times[i]);
+                opt_max_time = std::max(opt_max_time, opt_measured_times[i]);
+
+            }
+            
+            opt_mean_time = opt_total_time/MINI_REPS;
+            for (int i = 0; i < MINI_REPS; ++i) {
+                opt_std_dev += pow(opt_measured_times[i] - opt_mean_time, 2.0);
+            }
+            opt_std_dev = sqrt(opt_std_dev/MINI_REPS);
+
+            std::cout << "name(opt): "<<it.first << ", mean: " << opt_mean_time << ", min: " << opt_min_time << ", max: " << opt_max_time << ", std dev: " << opt_std_dev << std::endl;
+        }
+    }
 }
 
 void macro_benchmark_test(Timer &timer, double &min_time, double &max_time, double &mean_time, double& std_dev) {
@@ -143,7 +212,26 @@ void macro_benchmark_polyvest(Timer &timer, double &min_time, double &max_time, 
     std_dev = sqrt(std_dev/MACRO_REPS);
 }
 
+/**
+ * \brief Benchmarks for smaller functions in order to compare different versions
+ **/
+void run_mini_benchmarks(CLIFunctionsVolume &cliFun){
+    Timer timer;
 
+    for(int i = 0; i < mini_functions_count; ++i) {
+        mini_fun f = mini_functions[i];
+        double selected_min_time = std::numeric_limits<double>::max();
+        double selected_max_time = -1;
+        double selected_mean_time;
+        double selected_std_dev = 0.0;
+
+        // Benchmark function
+        f(timer, selected_min_time, selected_max_time, selected_mean_time, selected_std_dev, mini_functions_benchmark_all[i], cliFun);
+        
+        std::cout << "name(sel): "<<mini_functions_names[i] << ", mean: " << selected_mean_time << ", min: " << selected_min_time << ", max: " << selected_max_time << ", std dev: " << selected_std_dev << std::endl;
+    }
+    
+}
 
 /**
  * \brief Benchmarks for large functions in order to generate plot data
@@ -151,10 +239,8 @@ void macro_benchmark_polyvest(Timer &timer, double &min_time, double &max_time, 
 void run_macro_benchmarks(){
     Timer timer;
 
-    // Prepare input
-
     for(int i = 0; i < macro_functions_count; ++i) {
-        fun f = macro_functions[i];
+        macro_fun f = macro_functions[i];
         double min_time = std::numeric_limits<double>::max();
         double max_time = -1;
         double mean_time;
@@ -165,13 +251,20 @@ void run_macro_benchmarks(){
         
         std::cout << "name: "<<macro_functions_names[i] << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
     }
-    
+
 }
 
-void add_macro_function(fun f, std::string name) {
+void add_macro_function(macro_fun f, std::string name) {
     macro_functions.push_back(f);
     macro_functions_names.push_back(name);
     macro_functions_count++;
+}
+
+void add_mini_function(mini_fun f, std::string name, bool benchmark_all) {
+    mini_functions.push_back(f);
+    mini_functions_names.push_back(name);
+    mini_functions_benchmark_all.push_back(benchmark_all);
+    mini_functions_count++;
 }
 
 
@@ -181,11 +274,19 @@ void add_macro_benchmark_functions(){
 }
     
 void add_mini_benchmark_functions(){
-    // TODO
+    add_mini_function(mini_benchmark_xyz_f, "mini_benchmark_xyz_f", true);
 }
 
 
 int main(int argc, char *argv[]){
+    CLI cli(argc,argv,"benchmark");
+    CLIFunctionsVolume cliFun(cli);
+  
+    cliFun.preParse();
+    if (!cli.parse()) {return -1;}
+    cliFun.postParse();
+
+
     std::cout << "===== Starting benchmarks =====\n" << std::endl;
 
     /* Add macro-benchmark functions */
@@ -196,8 +297,8 @@ int main(int argc, char *argv[]){
 
 
     /* Run function-benchmarks */
-    run_mini_benchmarks();
     std::cout << "\n== Run mini-benchmarks with " << MINI_REPS << " repetitions each ==\n" << std::endl;
+    run_mini_benchmarks(cliFun);
 
     /* Run macro-benchmarks */
     std::cout << "\n== Run macro-benchmarks with " << MACRO_REPS << " repetitions each ==\n" << std::endl;
