@@ -16,6 +16,7 @@
 //  Extend from CLIFunctions, make config in constructor
 
 #include <set>
+#include <sstream>
 
 #include "cli.hpp"
 
@@ -60,6 +61,33 @@ public:
 private:
    F_t* var_; // global variable that will hold final choice
 };
+
+template <class T>
+class CLIF_OptionNumber : public CLIF_OptionBase {
+public:
+   CLIF_OptionNumber(T* var, const signed char opt, const std::string &name, const std::string &val,
+	       T minVal, T maxVal)
+   : var_(var), CLIF_OptionBase(opt,name,val), minVal_(minVal), maxVal_(maxVal) {}
+   
+   void virtual postParse(CLI &cli) {
+      std::string in = cli.parameters(opt_).get(name_,"");
+      
+      T value;
+      std::stringstream convert(in);
+      convert >> value;
+      
+      if(value > maxVal_ or value < minVal_) {
+         std::cout << "Error: parameter out of limits for: " << opt_ << " " << name_ << "\n";
+	 std::cout << "       viable range: " << minVal_ << " to " << maxVal_ << "\n";
+	 std::exit(0);
+      }
+      *var_ = value;
+   }
+   T minVal_, maxVal_;
+private:
+   T* var_; // global variable that will hold final choice
+};
+
 
 class CLIFunctions {
 public:

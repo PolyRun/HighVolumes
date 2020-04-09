@@ -257,10 +257,14 @@ void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, 
 }
 
 
+int step_size = 100000;
+int walk_size = 10;
+
+
 void walk(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d) {
-   const int walk_size = 10; // number of steps for walk
+   const int ws = walk_size; // number of steps for walk
    
-   for(int w=0;w<walk_size;w++) { // take some random steps for x
+   for(int w=0;w<ws;w++) { // take some random steps for x
       int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
       for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
       
@@ -296,7 +300,6 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
    //    -> how update? via function or direct?
    //    -> allocate in beginning, give offsets for each body
    //
-   const int step_size = 100000; // number of points sampled
    
    // init x:
    FT* x = (FT*) malloc(sizeof(FT)*n);// sample point x

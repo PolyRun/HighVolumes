@@ -40,6 +40,9 @@ public:
                                                      {"xyz_f1",xyz_f1},
 						     {"xyz_f2",xyz_f2} }));
 
+      // number parameters:
+      add(new CLIF_OptionNumber<int>(&step_size,'n',"step_size","100000", 100, 1e7));
+      add(new CLIF_OptionNumber<int>(&walk_size,'n',"walk_size","10", 1, 1e6));
    }
 };
 

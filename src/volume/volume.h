@@ -130,6 +130,11 @@ void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, 
 
 // --------------------------------------------- Volume estimation
 
+// number of points sampled per ball
+extern int step_size;
+// number of walk-steps taken for a sample
+extern int walk_size;
+
 void walk(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d);
 
 
