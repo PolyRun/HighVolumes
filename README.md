@@ -34,3 +34,14 @@ executables will end up in build/src
 
 The volume library is compiled with C.
 Currenly, peterem is compiled with C++.
+
+# Running Tests
+
+After you built, in the build directory:
+```
+./test/test.py
+```
+Or for a single test:
+```
+./test/test.py preprocess/test_preprocess
+```
