@@ -36,14 +36,16 @@ def run_test(test):
    myenv = os.environ;
    #myenv["OMP_NUM_THREADS"] = str(nproc); # change env
    proc = subprocess.Popen((sys.path[0]+"/"+test,), stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-
+   
+   isTimeout = False;
    try:
-      outs, errs = proc.communicate(timeout=15)
-   except TimeoutExpired:
+      outs, errs = proc.communicate(timeout=20)
+   except subprocess.TimeoutExpired:
       proc.kill()
       outs, errs = proc.communicate()
+      isTimeout = True;
    
-   if(b"TESTS COMPLETE." in outs and errs == b""):
+   if(b"TESTS COMPLETE." in outs and errs == b"" and not isTimeout):
       print("# SUCCESS");
       return True;
    else:
@@ -52,6 +54,8 @@ def run_test(test):
       if(errs!=b""):
          for e in errs.split(b"\n"):
             print("  stderr: {}".format(e.decode("utf-8")));
+      if(isTimeout):
+         print("  TIMEOUT!");
       print("# FAIL: '{}'".format(test));
       return False;
 
