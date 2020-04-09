@@ -1,11 +1,11 @@
 #include <iostream>
 
 extern "C" { // must be included C stlye
-#include "../../src/poly/volume.h"
-#include "../../src/poly/preprocess.h"
+#include "../../src/volume/volume.h"
+#include "../../src/volume/preprocess.h"
 }
 
-#include "../../src/poly/volume_helper.hpp"
+#include "../../src/volume/volume_helper.hpp"
 
 #include "../../src/util/cli.hpp"
 #include "../../src/util/cli_functions.hpp"

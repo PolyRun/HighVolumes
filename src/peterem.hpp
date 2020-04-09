@@ -1,10 +1,10 @@
 #include <iostream>
 
 extern "C" { // must be included C stlye
-#include "poly/volume.h"
+#include "volume/volume.h"
 }
 
-#include "poly/volume_helper.hpp"
+#include "volume/volume_helper.hpp"
 
 #ifndef HEADER_PETEREM_HPP
 #define HEADER_PETEREM_HPP

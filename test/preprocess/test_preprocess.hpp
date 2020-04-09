@@ -3,7 +3,7 @@
 #include <cmath>
 
 extern "C" { // must be included C stlye
-#include "../../src/poly/volume.h"
+#include "../../src/volume/volume.h"
 }
 
 

@@ -1,8 +1,10 @@
+// Please ignore this file, it is only used for small WIP tests
+
 #include <iostream>
 
 extern "C" { // must be included C stlye
-#include "poly/volume.h"
-    #include "poly/preprocess.h"
+#include "volume/volume.h"
+    #include "volume/preprocess.h"
 }
 
 #include "peterem.hpp"

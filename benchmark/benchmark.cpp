@@ -6,7 +6,7 @@
 #include <string>
 
 #include "../src/util/timer.hpp"
-#include "../src/poly/volume_helper.hpp"
+#include "../src/volume/volume_helper.hpp"
 #include "../polyvest/vol.h"
 
 #include "../src/util/cli.hpp"
