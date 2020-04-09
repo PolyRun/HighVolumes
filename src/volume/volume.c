@@ -290,6 +290,12 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
    //  try random direction
    //    -> require random from normal distr.
    //
+   //  cache values for bodies:
+   //    -> body has function saying how much memory.
+   //    -> body has function to initialize it for an x
+   //    -> how update? via function or direct?
+   //    -> allocate in beginning, give offsets for each body
+   //
    const int step_size = 100000; // number of points sampled
    
    // init x:
@@ -355,6 +361,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
 
       // x = stepFac * x   -> guarantee that in next smaller ball
       for(int j=0;j<n;j++) {x[j] *= stepFac;}
+      // may have to set to zero if initializing simpler for that
    }
 
    return volume;
