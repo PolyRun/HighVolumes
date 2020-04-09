@@ -82,7 +82,28 @@ int main(int argc, char** argv) {
       Polytope_T.intersect(box, x, d, &t0, &t1);
       assert(t0==-0.5 && t1==0.5);
    }
-   
+   // Test Polytope_T.intersectCoord
+   {
+      FT x[4] = {0.0,0.0,0.0,0.0};
+      for(int d=0;d<4;d++) {
+         FT t0,t1;
+         Polytope_T.intersectCoord(box, x, 0, &t0, &t1);
+         assert(t0==-2.0 && t1==2.0);
+      }
+   }
+   {
+      FT x[4] = {0.0,0.0,1.0,0.0};
+      FT t0,t1;
+      Polytope_T.intersectCoord(box, x, 2, &t0, &t1);
+      assert(t0==-3.0 && t1==1.0);
+      Polytope_T.intersectCoord(box, x, 0, &t0, &t1);
+      assert(t0==-2.0 && t1==2.0);
+      Polytope_T.intersectCoord(box, x, 1, &t0, &t1);
+      assert(t0==-2.0 && t1==2.0);
+      Polytope_T.intersectCoord(box, x, 3, &t0, &t1);
+      assert(t0==-2.0 && t1==2.0);
+   }
+  
    Polytope_free(box);
    
    // Check ball volume:
@@ -121,6 +142,10 @@ int main(int argc, char** argv) {
       FT t0,t1;
       Sphere_T.intersect(s, x, d, &t0, &t1);
       assert(t0==-3.0 && t1==3.0);
+      for(int dd=0;dd<4;dd++) {
+         Sphere_T.intersectCoord(s, x, dd, &t0, &t1);
+         assert(t0==-3.0 && t1==3.0);
+      }
    }
    {
       FT x[4] = {0.0,0.0,0.0,0.0};
@@ -128,12 +153,16 @@ int main(int argc, char** argv) {
       FT t0,t1;
       Sphere_T.intersect(s, x, d, &t0, &t1);
       assert(t0==-2.0 && t1==4.0);
+      Sphere_T.intersectCoord(s, x, 1, &t0, &t1);
+      assert(t0==-2.0 && t1==4.0);
    }
    {
       FT x[4] = {0.0,3.0,0.0,0.0};
       FT d[4] = {0.0,1.0,0.0,0.0};
       FT t0,t1;
       Sphere_T.intersect(s, x, d, &t0, &t1);
+      assert(t0==-5.0 && t1==1.0);
+      Sphere_T.intersectCoord(s, x, 1, &t0, &t1);
       assert(t0==-5.0 && t1==1.0);
    }
    {
@@ -143,9 +172,6 @@ int main(int argc, char** argv) {
       Sphere_T.intersect(s, x, d, &t0, &t1);
       assert(t0==-1.5 && t1==1.5);
    }
- 
-   
-
 
 
    Sphere_T.free(s);

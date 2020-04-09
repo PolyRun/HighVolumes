@@ -93,6 +93,7 @@ void Polytope_free(const void* o);
 void Polytope_print(const void* o);
 bool Polytope_inside_ref(const void* o, const FT* v);
 void Polytope_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
+void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1);
 
 // Setters:
 void Polytope_set_a(Polytope* p, int i, int x, FT a);
@@ -123,6 +124,7 @@ void Sphere_free(const void* o);
 void Sphere_print(const void* o);
 bool Sphere_inside_ref(const void* o, const FT* v);
 void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
+void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1);
 
 
 

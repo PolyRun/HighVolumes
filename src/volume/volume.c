@@ -28,6 +28,21 @@ void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, F
    *t0 = (-b - detSqrt) * 0.5 * ainv;
 }
 
+void Ball_intersectCoord(const int n, const FT r, const FT* x, const int d, FT* t0, FT* t1) {
+   FT x2 = dotProduct(x,x,n);
+   const FT d2 = 1.0;
+   FT xd = x[d]; // dot product with unit vector dim d
+
+   const FT a = d2;
+   const FT ainv = 1.0 / a;
+   FT b = 2.0*xd;
+   FT c = x2 - r*r;
+
+   FT detSqrt = sqrt(b*b - 4.0*a*c);
+   
+   *t1 = (-b + detSqrt) * 0.5 * ainv;
+   *t0 = (-b - detSqrt) * 0.5 * ainv;
+}
 
 FT Ball_volume(const int n, const FT r) {
    FT rn = pow(r,n);
@@ -51,14 +66,14 @@ Body_T Polytope_T = {
         .free = Polytope_free,
         .inside = Polytope_inside_ref,
         .intersect = Polytope_intersect_ref,
-        .intersectCoord = NULL,
+        .intersectCoord = Polytope_intersectCoord_ref,
 };
 Body_T Sphere_T = {
         .print = Sphere_print,
 	.free = Sphere_free,
 	.inside = Sphere_inside_ref,
 	.intersect = Sphere_intersect_ref,
-	.intersectCoord = NULL,
+	.intersectCoord = Sphere_intersectCoord_ref,
 };
 
 Polytope* Polytope_new(int n, int m) {
@@ -165,6 +180,35 @@ void Polytope_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT*
 }
 
 
+void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1) {
+   const Polytope* p = (Polytope*)o;
+   const int n = p->n;
+   const int m = p->m;
+   
+   FT t00 = -FT_MAX;// tmp variables for t0, t1
+   FT t11 = FT_MAX;
+
+   for(int i=0; i<m; i++) {
+      const FT* ai = Polytope_get_aV(p,i);
+      const FT b = Polytope_get_b(p, i);
+      const FT dai = ai[d]; // dot product with unit vector dim d
+      
+      if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
+
+      FT t = (b - dotProduct(ai,x,n)) / dai;
+      
+      if(dai < 0.0) {
+         t00 = (t00>t)?t00:t; // max
+      } else {
+         t11 = (t11<t)?t11:t; // min
+      }
+   }
+   
+   // return:
+   *t0 = t00;
+   *t1 = t11;
+}
+
 Sphere* Sphere_new(int n, FT r, const FT* c) {
    Sphere* o = (Sphere*) malloc(sizeof(Sphere));
    o->n = n;
@@ -202,6 +246,14 @@ void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t
    FT diff[n]; // probably a terrible idea, besides not vector alligned!
    for(int i=0;i<n;i++) {diff[i] = x[i] - s->center[i];}
    Ball_intersect(n, s->r, diff, d, t0,t1);
+}
+
+void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1) {
+   const Sphere* s = (Sphere*)o;
+   const int n = s->n;
+   FT diff[n]; // probably a terrible idea, besides not vector alligned!
+   for(int i=0;i<n;i++) {diff[i] = x[i] - s->center[i];}
+   Ball_intersectCoord(n, s->r, diff, d, t0,t1);
 }
 
 
