@@ -257,6 +257,29 @@ void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, 
 }
 
 
+void walk(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d) {
+   const int walk_size = 10; // number of steps for walk
+   
+   for(int w=0;w<walk_size;w++) { // take some random steps for x
+      int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
+      for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
+      
+      FT t0,t1;
+      // ensure do not walk outside of outer ball:
+      Ball_intersect(n, rk, x, d, &t0, &t1);
+      
+      for(int c=0;c<bcount;c++) {
+         FT bt0, bt1;
+         type[c]->intersect(body[c], x, d, &bt0, &bt1);
+         t0 = (t0>bt0)?t0:bt0; // max
+         t1 = (t1<bt1)?t1:bt1; // min
+      }
+   
+      FT t = prng_get_random_double_in_range(t0,t1);
+      for(int j=0;j<n;j++) {x[j] += d[j]*t;}
+   }
+}
+
 
 FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** body, const Body_T** type) {
    //
@@ -268,7 +291,6 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
    //    -> require random from normal distr.
    //
    const int step_size = 100000; // number of points sampled
-   const int walk_size = 10; // number of steps for walk
    
    // init x:
    FT* x = (FT*) malloc(sizeof(FT)*n);// sample point x
@@ -308,27 +330,8 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
       //   printf("m: %f\n",m);
       //}
       for(int i=count; i<step_size; i++) { // sample required amount of points
-         for(int w=0;w<walk_size;w++) { // take some random steps for x
-            int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
-            for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
-            
-            FT t0,t1;
-            // ensure do not walk outside of outer ball:
-            Ball_intersect(n, rk, x, d, &t0, &t1);
-            
-	    for(int c=0;c<bcount;c++) {
-	       FT bt0, bt1;
-	       type[c]->intersect(body[c], x, d, &bt0, &bt1);
-               t0 = (t0>bt0)?t0:bt0; // max
-               t1 = (t1<bt1)?t1:bt1; // min
-	    }
-
-            //printf("%f %f %f %f\n",bt0,bt1,t0,t1);
-
-            FT t = prng_get_random_double_in_range(t0,t1);
-            for(int j=0;j<n;j++) {x[j] += d[j]*t;}
-         }
-         
+         walk(n, rk, bcount, body, type, x, d);
+        
          // find right Bm:
          const FT x2 = dotProduct(x,x,n); // normalized radius
          const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));

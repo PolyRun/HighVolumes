@@ -130,6 +130,8 @@ void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, 
 
 // --------------------------------------------- Volume estimation
 
+void walk(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d);
+
 
 // input:
 //   n: dimensions
