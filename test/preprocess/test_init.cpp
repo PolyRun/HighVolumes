@@ -39,6 +39,9 @@ void test_init_against_polyvest(Polytope *P){
            "difference in frobenius norm is not small enough!");
 
 
+    std::cout << "PASSED" << std::endl;
+    
+
 #ifdef TEST_MSG
     std::cout << "---------------- POLYVEST\n";
     std::cout << "initial R2: " << polyvest_R2 << std::endl;

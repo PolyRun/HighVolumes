@@ -35,6 +35,8 @@ void test_preprocess_against_polyvest(Polytope *P){
     assert(diff.first < 0.1 && diff.second < 0.1 &&
            "frobenius norm of preprocessed polytopes is too different");
 
+    std::cout << "PASSED" << std::endl;
+        
 
 #ifdef TEST_MSG    
     std::cout << "2-Frobenius of A_P - A_Q: "
@@ -58,6 +60,10 @@ void test_preprocess_circumscription(Polytope *P){
     assert(is_correct &&
            "returned polytope does not include scaled 1-ball!");
 
+    std::cout << "PASSED" << std::endl;
+        
+
+    
 #ifdef TEST_MSG
     if (is_correct){
         std::cout << "Polytope contains B(0, 1/(2n))" << std::endl;
@@ -70,9 +76,7 @@ void test_preprocess_circumscription(Polytope *P){
 }
 
 
-int main(){    
-    std::cout << "\n-------------- TEST PREPROCESS EXAMPLE POLYTOPES:\n";
-    
+void test_preprocess_example_polytopes(){
     Polytope *P;
     for (int i = 0; i < NEXAMPLE_POLYTOPES; i++){
 
@@ -83,9 +87,47 @@ int main(){
 
         test_preprocess_against_polyvest(P);
         test_preprocess_circumscription(P);
+
+    }
+    
+    Polytope_free(P);
+}
+
+
+
+// TODO: choosing ntests > 1 for the moment doesn't make sense as my rng seed changes too slow...
+void test_preprocess_random_polytopes(int ntests, int dim, int nconstraints){
+
+    // unit ball
+    std::vector<double> ell(dim, 1.0);
+    Polytope *P;
+    
+    for (int i = 0; i < ntests; i++){
         
-        Polytope_free(P);
+        std::cout << "TESTING RANDOM POLYTOPE " << i << std::endl;
+
+        make_random_poly(ell, nconstraints, &P);
+
+        test_preprocess_against_polyvest(P);
+        test_preprocess_circumscription(P);
+
     }
 
-    return 0;
+    Polytope_free(P);
+    
+}
+
+
+int main(){    
+    std::cout << "\n-------------- TEST PREPROCESS EXAMPLE POLYTOPES:\n";
+    test_preprocess_example_polytopes();
+
+    int ntests = 1;
+    int dim = 20;
+    int nconstraints = 100;
+    std::cout << "\n-------------- TEST PREPROCESS EXAMPLE POLYTOPES\n"
+              << ntests << " random polytopes of dim " << dim << " with " << nconstraints << " constraints:\n";
+    test_preprocess_random_polytopes(ntests, dim, nconstraints);
+    
+    
 }
