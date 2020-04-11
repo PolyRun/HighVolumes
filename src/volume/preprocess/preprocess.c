@@ -95,6 +95,7 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
 
     FT *distance = (FT *) calloc(m, sizeof(FT));
     FT *tm = (FT *) calloc(m, sizeof(FT));
+    FT *t = (FT *) malloc(n*sizeof(FT));
 
     // update T until x^t*T*x <= 1
 
@@ -186,7 +187,6 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
         }
 
         // else update ellipsoid (ori, T)
-        FT *t = (FT *) malloc(n*sizeof(FT));
         for (int k = 0; k < n; k++){
             t[k] = 0;
             for (int j = 0; j < n; j++){
@@ -277,7 +277,10 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
     }
     *det /= pow(beta_r, n);
 
-
+    free(T);
+    free(distance);
+    free(tm);
+    free(t);
         
 #ifdef DEBUG_MSG
     printf("Final ellipsoid\n");
@@ -357,6 +360,7 @@ void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
 
     FT *distance = (FT *) calloc(m, sizeof(FT));
     FT *tm = (FT *) calloc(m, sizeof(FT));
+    FT *t = (FT *) malloc(n*sizeof(FT));
 
     // update T until x^t*T*x <= 1
 
@@ -418,7 +422,6 @@ void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
         }
 
         // else update ellipsoid (ori, T)
-        FT *t = (FT *) malloc(n*sizeof(FT));
         for (int k = 0; k < n; k++){
             t[k] = 0;
             for (int j = 0; j < n; j++){
@@ -466,5 +469,11 @@ void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
     for (int i = 0; i < n; i++){
         *det *= Trans[i*n+i];
     }
-    *det /= pow(beta_r, n);    
+    *det /= pow(beta_r, n);
+
+    
+    free(T);
+    free(distance);
+    free(tm);
+    free(t);
 }
