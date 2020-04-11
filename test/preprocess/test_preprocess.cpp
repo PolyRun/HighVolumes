@@ -207,25 +207,6 @@ void test_preprocess_circumscription(Polytope *P){
 
 int main(){
     std::cout << "\n-------------- Test initEllipsoid:\n";
-
-    int n = 5;
-
-
-    // test it we can use makepoly here
-    vector<double> ell(n);
-    for (int i = 0; i < n; i++){
-        ell[i] = 1;
-    }
-    
-    int nhyperplanes = 6;
-
-    Polytope *R;
-    make_random_poly(ell, nhyperplanes, &R);
-
-    // write polytope, ellipsoid and scaled ellipsoid to out stdout
-    cout << *R << endl;
-
-    
     //Polytope *P = Polytope_new_box(n, 3);
 
     Polytope *P;
@@ -265,9 +246,7 @@ int main(){
     paths[32] = POLYEXP_BASE + "simplex_20";
 
 
-    int failing_test = 21;
-
-    for (int i = 21; i < 22; i++){
+    for (int i = 0; i < 33; i++){
 
         std::cout << endl << endl << "TESTING " << paths[i] << std::endl;
         

@@ -11,10 +11,8 @@ void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori){
     int n = Pol->n;
     int m = Pol->m;
     
-    FT *A = Pol->data;
     *R2 = 0;
-    *Ori = (FT *) malloc(n * sizeof(FT));
-    memset(*Ori, 0, n*sizeof(FT));
+    *Ori = (FT *) calloc(n, sizeof(FT));
 
     //init GLPK
     glp_prob *lp;
@@ -35,12 +33,12 @@ void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori){
     for (int i = 1; i < m + 1; i++){
         for (int j = 1; j < n + 1; j++){
             ind[j] = j;
-            val[j] = A[(i-1) * (n+1) + j-1];
+            val[j] = Polytope_get_a(Pol, i-1, j-1);
         }
         
         glp_set_mat_row(lp, i, n, ind, val);
         // note: A[i][n] = b[i]
-        glp_set_row_bnds(lp, i, GLP_UP, 0, A[(i-1) * (n+1) + n]);
+        glp_set_row_bnds(lp, i, GLP_UP, 0, Polytope_get_b(Pol, i-1));
         
     }
     free(ind);
