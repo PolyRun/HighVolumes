@@ -7,6 +7,8 @@ extern "C" { // must be included C stlye
 }
 
 
+std::string path_from_exec = "";
+
 void test_init_against_polyvest(Polytope *P){
 
     int n = P->n;
@@ -63,7 +65,24 @@ void test_init_against_polyvest(Polytope *P){
 
 
 
-int main(){
+int main(int argc, char **argv){
+
+    CLI cli(argc, argv, "test preprocess");
+    CLIFunctionsVolume cliFun(cli);
+    cliFun.preParse();
+    if (!cli.parse()){
+        return -1;
+    }
+    cliFun.postParse();
+
+    std::string path = cli.getPath();
+    reverse(path.begin(), path.end());
+    size_t pos = path.find('/');
+    // the executable is not in the current directory
+    if(pos != std::string::npos){
+        reverse(path.begin(), path.end());
+        path_from_exec = path.substr(0, path.length() - pos);
+    }
 
     
     std::cout << "\n-------------- TEST INIT EXAMPLE POLYTOPES:\n";
@@ -71,9 +90,9 @@ int main(){
     Polytope *P;
     for (int i = 0; i < 33; i++){
 
-        std::cout << "TESTING " << exp_paths[i] << std::endl;
+        std::cout << "TESTING " << path_from_exec + exp_paths[i] << std::endl;
         
-        int err = read_polyvest_p(exp_paths[i], &P);
+        int err = read_polyvest_p(path_from_exec + exp_paths[i], &P);
         assert(!err);
 
         test_init_against_polyvest(P);
@@ -81,7 +100,9 @@ int main(){
         Polytope_free(P);
     }
 
-    return 0;
+    
+    std::cout<< "TESTS COMPLETE.\n";
+
     
 }
 

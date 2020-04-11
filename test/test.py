@@ -7,9 +7,14 @@ import pprint
 from threading import Timer
 
 # --------------------------------- ADD YOUR TEST HERE
-TESTS = ["volume/test_volume_basics",
-         "volume/test_volume_estimate",
-         "preprocess/test_preprocess",
+TESTS = [{"name": "volume/test_volume_basics",
+          "timeout": 10},
+         {"name": "volume/test_volume_estimate",
+          "timeout": 20},
+         {"name": "preprocess/test_preprocess",
+          "timeout": 30},
+         {"name": "preprocess/test_init",
+          "timeout": 10}
         ];
 
 
@@ -20,9 +25,9 @@ if(len(sys.argv)>1):
    
    for i in range(1,len(sys.argv)):
       test = sys.argv[i]
-      if(test in TESTS):
-         DO_TESTS.append(test);
-      else:
+      upd = list(filter(lambda t: t["name"] == test, TESTS))
+      DO_TESTS += upd
+      if len(upd) == 0:
          print("ERROR: test '{}' is not available!".format(test));
          print("  list of available tests:");
          for t in TESTS:
@@ -32,14 +37,15 @@ if(len(sys.argv)>1):
 # ------ iterate over tests chosen in DO_TESTS, subset of TESTS
 
 def run_test(test):
-   print("# Running Test '{}'...".format(test));
+   tname = test["name"]
+   print("# Running Test '{}'...".format(tname));
    myenv = os.environ;
    #myenv["OMP_NUM_THREADS"] = str(nproc); # change env
-   proc = subprocess.Popen((sys.path[0]+"/"+test,), stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+   proc = subprocess.Popen((sys.path[0]+"/"+tname,), stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
    
    isTimeout = False;
    try:
-      outs, errs = proc.communicate(timeout=20)
+      outs, errs = proc.communicate(timeout=test["timeout"])
    except subprocess.TimeoutExpired:
       proc.kill()
       outs, errs = proc.communicate()
@@ -56,7 +62,7 @@ def run_test(test):
             print("  stderr: {}".format(e.decode("utf-8")));
       if(isTimeout):
          print("  TIMEOUT!");
-      print("# FAIL: '{}'".format(test));
+      print("# FAIL: '{}'".format(tname));
       return False;
 
 FAILED = []

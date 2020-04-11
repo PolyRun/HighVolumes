@@ -16,7 +16,7 @@ extern "C" { // must be included C stlye
 
 //#define TEST_MSG
 
-#define POLYEXP_BASE ((string) "../polyvest/examples/")
+#define POLYEXP_BASE ((string) "../../../polyvest/examples/")
 #define NEXAMPLE_POLYTOPES 33
 
 static string exp_paths[NEXAMPLE_POLYTOPES] = {

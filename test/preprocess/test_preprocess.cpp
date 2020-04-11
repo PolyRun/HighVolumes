@@ -6,7 +6,7 @@ extern "C" { // must be included C stlye
 #include "../../src/volume/preprocess.h"
 }
 
-
+std::string path_from_exec = "";
 
 void test_preprocess_against_polyvest(Polytope *P){
 
@@ -80,9 +80,9 @@ void test_preprocess_example_polytopes(){
     Polytope *P;
     for (int i = 0; i < NEXAMPLE_POLYTOPES; i++){
 
-        std::cout << "TESTING " << exp_paths[i] << std::endl;
+        std::cout << "TESTING " << path_from_exec + exp_paths[i] << std::endl;
         
-        int err = read_polyvest_p(exp_paths[i], &P);
+        int err = read_polyvest_p(path_from_exec + exp_paths[i], &P);
         assert(!err &&
                "couldn't read example polytope");
 
@@ -119,7 +119,25 @@ void test_preprocess_random_polytopes(int ntests, int dim, int nconstraints){
 }
 
 
-int main(){    
+int main(int argc, char **argv){
+    CLI cli(argc, argv, "test preprocess");
+    CLIFunctionsVolume cliFun(cli);
+    cliFun.preParse();
+    if (!cli.parse()){
+        return -1;
+    }
+    cliFun.postParse();
+
+    std::string path = cli.getPath();
+    reverse(path.begin(), path.end());
+    size_t pos = path.find('/');
+    // the executable is not in the current directory
+    if(pos != std::string::npos){
+        reverse(path.begin(), path.end());
+        path_from_exec = path.substr(0, path.length() - pos);
+    }
+            
+    
     std::cout << "\n-------------- TEST PREPROCESS EXAMPLE POLYTOPES:\n";
     test_preprocess_example_polytopes();
 
@@ -130,5 +148,6 @@ int main(){
               << ntests << " random polytopes of dim " << dim << " with " << nconstraints << " constraints:\n";
     test_preprocess_random_polytopes(ntests, dim, nconstraints);
     
+    std::cout<< "TESTS COMPLETE.\n";
     
 }

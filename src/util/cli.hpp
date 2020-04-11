@@ -211,6 +211,12 @@ public:
    }
 
    bool isUsed(signed char opt) {return desc_.find(opt)!=desc_.end();}
+
+    std::string getPath(){
+        std::string s(argv_[0]);
+        return s;
+    }
+    
 protected:
    const int argc_;
    char** argv_;
