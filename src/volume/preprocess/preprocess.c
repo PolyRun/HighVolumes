@@ -136,11 +136,9 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
                     FT tmi_tmp = 0;
                     for (int k = 0; k < n; k++){
                         tmi_tmp += T[j*n + k] * Polytope_get_a(P, i, k);
-                        //printf("tmi_tmp: %0.*f\n", FLOATWIDTH, tmi_tmp);
                     }
                     tm[i] += Polytope_get_a(P, i, j) * tmi_tmp;
                 }
-                //printf("tm%d: %0.*f\n", i, FLOATWIDTH, tm[i]);
                 break;
             }
         }

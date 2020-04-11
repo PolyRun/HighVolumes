@@ -18,7 +18,7 @@ typedef double FT;
 #define FT_MIN DBL_MIN
 
 //#define DEBUG_MSG
-#define DEBUG
+//#define DEBUG
 //#define PRINT_T
 //#define PRINT_TMI
 // --------------------------------------------- Vectors / General
