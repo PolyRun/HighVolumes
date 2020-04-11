@@ -83,7 +83,8 @@ void test_preprocess_example_polytopes(){
         std::cout << "TESTING " << exp_paths[i] << std::endl;
         
         int err = read_polyvest_p(exp_paths[i], &P);
-        assert(!err);
+        assert(!err &&
+               "couldn't read example polytope");
 
         test_preprocess_against_polyvest(P);
         test_preprocess_circumscription(P);
