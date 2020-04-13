@@ -90,4 +90,10 @@ FT frobenius(FT *A, FT *B, int d1, int d2);
  **/
 std::pair<FT, FT> matrix_diff(Polytope *P, vol::Polyvest_p *Q);
 
+
+/**
+ * \brief test if P is included in unit ball. as this is np-hard we need to enumerate all vertices and check them
+ **/
+bool polytope_in_unit_ball(Polytope *P);
+
 #endif

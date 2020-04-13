@@ -22,7 +22,7 @@ extern "C" { // must be included C stlye
 std::ostream& operator<<(std::ostream& os, const Polytope& p);
 std::ostream& operator<<(std::ostream& os, const Polytope* p);
 
-Polytope* Polytope_new_box(int n, int r);
+Polytope* Polytope_new_box(int n, FT r);
 // allocates / generates cube polytope with radius r
 
 

@@ -21,7 +21,7 @@ std::ostream& operator<<(std::ostream& os, const Polytope& p) {
 }
 
 
-Polytope* Polytope_new_box(int n, int r) {
+Polytope* Polytope_new_box(int n, FT r) {
    Polytope* p = Polytope_new(n, 2*n);
 
    for(int i=0; i<n; i++) {// for each dim

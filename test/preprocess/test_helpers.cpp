@@ -1,5 +1,5 @@
 #include "test_helpers.hpp"
-
+#include <glpk.h>
 
 /**
  * \brief compare the two polytopes elementwise and return the 2-frobenius norm of the difference matrix of A and the 2-norm of the difference of b
@@ -16,8 +16,9 @@ std::pair<FT, FT> matrix_diff(Polytope *P, vol::Polyvest_p *Q){
         for (int j = 0; j < n; j++){
             FT a1 = Polytope_get_a(P, i, j);
             FT a2 = Q->A(i, j);
-            FT a_diff = a1 - a2;
-            a_diff *= a_diff;
+            FT a_diff = abs(a1 - a2);
+            //a_diff *= a_diff;
+            //cout << a_diff << std::endl;
             if (a_diff > EPS){
                 res.first += a_diff;
             }
@@ -28,8 +29,8 @@ std::pair<FT, FT> matrix_diff(Polytope *P, vol::Polyvest_p *Q){
         }
         FT b1 = Polytope_get_b(P, i);
         FT b2 = Q->b(i);
-        FT b_diff = b1 - b2; 
-        b_diff *= b_diff;
+        FT b_diff = abs(b1 - b2); 
+        //b_diff *= b_diff;
         if (b_diff > EPS){
             res.second += b_diff;
         }        
@@ -73,6 +74,89 @@ FT frobenius(FT *A, FT *B, int d1, int d2) {
 
 
 
+
+bool polytope_in_unit_ball(Polytope *P){
+
+
+    int n = P->n;
+    int m = P->m;
+
+    //init GLPK
+    glp_prob *lp;
+    lp = glp_create_prob();
+    glp_set_obj_dir(lp, GLP_MAX);
+    glp_add_rows(lp, m);
+    glp_add_cols(lp, n);
+
+    glp_smcp parm;
+    glp_init_smcp(&parm);
+    parm.msg_lev = GLP_MSG_ERR;
+
+    int *ind = new int[n + 1];
+    for (int j = 1; j < n + 1; j++){
+        // setup for constraint loading
+        ind[j] = j;
+        // all variables are free
+        glp_set_col_bnds(lp, j, GLP_FR, 0, 0);
+        // only check feasibility
+        glp_set_obj_coef(lp, j, 1);
+    }
+    // load polytope constraints
+    for (int i = 1; i < m+1; i++){
+        glp_set_mat_row(lp, i, n, ind, Polytope_get_aV(P, i-1) - 1);
+    }
+    
+    
+    // use this bit-magic to compute all subsets of m of size n
+    // this avoids computing all subsets of m and filtering out the relevant ones
+    unsigned int v = (1 << n) - 1; // start with lexicographically smallest permutation of n ones
+    unsigned int w = 0;
+
+    while (v < (1 << m)){
+
+        
+        // check the vertex specified by v
+        for (int i = 0; i < m; i++){
+            if (v & (1 << i)){ // force constraint 
+                glp_set_row_bnds(lp, i+1, GLP_FX, Polytope_get_b(P, i), Polytope_get_b(P, i));
+            }
+            else if (w & (1 << i)){ // constraint was only forced in last iteration
+                glp_set_row_bnds(lp, i+1, GLP_UP, 0, Polytope_get_b(P, i));
+            }
+        }
+        w = v;
+
+        glp_simplex(lp, &parm);
+
+        // if problem is infeasible the n constraints are not linearly independent
+        // if n constraints are dependent and the problem is feasible, the following check still needs to hold as we are inside the polytope, although not on a vertex
+        if (glp_get_status(lp) == GLP_OPT || glp_get_status(lp) == GLP_FEAS){
+            // check that point in unit ball
+            double sum = 0;
+            //std::cout << "vertex: ( ";
+            for (int i = 1; i < n+1; i++){
+                double val = glp_get_col_prim(lp, i);
+                //std::cout << val << " ";
+                sum += val*val;
+            }
+            //std::cout << ")\n";
+            if (sum > 1){
+                return false;
+            }
+        }
+                
+        // compute lexicographically next permutation
+        unsigned int t = v | (v - 1); // t gets v's least significant 0 bits set to 1
+        // Next set to 1 the most significant bit to change, 
+        // set to 0 the least significant ones, and add the necessary 1 bits.
+        v = (t + 1) | (((~t & -~t) - 1) >> (__builtin_ctz(v) + 1));
+    }
+
+    glp_delete_prob(lp);
+    delete []ind;
+    
+    return true;
+}    
 
 bool polytope_contains_scaled_ball(Polytope *P){
 
