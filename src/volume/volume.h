@@ -36,6 +36,9 @@ void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, F
 // calculate volume exactly for n-dim ball with radius r
 FT Ball_volume(const int n, const FT r);
 
+// given n elements of b bytes, want to get smallest multiple of 32 bytes that fits this.
+int ceil_cache(const int n, const int b);
+
 // --------------------------------------------- Sub-body Member functions
 
 // input body
@@ -51,8 +54,17 @@ typedef bool (*inside_f_t)(const void*,const FT*);
 // intersections: x+d*t0, x+d*t1
 typedef void (*intersect_f_t)(const void*,const FT*,const FT*,FT*,FT*);
 
-// input: body, point x, cooordinate i  -  output t0, t1
-typedef void (*intersectCoord_f_t)(const void*,const FT*,const int,FT*,FT*);
+// input: body, point x, cooordinate i, cache  -  output t0, t1
+typedef void (*intersectCoord_f_t)(const void*,const FT*,const int,FT*,FT*,void*);
+
+// input: body - output: number of bites cache required
+typedef int (*cacheAlloc_f_t)(const void*);
+
+// input: body, vector x, cache
+typedef void (*cacheReset_f_t)(const void*, const FT*, void*);
+
+// input: body, dim d, dx on that dim, cache
+typedef void (*cacheUpdateCoord_f_t)(const void*, const int, const FT, void*);
 
 typedef struct Body_T Body_T;
 struct Body_T {
@@ -61,6 +73,9 @@ struct Body_T {
    inside_f_t inside;
    intersect_f_t intersect;
    intersectCoord_f_t intersectCoord;
+   cacheAlloc_f_t cacheAlloc;
+   cacheReset_f_t cacheReset;
+   cacheUpdateCoord_f_t cacheUpdateCoord;
 };
 
 extern Body_T Polytope_T;
@@ -93,7 +108,11 @@ void Polytope_free(const void* o);
 void Polytope_print(const void* o);
 bool Polytope_inside_ref(const void* o, const FT* v);
 void Polytope_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
-void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1);
+void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
+void Polytope_intersectCoord_cached_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
+int  Polytope_cacheAlloc_ref(const void* o);
+void Polytope_cacheReset_ref(const void* o, const FT* x, void* cache);
+void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 
 // Setters:
 void Polytope_set_a(Polytope* p, int i, int x, FT a);
@@ -124,8 +143,10 @@ void Sphere_free(const void* o);
 void Sphere_print(const void* o);
 bool Sphere_inside_ref(const void* o, const FT* v);
 void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
-void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1);
-
+void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
+int  Sphere_cacheAlloc_ref(const void* o);
+void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache);
+void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 
 
 // --------------------------------------------- Volume estimation
@@ -135,10 +156,10 @@ extern int step_size;
 // number of walk-steps taken for a sample
 extern int walk_size;
 
-// walk function: n, rk, bcount, body, type, x, d
-typedef void (*walk_f_t)(const int, const FT, int bcount, const void**, const Body_T**, FT*, FT*);
-void walk_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d);
-void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d);
+// walk function: n, rk, bcount, body, type, x, d, cache
+typedef void (*walk_f_t)(const int, const FT, int bcount, const void**, const Body_T**, FT*, FT*,void**);
+void walk_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
+void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
 
 extern walk_f_t walk_f;
 

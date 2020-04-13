@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
    
    CLI cli(argc,argv,"peterem");
    cli.addFlag('v',false,"verbose");
-   cli.addOption('n',"100","size of data");
+   cli.addOption('s',"100","size of data");
    CLIParameters clip;
    clip.set("c","asdfasdf");
    cli.addParameters('p',clip,"somee extra parameters");
@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
    if (!cli.parse()) {return -1;}
    cliFun.postParse();
 
-   std::cout << "v flag: " << cli.flag('v') << ", n: " << cli.option('n') << std::endl;
+   std::cout << "v flag: " << cli.flag('v') << ", n: " << cli.option('s') << std::endl;
    std::cout << "Print parameters p:\n";
    std::cout << cli.parameters('p').tostring() << std::endl;
    std::cout << "And for c: " << cli.parameters('p').get("c","") << "\n\n";
@@ -55,7 +55,13 @@ int main(int argc, char** argv) {
    std::cout << "n: " << p->n << " m: " << p->m << " line: " << p->line << "\n";
    
    Polytope_free(p);
-
+   
+   std::cout << "ceil_cache: " << ceil_cache(31,1) << "\n";
+   std::cout << "ceil_cache: " << ceil_cache(32,1) << "\n";
+   std::cout << "ceil_cache: " << ceil_cache(33,1) << "\n";
+   std::cout << "ceil_cache: " << ceil_cache(1,sizeof(FT)) << "\n";
+   std::cout << "ceil_cache: " << ceil_cache(4,sizeof(FT)) << "\n";
+   std::cout << "ceil_cache: " << ceil_cache(5,sizeof(FT)) << "\n";
 
    #ifdef NDEBUG
    std::cout<< "## WARNING: DEBUG DISABLED!\n";

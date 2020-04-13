@@ -19,93 +19,91 @@ int main(int argc, char** argv) {
    cliFun.postParse();
    
    // -------------------------------- start tests
- 
-   // Generate new polytope box, 4 dim, 2 radius
-   Polytope* box = Polytope_new_box(4,2);
-   
-   // -- prototype:
-   auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
+   auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));
    for(auto it : o->fmap) {
-      assert(it.second(box,0.1,box->n) == box->n);
-      std::cout << "fname: " << it.first << " fcall: " << it.second(box,0.1,4) << std::endl;
-   }
-   // -- end prototype.
+      Polytope_T.intersectCoord = it.second;
+      std::cout << "Test Polytope for intersectCoord " << it.first << std::endl;
 
+      // Generate new polytope box, 4 dim, 2 radius
+      Polytope* box = Polytope_new_box(4,2);
+      {
+         FT v[4] = {0,0,0,0};
+         assert(Polytope_T.inside(box, (FT*)&v));
+      }
+      {
+         FT v[4] = {0,0,0,3};
+         assert(!Polytope_T.inside(box, (FT*)&v));
+      }
+      {
+         FT v[4] = {2,2,2,2};
+         assert(Polytope_T.inside(box, (FT*)&v));
+      }
+      {
+         FT v[4] = {1,-1,1,-1};
+         assert(Polytope_T.inside(box, (FT*)&v));
+      }
+      {
+         FT v[4] = {-3,0,0,0};
+         assert(Polytope_T.inside(box, (FT*)&v));
+      }
 
-   {
-      FT v[4] = {0,0,0,0};
-      assert(Polytope_T.inside(box, (FT*)&v));
-   }
-   {
-      FT v[4] = {0,0,0,3};
-      assert(!Polytope_T.inside(box, (FT*)&v));
-   }
-   {
-      FT v[4] = {2,2,2,2};
-      assert(Polytope_T.inside(box, (FT*)&v));
-   }
-   {
-      FT v[4] = {1,-1,1,-1};
-      assert(Polytope_T.inside(box, (FT*)&v));
-   }
-   {
-      FT v[4] = {-3,0,0,0};
-      assert(Polytope_T.inside(box, (FT*)&v));
-   }
-
-   // Test Polytope_T.intersect:
-   {
-      FT x[4] = {0.0,0.0,0.0,0.0};
-      FT d[4] = {0.1,-1.0,-0.9,0.2};
-      FT t0,t1;
-      Polytope_T.intersect(box, x, d, &t0, &t1);
-      assert(t0==-2.0 && t1==2.0);
-   }
-   {
-      FT x[4] = {0.0,0.0,1.0,0.0};
-      FT d[4] = {0.0,0.0,-1.0,0.0};
-      FT t0,t1;
-      Polytope_T.intersect(box, x, d, &t0, &t1);
-      assert(t0==-1.0 && t1==3.0);
-   }
-   {
-      FT x[4] = {0.0,0.0,1.0,-1.5};
-      FT d[4] = {0.0,0.1,0.1,0.5};
-      FT t0,t1;
-      Polytope_T.intersect(box, x, d, &t0, &t1);
-      assert(t0==-1.0 && t1==7.0);
-   }
-   {
-      FT x[4] = {1.5,1.5,0.0,0.0};
-      FT d[4] = {1.0,-1.0,0.0,0.0};
-      FT t0,t1;
-      Polytope_T.intersect(box, x, d, &t0, &t1);
-      assert(t0==-0.5 && t1==0.5);
-   }
-   // Test Polytope_T.intersectCoord
-   {
-      FT x[4] = {0.0,0.0,0.0,0.0};
-      for(int d=0;d<4;d++) {
+      // Test Polytope_T.intersect:
+      {
+         FT x[4] = {0.0,0.0,0.0,0.0};
+         FT d[4] = {0.1,-1.0,-0.9,0.2};
          FT t0,t1;
-         Polytope_T.intersectCoord(box, x, 0, &t0, &t1);
+         Polytope_T.intersect(box, x, d, &t0, &t1);
          assert(t0==-2.0 && t1==2.0);
       }
+      {
+         FT x[4] = {0.0,0.0,1.0,0.0};
+         FT d[4] = {0.0,0.0,-1.0,0.0};
+         FT t0,t1;
+         Polytope_T.intersect(box, x, d, &t0, &t1);
+         assert(t0==-1.0 && t1==3.0);
+      }
+      {
+         FT x[4] = {0.0,0.0,1.0,-1.5};
+         FT d[4] = {0.0,0.1,0.1,0.5};
+         FT t0,t1;
+         Polytope_T.intersect(box, x, d, &t0, &t1);
+         assert(t0==-1.0 && t1==7.0);
+      }
+      {
+         FT x[4] = {1.5,1.5,0.0,0.0};
+         FT d[4] = {1.0,-1.0,0.0,0.0};
+         FT t0,t1;
+         Polytope_T.intersect(box, x, d, &t0, &t1);
+         assert(t0==-0.5 && t1==0.5);
+      }
+      // Test Polytope_T.intersectCoord
+      void* cache = aligned_alloc(32, Polytope_T.cacheAlloc(box));
+      {
+         FT x[4] = {0.0,0.0,0.0,0.0};
+         Polytope_T.cacheReset(box,x,cache);
+         for(int d=0;d<4;d++) {
+            FT t0,t1;
+            Polytope_T.intersectCoord(box, x, 0, &t0, &t1, cache);
+            assert(t0==-2.0 && t1==2.0);
+         }
+      }
+      {
+         FT x[4] = {0.0,0.0,1.0,0.0};
+         Polytope_T.cacheReset(box,x,cache);
+         FT t0,t1;
+         Polytope_T.intersectCoord(box, x, 2, &t0, &t1, cache);
+         assert(t0==-3.0 && t1==1.0);
+         Polytope_T.intersectCoord(box, x, 0, &t0, &t1, cache);
+         assert(t0==-2.0 && t1==2.0);
+         Polytope_T.intersectCoord(box, x, 1, &t0, &t1, cache);
+         assert(t0==-2.0 && t1==2.0);
+         Polytope_T.intersectCoord(box, x, 3, &t0, &t1, cache);
+         assert(t0==-2.0 && t1==2.0);
+      }
+      free(cache);
+      Polytope_free(box);
    }
-   {
-      FT x[4] = {0.0,0.0,1.0,0.0};
-      FT t0,t1;
-      Polytope_T.intersectCoord(box, x, 2, &t0, &t1);
-      assert(t0==-3.0 && t1==1.0);
-      Polytope_T.intersectCoord(box, x, 0, &t0, &t1);
-      assert(t0==-2.0 && t1==2.0);
-      Polytope_T.intersectCoord(box, x, 1, &t0, &t1);
-      assert(t0==-2.0 && t1==2.0);
-      Polytope_T.intersectCoord(box, x, 3, &t0, &t1);
-      assert(t0==-2.0 && t1==2.0);
-   }
-  
-   Polytope_free(box);
-   
+
    // Check ball volume:
    assert(std::abs(Ball_volume(3,1.0) - 4.189) <= 0.01);
    assert(std::abs(Ball_volume(4,1.0) - 4.935) <= 0.01);
@@ -113,69 +111,72 @@ int main(int argc, char** argv) {
    assert(std::abs(Ball_volume(11,1.0) - 1.884) <= 0.01);
 
    // -------------- Sphere:
-   FT center[4] = {0,1,0,0};
-   Sphere* s = Sphere_new(4,3.0,center);
-
-   //Sphere_T.print(s);
-   
-   {
-      FT v[4] = {-1,0,0,0};
-      assert(Sphere_T.inside(s, (FT*)&v));
-   }
-   {
-      FT v[4] = {-3,0,0,0};
-      assert(!Sphere_T.inside(s, (FT*)&v));
-   }
-   {
-      FT v[4] = {0,3.99,0,0};
-      assert(Sphere_T.inside(s, (FT*)&v));
-   }
-   {
-      FT v[4] = {0,4.01,0,0};
-      assert(!Sphere_T.inside(s, (FT*)&v));
-   }
-
-   
-   {
-      FT x[4] = {0.0,1.0,0.0,0.0};
-      FT d[4] = {1.0,0.0,0.0,0.0};
-      FT t0,t1;
-      Sphere_T.intersect(s, x, d, &t0, &t1);
-      assert(t0==-3.0 && t1==3.0);
-      for(int dd=0;dd<4;dd++) {
-         Sphere_T.intersectCoord(s, x, dd, &t0, &t1);
-         assert(t0==-3.0 && t1==3.0);
+   {   
+      FT center[4] = {0,1,0,0};
+      Sphere* s = Sphere_new(4,3.0,center);
+      //Sphere_T.print(s);
+      {
+         FT v[4] = {-1,0,0,0};
+         assert(Sphere_T.inside(s, (FT*)&v));
       }
-   }
-   {
-      FT x[4] = {0.0,0.0,0.0,0.0};
-      FT d[4] = {0.0,1.0,0.0,0.0};
-      FT t0,t1;
-      Sphere_T.intersect(s, x, d, &t0, &t1);
-      assert(t0==-2.0 && t1==4.0);
-      Sphere_T.intersectCoord(s, x, 1, &t0, &t1);
-      assert(t0==-2.0 && t1==4.0);
-   }
-   {
-      FT x[4] = {0.0,3.0,0.0,0.0};
-      FT d[4] = {0.0,1.0,0.0,0.0};
-      FT t0,t1;
-      Sphere_T.intersect(s, x, d, &t0, &t1);
-      assert(t0==-5.0 && t1==1.0);
-      Sphere_T.intersectCoord(s, x, 1, &t0, &t1);
-      assert(t0==-5.0 && t1==1.0);
-   }
-   {
-      FT x[4] = {0.0,1.0,0.0,0.0};
-      FT d[4] = {1.0,1.0,1.0,1.0};
-      FT t0,t1;
-      Sphere_T.intersect(s, x, d, &t0, &t1);
-      assert(t0==-1.5 && t1==1.5);
-   }
+      {
+         FT v[4] = {-3,0,0,0};
+         assert(!Sphere_T.inside(s, (FT*)&v));
+      }
+      {
+         FT v[4] = {0,3.99,0,0};
+         assert(Sphere_T.inside(s, (FT*)&v));
+      }
+      {
+         FT v[4] = {0,4.01,0,0};
+         assert(!Sphere_T.inside(s, (FT*)&v));
+      }
 
+      void* cache = aligned_alloc(32, Sphere_T.cacheAlloc(s));
+      {
+         FT x[4] = {0.0,1.0,0.0,0.0};
+         Sphere_T.cacheReset(s,x,cache);
+         FT d[4] = {1.0,0.0,0.0,0.0};
+         FT t0,t1;
+         Sphere_T.intersect(s, x, d, &t0, &t1);
+         assert(t0==-3.0 && t1==3.0);
+         for(int dd=0;dd<4;dd++) {
+            Sphere_T.intersectCoord(s, x, dd, &t0, &t1, cache);
+            assert(t0==-3.0 && t1==3.0);
+         }
+      }
+      {
+         FT x[4] = {0.0,0.0,0.0,0.0};
+         Sphere_T.cacheReset(s,x,cache);
+         FT d[4] = {0.0,1.0,0.0,0.0};
+         FT t0,t1;
+         Sphere_T.intersect(s, x, d, &t0, &t1);
+         assert(t0==-2.0 && t1==4.0);
+         Sphere_T.intersectCoord(s, x, 1, &t0, &t1, cache);
+         assert(t0==-2.0 && t1==4.0);
+      }
+      {
+         FT x[4] = {0.0,3.0,0.0,0.0};
+         Sphere_T.cacheReset(s,x,cache);
+         FT d[4] = {0.0,1.0,0.0,0.0};
+         FT t0,t1;
+         Sphere_T.intersect(s, x, d, &t0, &t1);
+         assert(t0==-5.0 && t1==1.0);
+         Sphere_T.intersectCoord(s, x, 1, &t0, &t1, cache);
+         assert(t0==-5.0 && t1==1.0);
+      }
+      {
+         FT x[4] = {0.0,1.0,0.0,0.0};
+         Sphere_T.cacheReset(s,x,cache);
+         FT d[4] = {1.0,1.0,1.0,1.0};
+         FT t0,t1;
+         Sphere_T.intersect(s, x, d, &t0, &t1);
+         assert(t0==-1.5 && t1==1.5);
+      }
+      free(cache);
 
-   Sphere_T.free(s);
-
+      Sphere_T.free(s);
+   }
    // -------------------------------- end tests
 
    #ifdef NDEBUG

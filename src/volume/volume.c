@@ -61,12 +61,19 @@ FT Ball_volume(const int n, const FT r) {
    return pinhalf * rn / fact;
 }
 
+int ceil_cache(const int n, const int b) {
+   return (n*b + 31) / 32 * 32;
+}
+
 Body_T Polytope_T = {
 	.print = Polytope_print,
         .free = Polytope_free,
         .inside = Polytope_inside_ref,
         .intersect = Polytope_intersect_ref,
         .intersectCoord = Polytope_intersectCoord_ref,
+	.cacheAlloc = Polytope_cacheAlloc_ref,
+	.cacheReset = Polytope_cacheReset_ref,
+	.cacheUpdateCoord = Polytope_cacheUpdateCoord_ref,
 };
 Body_T Sphere_T = {
         .print = Sphere_print,
@@ -74,15 +81,16 @@ Body_T Sphere_T = {
 	.inside = Sphere_inside_ref,
 	.intersect = Sphere_intersect_ref,
 	.intersectCoord = Sphere_intersectCoord_ref,
+	.cacheAlloc = Sphere_cacheAlloc_ref,
+	.cacheReset = Sphere_cacheReset_ref,
+	.cacheUpdateCoord = Sphere_cacheUpdateCoord_ref,
 };
 
 Polytope* Polytope_new(int n, int m) {
    Polytope* o = (Polytope*) malloc(sizeof(Polytope));
    o->n = n;
    o->m = m;
-   const int ftPerVec = 32/sizeof(FT); // number FT per Vector
-   o->line = (n+1 + ftPerVec-1)/ftPerVec * ftPerVec;
-   //o->data = (FT*) malloc(sizeof(FT)*(n+1)*m);
+   o->line = ceil_cache(n+1,sizeof(FT)); // make sure next is also 32 alligned
    o->data = (FT*)(aligned_alloc(32, o->line*m*sizeof(FT))); // align this to 32
 
    return o;
@@ -179,11 +187,11 @@ void Polytope_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT*
    *t1 = t11;
 }
 
-
-void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1) {
+void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    const Polytope* p = (Polytope*)o;
    const int n = p->n;
    const int m = p->m;
+   FT* Aix = (FT*)cache;
    
    FT t00 = -FT_MAX;// tmp variables for t0, t1
    FT t11 = FT_MAX;
@@ -194,8 +202,10 @@ void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0
       const FT dai = ai[d]; // dot product with unit vector dim d
       
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
-
-      FT t = (b - dotProduct(ai,x,n)) / dai;
+      
+      const FT aix = dotProduct(ai,x,n);
+      assert(aix == Aix[i] && "Cache must be accurate!");
+      FT t = (b - aix) / dai;
       
       if(dai < 0.0) {
          t00 = (t00>t)?t00:t; // max
@@ -207,6 +217,64 @@ void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0
    // return:
    *t0 = t00;
    *t1 = t11;
+}
+
+void Polytope_intersectCoord_cached_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
+   const Polytope* p = (Polytope*)o;
+   const int n = p->n;
+   const int m = p->m;
+   FT* Aix = (FT*)cache;
+   
+   FT t00 = -FT_MAX;// tmp variables for t0, t1
+   FT t11 = FT_MAX;
+
+   for(int i=0; i<m; i++) {
+      const FT* ai = Polytope_get_aV(p,i);
+      const FT b = Polytope_get_b(p, i);
+      const FT dai = ai[d]; // dot product with unit vector dim d
+      
+      if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
+      
+      const FT aix = Aix[i];
+      FT t = (b - aix) / dai;
+      
+      if(dai < 0.0) {
+         t00 = (t00>t)?t00:t; // max
+      } else {
+         t11 = (t11<t)?t11:t; // min
+      }
+   }
+   
+   // return:
+   *t0 = t00;
+   *t1 = t11;
+}
+
+
+
+int  Polytope_cacheAlloc_ref(const void* o) {
+   const Polytope* p = (Polytope*)o;
+   // allocate one FT per inequality: store dot product: dot(ai,x)
+   return p->m * sizeof(FT);
+}
+void Polytope_cacheReset_ref(const void* o, const FT* x, void* cache) {
+   const Polytope* p = (Polytope*)o;
+   FT* c = (FT*)cache;
+   const int n = p->n;
+   const int m = p->m;
+   for(int i=0; i<m; i++) {
+      const FT* ai = Polytope_get_aV(p,i);
+      c[i] = dotProduct(ai,x,n);
+   }
+}
+
+void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
+   const Polytope* p = (Polytope*)o;
+   const int m = p->m;
+   FT* c = (FT*)cache;
+   for(int i=0; i<m; i++) {
+      c[i] += dx * Polytope_get_a(p,i,d);
+   } 
 }
 
 Sphere* Sphere_new(int n, FT r, const FT* c) {
@@ -248,12 +316,22 @@ void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t
    Ball_intersect(n, s->r, diff, d, t0,t1);
 }
 
-void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1) {
+void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    const Sphere* s = (Sphere*)o;
    const int n = s->n;
    FT diff[n]; // probably a terrible idea, besides not vector alligned!
    for(int i=0;i<n;i++) {diff[i] = x[i] - s->center[i];}
    Ball_intersectCoord(n, s->r, diff, d, t0,t1);
+}
+
+int Sphere_cacheAlloc_ref(const void* o) {
+   return 0; // no cache
+}
+void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache) {
+   // no cache
+}
+void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
+   // no cache
 }
 
 
@@ -262,7 +340,7 @@ int walk_size = 10;
 
 walk_f_t walk_f = walk_ref;
 
-void walk_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d) {
+void walk_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache) {
    const int ws = walk_size; // number of steps for walk
    
    for(int w=0;w<ws;w++) { // take some random steps for x
@@ -285,7 +363,7 @@ void walk_ref(const int n, const FT rk, int bcount, const void** body, const Bod
    }
 }
 
-void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d) {
+void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache) {
    const int ws = walk_size; // number of steps for walk
    
    for(int w=0;w<ws;w++) { // take some random steps for x
@@ -297,15 +375,20 @@ void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, cons
       
       for(int c=0;c<bcount;c++) {
          FT bt0, bt1;
-         type[c]->intersectCoord(body[c], x, dd, &bt0, &bt1);
+         type[c]->intersectCoord(body[c], x, dd, &bt0, &bt1, cache[c]);
          t0 = (t0>bt0)?t0:bt0; // max
          t1 = (t1<bt1)?t1:bt1; // min
       }
    
       FT t = prng_get_random_double_in_range(t0,t1);
       x[dd] += t;
+      for(int c=0;c<bcount;c++) {
+         type[c]->cacheUpdateCoord(body[c], dd, t, cache[c]);
+      }
+
    }
 }
+
 
 
 FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** body, const Body_T** type) {
@@ -330,6 +413,22 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
 
    FT* d = (FT*) malloc(sizeof(FT)*n); // vector for random direction
 
+   // set up cache:
+   int cache_size = 0;
+   void* cache[bcount];
+   for(int c=0;c<bcount;c++) {
+      cache_size += type[c]->cacheAlloc(body[c]);
+   }
+   void* cache_base = aligned_alloc(32, cache_size); // align this to 32
+   cache_size = 0;
+   for(int c=0;c<bcount;c++) {
+      cache[c] = cache_base + cache_size;
+      cache_size += type[c]->cacheAlloc(body[c]);
+
+      type[c]->cacheReset(body[c],x,cache[c]);
+   }
+
+   
    const int l = ceil(n*log(r1/r0) / log(2.0));
    printf("steps: %d\n",l);
    int t[l+1];// counts how many were thrown into Bi
@@ -362,7 +461,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
       //   printf("m: %f\n",m);
       //}
       for(int i=count; i<step_size; i++) { // sample required amount of points
-         walk_f(n, rk, bcount, body, type, x, d);
+         walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
         
          // find right Bm:
          const FT x2 = dotProduct(x,x,n); // normalized radius
@@ -388,7 +487,14 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
       // x = stepFac * x   -> guarantee that in next smaller ball
       for(int j=0;j<n;j++) {x[j] *= stepFac;}
       // may have to set to zero if initializing simpler for that
+      for(int c=0;c<bcount;c++) {
+         type[c]->cacheReset(body[c],x,cache[c]);
+      }
    }
+
+   free(x);
+   free(d);
+   free(cache_base);
 
    return volume;
 }

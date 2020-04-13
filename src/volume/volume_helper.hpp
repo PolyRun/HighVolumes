@@ -45,6 +45,10 @@ public:
                                                      {"walk_ref",walk_ref},
 						     {"walkCoord_ref",walkCoord_ref} }));
 
+      add(new CLIF_Option<intersectCoord_f_t>(&Polytope_T.intersectCoord,'f',"Polytope_intersectCoord","cached_ref", std::map<std::string, intersectCoord_f_t>{
+                                                     {"ref",Polytope_intersectCoord_ref},
+						     {"cached_ref",Polytope_intersectCoord_cached_ref} }));
+
       // number parameters:
       add(new CLIF_OptionNumber<int>(&step_size,'n',"step_size","100000", 100, 1e7));
       add(new CLIF_OptionNumber<int>(&walk_size,'n',"walk_size","1", 1, 1e6));
