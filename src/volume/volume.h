@@ -135,8 +135,12 @@ extern int step_size;
 // number of walk-steps taken for a sample
 extern int walk_size;
 
-void walk(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d);
+// walk function: n, rk, bcount, body, type, x, d
+typedef void (*walk_f_t)(const int, const FT, int bcount, const void**, const Body_T**, FT*, FT*);
+void walk_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d);
+void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d);
 
+extern walk_f_t walk_f;
 
 // input:
 //   n: dimensions

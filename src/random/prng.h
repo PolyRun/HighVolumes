@@ -18,6 +18,11 @@ double prng_get_random_double();
 double prng_get_random_double_0_1();
 
 /**
+ * \brief Returns a new random double from normal distribution
+ **/
+double prng_get_random_double_normal();
+
+/**
  * \brief Returns a new random double in  range [lower_bound, upper_bound)
  * \param lower_bound Lower bound on the value of the random double
  * \param upper_bound Upper bound on the value of the random double

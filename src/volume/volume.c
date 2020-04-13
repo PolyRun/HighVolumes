@@ -260,13 +260,14 @@ void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, 
 int step_size = 100000;
 int walk_size = 10;
 
+walk_f_t walk_f = walk_ref;
 
-void walk(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d) {
+void walk_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d) {
    const int ws = walk_size; // number of steps for walk
    
    for(int w=0;w<ws;w++) { // take some random steps for x
-      int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
-      for(int j=0;j<n;j++) {d[j] = ((j==dd)?1.0:0);}
+      // set d to random direction vector, not normalized
+      for(int j=0;j<n;j++) {d[j] = prng_get_random_double_normal();}
       
       FT t0,t1;
       // ensure do not walk outside of outer ball:
@@ -281,6 +282,28 @@ void walk(const int n, const FT rk, int bcount, const void** body, const Body_T*
    
       FT t = prng_get_random_double_in_range(t0,t1);
       for(int j=0;j<n;j++) {x[j] += d[j]*t;}
+   }
+}
+
+void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d) {
+   const int ws = walk_size; // number of steps for walk
+   
+   for(int w=0;w<ws;w++) { // take some random steps for x
+      int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
+      
+      FT t0,t1;
+      // ensure do not walk outside of outer ball:
+      Ball_intersectCoord(n, rk, x, dd, &t0, &t1);
+      
+      for(int c=0;c<bcount;c++) {
+         FT bt0, bt1;
+         type[c]->intersectCoord(body[c], x, dd, &bt0, &bt1);
+         t0 = (t0>bt0)?t0:bt0; // max
+         t1 = (t1<bt1)?t1:bt1; // min
+      }
+   
+      FT t = prng_get_random_double_in_range(t0,t1);
+      x[dd] += t;
    }
 }
 
@@ -339,7 +362,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
       //   printf("m: %f\n",m);
       //}
       for(int i=count; i<step_size; i++) { // sample required amount of points
-         walk(n, rk, bcount, body, type, x, d);
+         walk_f(n, rk, bcount, body, type, x, d);
         
          // find right Bm:
          const FT x2 = dotProduct(x,x,n); // normalized radius
