@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <float.h>
+#include <math.h>
 
 /**
  * \brief Initializes the prng
@@ -21,6 +22,20 @@ double prng_get_random_double(){
  **/
 double prng_get_random_double_0_1(){
     return ((double) rand() / (RAND_MAX));
+}
+
+/**
+ * \brief Returns a new random double from normal distribution
+ **/
+double prng_get_random_double_normal() {
+    // box-muller method:
+    const double u = prng_get_random_double_0_1();
+    const double v = prng_get_random_double_0_1();
+    const double lnu = log(u);
+    const double twopiv = 2.0*M_PI*v;
+    const double x = sqrt(-2.0*lnu) * cos(twopiv);
+    const double y = sqrt(-2.0*lnu) * sin(twopiv); // wasted
+    return x;
 }
 
 /**
