@@ -21,49 +21,6 @@ extern "C" { // must be included C stlye
 #define MACRO_REPS 100
 #define MINI_REPS 100
 
-int read_polyvest_p(string filename, Polytope **P){
-
-    ifstream file;
-    file.open(filename);
-
-
-    if (!file.is_open()){
-        printf("failed to read polytope");
-        return 1;
-    }
-
-    int n, m;
-    file >> m >> n;
-
-    *P = Polytope_new(n, m);
-
-    FT num;
-    for (int i = 0; i < m; i++){
-        file >> num;
-        Polytope_set_b(*P, i, num);
-        for (int j = 0; j < n; j++){
-            file >> num;
-            Polytope_set_a(*P, i, j, num);
-        }
-    }
-
-    return 0;
-}
-
-void polyvest_convert(Polytope *P, vol::Polyvest_p *Q){
-
-    int n = P->n;
-    int m = P->m;  
-
-    for (int i = 0; i < m; i++){
-        for (int j = 0; j < n; j++){
-            Q->matA(Polytope_get_a(P, i, j), i, j);
-        }
-        Q->vecb(Polytope_get_b(P, i), i);
-    }
-  
-}
-
 
 typedef void(*macro_fun)(Timer &timer, double &min_time, double &max_time, double &mean_time, double &std_dev);
 

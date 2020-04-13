@@ -90,19 +90,4 @@ FT frobenius(FT *A, FT *B, int d1, int d2);
  **/
 std::pair<FT, FT> matrix_diff(Polytope *P, vol::Polyvest_p *Q);
 
-/**
- * \brief convert from Polytope to Polyvest_p
- * \param P the given polytope
- * \param Q is filled with content equivalend to P
- **/
-void polyvest_convert(Polytope *P, vol::Polyvest_p *Q);
-
-
-/**
- * \brief read in one of the example polytopes defined in polyvest/examples
- * \param filename the relative path from root directory, something like polyvest/examples/simplex_10
- * \param P a *P will be filled with the example polytope from file
- **/
-int read_polyvest_p(string filename, Polytope **P);
-
 #endif

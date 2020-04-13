@@ -13,6 +13,7 @@ extern "C" { // must be included C stlye
 }
 
 #include "../util/cli_functions.hpp"
+#include "../../polyvest/vol.h"
 
 #ifndef HEADER_VOLUME_HELPER_HPP
 #define HEADER_VOLUME_HELPER_HPP
@@ -57,6 +58,21 @@ public:
 **/
 void make_random_poly(const std::vector<double> &ell, int m, Polytope **ret);
 
+
+/**
+ * \brief read in one of the example polytopes defined in polyvest/examples
+ * \param filename the relative path from root directory, something like polyvest/examples/simplex_10
+ * \param P a *P will be filled with the example polytope from file
+ **/
+int read_polyvest_p(std::string filename, Polytope **P);
+
+
+/**
+ * \brief convert from Polytope to Polyvest_p
+ * \param P the given polytope
+ * \param Q is filled with content equivalend to P
+ **/
+void polyvest_convert(Polytope *P, vol::Polyvest_p *Q);
 
 
 #endif // HEADER_VOLUME_HELPER_HPP
