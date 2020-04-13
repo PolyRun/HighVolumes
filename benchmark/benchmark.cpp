@@ -21,113 +21,16 @@ extern "C" { // must be included C stlye
 #define MACRO_REPS 100
 #define MINI_REPS 100
 
-
-typedef void(*macro_fun)(Timer &timer, double &min_time, double &max_time, double &mean_time, double &std_dev);
-
-typedef void(*mini_fun)(Timer &selected_timer, double &selected_min_time, double &selected_max_time, double &selected_mean_time, double &selected_std_dev, bool benchmark_all, CLIFunctionsVolume &cliFun);
-
 int macro_benchmarks_count = 0;
 std::vector<Benchmark_base*> macro_benchmarks;
 
 void add_macro_function(Benchmark_base &b);
 
 
-int mini_functions_count = 0;
-std::vector<mini_fun> mini_functions;
-std::vector<std::string> mini_functions_names;
-std::vector<bool> mini_functions_benchmark_all;
+int mini_benchmarks_count = 0;
+std::vector<Benchmark_base_cli*> mini_benchmarks;
 
-void add_mini_function(mini_fun f, std::string name);
-
-void mini_benchmark_xyz_f(Timer &timer, double &selected_min_time, double &selected_max_time, double &selected_mean_time, double &selected_std_dev, bool benchmark_all, CLIFunctionsVolume &cliFun) {
-    /* Prepare input */
-    // Generate new polytope box, 4 dim, 2 radius
-    Polytope* box = Polytope_new_box(4,2);
-
-    /* Benchmark selected version */
-    double selected_total_time = 0;
-    double selected_measured_times[MINI_REPS];
-    for (int i = 0; i < MINI_REPS; ++i) {
-
-        // Run benchmark
-        timer.start();
-        xyz_f(box,0.1,4);
-        timer.stop();
-        
-        selected_measured_times[i] = timer.millisecs();            
-        selected_total_time += selected_measured_times[i];
-        selected_min_time = std::min(selected_min_time, selected_measured_times[i]);
-        selected_max_time = std::max(selected_max_time, selected_measured_times[i]);
-
-    }
-    
-    selected_mean_time = selected_total_time/MINI_REPS;
-    for (int i = 0; i < MINI_REPS; ++i) {
-        selected_std_dev += pow(selected_measured_times[i] - selected_mean_time, 2.0);
-    }
-    selected_std_dev = sqrt(selected_std_dev/MINI_REPS);
-
-    /* Benchmark all versions */
-    if(benchmark_all) {
-        auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
-        for(auto it : o->fmap) {
-            double opt_min_time = std::numeric_limits<double>::max();
-            double opt_max_time = -1;
-            double opt_mean_time;
-            double opt_std_dev = 0.0;
-
-            double opt_total_time = 0;
-            double opt_measured_times[MINI_REPS];
-            for (int i = 0; i < MINI_REPS; ++i) {
-
-                // Run benchmark
-                timer.start();
-                it.second(box,0.1,4);
-                timer.stop();
-                
-                opt_measured_times[i] = timer.millisecs();            
-                opt_total_time += opt_measured_times[i];
-                opt_min_time = std::min(opt_min_time, opt_measured_times[i]);
-                opt_max_time = std::max(opt_max_time, opt_measured_times[i]);
-
-            }
-            
-            opt_mean_time = opt_total_time/MINI_REPS;
-            for (int i = 0; i < MINI_REPS; ++i) {
-                opt_std_dev += pow(opt_measured_times[i] - opt_mean_time, 2.0);
-            }
-            opt_std_dev = sqrt(opt_std_dev/MINI_REPS);
-
-            std::cout << "name(opt): "<<it.first << ", mean: " << opt_mean_time << ", min: " << opt_min_time << ", max: " << opt_max_time << ", std dev: " << opt_std_dev << std::endl;
-        }
-    }
-}
-
-void macro_benchmark_test(Timer &timer, double &min_time, double &max_time, double &mean_time, double& std_dev) {
-    /* Prepare input */
-    
-    double total_time = 0;
-    double measured_times[MACRO_REPS];
-    for (int i = 0; i < MACRO_REPS; ++i) {
-
-        // Run benchmark
-        timer.start();
-        prng_get_random_int_in_range(1, 2020);
-        timer.stop();
-        
-        measured_times[i] = timer.millisecs();            
-        total_time += measured_times[i];
-        min_time = std::min(min_time, measured_times[i]);
-        max_time = std::max(max_time, measured_times[i]);
-
-    }
-    
-    mean_time = total_time/MACRO_REPS;
-    for (int i = 0; i < MACRO_REPS; ++i) {
-        std_dev += pow(measured_times[i] - mean_time, 2.0);
-    }
-    std_dev = sqrt(std_dev/MACRO_REPS);
-}
+void add_mini_function(Benchmark_base_cli &b);
 
 void macro_benchmark_polyvest(Timer &timer, double &min_time, double &max_time, double &mean_time, double& std_dev) {
     /* Prepare input */
@@ -171,20 +74,86 @@ void macro_benchmark_polyvest(Timer &timer, double &min_time, double &max_time, 
 /**
  * \brief Benchmarks for smaller functions in order to compare different versions
  **/
-void run_mini_benchmarks(CLIFunctionsVolume &cliFun){
+void run_mini_benchmarks(){
     Timer timer;
 
-    for(int i = 0; i < mini_functions_count; ++i) {
-        mini_fun f = mini_functions[i];
-        double selected_min_time = std::numeric_limits<double>::max();
-        double selected_max_time = -1;
-        double selected_mean_time;
-        double selected_std_dev = 0.0;
+    for(int i = 0; i < mini_benchmarks_count; ++i) {
+        Benchmark_base_cli *b = mini_benchmarks[i];
+        if (b->get_benchmark_all()) {
+            for(int j = 0; j < b->get_nr_functions(); j++) {
+                double min_time = std::numeric_limits<double>::max();
+                double max_time = -1;
+                double mean_time;
+                double std_dev = 0.0;
+                double total_time = 0;
+                double measured_times[MINI_REPS];
 
-        // Benchmark function
-        f(timer, selected_min_time, selected_max_time, selected_mean_time, selected_std_dev, mini_functions_benchmark_all[i], cliFun);
+                // Initialize
+                b->select(j);
+                b->initialize();
+
+                for (int i = 0; i < MINI_REPS; ++i) {
+
+                    // Run benchmark
+                    timer.start();
+                    b->run_selected();
+                    timer.stop();
+                    
+                    measured_times[i] = timer.millisecs();            
+                    total_time += measured_times[i];
+                    min_time = std::min(min_time, measured_times[i]);
+                    max_time = std::max(max_time, measured_times[i]);
+
+                    // Reset
+                    b->reset();
+
+                }
+                
+                mean_time = total_time/MINI_REPS;
+                for (int i = 0; i < MINI_REPS; ++i) {
+                    std_dev += pow(measured_times[i] - mean_time, 2.0);
+                }
+                std_dev = sqrt(std_dev/MINI_REPS);
+                
+                std::cout << "name: "<< b->get_name_selected() << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
+            }
+        } else {
+            double min_time = std::numeric_limits<double>::max();
+            double max_time = -1;
+            double mean_time;
+            double std_dev = 0.0;
+            double total_time = 0;
+            double measured_times[MINI_REPS];
+
+            // Initialize
+            b->initialize();
+
+            for (int i = 0; i < MINI_REPS; ++i) {
+
+                // Run benchmark
+                timer.start();
+                b->run();
+                timer.stop();
+                
+                measured_times[i] = timer.millisecs();            
+                total_time += measured_times[i];
+                min_time = std::min(min_time, measured_times[i]);
+                max_time = std::max(max_time, measured_times[i]);
+
+                // Reset
+                b->reset();
+
+            }
+            
+            mean_time = total_time/MINI_REPS;
+            for (int i = 0; i < MINI_REPS; ++i) {
+                std_dev += pow(measured_times[i] - mean_time, 2.0);
+            }
+            std_dev = sqrt(std_dev/MINI_REPS);
+            
+            std::cout << "name: "<< b->get_name() << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
+        }
         
-        std::cout << "name(sel): "<<mini_functions_names[i] << ", mean: " << selected_mean_time << ", min: " << selected_min_time << ", max: " << selected_max_time << ", std dev: " << selected_std_dev << std::endl;
     }
     
 }
@@ -240,11 +209,9 @@ void add_macro_function(Benchmark_base &b) {
     macro_benchmarks_count++;
 }
 
-void add_mini_function(mini_fun f, std::string name, bool benchmark_all) {
-    mini_functions.push_back(f);
-    mini_functions_names.push_back(name);
-    mini_functions_benchmark_all.push_back(benchmark_all);
-    mini_functions_count++;
+void add_mini_function(Benchmark_base_cli &b) {
+    mini_benchmarks.push_back(&b);
+    mini_benchmarks_count++;
 }
 
 
@@ -253,8 +220,9 @@ void add_macro_benchmark_functions(){
     //add_macro_function(macro_benchmark_polyvest, "macro_benchmark_polyvest");
 }
     
-void add_mini_benchmark_functions(){
-    add_mini_function(mini_benchmark_xyz_f, "mini_benchmark_xyz_f", true);
+void add_mini_benchmark_functions(CLIFunctionsVolume &cliFun){
+    add_mini_function(*(new Mini_benchmark_xyz_f("mini_benchmark_xyz_f", cliFun, true)));
+    add_mini_function(*(new Mini_benchmark_xyz_f("mini_benchmark_xyz_f", cliFun, false)));
 }
 
 
@@ -273,12 +241,12 @@ int main(int argc, char *argv[]){
     add_macro_benchmark_functions();
     
     /* Add mini-benchmark functions */
-    add_mini_benchmark_functions();
+    add_mini_benchmark_functions(cliFun);
 
 
     /* Run function-benchmarks */
     std::cout << "\n== Run mini-benchmarks with " << MINI_REPS << " repetitions each ==\n" << std::endl;
-    run_mini_benchmarks(cliFun);
+    run_mini_benchmarks();
 
     /* Run macro-benchmarks */
     std::cout << "\n== Run macro-benchmarks with " << MACRO_REPS << " repetitions each ==\n" << std::endl;
