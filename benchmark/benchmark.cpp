@@ -1,20 +1,10 @@
-#include <iostream>
+
 #include <cmath>
 #include <limits>
 #include <algorithm>
 #include <vector>
-#include <string>
 
 #include "../src/util/timer.hpp"
-#include "../src/volume/volume_helper.hpp"
-#include "../polyvest/vol.h"
-
-#include "../src/util/cli.hpp"
-#include "../src/util/cli_functions.hpp"
-
-extern "C" { // must be included C stlye
-#include "../src/random/prng.h"
-}
 
 #include "benchmark.hpp"
 
@@ -80,6 +70,7 @@ void run_mini_benchmarks(){
     for(int i = 0; i < mini_benchmarks_count; ++i) {
         Benchmark_base_cli *b = mini_benchmarks[i];
         if (b->get_benchmark_all()) {
+            // Benchmark all available functions
             for(int j = 0; j < b->get_nr_functions(); j++) {
                 double min_time = std::numeric_limits<double>::max();
                 double max_time = -1;
@@ -118,6 +109,7 @@ void run_mini_benchmarks(){
                 std::cout << "name: "<< b->get_name_selected() << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
             }
         } else {
+            // Benchmark only function that is selected by the cli
             double min_time = std::numeric_limits<double>::max();
             double max_time = -1;
             double mean_time;
@@ -214,12 +206,17 @@ void add_mini_function(Benchmark_base_cli &b) {
     mini_benchmarks_count++;
 }
 
-
+/** 
+ * \brief Adds new classes to be benchmarked (macro)
+ **/
 void add_macro_benchmark_functions(){
     add_macro_function(*(new Macro_benchmark_test("macro_benchmark_test_name")));
     //add_macro_function(macro_benchmark_polyvest, "macro_benchmark_polyvest");
 }
-    
+
+/** 
+ * \brief Adds new classes to be benchmarked (mini)
+ **/
 void add_mini_benchmark_functions(CLIFunctionsVolume &cliFun){
     add_mini_function(*(new Mini_benchmark_xyz_f("mini_benchmark_xyz_f", cliFun, true)));
     add_mini_function(*(new Mini_benchmark_xyz_f("mini_benchmark_xyz_f", cliFun, false)));
