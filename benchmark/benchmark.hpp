@@ -1,4 +1,3 @@
-/* Base class includes */
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -8,10 +7,6 @@
 #include "../src/util/cli.hpp"
 #include "../src/util/cli_functions.hpp"
 #include "../src/util/timer.hpp"
-
-/* Additional classes includes */
-#include "../src/volume/volume_helper.hpp"
-#include "../polyvest/vol.h"
 
 #ifndef BENCHMARK_H
 #define BENCHMARK_H
@@ -27,20 +22,8 @@ class Benchmark_base {
         Benchmark_base(std::string name_, int reps_, bool convergence_) : name(name_), reps(reps_), convergence(convergence_){}
 
         /**
-         * Initializes all data that is needed in order to run the function (e.g. input data)
+         * \brief Actuall performs the benchmark
          **/
-        virtual void initialize() = 0;
-
-        /**
-         * Prepares everything for the function to be rerun.
-         **/
-        virtual void reset() = 0;
-
-        /**
-         * Runs the function (only function call to prevent overhead)
-         **/
-        virtual double run() = 0;
-
         virtual double run_benchmark() {
             double min_time = std::numeric_limits<double>::max();
             double max_time = -1;
@@ -88,6 +71,22 @@ class Benchmark_base {
         }
 
     protected:
+
+        /**
+         * Initializes all data that is needed in order to run the function (e.g. input data)
+         **/
+        virtual void initialize() = 0;
+
+        /**
+         * Prepares everything for the function to be rerun.
+         **/
+        virtual void reset() = 0;
+
+        /**
+         * Runs the function (only function call to prevent overhead)
+         **/
+        virtual double run() = 0;
+
         std::string name; // Name of the benchmark that is displayed in output
         int reps; // Number of repetitions in benchmark
         bool convergence; // Optional convergence output
@@ -100,7 +99,7 @@ class Benchmark_base {
  **/
 class Benchmark_base_cli : public Benchmark_base{
     public:
-        Benchmark_base_cli(std::string name_, int reps_, bool convergence_, CLIFunctionsVolume &cliFun_, bool benchmark_all_) : Benchmark_base(name_, reps_, convergence_), cliFun(cliFun_), benchmark_all(benchmark_all_){
+        Benchmark_base_cli(std::string name_, int reps_, bool convergence_, CLIFunctions &cliFun_, bool benchmark_all_) : Benchmark_base(name_, reps_, convergence_), cliFun(cliFun_), benchmark_all(benchmark_all_){
         }
 
         virtual double run_benchmark() {
@@ -179,7 +178,7 @@ class Benchmark_base_cli : public Benchmark_base{
          **/
         virtual double run_selected() = 0;
 
-        CLIFunctionsVolume cliFun;
+        CLIFunctions cliFun;
         bool benchmark_all; // If set, all available functions will be benchmarked, otherwise only the one selected by cli
         std::string name_selected; // Name of the currently selected function
 };

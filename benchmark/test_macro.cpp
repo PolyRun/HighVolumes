@@ -5,6 +5,7 @@ class Test_macro : public Benchmark_base {
     public:
         Test_macro(std::string name, int reps, bool convergence) : Benchmark_base(name, reps, convergence) {}
 
+    protected:
         void initialize () {
             std::cout << "initializing macro benchmark test" << std::endl;
         }
