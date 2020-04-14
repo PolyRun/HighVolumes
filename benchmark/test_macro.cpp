@@ -1,6 +1,5 @@
 #include "benchmark.hpp"
 
-#define REPS 100
 
 class Test_macro : public Benchmark_base {
     public:
@@ -20,11 +19,15 @@ class Test_macro : public Benchmark_base {
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
+
+    cli.addOption('r', "100", "number of repetitions");
   
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    Test_macro *benchmark = new Test_macro("test_macro", REPS, false);
+    int reps = std::stoi(cli.option('r'));
+
+    Test_macro *benchmark = new Test_macro("test_macro", reps, false);
     benchmark->run_benchmark();
 }

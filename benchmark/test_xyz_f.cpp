@@ -1,6 +1,5 @@
 #include "benchmark.hpp"
 
-#define REPS 100
 
 class Test_xyz_f : public Benchmark_base_cli {
     public:
@@ -40,17 +39,21 @@ class Test_xyz_f : public Benchmark_base_cli {
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
+    
+    cli.addOption('r', "100", "number of repetitions");
   
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    Test_xyz_f *benchmark = new Test_xyz_f("test_xyz_f", REPS, false, cliFun, false);
+    int reps = std::stoi(cli.option('r'));
+
+    Test_xyz_f *benchmark = new Test_xyz_f("test_xyz_f", reps, false, cliFun, false);
     benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", REPS, false, cliFun, true);
+    benchmark = new Test_xyz_f("test_xyz_f", reps, false, cliFun, true);
     benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", REPS, true, cliFun, false);
+    benchmark = new Test_xyz_f("test_xyz_f", reps, true, cliFun, false);
     benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", REPS, true, cliFun, true);
+    benchmark = new Test_xyz_f("test_xyz_f", reps, true, cliFun, true);
     benchmark->run_benchmark();
 }
