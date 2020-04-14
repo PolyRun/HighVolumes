@@ -63,7 +63,7 @@ FT frobenius(FT *A, FT *B, int d1, int d2) {
             }
             if (!std::isfinite(a1) || !std::isfinite(a2)){
                 res = -1;
-                break;
+                return res;
             }
         }
     }
