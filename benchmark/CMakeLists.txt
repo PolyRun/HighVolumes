@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(benchmark)
+project(benchmark_test_macro)
 
-add_executable(benchmark benchmark.cpp)
+add_executable(benchmark_test_macro benchmark_test_macro.cpp)
 
-target_link_libraries(benchmark PUBLIC polyvest_lib volume_helper prng)
+target_link_libraries(benchmark_test_macro PUBLIC volume_helper)
 
-set_target_properties(benchmark PROPERTIES
+set_target_properties(benchmark_test_macro PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
@@ -14,3 +14,28 @@ set_target_properties(benchmark PROPERTIES
 
 
 
+project(benchmark_test_xyz_f)
+
+add_executable(benchmark_test_xyz_f benchmark_test_xyz_f.cpp)
+
+target_link_libraries(benchmark_test_xyz_f PUBLIC volume_helper)
+
+set_target_properties(benchmark_test_xyz_f PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+
+
+project(benchmark_polyvest)
+
+add_executable(benchmark_polyvest benchmark_polyvest.cpp)
+
+target_link_libraries(benchmark_polyvest PUBLIC volume_helper)
+
+set_target_properties(benchmark_polyvest PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
