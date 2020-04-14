@@ -1,5 +1,7 @@
 #include "benchmark.hpp"
 
+#include "../src/volume/volume_helper.hpp"
+
 
 class Test_xyz_f : public Benchmark_base_cli {
     public:

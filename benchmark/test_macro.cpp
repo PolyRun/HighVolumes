@@ -6,19 +6,19 @@ class Test_macro : public Benchmark_base {
         Test_macro(std::string name, int reps, bool convergence) : Benchmark_base(name, reps, convergence) {}
 
         void initialize () {
-            std::cout << "initializing macro benchmark test" << endl;
+            std::cout << "initializing macro benchmark test" << std::endl;
         }
         void reset () {
-            std::cout << "resetting macro benchmark test" << endl;
+            std::cout << "resetting macro benchmark test" << std::endl;
         }
         double run () {
-            std::cout << "running macro benchmark test" << endl;
+            std::cout << "running macro benchmark test" << std::endl;
         }
 };
 
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
-    CLIFunctionsVolume cliFun(cli);
+    CLIFunctions cliFun(cli);
 
     cli.addOption('r', "100", "number of repetitions");
   
