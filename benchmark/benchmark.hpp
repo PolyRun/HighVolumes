@@ -1,10 +1,13 @@
-
+/* Base class includes */
 #include <iostream>
 #include <string>
+#include <cmath>
+#include <limits>
+#include <algorithm>
 
-/* Base class includes */
 #include "../src/util/cli.hpp"
 #include "../src/util/cli_functions.hpp"
+#include "../src/util/timer.hpp"
 
 /* Additional classes includes */
 #include "../src/volume/volume_helper.hpp"
@@ -21,7 +24,7 @@
  **/
 class Benchmark_base {
     public:
-        Benchmark_base(std::string name_) : name(name_){}
+        Benchmark_base(std::string name_, int reps_, bool convergence_) : name(name_), reps(reps_), convergence(convergence_){}
 
         /**
          * Initializes all data that is needed in order to run the function (e.g. input data)
@@ -38,22 +41,58 @@ class Benchmark_base {
          **/
         virtual double run() = 0;
 
-        /**
-         * Setter for benchmark name
-         **/
-        void set_name(std::string name_) {
-            name = name_;
-        }
+        virtual double run_benchmark() {
+            double min_time = std::numeric_limits<double>::max();
+            double max_time = -1;
+            double mean_time;
+            double std_dev = 0.0;
+            double total_time = 0;
+            double measured_times[reps];
 
-        /**
-         * Getter for benchmark name
-         **/
-        std::string get_name(){
-            return name;
+            // Initialize
+            initialize();
+
+            for (int i = 0; i < reps; ++i) {
+
+                // Run benchmark
+                timer.start();
+                double result = run();
+                timer.stop();
+
+                if (convergence) {
+                    if (i == 0) {
+                        std::cout << "Convergence Step(" << i << ") - Result: " << result << std::endl;
+                    } else {
+                        std::cout << "Convergence Step(" << i << ") - Result: " << result << ", Diff: " << result-last_result << std::endl;
+                    }
+                    last_result = result;
+                }
+                
+                measured_times[i] = timer.millisecs();            
+                total_time += measured_times[i];
+                min_time = std::min(min_time, measured_times[i]);
+                max_time = std::max(max_time, measured_times[i]);
+
+                // Reset
+                reset();
+
+            }
+            
+            mean_time = total_time/reps;
+            for (int i = 0; i < reps; ++i) {
+                std_dev += pow(measured_times[i] - mean_time, 2.0);
+            }
+            std_dev = sqrt(std_dev/reps);
+            
+            std::cout << "name: "<< name << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
         }
 
     protected:
         std::string name; // Name of the benchmark that is displayed in output
+        int reps; // Number of repetitions in benchmark
+        bool convergence; // Optional convergence output
+        double last_result; // Value in last step;
+        Timer timer;
 };
 
 /**
@@ -61,9 +100,70 @@ class Benchmark_base {
  **/
 class Benchmark_base_cli : public Benchmark_base{
     public:
-        Benchmark_base_cli(std::string name_, CLIFunctionsVolume &cliFun_, bool benchmark_all_) : Benchmark_base(name_), cliFun(cliFun_), benchmark_all(benchmark_all_){
+        Benchmark_base_cli(std::string name_, int reps_, bool convergence_, CLIFunctionsVolume &cliFun_, bool benchmark_all_) : Benchmark_base(name_, reps_, convergence_), cliFun(cliFun_), benchmark_all(benchmark_all_){
         }
 
+        virtual double run_benchmark() {
+            for (int j = 0; j < get_nr_functions(); ++j){
+                double min_time = std::numeric_limits<double>::max();
+                double max_time = -1;
+                double mean_time;
+                double std_dev = 0.0;
+                double total_time = 0;
+                double measured_times[reps];
+
+                // Initialize
+                initialize();
+                select(j);
+
+                for (int i = 0; i < reps; ++i) {
+                    double result;
+                    // Run benchmark
+                    if (benchmark_all) {
+                        timer.start();
+                        result = run_selected();
+                        timer.stop();
+                    } else {
+                        timer.start();
+                        result = run();
+                        timer.stop();
+                    }
+
+                    if (convergence) {
+                        if (i == 0) {
+                            std::cout << "Convergence Step(" << i << ") - Result: " << result << std::endl;
+                        } else {
+                            std::cout << "Convergence Step(" << i << ") - Result: " << result << ", Diff: " << result-last_result << std::endl;
+                        }
+                        last_result = result;
+                    }
+                    
+                    measured_times[i] = timer.millisecs();            
+                    total_time += measured_times[i];
+                    min_time = std::min(min_time, measured_times[i]);
+                    max_time = std::max(max_time, measured_times[i]);
+
+                    // Reset
+                    reset();
+
+                }
+                
+                mean_time = total_time/reps;
+                for (int i = 0; i < reps; ++i) {
+                    std_dev += pow(measured_times[i] - mean_time, 2.0);
+                }
+                std_dev = sqrt(std_dev/reps);
+                
+                if (benchmark_all) {
+                    std::cout << "name: "<< name_selected << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
+                } else {
+                    std::cout << "name: "<< name << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
+                    break;
+                }
+            }
+        }
+
+    protected:
         /**
          * Returns the number of functions that are available
          **/
@@ -79,87 +179,9 @@ class Benchmark_base_cli : public Benchmark_base{
          **/
         virtual double run_selected() = 0;
 
-        /**
-         * Setter for benchmark_all
-         **/
-        void set_benchmark_all(bool b) {
-            benchmark_all = b;
-        }
-
-        /**
-         * Getter for benchmark_all
-         **/
-        bool get_benchmark_all(){
-            return benchmark_all;
-        }
-        
-        /**
-         * Getter for the name of the currently selected function
-         **/
-        std::string get_name_selected(){
-            return name_selected;
-        }
-
-    protected:
         CLIFunctionsVolume cliFun;
         bool benchmark_all; // If set, all available functions will be benchmarked, otherwise only the one selected by cli
         std::string name_selected; // Name of the currently selected function
 };
-
-
-/* Macro benchmarks */
-
-class Macro_benchmark_test : public Benchmark_base {
-    public:
-        Macro_benchmark_test(std::string name) : Benchmark_base(name) {}
-
-        void initialize () {
-            std::cout << "initializing macro benchmark test" << endl;
-        }
-        void reset () {
-            std::cout << "resetting macro benchmark test" << endl;
-        }
-        double run () {
-            std::cout << "running macro benchmark test" << endl;
-        }
-};
-
-/* Mini benchmarks */
-
-class Mini_benchmark_xyz_f : public Benchmark_base_cli {
-    public:
-        Mini_benchmark_xyz_f(std::string name, CLIFunctionsVolume &cliFun, bool benchmark_all) : Benchmark_base_cli(name, cliFun, benchmark_all) {}
-
-        void initialize () {
-            box = Polytope_new_box(4,2);
-        }
-        void reset () {
-            // Nothing to reset
-        }
-        double run () {
-            xyz_f(box,0.1,4);
-        }
-        int get_nr_functions(){
-            auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
-            return o->fmap.size();
-        }
-        void select(int s){
-            auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
-            auto it = o->fmap.begin();
-            for (int i = 0; i < s; ++i) {
-                it ++;
-            }
-            selected = it->second;
-            name_selected = it->first;
-        }
-        double run_selected(){
-            selected(box,0.1,4);
-        }
-
-    private:
-        Polytope* box; 
-        xyz_f_t selected;
-};
-
 
 #endif // BENCHMARK_H
