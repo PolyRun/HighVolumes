@@ -186,13 +186,13 @@ bool ellipsoid_inside_poly(Polytope *P, FT *E, FT *c){
     
     for (int i = 0; i < m; i++){
         
-        // bi <- b[i] - Ai * c
-        FT bi = Polytope_get_b(P, i);
+        // b[i] - Ai * c
+        FT bi_sub_Ai_dot_c = Polytope_get_b(P, i);
         for (int j = 0; j < n; j++){
-            bi -= Polytope_get_a(P, i, j) * c[j];
+            bi_sub_Ai_dot_c -= Polytope_get_a(P, i, j) * c[j];
         }
 
-        // at_e_a <- Ai * E * Ai.transpose()
+        // at_e_a <- Ai.transpose() * E * Ai
         FT at_e_a = 0;
         for (int j = 0; j < n; j++){
             FT e_a = 0;
@@ -202,8 +202,8 @@ bool ellipsoid_inside_poly(Polytope *P, FT *E, FT *c){
             at_e_a += Polytope_get_a(P, i, j) * e_a;
         }
 
-        //  Ai * c + sqrt(Ai * E * Ai.transpose()) > bi 
-        if (at_e_a > bi*bi){
+        // sqrt(Ai.transpose() * E * Ai) > bi - Ai * c
+        if (at_e_a > bi_sub_Ai_dot_c * bi_sub_Ai_dot_c){
             return false;
         }
         
