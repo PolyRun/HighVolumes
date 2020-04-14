@@ -24,7 +24,7 @@ std::pair<FT, FT> matrix_diff(Polytope *P, vol::Polyvest_p *Q){
             }
             if (!std::isfinite(a1) || !std::isfinite(a2)){
                 res = std::make_pair(-1, -1);
-                break;
+                return res;
             }
         }
         FT b1 = Polytope_get_b(P, i);
@@ -33,10 +33,10 @@ std::pair<FT, FT> matrix_diff(Polytope *P, vol::Polyvest_p *Q){
         //b_diff *= b_diff;
         if (b_diff > EPS){
             res.second += b_diff;
-        }        
+        }
         if (!std::isfinite(b1) || !std::isfinite(b2)){
             res = std::make_pair(-1, -1);
-            break;
+            return res;
         }
     }
 
