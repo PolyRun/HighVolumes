@@ -334,6 +334,114 @@ void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* 
    // no cache
 }
 
+Ellipsoid* Ellipsoid_new(int n) {
+   Ellipsoid* e = (Ellipsoid*) malloc(sizeof(Ellipsoid));
+   e->n = n;
+   e->line = ceil_cache(n,sizeof(FT)); // make sure next is also 32 alligned
+   e->A = (FT*)(aligned_alloc(32, e->line*(n+1)*sizeof(FT))); // align this to 32
+   e->a = e->A + e->line * n;
+   for(int i=0; i<n; i++) {
+      for(int j=0; j<n; j++) {
+	 e->A[i*e->line + j] = (i==j)?1:0;
+      }
+      e->a[i] = 0;
+   }
+   return e;
+}
+
+FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) {
+   return e->A + i*e->line;
+}
+
+void Ellipsoid_free(const void* o) {
+   Ellipsoid* e = (Ellipsoid*)o;
+   free(e->A);// includes a
+   free(e);
+}
+
+FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {
+   // (x-a)T * A * (x-a)
+   const int n = e->n;
+   FT sum = 0;
+   for(int i=0;i<n;i++) {
+      const FT* Ai = Ellipsoid_get_Ai(e,i);
+      FT Axa = 0;
+      for(int j=0; j<n; j++) {
+         Axa += Ai[j] * (x[j] - e->a[j]);
+      }
+      sum += (x[i] - e->a[i]) * Axa;
+   }
+   return sum;
+}
+
+void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* normal) {
+   int n = e->n;
+   for(int i=0;i<n;i++) {
+      const FT* Ai = Ellipsoid_get_Ai(e,i);
+      FT Axa = 0;
+      for(int j=0; j<n; j++) {
+         Axa += Ai[j] * (x[j] - e->a[j]);
+      }
+      normal[i] = 2.0*Axa;
+   }
+}
+
+void Ellipsoid_project(const Ellipsoid* e, FT* x) {
+   // internal.
+   // push x back on surface of e
+   // 
+   // for now just pull to center. Could try with normal also...?
+   int n = e->n;
+   FT eval = Ellipsoid_eval(e,x);
+   FT scale = 1.0/sqrt(eval);
+   for(int i=0; i<n; i++) { x[i] = e->a[i] + (x[i]-e->a[i]) * scale;}
+}
+
+void Ellipsoid_minimize(const Ellipsoid* e, const Ellipsoid* f, FT* x){
+   const int n = e->n;
+   
+   // can we alloc before somehow?
+   FT* nE = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* nF = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* nP = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+
+   Ellipsoid_project(e,x);
+   
+   int count = 0;
+   FT dot = FT_MAX; // step size
+   FT beta = 0.1;
+   int lastBeta = 0;
+   do{
+      Ellipsoid_normal(e, x, nE);
+      FT nE2 = dotProduct(nE,nE, n);
+      Ellipsoid_normal(f, x, nF);
+      
+      FT proj = dotProduct(nE,nF,n)/nE2;
+      // project gradient in f on plane (normal to e)
+      for(int i=0; i<n; i++) {
+         nP[i] = nF[i] - nE[i]*proj;
+      }
+      FT lastDot = dot;
+      dot = dotProduct(nP,nP, n);
+      
+      // adjust step rate beta
+      if(lastDot < dot) {beta *= 0.5; printf("beta down! %f\n",beta); lastBeta = 0;}
+      if(lastBeta++ > 10) {beta*=1.2; printf("beta up! %f\n",beta); lastBeta = 0;}
+      
+      // debug output
+      FT eval = Ellipsoid_eval(f,x);
+      printf("hello %f %f\n",dot,eval);
+      
+      for(int i=0; i<n; i++) {
+         x[i] -= beta * nP[i]; // step = c - n (n * c)
+      }
+
+      Ellipsoid_project(e,x);
+   } while(count++ < 100*n && dot > 0.0000001);
+   printf("steps taken: %d\n",count);
+   free(nE);
+   free(nF);
+}
 
 int step_size = 100000;
 int walk_size = 10;

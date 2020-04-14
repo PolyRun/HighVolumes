@@ -148,6 +148,37 @@ int  Sphere_cacheAlloc_ref(const void* o);
 void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache);
 void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 
+// --------------------------------------------- Ellipsoid
+
+typedef struct Ellipsoid Ellipsoid;
+
+struct Ellipsoid {
+   FT* A; // row-wise
+   // (x-a)T * A * (x-a)
+   FT* a;
+   int line; // size of one row of A, plus buffer for allignment
+   int n;
+};
+
+Ellipsoid* Ellipsoid_new(int n);
+
+void Ellipsoid_free(const void* o);
+
+FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i); // get row i
+FT Ellipsoid_eval(const Ellipsoid* e, const FT* x); // (x-a)T * A * (x-a)
+void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* n); // 2 * A * (x - a)  ==> not normalized
+
+// internal: push x on surface of e
+void Ellipsoid_project(const Ellipsoid* e, FT* x);
+
+
+// Constrained to e, minimize f -> write into x
+// e = (A,a), f=(B,b)
+// (x-a)T * A * (x-a) = 1
+// min_x (x-b)T * B * (x-b)
+//
+// takes current x as initialization
+void Ellipsoid_minimize(const Ellipsoid* e, const Ellipsoid* f, FT* x);
 
 // --------------------------------------------- Volume estimation
 

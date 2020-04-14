@@ -177,6 +177,99 @@ int main(int argc, char** argv) {
 
       Sphere_T.free(s);
    }
+
+   // ----------------- Ellipsoid
+   { // test Ellipsoid_eval and Ellipsoid_normal
+      Ellipsoid* e = Ellipsoid_new(3); // simple sphere
+      FT n[3];
+      {
+         FT x[3] = {0,0,0};
+	 FT eval = Ellipsoid_eval(e, x);
+	 assert(eval == 0);
+         Ellipsoid_normal(e, x, n);
+	 assert(n[0]==0 && n[1]==0 && n[2]==0);
+      }
+      {
+         FT x[3] = {0,0,1};
+	 FT eval = Ellipsoid_eval(e, x);
+	 assert(eval == 1.0);
+         Ellipsoid_normal(e, x, n);
+	 assert(n[0]==0 && n[1]==0 && n[2]==2);
+      }
+      {
+         FT x[3] = {0,2.0,0};
+	 FT eval = Ellipsoid_eval(e, x);
+	 assert(eval == 4.0);
+         Ellipsoid_normal(e, x, n);
+	 assert(n[0]==0 && n[1]==4 && n[2]==0);
+      } 
+      {
+         FT x[3] = {3.0,4.0,0};
+	 FT eval = Ellipsoid_eval(e, x);
+	 assert(eval == 25.0);
+         Ellipsoid_normal(e, x, n);
+	 assert(n[0]==6 && n[1]==8 && n[2]==0);
+      }
+      Ellipsoid_free(e);
+   }
+   { // test Ellipsoid_project
+      Ellipsoid* e = Ellipsoid_new(3); // simple sphere
+      e->a[0] = 5.0;
+      e->a[1] = -10.0;
+      e->a[2] = 0.5;
+      
+      FT* A0 = Ellipsoid_get_Ai(e,0);
+      FT* A1 = Ellipsoid_get_Ai(e,1);
+      FT* A2 = Ellipsoid_get_Ai(e,2);
+      A0[0] = 2.0;
+      A1[1] = 1.0;
+      A2[2] = 0.5;
+
+      for(int t=0; t<100; t++) {
+         FT x[3] = {t % 13,t % 11 - 12, std::fmod(t,0.7)};
+         Ellipsoid_project(e, x);
+         FT eval = Ellipsoid_eval(e, x);
+         assert(std::abs(eval-1) < 0.00001);
+      }
+   }
+   
+   for(int t=0; t<100; t++) {
+      const int n = 20;
+      Ellipsoid* e1 = Ellipsoid_new(n); // simple sphere
+      Ellipsoid* e2 = Ellipsoid_new(n); // simple sphere
+      for(int i=0; i<n; i++) {
+         //e1->a[i] = prng_get_random_double_in_range(-10,10);
+         e2->a[i] = prng_get_random_double_in_range(-10,10);
+         //FT* A1i = Ellipsoid_get_Ai(e1,i);
+         //A1i[i] = prng_get_random_double_in_range(0.1,20);
+         FT* A2i = Ellipsoid_get_Ai(e2,i);
+         A2i[i] = prng_get_random_double_in_range(0.1,20);
+      }
+      
+      {
+         FT x[n];
+         for(int i=0; i<n; i++) {
+	    x[i] = e2->a[i] + prng_get_random_double_normal();
+	 }
+
+         FT n1[n];
+         FT n2[n];
+	 Ellipsoid_minimize(e2,e1,x); // test
+         Ellipsoid_normal(e1, x, n1);
+         Ellipsoid_normal(e2, x, n2);
+	 FT n1_2 = dotProduct(n1,n1, n);
+	 FT dot = dotProduct(n1,n2, n);
+	 
+         FT step[n];
+         for(int i=0;i<n;i++) { step[i] = n2[i] - n1[i] * dot / n1_2;}
+	 FT step2 = dotProduct(step,step,n);
+	 assert(std::abs(step2) < 0.0001);
+      }
+      
+
+      Ellipsoid_free(e1);
+      Ellipsoid_free(e2);
+   }
    // -------------------------------- end tests
 
    #ifdef NDEBUG
