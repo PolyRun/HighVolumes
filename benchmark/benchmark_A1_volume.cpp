@@ -11,26 +11,42 @@ class Benchmark_A1 : public Benchmark_base {
             std::cout << "initializing A1 data..." << std::endl;
             
 	    if(generator.compare("cube") == 0) {
+		bcount = 1;
 	        body = (void**)malloc(bcount*sizeof(void*));
 	        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
-
+                body[0] = Polytope_new_box(n,1);
+		type[0] = &Polytope_T;
+		r0 = 1.0;
+		r1 = std::sqrt(n);
+	    }else if(generator.compare("sphere") == 0) {
+		bcount = 1;
+	        body = (void**)malloc(bcount*sizeof(void*));
+	        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
+		FT* center = (FT*)malloc(n*sizeof(FT));
+		for(int i=0; i<n; i++) {center[i] = 0;}; center[0] = 1;
+                body[0] = Sphere_new(n,2,center);
+		type[0] = &Sphere_T;
+		r0 = 1.0;
+		r1 = 3.0;
+	
 	    } else {
 	        std::cout << "Error: did not find generator " << generator << "\n";
 		assert(false);
 	    }
         }
         void reset () {
-            std::cout << "resetting macro benchmark test" << std::endl;
-        }
+            // nothing to reset
+	}
         double run () {
-            std::cout << "running macro benchmark test" << std::endl;
-        }
+            return volume_ref(n, r0, r1, bcount, (const void**)body, (const Body_T**)type);
+	}
     private:
 	const std::string generator;
 	int n;
 	int bcount;
 	void** body;
 	Body_T** type;
+	FT r0,r1;
 };
 
 int main(int argc, char *argv[]){
