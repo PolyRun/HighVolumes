@@ -32,7 +32,7 @@ project(benchmark_polyvest)
 
 add_executable(benchmark_polyvest benchmark_polyvest.cpp)
 
-target_link_libraries(benchmark_polyvest PUBLIC volume_helper)
+target_link_libraries(benchmark_polyvest PUBLIC volume_helper polyvest_lib)
 
 set_target_properties(benchmark_polyvest PROPERTIES
    CXX_STANDARD 11

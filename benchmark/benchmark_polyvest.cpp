@@ -3,6 +3,10 @@
 #include "../polyvest/vol.h"
 #include "../src/volume/volume_helper.hpp"
 
+extern "C" { // must be included C stlye
+#include "../src/volume/preprocess.h"
+}
+
 class Polyvest : public Benchmark_base {
     public:
         Polyvest(std::string name, int reps, bool convergence) : Benchmark_base(name, reps, convergence) {}
@@ -22,9 +26,9 @@ class Polyvest : public Benchmark_base {
             polyvest_convert(P, Q);
         }
 
-        double run () {   
-            //Q->Preprocess();
-            //Q->EstimateVol(1600);
+        double run () {
+            Q->Preprocess();
+            Q->EstimateVol(1600);
         }
 
     private:
