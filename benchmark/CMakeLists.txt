@@ -45,7 +45,6 @@ set_target_properties(benchmark_polyvest PROPERTIES
    CXX_EXTENSIONS NO
 )
 
-
 project(benchmark_A1_volume)
 
 add_executable(benchmark_A1_volume benchmark_A1_volume.cpp)
@@ -53,6 +52,21 @@ add_executable(benchmark_A1_volume benchmark_A1_volume.cpp)
 target_link_libraries(benchmark_A1_volume PUBLIC volume_helper)
 
 set_target_properties(benchmark_A1_volume PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+
+
+
+project(benchmark_dotProduct)
+
+add_executable(benchmark_dotProduct benchmark_dotProduct.cpp)
+
+target_link_libraries(benchmark_dotProduct PUBLIC volume_helper)
+
+set_target_properties(benchmark_dotProduct PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
