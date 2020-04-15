@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 
+add_custom_target(build-time-make-directory ALL
+   COMMAND ${CMAKE_COMMAND} -E make_directory out)
+
 project(benchmark_test_macro)
 
 add_executable(benchmark_test_macro benchmark_test_macro.cpp)

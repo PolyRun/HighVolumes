@@ -45,3 +45,21 @@ Or for a single test:
 ```
 ./test/test.py preprocess/test_preprocess
 ```
+
+
+
+# Running Benchmarks
+
+After you built, in the build directory:
+
+```
+./benchmark/benchmark.py
+```
+
+Or for a single benchmark:
+
+```
+./benchmark/benchmark.py benchmark_text_xyz_f
+```
+
+The output will be written into a file named after the corresponding test in directory build/benchmark/out
