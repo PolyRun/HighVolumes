@@ -24,7 +24,8 @@ class Benchmark_dotProduct : public Benchmark_base {
 	    }
 	}
         double run () {
-            return dotProduct(u,v,n);
+            dotProduct(u,v,n);
+	    return 0;
 	}
     private:
 	int n;

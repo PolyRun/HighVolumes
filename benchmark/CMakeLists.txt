@@ -58,8 +58,6 @@ set_target_properties(benchmark_A1_volume PROPERTIES
 )
 
 
-
-
 project(benchmark_dotProduct)
 
 add_executable(benchmark_dotProduct benchmark_dotProduct.cpp)
@@ -73,3 +71,14 @@ set_target_properties(benchmark_dotProduct PROPERTIES
 )
 
 
+project(benchmark_intersect)
+
+add_executable(benchmark_intersect benchmark_intersect.cpp)
+
+target_link_libraries(benchmark_intersect PUBLIC volume_helper)
+
+set_target_properties(benchmark_intersect PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
