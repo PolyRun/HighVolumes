@@ -28,7 +28,6 @@ class Benchmark_A1 : public Benchmark_base {
 		type[0] = &Sphere_T;
 		r0 = 1.0;
 		r1 = 3.0;
-	
 	    } else {
 	        std::cout << "Error: did not find generator " << generator << "\n";
 		assert(false);
@@ -70,6 +69,6 @@ int main(int argc, char *argv[]){
 
     int reps = std::stoi(cli.option('r'));
 
-    Benchmark_A1 b("A1_volume", reps, false, n, generator);
+    Benchmark_A1 b("A1_volume", reps, true, n, generator);
     b.run_benchmark();
 }
