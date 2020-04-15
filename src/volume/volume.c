@@ -74,6 +74,7 @@ Body_T Polytope_T = {
 	.cacheAlloc = Polytope_cacheAlloc_ref,
 	.cacheReset = Polytope_cacheReset_ref,
 	.cacheUpdateCoord = Polytope_cacheUpdateCoord_ref,
+        .shallowCutOracle = Polytope_shallowCutOracle_ref,
 };
 Body_T Sphere_T = {
         .print = Sphere_print,
@@ -125,7 +126,7 @@ void Polytope_print(const void* o) {
    }
 }
 
-inline FT* Polytope_get_aV(const Polytope* p, int i) {
+inline FT* Polytope_get_Ai(const Polytope* p, int i) {
    return &(p->data[i * (p->line)]);
 }
 
@@ -167,7 +168,7 @@ void Polytope_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT*
       //   if orthogonal (d*ai = 0), then no intersection
       //   if <0, then same direction -> t0
       //   if >0, then opp  direction -> t1
-      const FT* ai = Polytope_get_aV(p,i);
+      const FT* ai = Polytope_get_Ai(p,i);
       const FT b = Polytope_get_b(p, i);
       const FT dai = dotProduct(d,ai,n);
       // Note: if base-vector: could just pick i'th entry!
@@ -207,7 +208,7 @@ void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0
    FT t11 = FT_MAX;
 
    for(int i=0; i<m; i++) {
-      const FT* ai = Polytope_get_aV(p,i);
+      const FT* ai = Polytope_get_Ai(p,i);
       const FT b = Polytope_get_b(p, i);
       const FT dai = ai[d]; // dot product with unit vector dim d
       
@@ -239,7 +240,7 @@ void Polytope_intersectCoord_cached_ref(const void* o, const FT* x, const int d,
    FT t11 = FT_MAX;
 
    for(int i=0; i<m; i++) {
-      const FT* ai = Polytope_get_aV(p,i);
+      const FT* ai = Polytope_get_Ai(p,i);
       const FT b = Polytope_get_b(p, i);
       const FT dai = ai[d]; // dot product with unit vector dim d
       
@@ -273,7 +274,7 @@ void Polytope_cacheReset_ref(const void* o, const FT* x, void* cache) {
    const int n = p->n;
    const int m = p->m;
    for(int i=0; i<m; i++) {
-      const FT* ai = Polytope_get_aV(p,i);
+      const FT* ai = Polytope_get_Ai(p,i);
       c[i] = dotProduct(ai,x,n);
    }
 }
@@ -285,6 +286,56 @@ void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void
    for(int i=0; i<m; i++) {
       c[i] += dx * Polytope_get_a(p,i,d);
    } 
+}
+
+bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c) {
+   const Polytope* p = (Polytope*)o;
+   const int n = p->n;
+   const int m = p->m;
+   
+   FT Ax[m];
+
+   // check if center of Ellisoid e = (X,x) is in Polytope:
+   // for all i, check if:
+   //    Ai * x <= bi
+   for(int i=0;i<m;i++) {
+      FT* Ai = Polytope_get_Ai(p,i);
+      FT bi = Polytope_get_b(p,i);
+      FT* x = e->a;
+      Ax[i] = dotProduct(Ai,x,n);
+      if(Ax[i] > bi) { // found one -> return (Ai, bi)
+         for(int j=0;j<n;j++) {v[j] = Ai[j];}
+	 *c = bi;
+         return true;
+      }
+   }
+   
+
+   // check if inner Ellipsoid e = ( (2n)^-2 * X, x) is in Polytope:
+   // for all i, check if:
+   //   AiT * X * Ai <= (bi - AiT * x)^2 * (2n)^2
+   const FT twon2 = 4.0*n*n;
+   for(int i=0;i<m;i++) {
+      FT* Ai = Polytope_get_Ai(p,i);
+      FT bi = Polytope_get_b(p,i);
+      
+      FT AiTXAi = 0; // could be useful to cache...
+      for(int j=0;j<n;j++) {
+         FT* Xj = Ellipsoid_get_Ai(e,j);
+	 FT XjAi = dotProduct(Xj,Ai,n);
+         AiTXAi += Ai[j] * XjAi;
+      }
+      
+      FT diff = bi - Ax[i];
+      if(AiTXAi > diff*diff*twon2) { // found one -> return (Ai, bi)
+         for(int j=0;j<n;j++) {v[j] = Ai[j];}
+	 *c = bi;
+         return true;
+      }
+   }
+   
+   // no half-plane violated inner ellipse
+   return false;
 }
 
 Sphere* Sphere_new(int n, FT r, const FT* c) {
@@ -523,6 +574,7 @@ void Ellipsoid_minimize(const Ellipsoid* e, const Ellipsoid* f, FT* x){
    printf("steps taken: %d\n",count);
    free(nE);
    free(nF);
+   free(nP);
 }
 
 int step_size = 100000;

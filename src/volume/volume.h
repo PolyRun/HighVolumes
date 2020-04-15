@@ -21,6 +21,12 @@ typedef double FT;
 //#define DEBUG
 //#define PRINT_T
 //#define PRINT_TMI
+
+// --------------------------------------------- Forward Declarations
+typedef struct Polytope Polytope;
+typedef struct Sphere Sphere;
+typedef struct Ellipsoid Ellipsoid;
+
 // --------------------------------------------- Vectors / General
 
 // simple vector product
@@ -66,6 +72,21 @@ typedef void (*cacheReset_f_t)(const void*, const FT*, void*);
 // input: body, dim d, dx on that dim, cache
 typedef void (*cacheUpdateCoord_f_t)(const void*, const int, const FT, void*);
 
+// Separation oracle used for preprocessing:
+//   If body inside E( (2n)^-2 * A, a):
+//       return false
+//   else:
+//       return true
+//       return a plane (v,c) for cutting much of ellipse E(A,a)
+//       such that vT * x <= c for all points in body
+//       and (2n)^-2 * vT * A * v <= (c - vT * a)^2
+//       (cut/touch inner ellipsoid)
+//
+// input: body, cost/cage ellipsoid
+// output: plane (normal v, const c)
+//    x in body: vT * x <= c
+typedef bool (*shallowCutOracle_f_t)(const void*, const Ellipsoid*, FT*, FT*);
+
 typedef struct Body_T Body_T;
 struct Body_T {
    print_f_t print;
@@ -76,6 +97,7 @@ struct Body_T {
    cacheAlloc_f_t cacheAlloc;
    cacheReset_f_t cacheReset;
    cacheUpdateCoord_f_t cacheUpdateCoord;
+   shallowCutOracle_f_t shallowCutOracle;
 };
 
 extern Body_T Polytope_T;
@@ -83,8 +105,6 @@ extern Body_T Sphere_T;
 extern Body_T Ellipsoid_T;
 
 // --------------------------------------------- Polytope
-
-typedef struct Polytope Polytope;
 
 struct Polytope {
    FT* data; // size m * (n + 1)
@@ -114,6 +134,7 @@ void Polytope_intersectCoord_cached_ref(const void* o, const FT* x, const int d,
 int  Polytope_cacheAlloc_ref(const void* o);
 void Polytope_cacheReset_ref(const void* o, const FT* x, void* cache);
 void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
+bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 
 // Setters:
 void Polytope_set_a(Polytope* p, int i, int x, FT a);
@@ -126,11 +147,9 @@ FT Polytope_get_a(const Polytope* p, int i, int x);
 FT Polytope_get_b(const Polytope* p, int i);
 
 // get pointer to ai
-FT* Polytope_get_aV(const Polytope* p, int i);
+FT* Polytope_get_Ai(const Polytope* p, int i);
 
 // --------------------------------------------- Sphere
-
-typedef struct Sphere Sphere;
 
 struct Sphere {
    FT* center; // size n
@@ -150,8 +169,6 @@ void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache);
 void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 
 // --------------------------------------------- Ellipsoid
-
-typedef struct Ellipsoid Ellipsoid;
 
 struct Ellipsoid {
    FT* A; // row-wise

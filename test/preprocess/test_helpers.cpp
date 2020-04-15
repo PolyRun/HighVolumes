@@ -103,7 +103,7 @@ bool polytope_in_unit_ball(Polytope *P){
     }
     // load polytope constraints
     for (int i = 1; i < m+1; i++){
-        glp_set_mat_row(lp, i, n, ind, Polytope_get_aV(P, i-1) - 1);
+        glp_set_mat_row(lp, i, n, ind, Polytope_get_Ai(P, i-1) - 1);
     }
     
     

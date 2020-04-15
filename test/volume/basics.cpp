@@ -303,6 +303,50 @@ int main(int argc, char** argv) {
       Ellipsoid_free(e1);
       Ellipsoid_free(e2);
    }
+   
+   // --------------------------------------------------- Shallow Cut Oracles
+   {// Polytope_T.shallowCutOracle
+      const int n = 20;
+      Polytope* box = Polytope_new_box(n,1.0);
+      
+      FT* v = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT c;
+
+      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+      for(int i=0; i<n; i++) {
+         e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         Ai[i] = prng_get_random_double_in_range(1.9*n,2.2*n);
+      }
+      
+      {// fully inside inner ellipsoid:
+         bool doCut = Polytope_T.shallowCutOracle(box, e, v, &c);
+         assert(!doCut && "center of ellipsoid");
+      }
+
+      for(int i=0;i<n;i++) {// center outside polytope
+	 for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-3.0)*n + prng_get_random_double_in_range(-0.5,0.5); }
+
+         bool doCut = Polytope_T.shallowCutOracle(box, e, v, &c);
+	 assert(doCut && "outer ellipsoid");
+	 assert(c==1.0);
+	 for(int j=0;j<n;j++) { assert(v[j]==(i==j)*-1.0);}
+      }
+
+      for(int i=0;i<n;i++) {// center inside, but violate inner ellipsoid
+	 for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-3.0) + prng_get_random_double_in_range(-0.1,0.1); }
+ 
+         bool doCut = Polytope_T.shallowCutOracle(box, e, v, &c);
+	 assert(doCut && "inner ellipsoid");
+	 assert(c==1.0);
+	 for(int j=0;j<n;j++) { assert(v[j]==(i==j)*-1.0);}
+      }
+
+      Ellipsoid_free(e);
+      free(v);
+      Polytope_free(box);
+   }
+   
    // -------------------------------- end tests
 
    #ifdef NDEBUG
