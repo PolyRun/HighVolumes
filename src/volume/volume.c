@@ -85,6 +85,16 @@ Body_T Sphere_T = {
 	.cacheReset = Sphere_cacheReset_ref,
 	.cacheUpdateCoord = Sphere_cacheUpdateCoord_ref,
 };
+Body_T Ellipsoid_T = {
+        .print = Ellipsoid_print,
+	.free = Ellipsoid_free,
+	.inside = Ellipsoid_inside_ref,
+	.intersect = Ellipsoid_intersect_ref,
+	.intersectCoord = Ellipsoid_intersectCoord_ref,
+	.cacheAlloc = Ellipsoid_cacheAlloc_ref,
+	.cacheReset = Ellipsoid_cacheReset_ref,
+	.cacheUpdateCoord = Ellipsoid_cacheUpdateCoord_ref,
+};
 
 Polytope* Polytope_new(int n, int m) {
    Polytope* o = (Polytope*) malloc(sizeof(Polytope));
@@ -357,6 +367,78 @@ void Ellipsoid_free(const void* o) {
    Ellipsoid* e = (Ellipsoid*)o;
    free(e->A);// includes a
    free(e);
+}
+
+void Ellipsoid_print(const void* o) {
+   Ellipsoid* e = (Ellipsoid*)o;
+   printf("Ellipsoid: n=%d\n",e->n);
+}
+
+bool Ellipsoid_inside_ref(const void* o, const FT* v) {
+   Ellipsoid* e = (Ellipsoid*)o;
+   return Ellipsoid_eval(e, v) <= 1.0;
+}
+
+void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1) {
+   // (y-a)T * A * (y-a) = 1
+   // y = x + t*d
+   //
+   // z = x-a
+   // t^2 * (dT * A * d) + t * 2(dT * A * z) + (zT * A * z) - 1 = 0
+   //
+   // Simple quadratic root problem
+   // t^2 * a + t * b + c = 0
+   
+   Ellipsoid* e = (Ellipsoid*)o;
+   const int n = e->n;
+
+   FT a = 0;
+   FT b = 0;
+   FT c = -1.0;
+   
+   // do multiplications same as in eval.
+   for(int i=0;i<n;i++) {
+      const FT* Ai = Ellipsoid_get_Ai(e,i);
+      FT Ad = 0;
+      FT Az = 0;
+      for(int j=0; j<n; j++) {
+         Ad += Ai[j] * d[j];
+         Az += Ai[j] * (x[j] - e->a[j]);
+      }
+      a += d[i] * Ad;
+      b += d[i] * Az;
+      c += (x[i] - e->a[i]) * Az;
+   }
+   b *= 2.0;
+
+   // find t:
+   const FT det = b*b - 4.0*a*c;
+   assert(det >= 0);
+   const FT sqrtDet = sqrt(det);
+   const FT aInv = 0.5/a;
+
+   *t0 = (-b - sqrtDet) * aInv;
+   *t1 = (-b + sqrtDet) * aInv;
+}
+
+void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
+   Ellipsoid* e = (Ellipsoid*)o;
+   assert(false && "not implemented!");
+}
+
+int  Ellipsoid_cacheAlloc_ref(const void* o) {
+   Ellipsoid* e = (Ellipsoid*)o;
+   assert(false && "not implemented!");
+}
+
+void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache) {
+   Ellipsoid* e = (Ellipsoid*)o;
+   assert(false && "not implemented!");
+}
+
+void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
+   Ellipsoid* e = (Ellipsoid*)o;
+   assert(false && "not implemented!");
 }
 
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {

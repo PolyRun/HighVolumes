@@ -80,6 +80,7 @@ struct Body_T {
 
 extern Body_T Polytope_T;
 extern Body_T Sphere_T;
+extern Body_T Ellipsoid_T;
 
 // --------------------------------------------- Polytope
 
@@ -163,6 +164,14 @@ struct Ellipsoid {
 Ellipsoid* Ellipsoid_new(int n);
 
 void Ellipsoid_free(const void* o);
+void Ellipsoid_print(const void* o);
+bool Ellipsoid_inside_ref(const void* o, const FT* v);
+void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
+void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
+int  Ellipsoid_cacheAlloc_ref(const void* o);
+void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache);
+void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
+
 
 FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i); // get row i
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x); // (x-a)T * A * (x-a)
