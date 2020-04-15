@@ -37,6 +37,7 @@ public:
       // string for default function name
       // map: function name -> function ptr
 
+      claimOpt('f',"Algorithm Functions");
       add(new CLIF_Option<xyz_f_t>(&xyz_f,'f',"xyz_f","xyz_f1", std::map<std::string, xyz_f_t>{
                                                      {"xyz_f1",xyz_f1},
 						     {"xyz_f2",xyz_f2} }));
@@ -50,8 +51,9 @@ public:
 						     {"cached_ref",Polytope_intersectCoord_cached_ref} }));
 
       // number parameters:
-      add(new CLIF_OptionNumber<int>(&step_size,'n',"step_size","100000", 100, 1e7));
-      add(new CLIF_OptionNumber<int>(&walk_size,'n',"walk_size","1", 1, 1e6));
+      claimOpt('c',"Algorithm Constants");
+      add(new CLIF_OptionNumber<int>(&step_size,'c',"step_size","100000", 100, 1e7));
+      add(new CLIF_OptionNumber<int>(&walk_size,'c',"walk_size","1", 1, 1e6));
    }
 };
 

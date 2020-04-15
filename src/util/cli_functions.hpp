@@ -48,7 +48,7 @@ public:
       std::string key = cli.parameters(opt_).get(name_,"");
       const auto it = fmap.find(key);
       if(it==fmap.end()) {
-         std::cout << "Error: bad function name for: " << opt_ << " " << name_ << "\n";
+         std::cout << "Error: bad choice for: " << opt_ << " " << name_ << "\n";
 	 std::cout << "       viable options:\n";
 	 for(const auto it : fmap) {
 	    std::cout << "           " << it.first << "\n";
@@ -105,6 +105,23 @@ public:
          o->postParse(cli_);
       }
    }
+   
+   // claim opt code for a specific description
+   void claimOpt(const signed char opt, const std::string &desc) {
+      auto it = params_.find(opt);
+      if(it==params_.end()) {
+         // check if opt is still available:
+         if(cli_.isUsed(opt)) {
+	    std::cout << "Error: CLIFunctions.claimOpt: opt " << opt << " not free!\n";
+	    std::exit(0);
+	 }
+	 params_[opt] = CLIParameters();
+	 desc_[opt] = desc;
+      } else {
+         std::cout << "Error: CLIFunctions.claimOpt: opt " << opt << " not free!\n";
+	 std::exit(0);
+      }
+   }
 
    // register function ptr
    // char + name
@@ -113,11 +130,7 @@ public:
       auto it = params_.find(o->opt_);
       if(it==params_.end()) {
          // check if opt is still available:
-         if(cli_.isUsed(o->opt_)) {
-	    std::cout << "Error: CLIFunctions.add: opt " << o->opt_ << " not free!\n";
-	    std::exit(0);
-	 }
-	 params_[o->opt_] = CLIParameters();
+         claimOpt(o->opt_, "Function configuration");
       }
       
       // register the parameter
@@ -135,7 +148,7 @@ public:
    void preParse() {
       for(auto it : params_) {
 	 // register the CLIParameters for opt
-	 cli_.addParameters(it.first,it.second, "Function configuration");
+	 cli_.addParameters(it.first,it.second, desc_[it.first]);
       }
    }
 
@@ -149,6 +162,7 @@ public:
 private:
    CLI &cli_;
    std::map<signed char,CLIParameters> params_; // assembled parameters for opt
+   std::map<signed char,std::string> desc_; 
    std::set<CLIF_OptionBase*> options_;
 };
 
