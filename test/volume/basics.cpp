@@ -179,13 +179,14 @@ int main(int argc, char** argv) {
    }
 
    // ----------------- Ellipsoid
-   { // test Ellipsoid_eval and Ellipsoid_normal
+   { // test Ellipsoid_eval and Ellipsoid_normal Ellipsoid_T.inside
       Ellipsoid* e = Ellipsoid_new(3); // simple sphere
       FT n[3];
       {
          FT x[3] = {0,0,0};
 	 FT eval = Ellipsoid_eval(e, x);
 	 assert(eval == 0);
+	 assert(Ellipsoid_T.inside(e,x));
          Ellipsoid_normal(e, x, n);
 	 assert(n[0]==0 && n[1]==0 && n[2]==0);
       }
@@ -193,6 +194,7 @@ int main(int argc, char** argv) {
          FT x[3] = {0,0,1};
 	 FT eval = Ellipsoid_eval(e, x);
 	 assert(eval == 1.0);
+	 assert(Ellipsoid_T.inside(e,x));
          Ellipsoid_normal(e, x, n);
 	 assert(n[0]==0 && n[1]==0 && n[2]==2);
       }
@@ -200,6 +202,7 @@ int main(int argc, char** argv) {
          FT x[3] = {0,2.0,0};
 	 FT eval = Ellipsoid_eval(e, x);
 	 assert(eval == 4.0);
+	 assert(!Ellipsoid_T.inside(e,x));
          Ellipsoid_normal(e, x, n);
 	 assert(n[0]==0 && n[1]==4 && n[2]==0);
       } 
@@ -207,8 +210,31 @@ int main(int argc, char** argv) {
          FT x[3] = {3.0,4.0,0};
 	 FT eval = Ellipsoid_eval(e, x);
 	 assert(eval == 25.0);
+	 assert(!Ellipsoid_T.inside(e,x));
          Ellipsoid_normal(e, x, n);
 	 assert(n[0]==6 && n[1]==8 && n[2]==0);
+      }
+      Ellipsoid_free(e);
+   }
+   { // test Ellipsoid_T.inside
+      const int n = 20;
+      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+      for(int i=0; i<n; i++) {
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         Ai[i] = (i+1)*(i+1);
+      }
+      FT x[n];
+      {
+         for(int i=0; i<n; i++) {x[i] = 0;}
+	 assert(Ellipsoid_T.inside(e,x));
+      }
+      for(int j=0;j<n;j++){
+         for(int i=0; i<n; i++) {x[i] = (i==j)*(1.0/n);}
+	 assert(Ellipsoid_T.inside(e,x));
+         for(int i=0; i<n; i++) {x[i] = (i==j)*(1.0/(i+1.0));}
+	 assert(Ellipsoid_T.inside(e,x));
+         for(int i=0; i<n; i++) {x[i] = (i==j)*(1.1/(i+1.0));}
+	 assert(!Ellipsoid_T.inside(e,x));
       }
       Ellipsoid_free(e);
    }
@@ -316,7 +342,8 @@ int main(int argc, char** argv) {
       for(int i=0; i<n; i++) {
          e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
          FT* Ai = Ellipsoid_get_Ai(e,i);
-         Ai[i] = prng_get_random_double_in_range(1.9*n,2.2*n);
+         FT r = prng_get_random_double_in_range(1.9*n,2.2*n);
+	 Ai[i] = 1.0 / (r*r);
       }
       
       {// fully inside inner ellipsoid:

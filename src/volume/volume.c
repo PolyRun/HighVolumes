@@ -85,6 +85,7 @@ Body_T Sphere_T = {
 	.cacheAlloc = Sphere_cacheAlloc_ref,
 	.cacheReset = Sphere_cacheReset_ref,
 	.cacheUpdateCoord = Sphere_cacheUpdateCoord_ref,
+	.shallowCutOracle = NULL,
 };
 Body_T Ellipsoid_T = {
         .print = Ellipsoid_print,
@@ -95,6 +96,7 @@ Body_T Ellipsoid_T = {
 	.cacheAlloc = Ellipsoid_cacheAlloc_ref,
 	.cacheReset = Ellipsoid_cacheReset_ref,
 	.cacheUpdateCoord = Ellipsoid_cacheUpdateCoord_ref,
+	.shallowCutOracle = Ellipsoid_shallowCutOracle_ref,
 };
 
 Polytope* Polytope_new(int n, int m) {
@@ -492,6 +494,11 @@ void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, voi
    assert(false && "not implemented!");
 }
 
+bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c) {
+   Ellipsoid* this = (Ellipsoid*)o;
+   assert(false && "not implemented!");
+}
+
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {
    // (x-a)T * A * (x-a)
    const int n = e->n;
@@ -576,6 +583,110 @@ void Ellipsoid_minimize(const Ellipsoid* e, const Ellipsoid* f, FT* x){
    free(nF);
    free(nP);
 }
+
+
+void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det) {
+   // 1. init_ellipsoid:
+   //     idea: origin at 0, radius determined by min of all bodies
+   printf("init_ellipsoid\n");
+   
+   FT R2 = 1e6; // TODO - ask sub bodies for radius, take min
+   
+   Ellipsoid* e = Ellipsoid_new(n); // origin zero
+   for(int i=0; i<n; i++) {
+      FT* Ai = Ellipsoid_get_Ai(e,i);
+      Ai[i] = R2; // sphere with 
+   }
+   
+   // 2. Cut steps
+   printf("cut steps\n");
+   
+   const FT beta_r = 2*n;
+   const FT beta = 1.0/beta_r;
+
+   const FT ro = (1.0 - n*beta) / (n+1.0);// c2
+   const FT tow = 2.0 * ro / (1.0 - beta); // c4
+   const FT onemnb = (1.0 - n*beta);
+   const FT zs = (2.0*n*n + onemnb*onemnb) * (1.0 - beta*beta) / (2.0*n*n-2.0); // zeta*sigma 
+
+   FT c; // plane for oracle: normal*x <= x
+   FT* v = (FT*)aligned_alloc(32, n*sizeof(FT)); // align this to 32
+
+   int step = 0;
+   while(true) {
+      step++;
+      printf("cut step %d\n",step);
+      
+      bool doCut = false;
+      for(int b=0; b<bcount; b++) {
+         doCut = type[b]->shallowCutOracle(body_in[b], e, v, &c);
+	 if(doCut) {break;}
+      }
+
+      if(!doCut) {break;} // we are done!
+
+      printf("cut!\n");
+      
+      // calculate: A * v and vT * A * v
+      FT Av[n];
+      FT vTAv = 0;
+      for(int i=0;i<n;i++) {
+         const FT* Ai = Ellipsoid_get_Ai(e,i);
+	 Av[i] = dotProduct(Ai,v,n);
+	 vTAv += v[i] * Av[i];
+      }
+      
+      // update a:
+      FT* a = e->a;
+      FT fac = ro/sqrt(vTAv);
+      for(int i=0;i<n;i++) {
+         a[i] -= fac * Av[i];
+      }
+
+      // update A:
+      FT fac2 = tow / vTAv;
+      for(int i=0;i<n;i++) {
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         for(int j=0;j<n;j++) {
+	    Ai[j] = zs * (Ai[j] * fac2*Av[i]*Av[j]);
+	 }
+      }
+   }
+
+   // 3. Transformation
+   printf("Transform\n");
+   //FT *L = (FT *) calloc(n*n, sizeof(FT));
+   //int err = cholesky(T, L, n);
+   //
+   //if (err > 0){
+   //   printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
+   //   exit(1);		
+   //}
+   
+   
+   //// b = beta_r * (b - A * ori);
+   //for (int i = 0; i < m; i++){
+   //   Polytope_set_b(*Q, i, beta_r * distance[i]);
+   //}
+   //// A = A * Trans;
+   //for (int i = 0; i < m; i++){
+   //   for (int j = 0; j < n; j++){
+   //      FT sum = 0;
+   //      for (int k = 0; k < n; k++){
+   //         sum += Polytope_get_a(P, i, k) * Trans[k*n + j];
+   //      }
+   //      Polytope_set_a(*Q, i, j, sum);
+   //   }
+   //}
+
+
+   //*det = 1;
+   //for (int i = 0; i < n; i++){
+   //   *det *= Trans[i*n+i];
+   //}
+   //*det /= pow(beta_r, n);
+}
+
 
 int step_size = 100000;
 int walk_size = 10;

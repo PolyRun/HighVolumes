@@ -118,6 +118,45 @@ void test_preprocess_random_polytopes(int ntests, int dim, int nconstraints){
     
 }
 
+void test_preprocess_generic() {
+    std::cout << "\n ----------- TEST GENERIC PREPROCESSING:\n";
+   
+    {
+        const int n = 20;
+        FT det;
+	Polytope* box = Polytope_new_box(n,1.0);
+        void* body_in[1] = {box};
+	Polytope* box_out = Polytope_new_box(n,1.0);
+        void* body_out[1] = {box_out};
+        Body_T* type[1] = {&Polytope_T};
+
+        preprocess_ref(n, 1, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+
+	std::cout << "det: " << det << std::endl;
+    }
+ 
+    {
+        const int n = 20;
+        FT det;
+	Polytope* box = Polytope_new_box(n,1.0);
+        Ellipsoid* e = Ellipsoid_new(n);
+        for(int i=0; i<n; i++) {
+            e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+            FT* Ai = Ellipsoid_get_Ai(e,i);
+            Ai[i] = prng_get_random_double_in_range(1.0,2.0);
+        }
+        void* body_in[2] = {box, e};
+	Polytope* box_out = Polytope_new_box(n,1.0);
+        Ellipsoid* e_out = Ellipsoid_new(n);
+        void* body_out[2] = {box_out, e_out};
+        Body_T* type[2] = {&Polytope_T, &Ellipsoid_T};
+
+        preprocess_ref(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+
+	std::cout << "det: " << det << std::endl;
+    }
+    assert(false && "done.");
+}
 
 int main(int argc, char **argv){
     CLI cli(argc, argv, "test preprocess");
@@ -137,7 +176,8 @@ int main(int argc, char **argv){
         path_from_exec = path.substr(0, path.length() - pos);
     }
             
-    
+    test_preprocess_generic();
+
     std::cout << "\n-------------- TEST PREPROCESS EXAMPLE POLYTOPES:\n";
     test_preprocess_example_polytopes();
 

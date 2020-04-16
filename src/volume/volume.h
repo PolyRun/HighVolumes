@@ -188,6 +188,7 @@ void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t
 int  Ellipsoid_cacheAlloc_ref(const void* o);
 void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache);
 void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
+bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 
 
 FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i); // get row i
@@ -205,6 +206,11 @@ void Ellipsoid_project(const Ellipsoid* e, FT* x);
 //
 // takes current x as initialization
 void Ellipsoid_minimize(const Ellipsoid* e, const Ellipsoid* f, FT* x);
+
+// --------------------------------------------- Preprocessing
+
+void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
+
 
 // --------------------------------------------- Volume estimation
 
