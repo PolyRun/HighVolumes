@@ -259,7 +259,7 @@ int main(int argc, char** argv) {
       A2[2] = 0.5;
 
       for(int t=0; t<100; t++) {
-         FT x[3] = {t % 13,t % 11 - 12, std::fmod(t,0.7)};
+         FT x[3] = {std::fmod(t,13),std::fmod(t,11) - 12, std::fmod(t,0.7)};
          Ellipsoid_project(e, x);
          FT eval = Ellipsoid_eval(e, x);
          assert(std::abs(eval-1) < 0.00001);
