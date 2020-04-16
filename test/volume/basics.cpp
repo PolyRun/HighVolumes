@@ -286,9 +286,10 @@ int main(int argc, char** argv) {
 
       for(int t=0; t<100; t++) {
          FT x[3] = {std::fmod(t,13),std::fmod(t,11) - 12, std::fmod(t,0.7)};
-         Ellipsoid_project(e, x);
+         FT r = prng_get_random_double_in_range(0.1,20);
+	 Ellipsoid_project(e, r, x);
          FT eval = Ellipsoid_eval(e, x);
-         assert(std::abs(eval-1) < 0.00001);
+         assert(std::abs(eval-r) < 0.00001);
       }
    }
    
@@ -297,10 +298,10 @@ int main(int argc, char** argv) {
       Ellipsoid* e1 = Ellipsoid_new(n); // simple sphere
       Ellipsoid* e2 = Ellipsoid_new(n); // simple sphere
       for(int i=0; i<n; i++) {
-         //e1->a[i] = prng_get_random_double_in_range(-10,10);
+         e1->a[i] = prng_get_random_double_in_range(-10,10);
          e2->a[i] = prng_get_random_double_in_range(-10,10);
-         //FT* A1i = Ellipsoid_get_Ai(e1,i);
-         //A1i[i] = prng_get_random_double_in_range(0.1,20);
+         FT* A1i = Ellipsoid_get_Ai(e1,i);
+         A1i[i] = prng_get_random_double_in_range(0.1,20);
          FT* A2i = Ellipsoid_get_Ai(e2,i);
          A2i[i] = prng_get_random_double_in_range(0.1,20);
       }
@@ -313,8 +314,12 @@ int main(int argc, char** argv) {
 
          FT n1[n];
          FT n2[n];
-	 Ellipsoid_minimize(e2,e1,x); // test
-         Ellipsoid_normal(e1, x, n1);
+	 FT r = prng_get_random_double_in_range(0.1,20);// change size of e2
+	 Ellipsoid_minimize(e2,r,e1,x); // test
+         FT eval = Ellipsoid_eval(e2,x);
+	 std::cout << r << " " << eval << "\n";
+	 assert(std::abs(eval-r) < 0.000001);
+	 Ellipsoid_normal(e1, x, n1);
          Ellipsoid_normal(e2, x, n2);
 	 FT n1_2 = dotProduct(n1,n1, n);
 	 FT dot = dotProduct(n1,n2, n);
@@ -372,6 +377,55 @@ int main(int argc, char** argv) {
       Ellipsoid_free(e);
       free(v);
       Polytope_free(box);
+   }
+   {// Ellipsoid_T.shallowCutOracle
+      std::cout << "Ellipsoid oracle:\n";
+      const int n = 20;
+      Ellipsoid* body = Ellipsoid_new(n); // simple sphere
+      
+      FT* v = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT c;
+      
+
+      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+      for(int i=0; i<n; i++) {
+         e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         FT r = prng_get_random_double_in_range(0.7*n,0.8*n); // make inner ellipsoid smaller than sphere!
+         Ai[i] = 1.0 / (r*r);
+      }
+      
+      {// fully inside inner ellipsoid:
+         bool doCut = Ellipsoid_T.shallowCutOracle(e, body, v, &c);
+         assert(!doCut && "center of ellipsoid");
+      }
+      
+      for(int i=0;i<n;i++) {// center outside polytope
+         for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-2.0)*n + prng_get_random_double_in_range(-0.5,0.5); }
+
+         bool doCut = Ellipsoid_T.shallowCutOracle(e, body, v, &c);
+         assert(doCut && "outer ellipsoid");
+         
+         // check that center of body is in halfspace:
+         FT dot = dotProduct(v, body->a, n);
+         assert(dot <= c);
+      }
+      
+      //assert(false && "fix this test and the missing part of the oracle!");
+      //for(int i=0;i<n;i++) {// center inside, but violate inner ellipsoid
+      //   for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-0) + prng_get_random_double_in_range(-0.1,0.1); }
+ 
+      //   bool doCut = Ellipsoid_T.shallowCutOracle(e, body, v, &c);
+      //   assert(doCut && "inner ellipsoid");
+      //	 
+      //   // check that center of body is in halfspace:
+      //   FT dot = dotProduct(v, body->a, n);
+      //   assert(dot <= c);
+      //}
+
+      Ellipsoid_free(e);
+      free(v);
+      Ellipsoid_free(body);
    }
    
    // -------------------------------- end tests

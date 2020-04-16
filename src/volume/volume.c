@@ -496,7 +496,34 @@ void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, voi
 
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c) {
    Ellipsoid* this = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   const int n = this->n;
+
+   // check if center of e is outside this Ellipsoid
+   if(!Ellipsoid_T.inside(e, this->a)) {
+      printf("not inside ellipsoid!\n");
+      
+      Ellipsoid_normal(e, this->a, v);
+      *c = dotProduct(v,this->a, n);
+
+      return true;
+   }
+
+   // run minimization to obtain a point where to cut:
+   FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   for(int i=0;i<n;i++) {x0[i]=0;}; x0[0] = 1;
+   for(int i=0;i<n;i++) {x1[i]=0;}; x1[0] = -1;
+   FT beta2 = 1.0 / (4*n*n);
+   Ellipsoid_minimize(e,beta2, this, x0);
+   Ellipsoid_minimize(e,beta2, this, x1);
+   
+   FT eval0 = Ellipsoid_eval(this,x0); 
+   FT eval1 = Ellipsoid_eval(this,x1);
+   
+   if(eval0 < beta2 && eval1 < beta2) { return false; } // both local minima too far out
+   
+   printf("eval: %f %f vs %f\n",eval0,eval1,beta2);
+   assert(false && "not implemented fully!");
 }
 
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {
@@ -526,18 +553,18 @@ void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* normal) {
    }
 }
 
-void Ellipsoid_project(const Ellipsoid* e, FT* x) {
+void Ellipsoid_project(const Ellipsoid* e, const FT eFac, FT* x) {
    // internal.
    // push x back on surface of e
    // 
    // for now just pull to center. Could try with normal also...?
    int n = e->n;
    FT eval = Ellipsoid_eval(e,x);
-   FT scale = 1.0/sqrt(eval);
+   FT scale = sqrt(eFac / eval);
    for(int i=0; i<n; i++) { x[i] = e->a[i] + (x[i]-e->a[i]) * scale;}
 }
 
-void Ellipsoid_minimize(const Ellipsoid* e, const Ellipsoid* f, FT* x){
+void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, FT* x){
    const int n = e->n;
    
    // can we alloc before somehow?
@@ -545,7 +572,7 @@ void Ellipsoid_minimize(const Ellipsoid* e, const Ellipsoid* f, FT* x){
    FT* nF = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
    FT* nP = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
 
-   Ellipsoid_project(e,x);
+   Ellipsoid_project(e,eFac,x);
    
    int count = 0;
    FT dot = FT_MAX; // step size
@@ -576,7 +603,7 @@ void Ellipsoid_minimize(const Ellipsoid* e, const Ellipsoid* f, FT* x){
          x[i] -= beta * nP[i]; // step = c - n (n * c)
       }
 
-      Ellipsoid_project(e,x);
+      Ellipsoid_project(e,eFac,x);
    } while(count++ < 100*n && dot > 0.0000001);
    printf("steps taken: %d\n",count);
    free(nE);
