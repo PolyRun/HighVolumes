@@ -498,12 +498,12 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    Ellipsoid* this = (Ellipsoid*)o;
    const int n = this->n;
 
-   // check if center of e is outside this Ellipsoid
-   if(!Ellipsoid_T.inside(e, this->a)) {
+   // case 1: center of cage (e->a) is outside of body o:
+   if(!Ellipsoid_T.inside(this, e->a)) {
       printf("not inside ellipsoid!\n");
       
-      Ellipsoid_normal(e, this->a, v);
-      *c = dotProduct(v,this->a, n);
+      Ellipsoid_normal(this, e->a, v);
+      *c = dotProduct(v,e->a, n);
 
       return true;
    }
@@ -511,8 +511,8 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    // run minimization to obtain a point where to cut:
    FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
    FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-   for(int i=0;i<n;i++) {x0[i]=0;}; x0[0] = 1;
-   for(int i=0;i<n;i++) {x1[i]=0;}; x1[0] = -1;
+   for(int i=0;i<n;i++) {x0[i]=e->a[i];}; x0[0] += 1;
+   for(int i=0;i<n;i++) {x1[i]=e->a[i];}; x1[0] -= 1;
    FT beta2 = 1.0 / (4*n*n);
    Ellipsoid_minimize(e,beta2, this, x0);
    Ellipsoid_minimize(e,beta2, this, x1);
@@ -520,7 +520,7 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    FT eval0 = Ellipsoid_eval(this,x0); 
    FT eval1 = Ellipsoid_eval(this,x1);
    
-   if(eval0 < beta2 && eval1 < beta2) { return false; } // both local minima too far out
+   if(eval0 > beta2 && eval1 > beta2) { return false; } // both local minima too far out
    
    printf("eval: %f %f vs %f\n",eval0,eval1,beta2);
    assert(false && "not implemented fully!");
@@ -597,7 +597,7 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
       
       // debug output
       FT eval = Ellipsoid_eval(f,x);
-      printf("hello %f %f\n",dot,eval);
+      printf("hello %.12f %.12f\n",dot,eval);
       
       for(int i=0; i<n; i++) {
          x[i] -= beta * nP[i]; // step = c - n (n * c)

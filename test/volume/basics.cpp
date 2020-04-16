@@ -391,19 +391,27 @@ int main(int argc, char** argv) {
       for(int i=0; i<n; i++) {
          e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
          FT* Ai = Ellipsoid_get_Ai(e,i);
-         FT r = prng_get_random_double_in_range(0.7*n,0.8*n); // make inner ellipsoid smaller than sphere!
+         FT r = prng_get_random_double_in_range(1.9*n,1.9*n); // make inner ellipsoid smaller than sphere!
          Ai[i] = 1.0 / (r*r);
       }
       
+      std::cout << "fully inside:\n";
       {// fully inside inner ellipsoid:
-         bool doCut = Ellipsoid_T.shallowCutOracle(e, body, v, &c);
+         // sanity check:
+         assert(Ellipsoid_T.inside(body, e->a));
+         
+         bool doCut = Ellipsoid_T.shallowCutOracle(body, e, v, &c);
          assert(!doCut && "center of ellipsoid");
       }
-      
-      for(int i=0;i<n;i++) {// center outside polytope
-         for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-2.0)*n + prng_get_random_double_in_range(-0.5,0.5); }
 
-         bool doCut = Ellipsoid_T.shallowCutOracle(e, body, v, &c);
+      std::cout << "center outside:\n";
+      for(int i=0;i<n;i++) {// center outside polytope
+         for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-3.0)*n + prng_get_random_double_in_range(-0.5,0.5); }
+
+	 // sanity check:
+	 assert(!Ellipsoid_T.inside(body, e->a));
+        
+         bool doCut = Ellipsoid_T.shallowCutOracle(body, e, v, &c);
          assert(doCut && "outer ellipsoid");
          
          // check that center of body is in halfspace:
@@ -411,17 +419,21 @@ int main(int argc, char** argv) {
          assert(dot <= c);
       }
       
-      //assert(false && "fix this test and the missing part of the oracle!");
-      //for(int i=0;i<n;i++) {// center inside, but violate inner ellipsoid
-      //   for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-0) + prng_get_random_double_in_range(-0.1,0.1); }
+      std::cout << "center sandwich:\n";
+      for(int i=0;i<n;i++) {// center inside, but violate inner ellipsoid
+         for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-0.3) + prng_get_random_double_in_range(-0.01,0.01); }
  
-      //   bool doCut = Ellipsoid_T.shallowCutOracle(e, body, v, &c);
-      //   assert(doCut && "inner ellipsoid");
-      //	 
-      //   // check that center of body is in halfspace:
-      //   FT dot = dotProduct(v, body->a, n);
-      //   assert(dot <= c);
-      //}
+	 // sanity check:
+	 assert(Ellipsoid_T.inside(body, e->a));
+         
+	 bool doCut = Ellipsoid_T.shallowCutOracle(body, e, v, &c);
+         assert(doCut && "inner ellipsoid");
+      	 
+         // check that center of body is in halfspace:
+         FT dot = dotProduct(v, body->a, n);
+         assert(dot <= c);
+      }
+      assert(false && "fixme"); // TODO something is wrong in sandwich case!
 
       Ellipsoid_free(e);
       free(v);
