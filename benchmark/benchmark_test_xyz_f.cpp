@@ -5,7 +5,7 @@
 
 class Test_xyz_f : public Benchmark_base_cli {
     public:
-        Test_xyz_f(std::string name, int reps, bool convergence, CLIFunctionsVolume &cliFun, bool benchmark_all) : Benchmark_base_cli(name, reps, convergence, cliFun, benchmark_all) {}
+        Test_xyz_f(std::string name, int reps, bool convergence, int warmup_reps, CLIFunctionsVolume &cliFun, bool benchmark_all) : Benchmark_base_cli(name, reps, convergence, warmup_reps, cliFun, benchmark_all) {}
 
         void initialize () {
             box = Polytope_new_box(4,2);
@@ -50,12 +50,12 @@ int main(int argc, char *argv[]){
 
     int reps = std::stoi(cli.option('r'));
 
-    Test_xyz_f *benchmark = new Test_xyz_f("test_xyz_f", reps, false, cliFun, false);
+    Test_xyz_f *benchmark = new Test_xyz_f("test_xyz_f", reps, false, 0, cliFun, false);
     benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", reps, false, cliFun, true);
+    benchmark = new Test_xyz_f("test_xyz_f", reps, false, 0, cliFun, true);
     benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", reps, true, cliFun, false);
+    benchmark = new Test_xyz_f("test_xyz_f", reps, true, 0, cliFun, false);
     benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", reps, true, cliFun, true);
+    benchmark = new Test_xyz_f("test_xyz_f", reps, true, 0, cliFun, true);
     benchmark->run_benchmark();
 }

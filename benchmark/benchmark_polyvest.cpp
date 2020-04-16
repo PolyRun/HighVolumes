@@ -9,7 +9,7 @@ extern "C" { // must be included C stlye
 
 class Polyvest : public Benchmark_base {
     public:
-        Polyvest(std::string name, int reps, bool convergence) : Benchmark_base(name, reps, convergence) {}
+        Polyvest(std::string name, int reps, bool convergence, int warmup_reps) : Benchmark_base(name, reps, convergence, warmup_reps) {}
 
     protected:
         void initialize () {
@@ -48,6 +48,6 @@ int main(int argc, char *argv[]){
 
     int reps = std::stoi(cli.option('r'));
 
-    Polyvest *benchmark = new Polyvest("Polyvest", reps, false);
+    Polyvest *benchmark = new Polyvest("Polyvest", reps, false, 0);
     benchmark->run_benchmark();
 }

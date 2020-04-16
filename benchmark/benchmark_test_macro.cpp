@@ -3,7 +3,7 @@
 
 class Test_macro : public Benchmark_base {
     public:
-        Test_macro(std::string name, int reps, bool convergence) : Benchmark_base(name, reps, convergence) {}
+        Test_macro(std::string name, int reps, bool convergence, int warmup_reps) : Benchmark_base(name, reps, convergence, warmup_reps) {}
 
     protected:
         void initialize () {
@@ -29,6 +29,6 @@ int main(int argc, char *argv[]){
 
     int reps = std::stoi(cli.option('r'));
 
-    Test_macro *benchmark = new Test_macro("test_macro", reps, false);
+    Test_macro *benchmark = new Test_macro("test_macro", reps, false, 0);
     benchmark->run_benchmark();
 }

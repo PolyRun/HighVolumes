@@ -4,7 +4,7 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int n, const std::string &generator) : Benchmark_base(name, reps, convergence), n(n), generator(generator) {}
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &generator) : Benchmark_base(name, reps, convergence, warmup_reps), n(n), generator(generator) {}
 
     protected:
         void initialize () {
@@ -69,6 +69,6 @@ int main(int argc, char *argv[]){
 
     int reps = std::stoi(cli.option('r'));
 
-    Benchmark_A1 b("A1_volume", reps, true, n, generator);
+    Benchmark_A1 b("A1_volume", reps, true, 0, n, generator);
     b.run_benchmark();
 }

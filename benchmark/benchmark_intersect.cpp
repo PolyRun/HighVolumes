@@ -4,7 +4,7 @@
 
 class Benchmark_intersect : public Benchmark_base {
     public:
-        Benchmark_intersect(std::string name, int reps, bool convergence, int n, const std::string &generator) : Benchmark_base(name, reps, convergence), n(n), generator(generator) {}
+        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &generator) : Benchmark_base(name, reps, convergence, warmup_reps), n(n), generator(generator) {}
 
     protected:
         void initialize () {
@@ -57,7 +57,7 @@ class Benchmark_intersect : public Benchmark_base {
 
 class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
-        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int n, const std::string &generator) : Benchmark_intersect(name, reps, convergence, n, generator) {}
+        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &generator) : Benchmark_intersect(name, reps, convergence, warmup_reps, n, generator) {}
     protected:
         double run () {
 	    FT t0, t1;
@@ -93,10 +93,10 @@ int main(int argc, char *argv[]){
     int reps = std::stoi(cli.option('r'));
     
     if(intersect.compare("intersect")==0) {
-        Benchmark_intersect b("intersect", reps, true, n, generator);
+        Benchmark_intersect b("intersect", reps, true, 0, n, generator);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", reps, true, n, generator);
+        Benchmark_intersectCoord b("intersectCoord", reps, true, 0, n, generator);
         b.run_benchmark();
     }
 }

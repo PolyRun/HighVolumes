@@ -19,7 +19,7 @@
  **/
 class Benchmark_base {
     public:
-        Benchmark_base(std::string name_, int reps_, bool convergence_) : name(name_), reps(reps_), convergence(convergence_){}
+        Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_) : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_){}
 
         /**
          * \brief Actuall performs the benchmark
@@ -37,6 +37,9 @@ class Benchmark_base {
 
             // Initialize
             initialize();
+            for (int i = 0; i < warmup_reps; ++i) {
+                run();
+            }
 
             for (int i = 0; i < reps; ++i) {
 
@@ -107,6 +110,7 @@ class Benchmark_base {
         bool convergence; // Optional convergence output
         double last_result; // Value in last step;
         Timer timer;
+        int warmup_reps;
 };
 
 /**
@@ -114,7 +118,7 @@ class Benchmark_base {
  **/
 class Benchmark_base_cli : public Benchmark_base{
     public:
-        Benchmark_base_cli(std::string name_, int reps_, bool convergence_, CLIFunctions &cliFun_, bool benchmark_all_) : Benchmark_base(name_, reps_, convergence_), cliFun(cliFun_), benchmark_all(benchmark_all_){
+        Benchmark_base_cli(std::string name_, int reps_, bool convergence_, int warmup_reps_, CLIFunctions &cliFun_, bool benchmark_all_) : Benchmark_base(name_, reps_, convergence_, warmup_reps_), cliFun(cliFun_), benchmark_all(benchmark_all_){
         }
 
         virtual double run_benchmark() {
@@ -129,6 +133,13 @@ class Benchmark_base_cli : public Benchmark_base{
                 // Initialize
                 initialize();
                 select(j);
+                for (int i = 0; i < warmup_reps; ++i) {
+                    if (benchmark_all) {
+                        run_selected();
+                    } else {
+                        run();
+                    }
+                }
 
                 for (int i = 0; i < reps; ++i) {
                     double result;
