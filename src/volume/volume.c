@@ -313,23 +313,23 @@ bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT*
    }
    
 
-   // check if inner Ellipsoid e = ( (2n)^-2 * X, x) is in Polytope:
+   // check if inner Ellipsoid e = ( (2n)^-2 * T.inverse(), x) is in Polytope:
    // for all i, check if:
-   //   AiT * X * Ai <= (bi - AiT * x)^2 * (2n)^2
+   //   AiT * T * Ai <= (bi - AiT * x)^2 * (2n)^2
    const FT twon2 = 4.0*n*n;
    for(int i=0;i<m;i++) {
       FT* Ai = Polytope_get_Ai(p,i);
       FT bi = Polytope_get_b(p,i);
       
-      FT AiTXAi = 0; // could be useful to cache...
+      FT AitTAi = 0; // could be useful to cache...
       for(int j=0;j<n;j++) {
-         FT* Xj = Ellipsoid_get_Ai(e,j);
-	 FT XjAi = dotProduct(Xj,Ai,n);
-         AiTXAi += Ai[j] * XjAi;
+         FT* Tj = Ellipsoid_get_Ti(e,j);
+	 FT TjAi = dotProduct(Tj,Ai,n);
+         AitTAi += Ai[j] * TjAi;
       }
       
       FT diff = bi - Ax[i];
-      if(AiTXAi > diff*diff*twon2) { // found one -> return (Ai, bi)
+      if(AitTAi > diff*diff*twon2) { // found one -> return (Ai, bi)
          for(int j=0;j<n;j++) {v[j] = Ai[j];}
 	 *c = bi;
          return true;
@@ -732,7 +732,6 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       Ti[i] = R2; // sphere with 
    }
    Ellipsoid_T.print(e);
-   assert(false && "fixme");
    
    // 2. Cut steps
    printf("cut steps\n");
@@ -763,28 +762,28 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 
       printf("cut!\n");
       
-      // calculate: A * v and vT * A * v
-      FT Av[n];
-      FT vTAv = 0;
+      // calculate: T * v and vt * T * v
+      FT Tv[n];
+      FT vtTv = 0;
       for(int i=0;i<n;i++) {
-         const FT* Ai = Ellipsoid_get_Ai(e,i);
-	 Av[i] = dotProduct(Ai,v,n);
-	 vTAv += v[i] * Av[i];
+         const FT* Ti = Ellipsoid_get_Ti(e,i);
+	 Tv[i] = dotProduct(Ti,v,n);
+	 vtTv += v[i] * Tv[i];
       }
       
       // update a:
       FT* a = e->a;
-      FT fac = ro/sqrt(vTAv);
+      FT fac = ro/sqrt(vtTv);
       for(int i=0;i<n;i++) {
-         a[i] -= fac * Av[i];
+         a[i] -= fac * Tv[i];
       }
 
       // update A:
-      FT fac2 = tow / vTAv;
+      FT fac2 = tow / vtTv;
       for(int i=0;i<n;i++) {
-         FT* Ai = Ellipsoid_get_Ai(e,i);
+         FT* Ti = Ellipsoid_get_Ti(e,i);
          for(int j=0;j<n;j++) {
-	    Ai[j] = zs * (Ai[j] * fac2*Av[i]*Av[j]);
+	    Ti[j] = zs * (Ti[j] * fac2*Tv[i]*Tv[j]);
 	 }
       }
    }
