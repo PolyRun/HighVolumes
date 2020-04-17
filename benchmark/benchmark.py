@@ -6,9 +6,9 @@ import subprocess
 import pprint
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
-BENCHMARKS = [{"name": "benchmark_test_macro", "configs":["","-r 2"]},
-         {"name": "benchmark_test_xyz_f", "configs":["","-r 2"]},
-         {"name": "benchmark_polyvest", "configs":[""]}
+BENCHMARKS = [{"name": "benchmark_test_macro", "configs":[("",""),("-r",{"1","2"})]},
+         {"name": "benchmark_test_xyz_f", "configs":[("",""),("-r",{"2","3"})]},
+         {"name": "benchmark_polyvest", "configs":[("",{""})]}
         ];
 
 
@@ -34,15 +34,19 @@ def run_benchmark(benchmark):
    bname = benchmark["name"]
    bconfigs = benchmark["configs"]
    for config in bconfigs:
-      print("# Running Benchmark '{}' with config '{}'...".format(bname, config));
-      myenv = os.environ;
-      #myenv["OMP_NUM_THREADS"] = str(nproc); # change env
-      proc = subprocess.Popen([sys.path[0]+"/"+bname, config], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-      f = open(sys.path[0]+"/out/"+bname+config.replace(' ', '_')+".out", "w")
-      for line in proc.stdout:
-         dict = eval(line)
-         f.write(str(dict)+'\n')
-      f.close()
+      for option in config[1]:
+         print("# Running Benchmark '{}' with config '{} {}'...".format(bname, config[0], option));
+         myenv = os.environ;
+         #myenv["OMP_NUM_THREADS"] = str(nproc); # change env
+         proc = subprocess.Popen([sys.path[0]+"/"+bname, config[0]+" "+option], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+         f = open(sys.path[0]+"/out/"+bname+config[0]+"_"+option+".out", "w")
+         for line in proc.stdout:
+            try:
+               dict = eval(line)
+               f.write(str(dict)+'\n')
+            except:
+               f.write(line.decode('utf-8'))
+         f.close()
 
 
 for benchmark in DO_BENCHMARKS:
