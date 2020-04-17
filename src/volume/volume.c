@@ -619,6 +619,28 @@ void Ellipsoid_project(const Ellipsoid* e, const FT eFac, FT* x) {
 }
 
 void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, FT* x){
+   // Argument why we cannot have more than 2 strict local minima
+   // 
+   // First, reduce to 2d problem
+   // Assume you have 3 strict local minima in n-dim problem,
+   // take intersection with ellipsoid and 2d plane of the three points, get 2d ellipse.
+   // Now you have 3 strict local minima on a 2d ellipse for a 2d ellipse cost function.
+   // 
+   // Why you cannot have 3 strict local minima in 2d case:
+   // 
+   // scale cost function to unit circle.
+   // for solution points, the normals must be parallel
+   // B * (x - b) = lambda * I * x
+   // Prove this only holds for 4 points: 2 local minima and 2 local maxima
+   // or for all points, all min=max
+   //
+   // B * (x - b) = lambda * I * x
+   //
+   // (B - lambda * I) * x = B*b
+   //
+   // Almost looks like eigenvector thing... but not with =0
+   // We are not sure how to make this formal...
+
    const int n = e->n;
    
    // can we alloc before somehow?
