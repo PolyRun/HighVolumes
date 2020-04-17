@@ -32,8 +32,8 @@ class Benchmark_base {
             double total_time = 0;
             double measured_times[reps];
             
-	    double results[reps];
-	    double results_sum = 0.0;
+            double results[reps];
+            double results_sum = 0.0;
 
             // Initialize
             initialize();
@@ -48,8 +48,8 @@ class Benchmark_base {
                 double result = run();
                 timer.stop();
 
-		results[i] = result;
-		results_sum += result;
+                results[i] = result;
+                results_sum += result;
 
                 measured_times[i] = timer.millisecs();            
                 total_time += measured_times[i];
@@ -61,31 +61,35 @@ class Benchmark_base {
 
             }
             
-	    // process time:
+	        // process time:
             mean_time = total_time/reps;
             for (int i = 0; i < reps; ++i) {
                 std_dev += pow(measured_times[i] - mean_time, 2.0);
             }
             std_dev = sqrt(std_dev/reps);
+
+            // Dictionary output
+            std::cout << "{'time': {";
+            std::cout << "'name_t': '"<< name << "', 'mean': '" << mean_time << "', 'min': '" << min_time << "', 'max': '" << max_time << "', 'std_dev': '" << std_dev << "'";
             
-            std::cout << "Time for "<< name << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std_dev: " << std_dev << std::endl;
-            
-	    // process results:
-	    if(convergence) {
-	        double results_mean = results_sum/reps;
-		double results_min = results[0];
-		double results_max = results[0];
+            std::cout << "}, 'convergence': {";
+	        // process results:
+            if(convergence) {
+                double results_mean = results_sum/reps;
+                double results_min = results[0];
+                double results_max = results[0];
                 double results_std_dev = 0;
- 
+    
                 for (int i = 0; i < reps; ++i) {
-		    results_std_dev += pow(results[i] - results_mean, 2.0);
-		    results_max = std::max(results_max, results[i]);
-		    results_min = std::min(results_min, results[i]);
-		}
-		results_std_dev = sqrt(results_std_dev/reps);
-                
-		std::cout << "Results for "<< name << ", mean: " << results_mean << ", min: " << results_min << ", max: " << results_max << ", std_dev: " << results_std_dev << std::endl;
-	    }
+                    results_std_dev += pow(results[i] - results_mean, 2.0);
+                    results_max = std::max(results_max, results[i]);
+                    results_min = std::min(results_min, results[i]);
+                }
+                results_std_dev = sqrt(results_std_dev/reps);
+                    
+                std::cout << "'name_c': '"<< name << "', 'mean': '" << results_mean << "', 'min': '" << results_min << "', 'max': '" << results_max << "', 'std_dev': '" << results_std_dev << "'";
+            }
+            std::cout << "}}" << std::endl;
         }
 
     protected:
@@ -130,6 +134,9 @@ class Benchmark_base_cli : public Benchmark_base{
                 double total_time = 0;
                 double measured_times[reps];
 
+                double results[reps];
+                double results_sum = 0.0;
+
                 // Initialize
                 initialize();
                 select(j);
@@ -154,15 +161,9 @@ class Benchmark_base_cli : public Benchmark_base{
                         timer.stop();
                     }
 
-                    if (convergence) {
-                        if (i == 0) {
-                            std::cout << "Convergence Step(" << i << ") - Result: " << result << std::endl;
-                        } else {
-                            std::cout << "Convergence Step(" << i << ") - Result: " << result << ", Diff: " << result-last_result << std::endl;
-                        }
-                        last_result = result;
-                    }
-                    
+                    results[i] = result;
+                    results_sum += result;
+
                     measured_times[i] = timer.millisecs();            
                     total_time += measured_times[i];
                     min_time = std::min(min_time, measured_times[i]);
@@ -173,17 +174,49 @@ class Benchmark_base_cli : public Benchmark_base{
 
                 }
                 
+                // process time:
                 mean_time = total_time/reps;
                 for (int i = 0; i < reps; ++i) {
                     std_dev += pow(measured_times[i] - mean_time, 2.0);
                 }
                 std_dev = sqrt(std_dev/reps);
+
+
+                // Dictionary output
+                std::cout << "{'time': {";
                 
+            
                 if (benchmark_all) {
-                    std::cout << "name: "<< name_selected << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
+                    std::cout << "'name_t': '"<< name_selected << "', 'mean': '" << mean_time << "', 'min': '" << min_time << "', 'max': '" << max_time << "', 'std_dev': '" << std_dev << "'";
                 } else {
-                    std::cout << "name: "<< name << ", mean: " << mean_time << ", min: " << min_time << ", max: " << max_time << ", std dev: " << std_dev << std::endl;
-                    break;
+                    std::cout << "'name_t': '"<< name << "', 'mean': '" << mean_time << "', 'min': '" << min_time << "', 'max': '" << max_time << "', 'std_dev': '" << std_dev << "'";
+                }
+                std::cout << "}, 'convergence': {";
+
+                // process results:
+                if(convergence) {
+                    double results_mean = results_sum/reps;
+                    double results_min = results[0];
+                    double results_max = results[0];
+                    double results_std_dev = 0;
+            
+                    for (int i = 0; i < reps; ++i) {
+                        results_std_dev += pow(results[i] - results_mean, 2.0);
+                        results_max = std::max(results_max, results[i]);
+                        results_min = std::min(results_min, results[i]);
+                    }
+                    results_std_dev = sqrt(results_std_dev/reps);
+                    
+                    if (benchmark_all) {
+                        std::cout << "Results for "<< name_selected << ", mean: " << results_mean << ", min: " << results_min << ", max: " << results_max << ", std_dev: " << results_std_dev << "'";
+                        std::cout << "}}" << std::endl;
+                    } else {
+                        std::cout << "Results for "<< name << ", mean: " << results_mean << ", min: " << results_min << ", max: " << results_max << ", std_dev: " << results_std_dev << "'";
+                        std::cout << "}}" << std::endl;
+                        break;
+                    }
+                } else {
+                    std::cout << "}}" << std::endl;
                 }
             }
         }
