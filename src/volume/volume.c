@@ -768,6 +768,54 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    }
 
    // 3. Transformation
+   
+   // outer ellipsoid (cage):
+   // (x-a)T * T.inverse() * (x-a) <= 1
+   // 
+   // We want to transform our space, such that this ellipsoid becomes a ball:
+   // (y-a') * I * (y - a') <=1
+   // and a' == 0
+   // 
+   // Cholesky:
+   // T = L * LT
+   // 
+   // How do we get there:
+   //
+   // (x-a)T * (L * LT).inverse() * (x-a) <= 1
+   // (x-a)T * LT.inverse() * L.inverse() * (x-a) <= 1
+   // (L.inverse()*x-L.inverse()*a)T * (L.inverse()*x-L.inverse()*a) <= 1
+   // 
+   // y = L.invere()*x - L.inverse()*a
+   // a' = 0
+   // x = L * y + a
+   //
+   // Polytope:
+   // A * x <= b
+   // A * (L * y + a) <= b
+   // A * L * y <= b - A * a
+   // A' = A * L
+   // b' = b - A * a
+   // A * L * y <= b'
+   //
+   // Paper then grows everything by 1/beta, such that unit ball = inner ellipsoid
+   // hence b'' = b' / beta
+   //       A'' = A'
+   // 
+   // Ellipsoid:
+   // (x-b)T * B * (x-b) <= 1
+   // (L * y + a - b)T * B * (L * y + a - b) <= 1
+   // 
+   // goal:
+   // (y - b')T * B' * (y - b') <= 1
+   //
+   // B' = LT * B * L
+   // b' = L.inverse() * (a-b)
+   //
+   // grow by 1/beta:
+   // (y - b')T * B' * (y - b') <= 1/beta
+   // B'' = B' * beta 
+   // b'' = b'
+
    printf("Transform\n");
    //FT *L = (FT *) calloc(n*n, sizeof(FT));
    //int err = cholesky(T, L, n);
