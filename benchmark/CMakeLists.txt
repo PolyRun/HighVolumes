@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
 file(COPY benchmark.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY plot.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(build-time-make-directory ALL
-   COMMAND ${CMAKE_COMMAND} -E make_directory out)
+   COMMAND ${CMAKE_COMMAND} -E make_directory out plots)
 
 project(benchmark_test_macro)
 
