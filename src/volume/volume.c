@@ -778,14 +778,44 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
          a[i] -= fac * Tv[i];
       }
 
-      // update A:
+      // update T:
+      // T' = zs * (T - fac2*Tv*Tvt)
       FT fac2 = tow / vtTv;
       for(int i=0;i<n;i++) {
          FT* Ti = Ellipsoid_get_Ti(e,i);
          for(int j=0;j<n;j++) {
-	    Ti[j] = zs * (Ti[j] * fac2*Tv[i]*Tv[j]);
+	    Ti[j] = zs * (Ti[j] - fac2*Tv[i]*Tv[j]);
 	 }
       }
+
+      // update A:
+      // above, we made a rank-1 update for T.
+      // We can update A (=T.inverse()) using the Sherman-Morisson formula:
+      // (T + u*vt).inverse() = T.inverse() - T.inverse() * u * vt * T.inverse() / (1 + vt * T.inverse() * u)
+      // A' = (T + u*vt).inverse() = A - A * u * vt * A / (1 + vt * A * u)
+      //
+      // So we will compute:
+      // A' = A - fac2 * A  * Tv * Tvt * A / (1 + fac2 * Tvt * A * Tv)
+      
+      FT ATv[n];
+      FT TvtATv = 0;
+      for(int i=0;i<n;i++) {
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         ATv[i] = 0;
+         for(int j=0;j<n;j++) {// dotProduct
+	    ATv[i] += Ai[j] * Tv[j];
+	 }
+
+	 TvtATv += Tv[i] * ATv[i];
+      }
+      FT div = 1.0 / (1 + fac2*TvtATv);
+
+      for(int i=0;i<n;i++) {
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         for(int j=0;j<n;j++) {
+	    Ai[j] = (Ai[j] - fac2 * ATv[i]*ATv[j]) * div;
+	 }
+      } 
    }
 
    // 3. Transformation

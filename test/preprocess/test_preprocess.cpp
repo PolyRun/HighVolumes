@@ -134,7 +134,7 @@ void test_preprocess_generic() {
 
 	std::cout << "det: " << det << std::endl;
     }
- 
+    
     {
         const int n = 20;
         FT det;
