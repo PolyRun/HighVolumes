@@ -176,9 +176,13 @@ struct Ellipsoid {
    FT* a;
    int line; // size of one row of A, plus buffer for allignment
    int n;
+   FT* T; // inverse of A
+   // only used for preprocessing
+   // only non-NULL if generated with Ellipsoid_new_with_T(n)
 };
 
 Ellipsoid* Ellipsoid_new(int n);
+Ellipsoid* Ellipsoid_new_with_T(int n);// only use if you need T!
 
 void Ellipsoid_free(const void* o);
 void Ellipsoid_print(const void* o);
@@ -192,6 +196,7 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
 
 
 FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i); // get row i
+FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i); // get row i
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x); // (x-a)T * A * (x-a)
 void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* n); // 2 * A * (x - a)  ==> not normalized
 

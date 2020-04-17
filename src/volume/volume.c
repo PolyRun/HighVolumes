@@ -403,6 +403,7 @@ Ellipsoid* Ellipsoid_new(int n) {
    e->line = ceil_cache(n,sizeof(FT)); // make sure next is also 32 alligned
    e->A = (FT*)(aligned_alloc(32, e->line*(n+1)*sizeof(FT))); // align this to 32
    e->a = e->A + e->line * n;
+   e->T = NULL;
    for(int i=0; i<n; i++) {
       for(int j=0; j<n; j++) {
 	 e->A[i*e->line + j] = (i==j)?1:0;
@@ -412,19 +413,67 @@ Ellipsoid* Ellipsoid_new(int n) {
    return e;
 }
 
+Ellipsoid* Ellipsoid_new_with_T(int n) {
+   Ellipsoid* e = (Ellipsoid*) malloc(sizeof(Ellipsoid));
+   e->n = n;
+   e->line = ceil_cache(n,sizeof(FT)); // make sure next is also 32 alligned
+   e->A = (FT*)(aligned_alloc(32, e->line*(2*n+1)*sizeof(FT))); // align this to 32
+   e->a = e->A + e->line * n;
+   e->T = e->a + e->line;
+   for(int i=0; i<n; i++) {
+      for(int j=0; j<n; j++) {
+	 e->A[i*e->line + j] = (i==j)?1:0;
+	 e->T[i*e->line + j] = (i==j)?1:0;
+      }
+      e->a[i] = 0;
+   }
+   return e;
+}
+
+
 FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) {
    return e->A + i*e->line;
 }
 
+FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) {
+   assert(e->T && "T must be allocated");
+   return e->T + i*e->line;
+}
+
 void Ellipsoid_free(const void* o) {
    Ellipsoid* e = (Ellipsoid*)o;
-   free(e->A);// includes a
+   free(e->A);// includes a (and T)
    free(e);
 }
 
 void Ellipsoid_print(const void* o) {
    Ellipsoid* e = (Ellipsoid*)o;
+   const int n = e->n;
    printf("Ellipsoid: n=%d\n",e->n);
+   printf("A:\n");
+   for(int i=0;i<n;i++) {
+      const FT* Ai = Ellipsoid_get_Ai(e,i);
+      for(int j=0;j<n;j++) {
+         printf("%.8f ",Ai[j]);
+      }
+      printf("\n");
+   } 
+   if(e->T){
+      printf("T:\n");
+      for(int i=0;i<n;i++) {
+         const FT* Ti = Ellipsoid_get_Ti(e,i);
+         for(int j=0;j<n;j++) {
+            printf("%.8f ",Ti[j]);
+         }
+         printf("\n");
+      }
+   }
+   printf("a:\n");
+   for(int j=0;j<n;j++) {
+      printf("%.8f ",e->a[j]);
+   }
+   printf("\n");
+ 
 }
 
 bool Ellipsoid_inside_ref(const void* o, const FT* v) {
@@ -653,11 +702,15 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    
    FT R2 = 1e6; // TODO - ask sub bodies for radius, take min
    
-   Ellipsoid* e = Ellipsoid_new(n); // origin zero
+   Ellipsoid* e = Ellipsoid_new_with_T(n); // origin zero
    for(int i=0; i<n; i++) {
       FT* Ai = Ellipsoid_get_Ai(e,i);
-      Ai[i] = R2; // sphere with 
+      FT* Ti = Ellipsoid_get_Ti(e,i);
+      Ai[i] = 1.0/R2; // sphere with 
+      Ti[i] = R2; // sphere with 
    }
+   Ellipsoid_T.print(e);
+   assert(false && "fixme");
    
    // 2. Cut steps
    printf("cut steps\n");
