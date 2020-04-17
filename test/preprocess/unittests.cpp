@@ -1,7 +1,7 @@
 #include "test_helpers.hpp"
 #include <iostream>
 #include "../../src/volume/volume_helper.hpp"
-
+#include "../../src/random/prng.h"
 
 
 void test_cholesky(int n){
@@ -21,9 +21,6 @@ void test_cholesky(int n){
     cholesky_ellipsoid(M, L);
 
     
-    Ellipsoid_print(M);
-    Matrix_print(L);
-    
     for (int i = 0; i < 3; i++){
         FT *Lrowi = Matrix_get_row(L, i);
         for (int j = 0; j < 3; j++){
@@ -40,8 +37,67 @@ void test_cholesky(int n){
 
 
 
+
+void test_cholesky_random(int n){
+
+    // generate random L matrix
+    Matrix *L = Matrix_new(n, n);
+    
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j <= i; j++){
+            Matrix_set(L, i, j, prng_get_random_double_in_range(-100, 100));
+        }
+        for (int j = i+1; j < n; j++){
+            Matrix_set(L, i, j, 0);
+        }
+    }
+
+    // compute Ellipsoid's T matrix as L*LT
+    Ellipsoid *E = Ellipsoid_new_with_T(n);
+
+    for (int i = 0; i < n; i++){
+        FT *Ti = Ellipsoid_get_Ti(E, i);
+        FT *Li = Matrix_get_row(L, i);
+        for (int j = 0; j < n; j++){
+            FT *Lj = Matrix_get_row(L, j);
+            Ti[j] = dotProduct(Li, Lj, n);
+        }
+    }
+
+    // compute the cholesky decomposition
+    Matrix *R = Matrix_new(n,n);
+    cholesky_ellipsoid(E, R);
+
+    FT maxdif = 0;
+    for (int i = 0; i < n; i++){
+        FT *Rrowi = Matrix_get_row(R, i);
+        for (int j = 0; j < n; j++){
+            // row of L is col of LT
+            FT *RTcolj = Matrix_get_row(R, j);            
+            maxdif = max(maxdif,
+                         abs(
+                             dotProduct(Rrowi, RTcolj, n) -
+                             Ellipsoid_get_Ti(E, i)[j]));
+            
+        }
+    }
+
+    //cout << "maxdif " << maxdif << "\n";
+
+    assert(maxdif < 1e-11 && "R * RT != E.T\n");
+                        
+
+}
+
+
+
+
+
 int main(){
 
+
+
+    
     std::cout << "\n-------------- TEST IN BALL\n";
 
     /*
@@ -61,6 +117,12 @@ int main(){
     */
 
     test_cholesky(3);
+
+    prng_init();
+    for (int i = 20; i < 50; i++){
+        test_cholesky_random(i);
+    }
+    
 
     std::cout<< "TESTS COMPLETE.\n";
     
