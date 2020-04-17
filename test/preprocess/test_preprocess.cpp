@@ -141,12 +141,12 @@ void test_preprocess_generic() {
         Ellipsoid* e1 = Ellipsoid_new(n);
         Ellipsoid* e2 = Ellipsoid_new(n);
         for(int i=0; i<n; i++) {
-            e1->a[i] = prng_get_random_double_in_range(-0.1,0.1);
-            e2->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+            e1->a[i] = 0;//prng_get_random_double_in_range(-0.1,0.1);
+            e2->a[i] = 0;//prng_get_random_double_in_range(-0.1,0.1);
             FT* Ai1 = Ellipsoid_get_Ai(e1,i);
-            Ai1[i] = prng_get_random_double_in_range(0.1,0.2);
+            Ai1[i] = 1;//prng_get_random_double_in_range(0.1,0.2);
             FT* Ai2 = Ellipsoid_get_Ai(e2,i);
-            Ai2[i] = prng_get_random_double_in_range(0.1,0.2);
+            Ai2[i] = 1;//prng_get_random_double_in_range(0.1,0.2);
         }
         void* body_in[2] = {e1, e2};
         Ellipsoid* e1_out = Ellipsoid_new(n);

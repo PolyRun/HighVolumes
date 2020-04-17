@@ -572,14 +572,17 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    FT eval1 = Ellipsoid_eval(e,x1);
    
    //printf("eval: %f %f vs %f\n",eval0,eval1,beta2);
-   if(eval0 > beta2 && eval1 > beta2) { return false; } // both local minima too far out
-   
+   if(eval0 > beta2 && eval1 > beta2) {
+      printf("no cut found!\n");
+      return false; // both local minima too far out
+   }
    // choose better x:
    FT* x = x0;
    if(eval1 < eval0) {x = x1;}
    
    Ellipsoid_normal(this, x, v);
    *c = dotProduct(v,x, n);
+   return true;
 }
 
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {
@@ -797,7 +800,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       // A' = (T + u*vt).inverse() = A - A * u * vt * A / (1 + vt * A * u)
       //
       // So we will compute:
-      // A' = A - fac2 * A  * Tv * Tvt * A / (1 + fac2 * Tvt * A * Tv)
+      // A' = A + fac2 * A  * Tv * Tvt * A / (1 - fac2 * Tvt * A * Tv)
       
       FT ATv[n];
       FT TvtATv = 0;
@@ -810,14 +813,33 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 
 	 TvtATv += Tv[i] * ATv[i];
       }
-      FT div = 1.0 / (1 + fac2*TvtATv);
+      FT div = 1.0 / (1 - fac2*TvtATv);
 
       for(int i=0;i<n;i++) {
          FT* Ai = Ellipsoid_get_Ai(e,i);
          for(int j=0;j<n;j++) {
-	    Ai[j] = (Ai[j] - fac2 * ATv[i]*ATv[j]) * div;
+	    Ai[j] = (Ai[j] + fac2 * ATv[i]*ATv[j] * div) / zs;
 	 }
-      } 
+      }
+
+      // debug: test inverse:
+      Ellipsoid_T.print(e);
+      printf("\n");
+      for(int i=0;i<n;i++){
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         for(int j=0;j<n;j++){
+            FT sum = 0;
+            for(int k=0;k<n;k++){
+               FT* Tk = Ellipsoid_get_Ti(e,k);
+               sum += Ai[k] * Tk[j];
+            }
+            printf(" %.12f",sum);
+            assert(abs(sum - 1.0*(i==j) < 0.0001));
+         }
+         printf("\n");
+      }
+      printf("\n");
+      //assert(false);
    }
    Ellipsoid_T.print(e);
    printf("took %d steps.\n",step);
