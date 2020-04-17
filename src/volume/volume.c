@@ -500,7 +500,7 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
 
    // case 1: center of cage (e->a) is outside of body o:
    if(!Ellipsoid_T.inside(this, e->a)) {
-      printf("not inside ellipsoid!\n");
+      //printf("not inside ellipsoid!\n");
       
       Ellipsoid_normal(this, e->a, v);
       *c = dotProduct(v,e->a, n);
@@ -511,19 +511,24 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    // run minimization to obtain a point where to cut:
    FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
    FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-   for(int i=0;i<n;i++) {x0[i]=e->a[i];}; x0[0] += 1;
-   for(int i=0;i<n;i++) {x1[i]=e->a[i];}; x1[0] -= 1;
+   for(int i=0;i<n;i++) {x0[i]=this->a[i];}; x0[0] += 1;
+   for(int i=0;i<n;i++) {x1[i]=this->a[i];}; x1[0] -= 1;
    FT beta2 = 1.0 / (4*n*n);
-   Ellipsoid_minimize(e,beta2, this, x0);
-   Ellipsoid_minimize(e,beta2, this, x1);
+   Ellipsoid_minimize(this,1, e, x0);
+   Ellipsoid_minimize(this,1, e, x1);
    
-   FT eval0 = Ellipsoid_eval(this,x0); 
-   FT eval1 = Ellipsoid_eval(this,x1);
+   FT eval0 = Ellipsoid_eval(e,x0); 
+   FT eval1 = Ellipsoid_eval(e,x1);
    
+   //printf("eval: %f %f vs %f\n",eval0,eval1,beta2);
    if(eval0 > beta2 && eval1 > beta2) { return false; } // both local minima too far out
    
-   printf("eval: %f %f vs %f\n",eval0,eval1,beta2);
-   assert(false && "not implemented fully!");
+   // choose better x:
+   FT* x = x0;
+   if(eval1 < eval0) {x = x1;}
+   
+   Ellipsoid_normal(this, x, v);
+   *c = dotProduct(v,x, n);
 }
 
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {
@@ -571,12 +576,16 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
    FT* nE = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
    FT* nF = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
    FT* nP = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   
+   // for debugging:
+   FT* tmp = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
 
    Ellipsoid_project(e,eFac,x);
    
    int count = 0;
    FT dot = FT_MAX; // step size
-   FT beta = 0.1;
+   FT eval = FT_MAX; // step size
+   FT beta = 1.0;
    int lastBeta = 0;
    do{
       Ellipsoid_normal(e, x, nE);
@@ -591,21 +600,46 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
       FT lastDot = dot;
       dot = dotProduct(nP,nP, n);
       
-      // adjust step rate beta
-      if(lastDot < dot) {beta *= 0.5; printf("beta down! %f\n",beta); lastBeta = 0;}
-      if(lastBeta++ > 10) {beta*=1.2; printf("beta up! %f\n",beta); lastBeta = 0;}
-      
       // debug output
-      FT eval = Ellipsoid_eval(f,x);
-      printf("hello %.12f %.12f\n",dot,eval);
+      FT lastEval = eval;
+      eval = Ellipsoid_eval(f,x);
+      //printf("dot %.12f eval %.12f\n",dot,eval);
+      // adjust step rate beta
+      if(lastEval < eval) {
+         beta *= 0.5;
+	 //printf("beta down! %.20f\n",beta);
+	 lastBeta = 0;
+      }
+      if(lastBeta++ > 10) {
+	 beta*=1.2;
+	 //printf("beta up! %.20f\n",beta);
+	 lastBeta = 0;
+      }
       
+      for(int i=0; i<n; i++) {tmp[i] = x[i];}// debug
       for(int i=0; i<n; i++) {
          x[i] -= beta * nP[i]; // step = c - n (n * c)
       }
 
-      Ellipsoid_project(e,eFac,x);
-   } while(count++ < 100*n && dot > 0.0000001);
+      Ellipsoid_project(e,eFac,x);// pull back on ellipsoid
+
+      //for(int i=0; i<n; i++) {tmp[i] -= x[i];}// debug
+      //FT dotTmp = dotProduct(tmp,tmp,n);
+      //printf("moved: %.20f\n",dotTmp);
+      //FT evalX = Ellipsoid_eval(e,x);
+      //printf("evalX: %.20f\n",evalX);
+      
+      if(++count >= 100*n) {
+         printf("Warning: taking too many steps (%d), abort minimization now!\n",count);
+	 break;
+      }
+   } while(dot > 0.00000001);
+   
    printf("steps taken: %d\n",count);
+   
+   //for(int i=0; i<n; i++) {printf(" %.12f", x[i]);}// debug
+   //printf("\n");
+
    free(nE);
    free(nF);
    free(nP);

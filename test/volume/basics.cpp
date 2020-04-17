@@ -389,7 +389,7 @@ int main(int argc, char** argv) {
 
       Ellipsoid* e = Ellipsoid_new(n); // simple sphere
       for(int i=0; i<n; i++) {
-         e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+         e->a[i] = prng_get_random_double_in_range(-0.001,0.001);
          FT* Ai = Ellipsoid_get_Ai(e,i);
          FT r = prng_get_random_double_in_range(1.9*n,1.9*n); // make inner ellipsoid smaller than sphere!
          Ai[i] = 1.0 / (r*r);
@@ -433,7 +433,6 @@ int main(int argc, char** argv) {
          FT dot = dotProduct(v, body->a, n);
          assert(dot <= c);
       }
-      assert(false && "fixme"); // TODO something is wrong in sandwich case!
 
       Ellipsoid_free(e);
       free(v);
