@@ -40,7 +40,8 @@ def run_benchmark(benchmark):
       proc = subprocess.Popen([sys.path[0]+"/"+bname, config], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
       f = open(sys.path[0]+"/out/"+bname+config.replace(' ', '_')+".out", "w")
       for line in proc.stdout:
-         f.write(line.decode('utf-8'))
+         dict = eval(line)
+         f.write(str(dict)+'\n')
       f.close()
 
 

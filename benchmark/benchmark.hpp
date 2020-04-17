@@ -208,10 +208,10 @@ class Benchmark_base_cli : public Benchmark_base{
                     results_std_dev = sqrt(results_std_dev/reps);
                     
                     if (benchmark_all) {
-                        std::cout << "Results for "<< name_selected << ", mean: " << results_mean << ", min: " << results_min << ", max: " << results_max << ", std_dev: " << results_std_dev << "'";
+                        std::cout << "'name_c': '"<< name_selected << "', 'mean': '" << results_mean << "', 'min': '" << results_min << "', 'max': '" << results_max << "', 'std_dev': '" << results_std_dev << "'";
                         std::cout << "}}" << std::endl;
                     } else {
-                        std::cout << "Results for "<< name << ", mean: " << results_mean << ", min: " << results_min << ", max: " << results_max << ", std_dev: " << results_std_dev << "'";
+                        std::cout << "'name_c': '"<< name << "', 'mean': '" << results_mean << "', 'min': '" << results_min << "', 'max': '" << results_max << "', 'std_dev': '" << results_std_dev << "'";
                         std::cout << "}}" << std::endl;
                         break;
                     }
