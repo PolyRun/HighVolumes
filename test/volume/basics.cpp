@@ -343,12 +343,14 @@ int main(int argc, char** argv) {
       FT* v = (FT*)(aligned_alloc(32, n*sizeof(FT)));
       FT c;
 
-      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+      Ellipsoid* e = Ellipsoid_new_with_T(n); // simple sphere
       for(int i=0; i<n; i++) {
          e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
          FT* Ai = Ellipsoid_get_Ai(e,i);
+         FT* Ti = Ellipsoid_get_Ai(e,i);
          FT r = prng_get_random_double_in_range(1.9*n,2.2*n);
 	 Ai[i] = 1.0 / (r*r);
+	 Ti[i] = (r*r);
       }
       
       {// fully inside inner ellipsoid:
@@ -387,12 +389,14 @@ int main(int argc, char** argv) {
       FT c;
       
 
-      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+      Ellipsoid* e = Ellipsoid_new_with_T(n); // simple sphere
       for(int i=0; i<n; i++) {
          e->a[i] = prng_get_random_double_in_range(-0.001,0.001);
          FT* Ai = Ellipsoid_get_Ai(e,i);
+         FT* Ti = Ellipsoid_get_Ti(e,i);
          FT r = prng_get_random_double_in_range(1.9*n,1.9*n); // make inner ellipsoid smaller than sphere!
          Ai[i] = 1.0 / (r*r);
+         Ti[i] = (r*r);
       }
       
       std::cout << "fully inside:\n";

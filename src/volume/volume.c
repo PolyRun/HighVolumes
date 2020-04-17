@@ -454,7 +454,7 @@ void Ellipsoid_print(const void* o) {
    for(int i=0;i<n;i++) {
       const FT* Ai = Ellipsoid_get_Ai(e,i);
       for(int j=0;j<n;j++) {
-         printf("%.8f ",Ai[j]);
+         printf("%.12f ",Ai[j]);
       }
       printf("\n");
    } 
@@ -463,14 +463,14 @@ void Ellipsoid_print(const void* o) {
       for(int i=0;i<n;i++) {
          const FT* Ti = Ellipsoid_get_Ti(e,i);
          for(int j=0;j<n;j++) {
-            printf("%.8f ",Ti[j]);
+            printf("%.12f ",Ti[j]);
          }
          printf("\n");
       }
    }
    printf("a:\n");
    for(int j=0;j<n;j++) {
-      printf("%.8f ",e->a[j]);
+      printf("%.12f ",e->a[j]);
    }
    printf("\n");
  
@@ -560,8 +560,10 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    // run minimization to obtain a point where to cut:
    FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
    FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-   for(int i=0;i<n;i++) {x0[i]=this->a[i];}; x0[0] += 1;
-   for(int i=0;i<n;i++) {x1[i]=this->a[i];}; x1[0] -= 1;
+
+   for(int i=0;i<n;i++) {x0[i]=prng_get_random_double_normal();}// random direction
+   for(int i=0;i<n;i++) {x1[i]=this->a[i] + x0[i];}
+   for(int i=0;i<n;i++) {x0[i]=this->a[i] + x0[i];}
    FT beta2 = 1.0 / (4*n*n);
    Ellipsoid_minimize(this,1, e, x0);
    Ellipsoid_minimize(this,1, e, x1);
@@ -750,7 +752,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    int step = 0;
    while(true) {
       step++;
-      printf("cut step %d\n",step);
+      //printf("cut step %d\n",step);
       
       bool doCut = false;
       for(int b=0; b<bcount; b++) {
@@ -760,7 +762,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 
       if(!doCut) {break;} // we are done!
 
-      printf("cut!\n");
+      //printf("cut!\n");
       
       // calculate: T * v and vt * T * v
       FT Tv[n];
@@ -817,6 +819,8 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 	 }
       } 
    }
+   Ellipsoid_T.print(e);
+   printf("took %d steps.\n",step);
 
    // 3. Transformation
    
