@@ -313,23 +313,23 @@ bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT*
    }
    
 
-   // check if inner Ellipsoid e = ( (2n)^-2 * X, x) is in Polytope:
+   // check if inner Ellipsoid e = ( (2n)^-2 * T.inverse(), x) is in Polytope:
    // for all i, check if:
-   //   AiT * X * Ai <= (bi - AiT * x)^2 * (2n)^2
+   //   AiT * T * Ai <= (bi - AiT * x)^2 * (2n)^2
    const FT twon2 = 4.0*n*n;
    for(int i=0;i<m;i++) {
       FT* Ai = Polytope_get_Ai(p,i);
       FT bi = Polytope_get_b(p,i);
       
-      FT AiTXAi = 0; // could be useful to cache...
+      FT AitTAi = 0; // could be useful to cache...
       for(int j=0;j<n;j++) {
-         FT* Xj = Ellipsoid_get_Ai(e,j);
-	 FT XjAi = dotProduct(Xj,Ai,n);
-         AiTXAi += Ai[j] * XjAi;
+         FT* Tj = Ellipsoid_get_Ti(e,j);
+	 FT TjAi = dotProduct(Tj,Ai,n);
+         AitTAi += Ai[j] * TjAi;
       }
       
       FT diff = bi - Ax[i];
-      if(AiTXAi > diff*diff*twon2) { // found one -> return (Ai, bi)
+      if(AitTAi > diff*diff*twon2) { // found one -> return (Ai, bi)
          for(int j=0;j<n;j++) {v[j] = Ai[j];}
 	 *c = bi;
          return true;
@@ -454,7 +454,7 @@ void Ellipsoid_print(const void* o) {
    for(int i=0;i<n;i++) {
       const FT* Ai = Ellipsoid_get_Ai(e,i);
       for(int j=0;j<n;j++) {
-         printf("%.8f ",Ai[j]);
+         printf("%.12f ",Ai[j]);
       }
       printf("\n");
    } 
@@ -463,14 +463,14 @@ void Ellipsoid_print(const void* o) {
       for(int i=0;i<n;i++) {
          const FT* Ti = Ellipsoid_get_Ti(e,i);
          for(int j=0;j<n;j++) {
-            printf("%.8f ",Ti[j]);
+            printf("%.12f ",Ti[j]);
          }
          printf("\n");
       }
    }
    printf("a:\n");
    for(int j=0;j<n;j++) {
-      printf("%.8f ",e->a[j]);
+      printf("%.12f ",e->a[j]);
    }
    printf("\n");
  
@@ -560,8 +560,10 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    // run minimization to obtain a point where to cut:
    FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
    FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-   for(int i=0;i<n;i++) {x0[i]=this->a[i];}; x0[0] += 1;
-   for(int i=0;i<n;i++) {x1[i]=this->a[i];}; x1[0] -= 1;
+
+   for(int i=0;i<n;i++) {x0[i]=prng_get_random_double_normal();}// random direction
+   for(int i=0;i<n;i++) {x1[i]=this->a[i] + x0[i];}
+   for(int i=0;i<n;i++) {x0[i]=this->a[i] + x0[i];}
    FT beta2 = 1.0 / (4*n*n);
    Ellipsoid_minimize(this,1, e, x0);
    Ellipsoid_minimize(this,1, e, x1);
@@ -619,6 +621,28 @@ void Ellipsoid_project(const Ellipsoid* e, const FT eFac, FT* x) {
 }
 
 void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, FT* x){
+   // Argument why we cannot have more than 2 strict local minima
+   // 
+   // First, reduce to 2d problem
+   // Assume you have 3 strict local minima in n-dim problem,
+   // take intersection with ellipsoid and 2d plane of the three points, get 2d ellipse.
+   // Now you have 3 strict local minima on a 2d ellipse for a 2d ellipse cost function.
+   // 
+   // Why you cannot have 3 strict local minima in 2d case:
+   // 
+   // scale cost function to unit circle.
+   // for solution points, the normals must be parallel
+   // B * (x - b) = lambda * I * x
+   // Prove this only holds for 4 points: 2 local minima and 2 local maxima
+   // or for all points, all min=max
+   //
+   // B * (x - b) = lambda * I * x
+   //
+   // (B - lambda * I) * x = B*b
+   //
+   // Almost looks like eigenvector thing... but not with =0
+   // We are not sure how to make this formal...
+
    const int n = e->n;
    
    // can we alloc before somehow?
@@ -710,7 +734,6 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       Ti[i] = R2; // sphere with 
    }
    Ellipsoid_T.print(e);
-   assert(false && "fixme");
    
    // 2. Cut steps
    printf("cut steps\n");
@@ -729,7 +752,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    int step = 0;
    while(true) {
       step++;
-      printf("cut step %d\n",step);
+      //printf("cut step %d\n",step);
       
       bool doCut = false;
       for(int b=0; b<bcount; b++) {
@@ -739,33 +762,65 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 
       if(!doCut) {break;} // we are done!
 
-      printf("cut!\n");
+      //printf("cut!\n");
       
-      // calculate: A * v and vT * A * v
-      FT Av[n];
-      FT vTAv = 0;
+      // calculate: T * v and vt * T * v
+      FT Tv[n];
+      FT vtTv = 0;
       for(int i=0;i<n;i++) {
-         const FT* Ai = Ellipsoid_get_Ai(e,i);
-	 Av[i] = dotProduct(Ai,v,n);
-	 vTAv += v[i] * Av[i];
+         const FT* Ti = Ellipsoid_get_Ti(e,i);
+	 Tv[i] = dotProduct(Ti,v,n);
+	 vtTv += v[i] * Tv[i];
       }
       
       // update a:
       FT* a = e->a;
-      FT fac = ro/sqrt(vTAv);
+      FT fac = ro/sqrt(vtTv);
       for(int i=0;i<n;i++) {
-         a[i] -= fac * Av[i];
+         a[i] -= fac * Tv[i];
+      }
+
+      // update T:
+      // T' = zs * (T - fac2*Tv*Tvt)
+      FT fac2 = tow / vtTv;
+      for(int i=0;i<n;i++) {
+         FT* Ti = Ellipsoid_get_Ti(e,i);
+         for(int j=0;j<n;j++) {
+	    Ti[j] = zs * (Ti[j] - fac2*Tv[i]*Tv[j]);
+	 }
       }
 
       // update A:
-      FT fac2 = tow / vTAv;
+      // above, we made a rank-1 update for T.
+      // We can update A (=T.inverse()) using the Sherman-Morisson formula:
+      // (T + u*vt).inverse() = T.inverse() - T.inverse() * u * vt * T.inverse() / (1 + vt * T.inverse() * u)
+      // A' = (T + u*vt).inverse() = A - A * u * vt * A / (1 + vt * A * u)
+      //
+      // So we will compute:
+      // A' = A - fac2 * A  * Tv * Tvt * A / (1 + fac2 * Tvt * A * Tv)
+      
+      FT ATv[n];
+      FT TvtATv = 0;
+      for(int i=0;i<n;i++) {
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         ATv[i] = 0;
+         for(int j=0;j<n;j++) {// dotProduct
+	    ATv[i] += Ai[j] * Tv[j];
+	 }
+
+	 TvtATv += Tv[i] * ATv[i];
+      }
+      FT div = 1.0 / (1 + fac2*TvtATv);
+
       for(int i=0;i<n;i++) {
          FT* Ai = Ellipsoid_get_Ai(e,i);
          for(int j=0;j<n;j++) {
-	    Ai[j] = zs * (Ai[j] * fac2*Av[i]*Av[j]);
+	    Ai[j] = (Ai[j] - fac2 * ATv[i]*ATv[j]) * div;
 	 }
-      }
+      } 
    }
+   Ellipsoid_T.print(e);
+   printf("took %d steps.\n",step);
 
    // 3. Transformation
    

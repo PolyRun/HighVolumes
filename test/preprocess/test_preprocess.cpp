@@ -122,7 +122,7 @@ void test_preprocess_generic() {
     std::cout << "\n ----------- TEST GENERIC PREPROCESSING:\n";
    
     {
-        const int n = 20;
+        const int n = 5;
         FT det;
 	Polytope* box = Polytope_new_box(n,1.0);
         void* body_in[1] = {box};
@@ -134,9 +134,33 @@ void test_preprocess_generic() {
 
 	std::cout << "det: " << det << std::endl;
     }
- 
+     
     {
-        const int n = 20;
+        const int n = 5;
+        FT det;
+        Ellipsoid* e1 = Ellipsoid_new(n);
+        Ellipsoid* e2 = Ellipsoid_new(n);
+        for(int i=0; i<n; i++) {
+            e1->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+            e2->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+            FT* Ai1 = Ellipsoid_get_Ai(e1,i);
+            Ai1[i] = prng_get_random_double_in_range(0.1,0.2);
+            FT* Ai2 = Ellipsoid_get_Ai(e2,i);
+            Ai2[i] = prng_get_random_double_in_range(0.1,0.2);
+        }
+        void* body_in[2] = {e1, e2};
+        Ellipsoid* e1_out = Ellipsoid_new(n);
+        Ellipsoid* e2_out = Ellipsoid_new(n);
+        void* body_out[2] = {e1_out, e2_out};
+        Body_T* type[2] = {&Ellipsoid_T, &Ellipsoid_T};
+
+        preprocess_ref(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+
+	std::cout << "det: " << det << std::endl;
+    }
+
+    {
+        const int n = 5;
         FT det;
 	Polytope* box = Polytope_new_box(n,1.0);
         Ellipsoid* e = Ellipsoid_new(n);
