@@ -45,6 +45,33 @@ FT Ball_volume(const int n, const FT r);
 // given n elements of b bytes, want to get smallest multiple of 32 bytes that fits this.
 int ceil_cache(const int n, const int b);
 
+
+// --------------------------------------------- Memory aligned matrix
+
+// maybe use this inside Polytope... splittig A and b of polytope might make sense for accessing anyway
+
+typedef struct Matrix {
+   FT* data; // size m * n
+   // layout (row-wise):
+   // a00, a01, ... a0n-1, [buffering]
+   // ...
+   // am-10, am-11, ... am-1n-1, [buffering] 
+   int line; // size of one row + b, plus buffer for allignment
+   int n; // dimensions
+   int m; // constraints   
+    
+} Matrix;
+
+
+Matrix* Matrix_new(int n, int m);
+void Matrix_free(const void* o);
+FT* Matrix_get_row(const Matrix* m, int i);
+void Matrix_set(Matrix* m, int i, int x, FT a);
+FT Matrix_get(const Matrix* m, int i, int x);
+void Matrix_print(const void* o);
+
+
+
 // --------------------------------------------- Sub-body Member functions
 
 // input body

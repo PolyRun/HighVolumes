@@ -54,8 +54,8 @@ int main(int argc, char *argv[]){
     benchmark->run_benchmark();
     benchmark = new Test_xyz_f("test_xyz_f", reps, false, 0, cliFun, true);
     benchmark->run_benchmark();
-    /*benchmark = new Test_xyz_f("test_xyz_f", reps, true, 0, cliFun, false);
+    benchmark = new Test_xyz_f("test_xyz_f", reps, true, 0, cliFun, false);
     benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", reps, true, 0, cliFun, true);
+    /*benchmark = new Test_xyz_f("test_xyz_f", reps, true, 0, cliFun, true);
     benchmark->run_benchmark();*/
 }

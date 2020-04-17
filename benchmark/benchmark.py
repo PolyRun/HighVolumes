@@ -54,11 +54,15 @@ def run_benchmark(benchmark):
    return results
 
 do_plot = True
+plot_name = None
 results = []
+
+if len(sys.argv) == 2:
+   plot_name = (DO_BENCHMARKS[0])["name"]
 
 for benchmark in DO_BENCHMARKS:
    result = run_benchmark(benchmark)
    results.extend(result)
 
 if do_plot and results:
-   plot(sys.path[0], results)
+   plot(sys.path[0], plot_name, results)

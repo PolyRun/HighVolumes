@@ -3,6 +3,7 @@
 
 extern "C" { // must be included C stlye
 #include "../../src/volume/volume.h"
+#include "../../src/volume/cholesky.h"
 }
 
 
@@ -81,6 +82,7 @@ bool polytope_contains_scaled_ball(Polytope *P);
  * \param d1 first dimension
  * \param d2 second dimension
  **/
+// TODO, adopt to matrix struct
 FT frobenius(FT *A, FT *B, int d1, int d2);
 
 /**
