@@ -3,6 +3,7 @@
 
 extern "C" { // must be included C stlye
 #include "../../src/volume/volume.h"
+#include "../../src/volume/cholesky.h"
 }
 
 

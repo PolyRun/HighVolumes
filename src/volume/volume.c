@@ -1019,3 +1019,45 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
 FT xyz_f1(const Polytope* body, const FT r, const int n) {return body->n;}
 FT xyz_f2(const Polytope* body, const FT r, const int n) {return n;}
 xyz_f_t xyz_f = xyz_f1;
+
+
+
+
+Matrix* Matrix_new(int n, int m) {
+   Matrix* o = (Matrix*) malloc(sizeof(Matrix));
+   o->n = n;
+   o->m = m;
+   o->line = ceil_cache(n,sizeof(FT)); // make sure next is also 32 alligned
+   o->data = (FT*)(aligned_alloc(32, o->line*m*sizeof(FT))); // align this to 32
+
+   return o;
+}
+
+
+void Matrix_free(const void* o) {
+   Matrix* p = (Matrix*)o;
+   free(p->data);
+   free(p);
+}
+
+inline FT* Matrix_get_row(const Matrix* m, int i) {
+   return &(m->data[i * (m->line)]);
+}
+
+inline void Matrix_set(Matrix* m, int i, int x, FT a) {
+   m->data[i * (m->line) + x] = a;
+}
+inline FT Matrix_get(const Matrix* m, int i, int x) {
+   return m->data[i * (m->line) + x];
+}
+
+void Matrix_print(const void* o) {
+   const Matrix* p = (Matrix*)o;
+   printf("Matrix: n=%d, m=%d\n",p->n,p->m);
+   for(int i=0; i<p->m; i++) {
+      for(int j=0; j<p->n; j++) {
+         printf(" %.3f", Matrix_get(p,i,j));
+      }
+      printf("\n");
+   }
+}
