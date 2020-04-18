@@ -15,25 +15,41 @@ int cholesky(FT *A, FT *Trans, int n);
 
 inline int cholesky(FT *A, FT *Trans, int n){
     
-    // Decomposing a matrix into Lower Triangular 
-    for (int i = 0; i < n; i++) { 
+    // Decomposing a matrix into Lower Triangular
+    
+    //------------------------------
+    for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) { 
             FT sum = 0; 
-  
+
+            //------------------------------
             if (j == i) { 
                 for (int k = 0; k < j; k++) {
                     sum += Trans[j*n+k] * Trans[j*n+k];
                 }
                 Trans[j*n+j] = sqrt(A[j*n+j] - sum); 
             }
+            // (i+1, i, 0, 1)
+            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            
+            //------------------------------
             else { 
                 for (int k = 0; k < j; k++) {
                     sum += (Trans[i*n+k] * Trans[j*n+k]);
                 }
                 Trans[i*n+j] = (A[i*n+j] - sum) / Trans[j*n+j]; 
-            } 
-        } 
+            }
+            // (j+1, j, 1, 0)
+            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        }
     }
+    // sum_{i=0}^{n} (i+1, i, 0, 1) +
+    // sum_{i=1}^{n-1} sum_{j=0}^{i-1} (j+1, j, 1, 0)
+    // = ((n^4 - n^3 + 2n^2 + 4n)/6,
+    //    (n^4 - 4n^3 + 8n^2 - 5n)/6,
+    //    (n^2 - n)/2,
+    //    n)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     return 0;
 }
 
@@ -326,11 +342,8 @@ void preprocess(Polytope *P, Polytope **Q, FT *det){
 
 
 
-
-void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
-
-    // MB: maybe implement this function as in PolyVest
-    //checkHPs();
+//------------------------------
+void preprocess_opcount(Polytope *P, FT R2, FT *ori, Polytope **Q, FT *det, int *iterations, int *loopone, int *looptwo, int *breakcond){
 
     int n = P->n;
     int m = P->m;
@@ -342,14 +355,6 @@ void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
     double c2 = (1 - n / beta_r) / (n + 1);
     double c3 = beta_r * beta_r;
     double c4 = 2 * c2 / (1 - 1.0 / beta_r);
-
-    
-    //init E(R2I, 0), T = R2I, ori = 0.
-    
-    FT R2;
-    FT *ori;
-    init_ellipsoid(P, &R2, &ori);
-
 
     // initialize T to diag(R2)
     // T is out initial guess to the ellipsoid around Poly
@@ -364,55 +369,67 @@ void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
 
     // update T until x^t*T*x <= 1
 
-    int counter = 0;
-    while (++counter > 0){
+    *iterations = 0;
+    *loopone = 0;
+    *looptwo = 0;
+    *breakcond = 0;
+    //------------------------------
+    while (++(*iterations) > 0){
         int i;
 
         // distance = b - A * ori
+        //------------------------------
         for (i = 0; i < m; i++){
-            FT sum = 0;
-            for(int x=0; x < n; x++) {
-                sum += ori[x] * Polytope_get_a(P, i, x);
-            }
-            distance[i] = Polytope_get_b(P, i) - sum;
-        }
-     
-        
-        //check if ori in polytope
-        for(i = 0; i < m; i++) {
-            // sum = (A * ori)_i > b_i (constraint not satisfied)
-            if(distance[i] < 0) {
+            (*loopone)++;
+
+            //------------------------------
+            FT *Ai = Polytope_get_Ai(P, i);
+            distance[i] = Polytope_get_b(P, i);
+            distance[i] -= dotProduct(Ai, ori, n);
+            // (n+1, n)
+            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+            if (distance[i] < 0){
                 // tm[i] = row_i(A)*T*row_i(A)^t
+                (*breakcond)++;
+
+                //------------------------------
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
-                    FT tmi_tmp = 0;
-                    for (int k = 0; k < n; k++){
-                        tmi_tmp += T[j*n + k] * Polytope_get_a(P, i, k);
-                        //printf("tmi_tmp: %0.*f\n", FLOATWIDTH, tmi_tmp);
-                    }
+                    FT tmi_tmp = dotProduct(Ai, &T[j*n], n);
                     tm[i] += Polytope_get_a(P, i, j) * tmi_tmp;
                 }
-                //printf("tm%d: %0.*f\n", i, FLOATWIDTH, tm[i]);
+                // (n^2 + n, n^2 + n)
+                //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
                 break;
             }
         }
+        // loopone * (n+1, n) + breakcond *(n^2 + n, n^2 + n)
+        //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         
         // check if small ellipsoid is contained in polytope
         if (i == m) {
+            //------------------------------
             for (i = 0; i < m; i++){
+                (*looptwo)++;
+                //------------------------------
                 tm[i] = 0;
                 for (int j = 0; j < n; j++){
-                    FT tmi_tmp = 0;
-                    for (int k = 0; k < n; k++){
-                        tmi_tmp += T[j*n + k] * Polytope_get_a(P, i, k);
-                    }
+                    FT tmi_tmp = dotProduct(Polytope_get_Ai(P, i), &T[j*n], n);
                     tm[i] += Polytope_get_a(P, i, j) * tmi_tmp;
                 }
-  
+                // (n^2 + n, n^2 + n)
+                //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                //------------------------------
                 if (c3 * distance[i] * distance[i] - tm[i] < 0){
                     break;
                 }
+                // (1, 2)
+                //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
             }
+            // looptwo * (n^2 + n + 1, n^2 + n + 2)
+            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         }
 
 
@@ -422,27 +439,45 @@ void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
         }
 
         // else update ellipsoid (ori, T)
+        //------------------------------
         for (int k = 0; k < n; k++){
-            t[k] = 0;
-            for (int j = 0; j < n; j++){
-                t[k] += T[k*n+j] * Polytope_get_a(P, i, j);
-            }
+            t[k] = dotProduct(Polytope_get_Ai(P, i), &T[k*n], n);
             t[k] /= sqrt(tm[i]);
         }
+        // n * (n, n, 1, 1)
+        //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        //------------------------------
         for (int k = 0; k < n; k++){
             ori[k] -= t[k] * c2;   
         }
-        
+        // n * (1, 1)
+        //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        //------------------------------
         for (int k = 0; k < n; k++){
             for (int j = 0; j < n; j++){
                 T[k*n + j] = c1 * (T[k*n + j] - c4 * (t[k] * t[j]));
             }   
-        }        
+        }
+        // n^2 * (1, 3)
+        //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
+    // iterations * (2n^2 + n, 4n^2 + n, n, n) +
+    // loopone * (n+1, n) + 
+    // breakcond *(n^2 + n, n^2 + n) +
+    // looptwo * (n^2 + n + 1, n^2 + n + 2)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     
     //apply affine transformation in-place on Poly
     FT *Trans = (FT *) calloc(n*n, sizeof(FT));
+    //------------------------------
     int err = cholesky(T, Trans, n);
+    // ((n^4 - n^3 + 2n^2 + 4n)/6,
+    //  (n^4 - 4n^3 + 8n^2 - 5n)/6,
+    //  (n^2 - n)/2,
+    //  n)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     if (err > 0){
         printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
         exit(1);		
@@ -450,26 +485,37 @@ void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
     
     
     // b = beta_r * (b - A * ori);
+    //------------------------------
     for (int i = 0; i < m; i++){
         Polytope_set_b(*Q, i, beta_r * distance[i]);
     }
+    // (0, m, 0, 0)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    
     // A = A * Trans;
+    //------------------------------
     for (int i = 0; i < m; i++){
         for (int j = 0; j < n; j++){
             FT sum = 0;
-            for (int k = 0; k < n; k++){
+            for (int k = j; k < n; k++){
                 sum += Polytope_get_a(P, i, k) * Trans[k*n + j];
             }
             Polytope_set_a(*Q, i, j, sum);
         }
     }
+    // (mn(n+1)/2, mn(n+1)/2, 0, 0)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+    //------------------------------
     *det = 1;
     for (int i = 0; i < n; i++){
         *det *= Trans[i*n+i];
     }
     *det /= pow(beta_r, n);
+    // (0, 2n-1, 1, 0)
+    // question: pow(x, n) is n-1 mults?
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     
     free(T);
@@ -477,3 +523,21 @@ void preprocess_nocmt(Polytope *P, Polytope **Q, FT *det){
     free(tm);
     free(t);
 }
+// adds: iterations * (2n^2 + n) +
+//       loopone * (n+1) +
+//       breakcond * (n^2 + n) + 
+//       looptwo * (n^2+n+1) +
+//       (n^4 - n^3 + 2n^2 + 4n)/6 + mn(n+1)/2
+// mults: iterations * (4n^2 + n) +
+//        loopone * n +
+//        breakcond * (n^2 + n) + 
+//        looptwo * (n^2+n+2) +
+//        (n^4 - 4n^3 + 8n^2 - 5n)/6 + mn(n+1)/2 + 2n - 1 + m
+// divs: iterations * n +
+//       (n^2 - n)/2 + 1
+// sqrts: iterations * n +
+//        n
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+

@@ -83,3 +83,16 @@ set_target_properties(benchmark_intersect PROPERTIES
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
 )
+
+
+project(benchmark_preprocess)
+
+add_executable(benchmark_preprocess benchmark_preprocessing.cpp)
+
+target_link_libraries(benchmark_preprocess PUBLIC volume_helper)
+
+set_target_properties(benchmark_polyvest PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
