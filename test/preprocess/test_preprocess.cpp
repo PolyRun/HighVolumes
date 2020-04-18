@@ -222,7 +222,6 @@ void test_preprocess_generic() {
 	Ellipsoid_T.free(e1_out);
 	Ellipsoid_T.free(e2_out);
     }
-    assert(false && "done.");
 
     {
         const int n = 10;
@@ -230,10 +229,12 @@ void test_preprocess_generic() {
 	Polytope* box = Polytope_new_box(n,1.0);
         Ellipsoid* e = Ellipsoid_new(n);
         for(int i=0; i<n; i++) {
-            e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+            e->a[i] = (i==0)*1.7; // set on plane of box
             FT* Ai = Ellipsoid_get_Ai(e,i);
-            Ai[i] = prng_get_random_double_in_range(1.0,2.0);
+            Ai[i] = 2.0;// make quite small
+	    if(i==0) {Ai[i] = 1;}// stretch quite far
         }
+
         void* body_in[2] = {box, e};
 	Polytope* box_out = Polytope_new_box(n,1.0);
         Ellipsoid* e_out = Ellipsoid_new(n);
@@ -241,8 +242,36 @@ void test_preprocess_generic() {
         Body_T* type[2] = {&Polytope_T, &Ellipsoid_T};
 
         preprocess_ref(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
-
+        
 	std::cout << "det: " << det << std::endl;
+
+	std::cout << "e_out:\n";
+        Ellipsoid_T.print(e_out);
+	std::cout << "box_out:\n";
+	Polytope_T.print(box_out);
+
+        // inside test:
+        FT* x = (FT*)aligned_alloc(32, n*sizeof(FT));
+	for(int i=0;i<n;i++) {
+	    {// inner ellipsoid
+                for(int j=0;j<n;j++) {x[j]=(i==j);}// init vector
+                bool i1 = Polytope_T.inside(box_out,x);
+                bool i2 = Ellipsoid_T.inside(e_out,x);
+		assert(i1 && i2 && "inner ellipsoid points must be in both");
+	    }
+	    {// outer ellipsoid
+                for(int j=0;j<n;j++) {x[j]=(i==j)*2*n;}// init vector
+                bool i1 = Polytope_T.inside(box_out,x);
+                bool i2 = Ellipsoid_T.inside(e_out,x);
+		std::cout << "outer " << i1 << " " << i2 << "\n";
+		assert((!i1 && !i2) && "outer ellipsoid points must be outside at least one");
+            }
+	}
+
+	Polytope_T.free(box);
+	Polytope_T.free(box_out);
+	Ellipsoid_T.free(e);
+	Ellipsoid_T.free(e_out);
     }
 }
 
