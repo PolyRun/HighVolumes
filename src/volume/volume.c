@@ -623,7 +623,47 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
 }
 
 void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta) {
-   assert(false && "not implemented");
+   Ellipsoid* e_in = (Ellipsoid*)o_in;
+   Ellipsoid* e_out = (Ellipsoid*)o_out;
+   const int n = e_in->n;
+   
+   // computation according to preprocess_ref
+   // B' = LT * B * L
+   // B'' = B' * beta^2
+   
+   // the matrix multiplications below are terrible, but they work 
+   FT* LtB = (FT*)(aligned_alloc(32, n*n*sizeof(FT))); // align this to 32
+   
+   for(int i=0;i<n;i++) {
+      for(int j=0;j<n;j++) {
+         FT sum = 0;
+	 for(int k=0;k<n;k++) {
+	    FT* Lk = Matrix_get_row(L,k);
+	    FT* Bk = Ellipsoid_get_Ai(e_in,k);
+	    sum += Lk[i] * Bk[j];
+	 }
+	 LtB[i*n + j] = sum;
+      }
+   }
+   for(int i=0;i<n;i++) {
+      FT* Bi = Ellipsoid_get_Ai(e_out,i);
+      for(int j=0;j<n;j++) {
+         FT sum = 0;
+	 for(int k=0;k<n;k++) {
+	    FT* Lk = Matrix_get_row(L,k);
+	    sum += LtB[i*n + k] * Lk[j];
+	 }
+	 Bi[j] = sum * beta * beta; // new ellipse
+      }
+   }
+
+   free(LtB);
+   
+   // b'' = b' = L.inverse() * (a-b)
+   FT* ab = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   for(int i=0;i<n;i++) {ab[i] = a[i] - e_in->a[i];}
+   Matrix_L_solve(L, e_out->a, ab);
+   free(ab);
 }
 
 
@@ -939,7 +979,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    //
    // grow by 1/beta:
    // (y - b')T * B' * (y - b') <= 1/beta
-   // B'' = B' * beta 
+   // B'' = B' * beta^2 
    // b'' = b'
 
    printf("Transform\n");
@@ -1188,5 +1228,19 @@ void Matrix_print(const void* o) {
          printf(" %.3f", Matrix_get(p,i,j));
       }
       printf("\n");
+   }
+}
+
+void Matrix_L_solve(const Matrix* o, FT* x, const FT* b) {
+   const Matrix* L = (Matrix*)o;
+   const int n = L->n;
+
+   for(int i=0;i<n;i++) {
+      FT sum = 0;
+      FT* Li = Matrix_get_row(L, i);
+      for(int j=0;j<i;j++) {
+         sum += x[j] * Li[j];
+      }
+      x[i] = (b[i] - sum) / Li[i];
    }
 }

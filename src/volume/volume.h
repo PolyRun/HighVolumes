@@ -70,7 +70,9 @@ void Matrix_set(Matrix* m, int i, int x, FT a);
 FT Matrix_get(const Matrix* m, int i, int x);
 void Matrix_print(const void* o);
 
-
+// given L (lower triangle), b, solve for x: Lx = b
+// simple forward substitution
+void Matrix_L_solve(const Matrix* o, FT* x, const FT* b);
 
 // --------------------------------------------- Sub-body Member functions
 

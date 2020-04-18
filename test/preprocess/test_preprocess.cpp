@@ -145,7 +145,7 @@ void test_preprocess_generic() {
 	FT d2 = 1;
 	for(int i=0;i<n;i++) {
 	    FT t0,t1;
-            Polytope_T.intersectCoord(box_out, x, 0, &t0, &t1, cache);
+            Polytope_T.intersectCoord(box_out, x, i, &t0, &t1, cache);
             FT tmax = std::max(-t0,t1);
 	    d2 *= tmax;
 	    assert(t0 <= -1 && t1 >= 1 && "walls do not cut inner ellipse");
@@ -153,10 +153,14 @@ void test_preprocess_generic() {
 	}
 	std::cout << "d2 " << d2 << "\n";
 	assert(d2 <= 4.0*n*n && "box not outside ellipse");
-
+        
+	free(x);
+	free(cache);
+        Polytope_T.free(box);
+        Polytope_T.free(box_out);
+	
 	std::cout << "det: " << det << std::endl;
     }
-    assert(false && "done.");
      
     {
         const int n = 10;
@@ -178,9 +182,47 @@ void test_preprocess_generic() {
         Body_T* type[2] = {&Ellipsoid_T, &Ellipsoid_T};
 
         preprocess_ref(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+        
+	std::cout << "e1_out:\n";
+        Ellipsoid_T.print(e1_out);
+	std::cout << "e2_out:\n";
+        Ellipsoid_T.print(e2_out);
+        
+        // check that centers allign:
+	for(int i=0;i<n;i++) {
+	   assert(e1_out->a[i] == e2_out->a[i]);
+	}
+        
+        // eval test:
+        FT* x = (FT*)aligned_alloc(32, n*sizeof(FT));
+	for(int i=0;i<n;i++) {
+	    {// inner ellipsoid
+                for(int j=0;j<n;j++) {x[j]=(i==j);}// init vector
+	        FT eval1 = Ellipsoid_eval(e1_out, x);
+	        FT eval2 = Ellipsoid_eval(e2_out, x);
+		std::cout << "inner: " << eval1 << " " << eval2 << "\n";
+		assert(eval1 <= 1.0);
+		assert(eval2 <= 1.0);
+            }
+	    {// outer ellipsoid
+                for(int j=0;j<n;j++) {x[j]=(i==j)*2*n;}// init vector
+	        FT eval1 = Ellipsoid_eval(e1_out, x);
+	        FT eval2 = Ellipsoid_eval(e2_out, x);
+		std::cout << "outer: " << eval1 << " " << eval2 << "\n";
+		assert(eval1 >= 1.0);
+		assert(eval2 >= 1.0);
+            }
+	}
 
 	std::cout << "det: " << det << std::endl;
+        
+	free(x);
+	Ellipsoid_T.free(e1);
+	Ellipsoid_T.free(e2);
+	Ellipsoid_T.free(e1_out);
+	Ellipsoid_T.free(e2_out);
     }
+    assert(false && "done.");
 
     {
         const int n = 10;

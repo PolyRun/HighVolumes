@@ -442,6 +442,38 @@ int main(int argc, char** argv) {
       free(v);
       Ellipsoid_free(body);
    }
+
+   // ---------------------------------------- Matrix
+
+   for(int t=0;t<100;t++){// Matrix_L_solve:
+      const int n = 20;
+      Matrix* L = Matrix_new(n,n);
+      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT* b = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      // init L matrix:
+      for(int i=0;i<n;i++) {
+         FT* Li = Matrix_get_row(L,i);
+	 Li[i] = prng_get_random_double_in_range(5,10);// strong diagonal
+	 for(int j=0;j<i;j++) {
+	    Li[j] = prng_get_random_double_in_range(0.1,0.5);
+	 }
+      }
+      
+      for(int i=0;i<n;i++) {
+         for(int j=0;j<n;j++) {b[j]=(i==j);} // for each unit vector
+	 Matrix_L_solve(L,x,b);
+
+	 for(int j=0;j<n;j++) {// check by multiplying
+            FT* Li = Matrix_get_row(L,j);
+	    FT dot = dotProduct(Li,x, n);
+	    assert(std::abs(dot - b[j])<0.000001);
+	 }
+      } 
+
+      Matrix_free(L);
+      free(x);
+      free(b);
+   }
    
    // -------------------------------- end tests
 
