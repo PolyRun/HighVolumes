@@ -75,6 +75,7 @@ Body_T Polytope_T = {
 	.cacheReset = Polytope_cacheReset_ref,
 	.cacheUpdateCoord = Polytope_cacheUpdateCoord_ref,
         .shallowCutOracle = Polytope_shallowCutOracle_ref,
+	.transform = Polytope_transform_ref,
 };
 Body_T Sphere_T = {
         .print = Sphere_print,
@@ -86,6 +87,7 @@ Body_T Sphere_T = {
 	.cacheReset = Sphere_cacheReset_ref,
 	.cacheUpdateCoord = Sphere_cacheUpdateCoord_ref,
 	.shallowCutOracle = NULL,
+	.transform = NULL,
 };
 Body_T Ellipsoid_T = {
         .print = Ellipsoid_print,
@@ -97,6 +99,7 @@ Body_T Ellipsoid_T = {
 	.cacheReset = Ellipsoid_cacheReset_ref,
 	.cacheUpdateCoord = Ellipsoid_cacheUpdateCoord_ref,
 	.shallowCutOracle = Ellipsoid_shallowCutOracle_ref,
+	.transform = Ellipsoid_transform_ref,
 };
 
 Polytope* Polytope_new(int n, int m) {
@@ -300,7 +303,10 @@ bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT*
    // check if center of Ellisoid e = (X,x) is in Polytope:
    // for all i, check if:
    //    Ai * x <= bi
-   for(int i=0;i<m;i++) {
+   
+   int i0 = prng_get_random_int_in_range(0,m-1);// just an experiment to see if it helps balance things
+   for(int ii=0;ii<m;ii++) {
+      int i = (ii+i0) % m;
       FT* Ai = Polytope_get_Ai(p,i);
       FT bi = Polytope_get_b(p,i);
       FT* x = e->a;
@@ -317,7 +323,9 @@ bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT*
    // for all i, check if:
    //   AiT * T * Ai <= (bi - AiT * x)^2 * (2n)^2
    const FT twon2 = 4.0*n*n;
-   for(int i=0;i<m;i++) {
+   int i1 = prng_get_random_int_in_range(0,m-1);//ballance experiment
+   for(int ii=0;ii<m;ii++) {
+      int i = (ii+i1) % m;
       FT* Ai = Polytope_get_Ai(p,i);
       FT bi = Polytope_get_b(p,i);
       
@@ -338,6 +346,35 @@ bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT*
    
    // no half-plane violated inner ellipse
    return false;
+}
+
+void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta) {
+   const Polytope* p_in = (Polytope*)o_in;
+   Polytope* p_out = (Polytope*)o_out;
+   const int n = p_in->n;
+   const int m = p_in->m;
+   // computation according to explanation in preprocess_ref
+   
+   // b' = b - A * a
+   // b'' = b' / beta
+   FT beta_r = 1.0 / beta; 
+   for (int i = 0; i < m; i++){
+      FT* Ai = Polytope_get_Ai(p_in,i);
+      FT bi = Polytope_get_b(p_in, i);
+      FT distance = bi - dotProduct(Ai, a, n);
+      Polytope_set_b(p_out, i, beta_r * distance);
+   }
+   
+   // A'' = A' = A * L
+   for (int i = 0; i < m; i++){
+      for (int j = 0; j < n; j++){
+         FT sum = 0;
+         for (int k = 0; k < n; k++){
+            sum += Polytope_get_a(p_in, i, k) * Matrix_get(L, k, j);
+         }
+         Polytope_set_a(p_out, i, j, sum);
+      }
+   }
 }
 
 Sphere* Sphere_new(int n, FT r, const FT* c) {
@@ -585,6 +622,11 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    return true;
 }
 
+void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta) {
+   assert(false && "not implemented");
+}
+
+
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {
    // (x-a)T * A * (x-a)
    const int n = e->n;
@@ -727,7 +769,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    //     idea: origin at 0, radius determined by min of all bodies
    printf("init_ellipsoid\n");
    
-   FT R2 = 1e6; // TODO - ask sub bodies for radius, take min
+   FT R2 = 1e3; // TODO - ask sub bodies for radius, take min
    
    Ellipsoid* e = Ellipsoid_new_with_T(n); // origin zero
    for(int i=0; i<n; i++) {
@@ -764,6 +806,11 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       }
 
       if(!doCut) {break;} // we are done!
+      
+      {//debug:
+         FT d = dotProduct(v,v, n);
+	 printf("dotProduct v: %.12f c: %.12f\n",d,c);
+      }
 
       //printf("cut!\n");
       
@@ -813,7 +860,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 
 	 TvtATv += Tv[i] * ATv[i];
       }
-      FT div = 1.0 / (1 - fac2*TvtATv);
+      FT div = 1.0 / (1.0 - fac2*TvtATv);
 
       for(int i=0;i<n;i++) {
          FT* Ai = Ellipsoid_get_Ai(e,i);
@@ -824,6 +871,8 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 
       // debug: test inverse:
       Ellipsoid_T.print(e);
+      printf("\n");
+      printf("fac2: %.12f, div: %.12f\n",fac2,div);
       printf("\n");
       for(int i=0;i<n;i++){
          FT* Ai = Ellipsoid_get_Ai(e,i);
@@ -894,36 +943,39 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    // b'' = b'
 
    printf("Transform\n");
-   //FT *L = (FT *) calloc(n*n, sizeof(FT));
-   //int err = cholesky(T, L, n);
-   //
-   //if (err > 0){
-   //   printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
-   //   exit(1);		
-   //}
+  
+   Matrix* L = Matrix_new(n,n);
+   int err = cholesky_ellipsoid(e,L);
+   if (err > 0){
+      printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
+      exit(1);		
+   }
    
-   
-   //// b = beta_r * (b - A * ori);
-   //for (int i = 0; i < m; i++){
-   //   Polytope_set_b(*Q, i, beta_r * distance[i]);
-   //}
-   //// A = A * Trans;
-   //for (int i = 0; i < m; i++){
-   //   for (int j = 0; j < n; j++){
-   //      FT sum = 0;
-   //      for (int k = 0; k < n; k++){
-   //         sum += Polytope_get_a(P, i, k) * Trans[k*n + j];
-   //      }
-   //      Polytope_set_a(*Q, i, j, sum);
+   //printf("\nL:\n");
+   //for(int i=0;i<n;i++) {
+   //   FT* Li = Matrix_get_row(L,i);
+   //   for(int j=0;j<n;j++) {
+   //      printf(" %.12f",Li[j]);
    //   }
+   //   printf("\n");
    //}
+   
+   // transform bodies:
+    for(int b=0; b<bcount; b++) {
+      type[b]->transform(body_in[b], body_out[b], L, e->a, beta);
+   }
 
+   // calculate determinant:
+   //    diagonal of L matrix
+   //    scaled by beta
+   *det = 1;
+   for (int i = 0; i < n; i++){
+      *det *= Matrix_get(L,i,i);
+   }
+   *det /= pow(beta_r, n);
 
-   //*det = 1;
-   //for (int i = 0; i < n; i++){
-   //   *det *= Trans[i*n+i];
-   //}
-   //*det /= pow(beta_r, n);
+   Matrix_free(L);
+   //assert(false && "fixme T");
 }
 
 

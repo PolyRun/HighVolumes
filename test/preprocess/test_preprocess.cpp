@@ -122,31 +122,54 @@ void test_preprocess_generic() {
     std::cout << "\n ----------- TEST GENERIC PREPROCESSING:\n";
    
     {
-        const int n = 5;
+        const int n = 10;
         FT det;
-	Polytope* box = Polytope_new_box(n,1.0);
+	Polytope* box = Polytope_new_box(n,0.5);
         void* body_in[1] = {box};
 	Polytope* box_out = Polytope_new_box(n,1.0);
         void* body_out[1] = {box_out};
         Body_T* type[1] = {&Polytope_T};
 
         preprocess_ref(n, 1, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+        
+	//Polytope_T.print(box_out);
+        
+        FT* x = (FT*)aligned_alloc(32, n*sizeof(FT));
+        void* cache = aligned_alloc(32, Polytope_T.cacheAlloc(box_out));
+	for(int i=0;i<n;i++) {x[i]=0;}
+	Polytope_T.cacheReset(box_out,x,cache);
+	// check origin 0 is inside:
+        assert(Polytope_T.inside(box_out, x));
+        
+	// check intersections:
+	FT d2 = 1;
+	for(int i=0;i<n;i++) {
+	    FT t0,t1;
+            Polytope_T.intersectCoord(box_out, x, 0, &t0, &t1, cache);
+            FT tmax = std::max(-t0,t1);
+	    d2 *= tmax;
+	    assert(t0 <= -1 && t1 >= 1 && "walls do not cut inner ellipse");
+	    std::cout << t0 << " " << t1 << "\n";
+	}
+	std::cout << "d2 " << d2 << "\n";
+	assert(d2 <= 4.0*n*n && "box not outside ellipse");
 
 	std::cout << "det: " << det << std::endl;
     }
+    assert(false && "done.");
      
     {
-        const int n = 5;
+        const int n = 10;
         FT det;
         Ellipsoid* e1 = Ellipsoid_new(n);
         Ellipsoid* e2 = Ellipsoid_new(n);
         for(int i=0; i<n; i++) {
-            e1->a[i] = 0;//prng_get_random_double_in_range(-0.1,0.1);
-            e2->a[i] = 0;//prng_get_random_double_in_range(-0.1,0.1);
+            e1->a[i] = (i==1)*10;//prng_get_random_double_in_range(-0.1,0.1);
+            e2->a[i] = (i==1)*10;//prng_get_random_double_in_range(-0.1,0.1);
             FT* Ai1 = Ellipsoid_get_Ai(e1,i);
-            Ai1[i] = 1;//prng_get_random_double_in_range(0.1,0.2);
+            Ai1[i] = prng_get_random_double_in_range(0.1,0.2);
             FT* Ai2 = Ellipsoid_get_Ai(e2,i);
-            Ai2[i] = 1;//prng_get_random_double_in_range(0.1,0.2);
+            Ai2[i] = prng_get_random_double_in_range(0.1,0.2);
         }
         void* body_in[2] = {e1, e2};
         Ellipsoid* e1_out = Ellipsoid_new(n);
@@ -160,7 +183,7 @@ void test_preprocess_generic() {
     }
 
     {
-        const int n = 5;
+        const int n = 10;
         FT det;
 	Polytope* box = Polytope_new_box(n,1.0);
         Ellipsoid* e = Ellipsoid_new(n);
@@ -179,7 +202,6 @@ void test_preprocess_generic() {
 
 	std::cout << "det: " << det << std::endl;
     }
-    assert(false && "done.");
 }
 
 int main(int argc, char **argv){
