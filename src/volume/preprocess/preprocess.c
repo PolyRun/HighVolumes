@@ -351,12 +351,27 @@ void preprocess_opcount(Polytope *P, FT R2, FT *ori, Polytope **Q, FT *det, int 
     int m = P->m;
 
     *Q = Polytope_new(n, m);
-    
+
+    //------------------------------
     double beta_r = 2*n; 
+    // (0,1,0,0)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //------------------------------
     double c1 = (2 * pow(n, 2) + pow(1 - n / beta_r, 2)) * (1 - 1.0 / pow(beta_r, 2)) / (2 * pow(n, 2) - 2);
+    // (4,7,3,0)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //------------------------------
     double c2 = (1 - n / beta_r) / (n + 1);
+    // (2, 0, 2, 0)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //------------------------------
     double c3 = beta_r * beta_r;
+    // (0,1,0,0)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //------------------------------
     double c4 = 2 * c2 / (1 - 1.0 / beta_r);
+    // (1, 1, 2, 0)
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     // initialize T to diag(R2)
     // T is out initial guess to the ellipsoid around Poly
@@ -529,14 +544,14 @@ void preprocess_opcount(Polytope *P, FT R2, FT *ori, Polytope **Q, FT *det, int 
 //       loopone * (n+1) +
 //       breakcond * (n^2 + n) + 
 //       looptwo * (n^2+n+1) +
-//       (n^3 + 6n^2 + 5n)/6 + mn(n+1)/2
+//       (n^3 + 6n^2 + 5n)/6 + mn(n+1)/2 + 7
 // mults: iterations * (4n^2 + n) +
 //        loopone * n +
 //        breakcond * (n^2 + n) + 
 //        looptwo * (n^2+n+2) +
-//        (n^3 + 3n^2 - 4n)/6 + mn(n+1)/2 + 2n - 1 + m
+//        (n^3 + 3n^2 - 4n)/6 + mn(n+1)/2 + 2n + m + 9
 // divs: iterations * n +
-//       (n^2 + n)/2 + 1
+//       (n^2 + n)/2 + 8
 // sqrts: iterations * n +
 //        n
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

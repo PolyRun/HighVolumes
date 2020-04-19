@@ -1,5 +1,6 @@
 #include "benchmark.hpp"
 #include "../src/volume/volume_helper.hpp"
+#include "../src/util/timer.hpp"
 
 extern "C" {
 #include "../src/volume/preprocess.h"
@@ -11,11 +12,12 @@ extern "C" {
 class Benchmark_preprocessing : public Benchmark_base {
 public:
     Benchmark_preprocessing(std::string name,
-                         int reps,
-                         bool convergence,
-                         int warmup_reps,
-                         const std::string &polytope_path) :
-        Benchmark_base(name, reps, convergence, warmup_reps),
+                            int reps,
+                            bool convergence,
+                            int warmup_reps,
+                            const std::string &polytope_path,
+                            Timer_generic *timer) :
+        Benchmark_base(name, reps, convergence, warmup_reps, timer),
         polytope_path(polytope_path)
     {}
 
@@ -46,15 +48,15 @@ protected:
             c2 * (n+1) +
             c3 * (n*n+n+1) +
             c4 * (n*n+1) +
-            (n*n*n + 6*n*n + 5*n)/6 + m*n*(n+1)/2;
+            (n*n*n + 6*n*n + 5*n)/6 + m*n*(n+1)/2 + 7;
 
         nmults = c1 * (4*n*n + n) +
             c2 * n +
             c3 * (n*n+n+2) +
             c4 * (n*n + n) +
-            (n*n*n + 3*n*n - 4*n)/6 + m*n*(n+1)/2 + 2*n - 1 + m;
+            (n*n*n + 3*n*n - 4*n)/6 + m*n*(n+1)/2 + 2*n + m + 9;
 
-        ndivs = c1 * n + (n*n + n)/2 + 1;
+        ndivs = c1 * n + (n*n + n)/2 + 8;
 
         nsqrts = c1 * n + n;
         
@@ -116,6 +118,7 @@ int main(int argc, char *argv[]){
     int reps = std::stoi(cli.option('r'));
     
 
-    Benchmark_preprocessing b("preprocess", reps, false, 0, path_from_exec);
+    Tsc clocks = Tsc();
+    Benchmark_preprocessing b("preprocess", reps, false, 0, path_from_exec, (Timer_generic *) &clocks);
     b.run_benchmark();
 }
