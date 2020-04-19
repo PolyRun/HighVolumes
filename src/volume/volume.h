@@ -7,7 +7,7 @@
 #include <assert.h>
 
 #include "../random/prng.h"
-
+#include "cholesky.h"
 
 #ifndef HEADER_VOLUMES_H
 #define HEADER_VOLUMES_H
@@ -70,7 +70,9 @@ void Matrix_set(Matrix* m, int i, int x, FT a);
 FT Matrix_get(const Matrix* m, int i, int x);
 void Matrix_print(const void* o);
 
-
+// given L (lower triangle), b, solve for x: Lx = b
+// simple forward substitution
+void Matrix_L_solve(const Matrix* o, FT* x, const FT* b);
 
 // --------------------------------------------- Sub-body Member functions
 
@@ -114,6 +116,10 @@ typedef void (*cacheUpdateCoord_f_t)(const void*, const int, const FT, void*);
 //    x in body: vT * x <= c
 typedef bool (*shallowCutOracle_f_t)(const void*, const Ellipsoid*, FT*, FT*);
 
+// Transform body after preprocessing
+// intput: body_in, body_out, matrix L, vector a, beta.
+typedef void (*transform_f_t)(const void*, void*, const Matrix*, FT*, FT);
+
 typedef struct Body_T Body_T;
 struct Body_T {
    print_f_t print;
@@ -125,6 +131,7 @@ struct Body_T {
    cacheReset_f_t cacheReset;
    cacheUpdateCoord_f_t cacheUpdateCoord;
    shallowCutOracle_f_t shallowCutOracle;
+   transform_f_t transform;
 };
 
 extern Body_T Polytope_T;
@@ -162,6 +169,7 @@ int  Polytope_cacheAlloc_ref(const void* o);
 void Polytope_cacheReset_ref(const void* o, const FT* x, void* cache);
 void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
+void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
 
 // Setters:
 void Polytope_set_a(Polytope* p, int i, int x, FT a);
@@ -220,6 +228,7 @@ int  Ellipsoid_cacheAlloc_ref(const void* o);
 void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache);
 void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
+void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
 
 
 FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i); // get row i

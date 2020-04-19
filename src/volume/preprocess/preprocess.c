@@ -4,54 +4,56 @@
 
 #define FLOATWIDTH 15
 
-/**
- * \brief cholesky factorization
- * \param A a symmetric, positive definite matrix
- * \param Trans will be lower diagonal matrix holding L
- * \param n the number of rows and cols of A
- **/
-int cholesky(FT *A, FT *Trans, int n);
 
-
-inline int cholesky(FT *A, FT *Trans, int n){
-    
-    // Decomposing a matrix into Lower Triangular
-    
-    //------------------------------
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j <= i; j++) { 
-            FT sum = 0; 
-
-            //------------------------------
-            if (j == i) { 
-                for (int k = 0; k < j; k++) {
-                    sum += Trans[j*n+k] * Trans[j*n+k];
-                }
-                Trans[j*n+j] = sqrt(A[j*n+j] - sum); 
-            }
-            // (i+1, i, 0, 1)
-            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-            
-            //------------------------------
-            else { 
-                for (int k = 0; k < j; k++) {
-                    sum += (Trans[i*n+k] * Trans[j*n+k]);
-                }
-                Trans[i*n+j] = (A[i*n+j] - sum) / Trans[j*n+j]; 
-            }
-            // (j+1, j, 1, 0)
-            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        }
-    }
-    // sum_{i=0}^{n} (i+1, i, 0, 1) +
-    // sum_{i=1}^{n-1} sum_{j=0}^{i-1} (j+1, j, 1, 0)
-    // = ((n^3 + 6n^2 + 5n)/6,
-    //    (n^3 + 3n^2 - 4n)/6,
-    //    (n^2 + n)/2,
-    //    n)
-    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    return 0;
-}
+// ------------ Find real implementation in cholesky.h, included through volume.h
+///**
+// * \brief cholesky factorization
+// * \param A a symmetric, positive definite matrix
+// * \param Trans will be lower diagonal matrix holding L
+// * \param n the number of rows and cols of A
+// **/
+//int cholesky(FT *A, FT *Trans, int n);
+//
+//
+//inline int cholesky(FT *A, FT *Trans, int n){
+//    
+//    // Decomposing a matrix into Lower Triangular
+//    
+//    //------------------------------
+//    for (int i = 0; i < n; i++) {
+//        for (int j = 0; j <= i; j++) { 
+//            FT sum = 0; 
+//
+//            //------------------------------
+//            if (j == i) { 
+//                for (int k = 0; k < j; k++) {
+//                    sum += Trans[j*n+k] * Trans[j*n+k];
+//                }
+//                Trans[j*n+j] = sqrt(A[j*n+j] - sum); 
+//            }
+//            // (i+1, i, 0, 1)
+//            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//            
+//            //------------------------------
+//            else { 
+//                for (int k = 0; k < j; k++) {
+//                    sum += (Trans[i*n+k] * Trans[j*n+k]);
+//                }
+//                Trans[i*n+j] = (A[i*n+j] - sum) / Trans[j*n+j]; 
+//            }
+//            // (j+1, j, 1, 0)
+//            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//        }
+//    }
+//    // sum_{i=0}^{n} (i+1, i, 0, 1) +
+//    // sum_{i=1}^{n-1} sum_{j=0}^{i-1} (j+1, j, 1, 0)
+//    // = ((n^3 + 6n^2 + 5n)/6,
+//    //    (n^3 + 3n^2 - 4n)/6,
+//    //    (n^2 + n)/2,
+//    //    n)
+//    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//    return 0;
+//}
 
 
 
