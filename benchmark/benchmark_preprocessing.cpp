@@ -46,15 +46,15 @@ protected:
             c2 * (n+1) +
             c3 * (n*n+n+1) +
             c4 * (n*n+1) +
-            (n*n*n*n - n*n*n + 2*n*n + 4*n)/6 + m*n*(n+1)/2;
+            (n*n*n + 6*n*n + 5*n)/6 + m*n*(n+1)/2;
 
         nmults = c1 * (4*n*n + n) +
             c2 * n +
             c3 * (n*n+n+2) +
             c4 * (n*n + n) +
-            (n*n*n*n - 4*n*n*n + 8*n*n - 5*n)/6 + m*n*(n+1)/2 + 2*n - 1 + m;
+            (n*n*n + 3*n*n - 4*n)/6 + m*n*(n+1)/2 + 2*n - 1 + m;
 
-        ndivs = c1 * n + (n*n - n)/2 + 1;
+        ndivs = c1 * n + (n*n + n)/2 + 1;
 
         nsqrts = c1 * n + n;
         

@@ -45,9 +45,9 @@ inline int cholesky(FT *A, FT *Trans, int n){
     }
     // sum_{i=0}^{n} (i+1, i, 0, 1) +
     // sum_{i=1}^{n-1} sum_{j=0}^{i-1} (j+1, j, 1, 0)
-    // = ((n^4 - n^3 + 2n^2 + 4n)/6,
-    //    (n^4 - 4n^3 + 8n^2 - 5n)/6,
-    //    (n^2 - n)/2,
+    // = ((n^3 + 6n^2 + 5n)/6,
+    //    (n^3 + 3n^2 - 4n)/6,
+    //    (n^2 + n)/2,
     //    n)
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     return 0;
@@ -527,17 +527,20 @@ void preprocess_opcount(Polytope *P, FT R2, FT *ori, Polytope **Q, FT *det, int 
 //       loopone * (n+1) +
 //       breakcond * (n^2 + n) + 
 //       looptwo * (n^2+n+1) +
-//       (n^4 - n^3 + 2n^2 + 4n)/6 + mn(n+1)/2
+//       (n^3 + 6n^2 + 5n)/6 + mn(n+1)/2
 // mults: iterations * (4n^2 + n) +
 //        loopone * n +
 //        breakcond * (n^2 + n) + 
 //        looptwo * (n^2+n+2) +
-//        (n^4 - 4n^3 + 8n^2 - 5n)/6 + mn(n+1)/2 + 2n - 1 + m
+//        (n^3 + 3n^2 - 4n)/6 + mn(n+1)/2 + 2n - 1 + m
 // divs: iterations * n +
-//       (n^2 - n)/2 + 1
+//       (n^2 + n)/2 + 1
 // sqrts: iterations * n +
 //        n
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-
+    // = ((n^3 + 6n^2 + 5n)/6,
+    //    (n^3 + 3n^2 - 4n)/6,
+    //    (n^2 + n)/2,
+    //    n)
