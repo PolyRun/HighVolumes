@@ -258,6 +258,12 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 
 // --------------------------------------------- Volume estimation
 
+// call this function at before any other function.
+// initializes memory arrays
+// set max_n to be at least as large as maximum dimension to ever be used
+// set max_b to be at least the number of sub-bodies ever used at one time
+void volume_lib_init(const int max_n, const int max_b);
+
 // number of points sampled per ball
 extern int step_size;
 // number of walk-steps taken for a sample

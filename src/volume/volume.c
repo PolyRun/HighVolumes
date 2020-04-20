@@ -1137,7 +1137,19 @@ void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, cons
    }
 }
 
+FT* volume_x_ptr = NULL;
+FT* volume_d_ptr = NULL;
+void* volume_cache_ptr = NULL;
 
+void volume_lib_init(const int max_n, const int max_b) {
+   printf("volume_lib_init...\n");
+
+   volume_x_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
+   volume_d_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
+   
+   int cache_size = 1000*max_n*max_b*sizeof(FT);
+   volume_cache_ptr = (aligned_alloc(32, cache_size*sizeof(FT))); // align this to 32
+}
 
 FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** body, const Body_T** type) {
    //
@@ -1156,23 +1168,25 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
    //
    
    // init x:
-   FT* x = (FT*) malloc(sizeof(FT)*n);// sample point x
+   FT* x = volume_x_ptr;// sample point x
+   assert(x);
    for(int j=0;j<n;j++) {x[j]=0.0;}// origin
 
-   FT* d = (FT*) malloc(sizeof(FT)*n); // vector for random direction
+   FT* d = volume_d_ptr; // vector for random direction
+   assert(d);
 
    // set up cache:
    int cache_size = 0;
    void* cache[bcount];
-   for(int c=0;c<bcount;c++) {
-      cache_size += type[c]->cacheAlloc(body[c]);
-   }
-   void* cache_base = aligned_alloc(32, cache_size); // align this to 32
+   //for(int c=0;c<bcount;c++) {
+   //   cache_size += type[c]->cacheAlloc(body[c]);
+   //}
+   void* cache_base = volume_cache_ptr; // align this to 32
    cache_size = 0;
    for(int c=0;c<bcount;c++) {
       cache[c] = cache_base + cache_size;
-      cache_size += type[c]->cacheAlloc(body[c]);
-
+      cache_size += ceil_cache(type[c]->cacheAlloc(body[c]), 1);
+      // round up for allignment
       type[c]->cacheReset(body[c],x,cache[c]);
    }
 
@@ -1239,10 +1253,6 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
          type[c]->cacheReset(body[c],x,cache[c]);
       }
    }
-
-   free(x);
-   free(d);
-   free(cache_base);
 
    return volume;
 }

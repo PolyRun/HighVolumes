@@ -50,7 +50,6 @@ int main(int argc, char** argv) {
 
    std::cout << "\nGenerate new polytope:\n";
    Polytope* p = Polytope_new(10,6);
-   hello(p);
 
    std::cout << "n: " << p->n << " m: " << p->m << " line: " << p->line << "\n";
    
