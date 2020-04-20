@@ -271,6 +271,43 @@ int main(int argc, char** argv) {
       assert(std::abs(eval0-1) < 0.000001);
       assert(std::abs(eval1-1) < 0.000001);
    } 
+   for(int t=0; t<100; t++) {// test Ellipsoid_T.intersectCoord
+      const int n = 20;
+      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+      for(int i=0; i<n; i++) {
+         e->a[i] = prng_get_random_double_in_range(-10,10);
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         Ai[i] = prng_get_random_double_in_range(1.1,2.0);
+      }
+      
+      FT x[n];
+      int d = prng_get_random_int_in_range(0,n-1);
+      for(int i=0; i<n; i++) {
+         x[i] = e->a[i] + prng_get_random_double_in_range(-1.0/n,1.0/n);
+      }
+      
+      void* cache = aligned_alloc(32, Ellipsoid_T.cacheAlloc(e));
+      Ellipsoid_T.cacheReset(e,x,cache);
+      FT t0,t1;
+      Ellipsoid_T.intersectCoord(e, x, d, &t0, &t1, cache);
+      
+      assert(t0 < t1);
+      
+      // test if points are really on ellipse:
+      FT x0[n];
+      FT x1[n];
+      for(int i=0; i<n; i++) {
+         x0[i] = x[i] + t0*(i==d);
+         x1[i] = x[i] + t1*(i==d);
+      }
+      FT eval0 = Ellipsoid_eval(e, x0);
+      FT eval1 = Ellipsoid_eval(e, x1);
+      assert(std::abs(eval0-1) < 0.000001);
+      assert(std::abs(eval1-1) < 0.000001);
+
+      free(cache);
+      Ellipsoid_T.free(e);
+   } 
    { // test Ellipsoid_project
       Ellipsoid* e = Ellipsoid_new(3); // simple sphere
       e->a[0] = 5.0;

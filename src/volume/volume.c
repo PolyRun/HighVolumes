@@ -562,22 +562,48 @@ void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT
 
 void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   const int n = e->n;
+
+   FT* Ad = Ellipsoid_get_Ai(e,d);
+   FT a = Ad[d];
+   FT b = 0;
+   FT c = -1.0;
+   
+   // do multiplications same as in eval.
+   for(int i=0;i<n;i++) {
+      const FT* Ai = Ellipsoid_get_Ai(e,i);
+      FT Az = 0;
+      for(int j=0; j<n; j++) {
+         Az += Ai[j] * (x[j] - e->a[j]);
+      }
+      b += (i==d) * Az;
+      c += (x[i] - e->a[i]) * Az;
+   }
+   b *= 2.0;
+
+   // find t:
+   const FT det = b*b - 4.0*a*c;
+   assert(det >= 0);
+   const FT sqrtDet = sqrt(det);
+   const FT aInv = 0.5/a;
+
+   *t0 = (-b - sqrtDet) * aInv;
+   *t1 = (-b + sqrtDet) * aInv;
 }
 
 int  Ellipsoid_cacheAlloc_ref(const void* o) {
    Ellipsoid* e = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   return 0; // no cache
 }
 
 void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   // no cache
 }
 
 void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   // no cache
 }
 
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c) {
