@@ -17,10 +17,14 @@ class Benchmark_intersect : public Benchmark_base {
                 body = Polytope_new_box(n,1);
 		type = &Polytope_T;
 	    }else if(generator.compare("sphere") == 0) {
-		FT* center = (FT*)malloc(n*sizeof(FT));
-		for(int i=0; i<n; i++) {center[i] = 0;}; center[0] = 1;
-                body = Sphere_new(n,2,center);
-		type = &Sphere_T;
+	        Ellipsoid* e = Ellipsoid_new(n);
+                for(int i=0;i<n;i++) {
+                    FT* Ai = Ellipsoid_get_Ai(e,i);
+                    Ai[i] = 1.0/4.0;
+		    e->a[i] = (i==0);
+                }
+		body = e;
+		type = &Ellipsoid_T;
 	    } else {
 	        std::cout << "Error: did not find generator " << generator << "\n";
 		assert(false);

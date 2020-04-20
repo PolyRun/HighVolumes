@@ -77,18 +77,6 @@ Body_T Polytope_T = {
         .shallowCutOracle = Polytope_shallowCutOracle_ref,
 	.transform = Polytope_transform_ref,
 };
-Body_T Sphere_T = {
-        .print = Sphere_print,
-	.free = Sphere_free,
-	.inside = Sphere_inside_ref,
-	.intersect = Sphere_intersect_ref,
-	.intersectCoord = Sphere_intersectCoord_ref,
-	.cacheAlloc = Sphere_cacheAlloc_ref,
-	.cacheReset = Sphere_cacheReset_ref,
-	.cacheUpdateCoord = Sphere_cacheUpdateCoord_ref,
-	.shallowCutOracle = NULL,
-	.transform = NULL,
-};
 Body_T Ellipsoid_T = {
         .print = Ellipsoid_print,
 	.free = Ellipsoid_free,
@@ -377,62 +365,6 @@ void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* 
    }
 }
 
-Sphere* Sphere_new(int n, FT r, const FT* c) {
-   Sphere* o = (Sphere*) malloc(sizeof(Sphere));
-   o->n = n;
-   o->r = r;
-   o->center = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-   for(int i=0; i<n; i++) {o->center[i] = c[i];}
-   return o;
-}
-
-void Sphere_free(const void* o) {
-   Sphere* s = (Sphere*)o;
-   free(s->center);
-   free(s);
-}
-
-void Sphere_print(const void* o) {
-   const Sphere* s = (Sphere*)o;
-   printf("Sphere: n=%d, r=%.3f, c=[",s->n,s->r);
-   for(int i=0; i<s->n; i++) {
-      printf(" %.3f",s->center[i]);
-   }
-   printf("]\n");
-}
-
-bool Sphere_inside_ref(const void* o, const FT* v) {
-   const Sphere* s = (Sphere*)o;
-   FT d2 = 0.0;
-   for(int i=0; i<s->n; i++) { FT d = s->center[i] - v[i]; d2 += d*d;}
-   return d2 <= s->r*s->r;
-}
-
-void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1) {
-   const Sphere* s = (Sphere*)o;
-   const int n = s->n;
-   FT diff[n]; // probably a terrible idea, besides not vector alligned!
-   for(int i=0;i<n;i++) {diff[i] = x[i] - s->center[i];}
-   Ball_intersect(n, s->r, diff, d, t0,t1);
-}
-
-void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
-   const Sphere* s = (Sphere*)o;
-   const int n = s->n;
-   FT diff[n]; // probably a terrible idea, besides not vector alligned!
-   for(int i=0;i<n;i++) {diff[i] = x[i] - s->center[i];}
-   Ball_intersectCoord(n, s->r, diff, d, t0,t1);
-}
-
-int Sphere_cacheAlloc_ref(const void* o) {
-   return 0; // no cache
-}
-void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache) {
-   // no cache
-}
-void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
-   // no cache
-}
 
 Ellipsoid* Ellipsoid_new(int n) {
    Ellipsoid* e = (Ellipsoid*) malloc(sizeof(Ellipsoid));

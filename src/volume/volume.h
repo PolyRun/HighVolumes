@@ -24,7 +24,6 @@ typedef double FT;
 
 // --------------------------------------------- Forward Declarations
 typedef struct Polytope Polytope;
-typedef struct Sphere Sphere;
 typedef struct Ellipsoid Ellipsoid;
 
 // --------------------------------------------- Vectors / General
@@ -135,7 +134,6 @@ struct Body_T {
 };
 
 extern Body_T Polytope_T;
-extern Body_T Sphere_T;
 extern Body_T Ellipsoid_T;
 
 // --------------------------------------------- Polytope
@@ -183,25 +181,6 @@ FT Polytope_get_b(const Polytope* p, int i);
 
 // get pointer to ai
 FT* Polytope_get_Ai(const Polytope* p, int i);
-
-// --------------------------------------------- Sphere
-
-struct Sphere {
-   FT* center; // size n
-   FT r; // radius
-   int n; // dimensions
-};
-
-Sphere* Sphere_new(int n, FT r, const FT* c);
-
-void Sphere_free(const void* o);
-void Sphere_print(const void* o);
-bool Sphere_inside_ref(const void* o, const FT* v);
-void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
-void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-int  Sphere_cacheAlloc_ref(const void* o);
-void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache);
-void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 
 // --------------------------------------------- Ellipsoid
 

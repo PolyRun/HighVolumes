@@ -22,10 +22,14 @@ class Benchmark_A1 : public Benchmark_base {
 		bcount = 1;
 	        body = (void**)malloc(bcount*sizeof(void*));
 	        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
-		FT* center = (FT*)malloc(n*sizeof(FT));
-		for(int i=0; i<n; i++) {center[i] = 0;}; center[0] = 1;
-                body[0] = Sphere_new(n,2,center);
-		type[0] = &Sphere_T;
+		Ellipsoid* e = Ellipsoid_new(n);
+                for(int i=0;i<n;i++) {
+                    FT* Ai = Ellipsoid_get_Ai(e,i);
+                    Ai[i] = 1.0/4.0;
+		    e->a[i] = (i==0);
+                }
+		body[0] = e;
+		type[0] = &Ellipsoid_T;
 		r0 = 1.0;
 		r1 = 3.0;
 	    } else {
