@@ -248,6 +248,9 @@ void Ellipsoid_project(const Ellipsoid* e, const FT eFac, FT* x);
 // takes current x as initialization
 void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, FT* x);
 
+// recompute A from T (inverse)
+void Ellipsoid_A_from_T(Ellipsoid* e);
+
 // --------------------------------------------- Preprocessing
 
 void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
