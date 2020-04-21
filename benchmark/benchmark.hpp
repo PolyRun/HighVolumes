@@ -24,6 +24,7 @@ class Benchmark_base {
         timer = new Timer();
     }
 
+    // overloaded constructer taking timer argument
     Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_, Timer_generic *t) : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_), timer(t) {}
 
         /**

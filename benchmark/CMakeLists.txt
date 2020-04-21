@@ -91,7 +91,20 @@ add_executable(benchmark_preprocess benchmark_preprocessing.cpp)
 
 target_link_libraries(benchmark_preprocess PUBLIC volume_helper)
 
-set_target_properties(benchmark_polyvest PROPERTIES
+set_target_properties(benchmark_preprocess PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+
+project(benchmark_A1_polytope)
+
+add_executable(benchmark_A1_polytope benchmark_A1_polytope.cpp)
+
+target_link_libraries(benchmark_A1_polytope PUBLIC volume_helper)
+
+set_target_properties(benchmark_A1_polytope PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO

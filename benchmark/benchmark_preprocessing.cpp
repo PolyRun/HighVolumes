@@ -98,6 +98,8 @@ int main(int argc, char *argv[]){
     cli.addOption('r', "5", "number of repetitions");
     
     cli.addOption('P', "cube_2", "input polytope");
+
+    cli.addOption('t', "1", "timer: 0 chrono, 1 tsc");
     
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
@@ -116,9 +118,16 @@ int main(int argc, char *argv[]){
 
     std::cout << "path: " << path_from_exec << std::endl;
     int reps = std::stoi(cli.option('r'));
-    
-
-    Tsc clocks = Tsc();
-    Benchmark_preprocessing b("preprocess", reps, false, 0, path_from_exec, (Timer_generic *) &clocks);
+    Timer_generic *timer;
+    if (std::stoi(cli.option('t')) == 0) {
+        Timer t = Timer();
+        timer = (Timer_generic *) &t;
+    }
+    else {
+        Tsc t = Tsc();
+        timer = (Timer_generic *) &t;
+    }
+    //Tsc clocks = Tsc();
+    Benchmark_preprocessing b("preprocess", reps, false, 0, path_from_exec, timer);
     b.run_benchmark();
 }

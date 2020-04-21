@@ -6,6 +6,7 @@
 #include <map>
 #include <sstream>
 #include <getopt.h>
+#include <algorithm>
 
 // -------------------- Idea:
 //
@@ -215,6 +216,19 @@ public:
     std::string getPath(){
         std::string s(argv_[0]);
         return s;
+    }
+
+    std::string getPathFromExec(){
+        std::string path = getPath();
+        std::string res = "";
+        reverse(path.begin(), path.end());
+        size_t pos = path.find('/');
+        // the executable is not in the current directory
+        if(pos != std::string::npos){
+            reverse(path.begin(), path.end());
+            res = path.substr(0, path.length() - pos);
+        }
+        return res;
     }
     
 protected:
