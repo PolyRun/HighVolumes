@@ -78,18 +78,6 @@ Body_T Polytope_T = {
 	.transform = Polytope_transform_ref,
         .boundingSphere = Polytope_bounding_ref
 };
-Body_T Sphere_T = {
-        .print = Sphere_print,
-	.free = Sphere_free,
-	.inside = Sphere_inside_ref,
-	.intersect = Sphere_intersect_ref,
-	.intersectCoord = Sphere_intersectCoord_ref,
-	.cacheAlloc = Sphere_cacheAlloc_ref,
-	.cacheReset = Sphere_cacheReset_ref,
-	.cacheUpdateCoord = Sphere_cacheUpdateCoord_ref,
-	.shallowCutOracle = NULL,
-	.transform = NULL,
-};
 Body_T Ellipsoid_T = {
         .print = Ellipsoid_print,
 	.free = Ellipsoid_free,
@@ -379,62 +367,6 @@ void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* 
    }
 }
 
-Sphere* Sphere_new(int n, FT r, const FT* c) {
-   Sphere* o = (Sphere*) malloc(sizeof(Sphere));
-   o->n = n;
-   o->r = r;
-   o->center = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-   for(int i=0; i<n; i++) {o->center[i] = c[i];}
-   return o;
-}
-
-void Sphere_free(const void* o) {
-   Sphere* s = (Sphere*)o;
-   free(s->center);
-   free(s);
-}
-
-void Sphere_print(const void* o) {
-   const Sphere* s = (Sphere*)o;
-   printf("Sphere: n=%d, r=%.3f, c=[",s->n,s->r);
-   for(int i=0; i<s->n; i++) {
-      printf(" %.3f",s->center[i]);
-   }
-   printf("]\n");
-}
-
-bool Sphere_inside_ref(const void* o, const FT* v) {
-   const Sphere* s = (Sphere*)o;
-   FT d2 = 0.0;
-   for(int i=0; i<s->n; i++) { FT d = s->center[i] - v[i]; d2 += d*d;}
-   return d2 <= s->r*s->r;
-}
-
-void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1) {
-   const Sphere* s = (Sphere*)o;
-   const int n = s->n;
-   FT diff[n]; // probably a terrible idea, besides not vector alligned!
-   for(int i=0;i<n;i++) {diff[i] = x[i] - s->center[i];}
-   Ball_intersect(n, s->r, diff, d, t0,t1);
-}
-
-void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
-   const Sphere* s = (Sphere*)o;
-   const int n = s->n;
-   FT diff[n]; // probably a terrible idea, besides not vector alligned!
-   for(int i=0;i<n;i++) {diff[i] = x[i] - s->center[i];}
-   Ball_intersectCoord(n, s->r, diff, d, t0,t1);
-}
-
-int Sphere_cacheAlloc_ref(const void* o) {
-   return 0; // no cache
-}
-void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache) {
-   // no cache
-}
-void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
-   // no cache
-}
 
 Ellipsoid* Ellipsoid_new(int n) {
    Ellipsoid* e = (Ellipsoid*) malloc(sizeof(Ellipsoid));
@@ -564,22 +496,48 @@ void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT
 
 void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   const int n = e->n;
+
+   FT* Ad = Ellipsoid_get_Ai(e,d);
+   FT a = Ad[d];
+   FT b = 0;
+   FT c = -1.0;
+   
+   // do multiplications same as in eval.
+   for(int i=0;i<n;i++) {
+      const FT* Ai = Ellipsoid_get_Ai(e,i);
+      FT Az = 0;
+      for(int j=0; j<n; j++) {
+         Az += Ai[j] * (x[j] - e->a[j]);
+      }
+      b += (i==d) * Az;
+      c += (x[i] - e->a[i]) * Az;
+   }
+   b *= 2.0;
+
+   // find t:
+   const FT det = b*b - 4.0*a*c;
+   assert(det >= 0);
+   const FT sqrtDet = sqrt(det);
+   const FT aInv = 0.5/a;
+
+   *t0 = (-b - sqrtDet) * aInv;
+   *t1 = (-b + sqrtDet) * aInv;
 }
 
 int  Ellipsoid_cacheAlloc_ref(const void* o) {
    Ellipsoid* e = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   return 0; // no cache
 }
 
 void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   // no cache
 }
 
 void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
-   assert(false && "not implemented!");
+   // no cache
 }
 
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c) {
@@ -790,7 +748,7 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
       //printf("evalX: %.20f\n",evalX);
       
       if(++count >= 100*n) {
-         printf("Warning: taking too many steps (%d), abort minimization now!\n",count);
+         printf("Warning: taking too many steps (%d), abort minimization now! (dot: %.12f)\n",count,dot);
 	 break;
       }
    } while(dot > 0.00000001);
@@ -805,6 +763,42 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
    free(nP);
 }
 
+void Ellipsoid_A_from_T(Ellipsoid* e) {
+   const int n = e->n;
+   printf("redoing A from T:\n");
+
+   Matrix* L = Matrix_new(n,n);
+   Matrix* Linvt = Matrix_new(n,n);
+   FT* b = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   int err = cholesky_ellipsoid(e,L);
+   assert(err==0 && "no cholesky errors");
+   
+   for(int i=0;i<n;i++) {
+      for(int j=0;j<n;j++) {b[j]=(i==j);}// unit vec
+      FT* x = Matrix_get_row(Linvt, i);
+      Matrix_L_solve(L, x, b);
+   }
+   //Matrix_print(Linvt);
+   
+   // A = T.inverse()
+   // A = (LLt).inverse()
+   // A = Lt.inverse() * L.inverse()
+   for(int i=0;i<n;i++) {
+      FT* Ai = Ellipsoid_get_Ai(e,i);
+      for(int j=0;j<n;j++) {
+	 FT* a = Matrix_get_row(Linvt, i);
+	 FT* b = Matrix_get_row(Linvt, j);
+         FT aij = Ai[j];
+	 FT dot = dotProduct(a,b, n);
+	 assert(abs(aij-dot) < 0.00000001);
+	 Ai[j] = dot;
+      }
+   }
+
+   free(b);
+   Matrix_free(Linvt);
+   Matrix_free(L);
+}
 
 void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det) {
    // 1. init_ellipsoid:
@@ -820,9 +814,14 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    FT *ori_prev = (FT *) malloc(n*sizeof(FT));
    FT *ori_prev = (FT *) malloc(n*sizeof(FT));
    
-   /*
-   FT R2 = 1e3; // TODO - ask sub bodies for radius, take min
-   
+   FT R2 = 1e4; // TODO - ask sub bodies for radius, take min
+   // Note: tests run reliably with 1e3
+   // for 1e4 we need the periodic inverse recalculation
+   // but beyond 1e5, the tests will fail
+   // doing inverse adjustment always also fails the tests unfortunately...
+   // I hope this problem goes away with the bounding box oracle,
+   // maybe then we don't even need the inverse adjustment
+
    Ellipsoid* e = Ellipsoid_new_with_T(n); // origin zero
    for(int i=0; i<n; i++) {
       FT* Ai = Ellipsoid_get_Ai(e,i);
@@ -859,13 +858,6 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       }
 
       if(!doCut) {break;} // we are done!
-      
-      {//debug:
-         FT d = dotProduct(v,v, n);
-	 printf("dotProduct v: %.12f c: %.12f\n",d,c);
-      }
-
-      //printf("cut!\n");
       
       // calculate: T * v and vt * T * v
       FT Tv[n];
@@ -921,12 +913,15 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 	    Ai[j] = (Ai[j] + fac2 * ATv[i]*ATv[j] * div) / zs;
 	 }
       }
+      
+      // testing: do inverse recalculation periodically!
+      if(step % 100 == 0) { // could finetune this!
+         Ellipsoid_A_from_T(e);
+      }
 
       // debug: test inverse:
-      Ellipsoid_T.print(e);
-      printf("\n");
-      printf("fac2: %.12f, div: %.12f\n",fac2,div);
-      printf("\n");
+      //Ellipsoid_T.print(e);
+      //printf("\n");
       for(int i=0;i<n;i++){
          FT* Ai = Ellipsoid_get_Ai(e,i);
          for(int j=0;j<n;j++){
@@ -935,12 +930,12 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
                FT* Tk = Ellipsoid_get_Ti(e,k);
                sum += Ai[k] * Tk[j];
             }
-            printf(" %.12f",sum);
+            //printf(" %.12f",sum);
             assert(abs(sum - 1.0*(i==j) < 0.0001));
          }
-         printf("\n");
+         //printf("\n");
       }
-      printf("\n");
+      //printf("\n");
       //assert(false);
    }
    Ellipsoid_T.print(e);
@@ -1086,7 +1081,19 @@ void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, cons
    }
 }
 
+FT* volume_x_ptr = NULL;
+FT* volume_d_ptr = NULL;
+void* volume_cache_ptr = NULL;
 
+void volume_lib_init(const int max_n, const int max_b) {
+   printf("volume_lib_init...\n");
+
+   volume_x_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
+   volume_d_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
+   
+   int cache_size = 1000*max_n*max_b*sizeof(FT);
+   volume_cache_ptr = (aligned_alloc(32, cache_size*sizeof(FT))); // align this to 32
+}
 
 FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** body, const Body_T** type) {
    //
@@ -1105,23 +1112,25 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
    //
    
    // init x:
-   FT* x = (FT*) malloc(sizeof(FT)*n);// sample point x
+   FT* x = volume_x_ptr;// sample point x
+   assert(x);
    for(int j=0;j<n;j++) {x[j]=0.0;}// origin
 
-   FT* d = (FT*) malloc(sizeof(FT)*n); // vector for random direction
+   FT* d = volume_d_ptr; // vector for random direction
+   assert(d);
 
    // set up cache:
    int cache_size = 0;
    void* cache[bcount];
-   for(int c=0;c<bcount;c++) {
-      cache_size += type[c]->cacheAlloc(body[c]);
-   }
-   void* cache_base = aligned_alloc(32, cache_size); // align this to 32
+   //for(int c=0;c<bcount;c++) {
+   //   cache_size += type[c]->cacheAlloc(body[c]);
+   //}
+   void* cache_base = volume_cache_ptr; // align this to 32
    cache_size = 0;
    for(int c=0;c<bcount;c++) {
       cache[c] = cache_base + cache_size;
-      cache_size += type[c]->cacheAlloc(body[c]);
-
+      cache_size += ceil_cache(type[c]->cacheAlloc(body[c]), 1);
+      // round up for allignment
       type[c]->cacheReset(body[c],x,cache[c]);
    }
 
@@ -1188,10 +1197,6 @@ FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** bo
          type[c]->cacheReset(body[c],x,cache[c]);
       }
    }
-
-   free(x);
-   free(d);
-   free(cache_base);
 
    return volume;
 }

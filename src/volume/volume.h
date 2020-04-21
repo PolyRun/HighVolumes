@@ -24,7 +24,6 @@ typedef double FT;
 
 // --------------------------------------------- Forward Declarations
 typedef struct Polytope Polytope;
-typedef struct Sphere Sphere;
 typedef struct Ellipsoid Ellipsoid;
 
 // --------------------------------------------- Vectors / General
@@ -140,7 +139,6 @@ struct Body_T {
 };
 
 extern Body_T Polytope_T;
-extern Body_T Sphere_T;
 extern Body_T Ellipsoid_T;
 
 // --------------------------------------------- Polytope
@@ -189,25 +187,6 @@ FT Polytope_get_b(const Polytope* p, int i);
 // get pointer to ai
 FT* Polytope_get_Ai(const Polytope* p, int i);
 
-// --------------------------------------------- Sphere
-
-struct Sphere {
-   FT* center; // size n
-   FT r; // radius
-   int n; // dimensions
-};
-
-Sphere* Sphere_new(int n, FT r, const FT* c);
-
-void Sphere_free(const void* o);
-void Sphere_print(const void* o);
-bool Sphere_inside_ref(const void* o, const FT* v);
-void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
-void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-int  Sphere_cacheAlloc_ref(const void* o);
-void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache);
-void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
-
 // --------------------------------------------- Ellipsoid
 
 struct Ellipsoid {
@@ -253,12 +232,21 @@ void Ellipsoid_project(const Ellipsoid* e, const FT eFac, FT* x);
 // takes current x as initialization
 void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, FT* x);
 
+// recompute A from T (inverse)
+void Ellipsoid_A_from_T(Ellipsoid* e);
+
 // --------------------------------------------- Preprocessing
 
 void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
 
 
 // --------------------------------------------- Volume estimation
+
+// call this function at before any other function.
+// initializes memory arrays
+// set max_n to be at least as large as maximum dimension to ever be used
+// set max_b to be at least the number of sub-bodies ever used at one time
+void volume_lib_init(const int max_n, const int max_b);
 
 // number of points sampled per ball
 extern int step_size;

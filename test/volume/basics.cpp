@@ -24,54 +24,53 @@ int main(int argc, char** argv) {
       Polytope_T.intersectCoord = it.second;
       std::cout << "Test Polytope for intersectCoord " << it.first << std::endl;
 
-      // Generate new polytope box, 4 dim, 2 radius
-      Polytope* box = Polytope_new_box(4,2);
+      // Generate new polytope box, n dim, 2 radius
+      const int n = 10;
+      Polytope* box = Polytope_new_box(n,2);
+      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
       {
-         FT v[4] = {0,0,0,0};
-         assert(Polytope_T.inside(box, (FT*)&v));
+         for(int i=0;i<n;i++) {x[i]=0;}
+	 assert(Polytope_T.inside(box, x));
       }
       {
-         FT v[4] = {0,0,0,3};
-         assert(!Polytope_T.inside(box, (FT*)&v));
+         for(int i=0;i<n;i++) {x[i]=(i==2)*3;}
+         assert(!Polytope_T.inside(box, x));
       }
       {
-         FT v[4] = {2,2,2,2};
-         assert(Polytope_T.inside(box, (FT*)&v));
+         for(int i=0;i<n;i++) {x[i]=2;}
+         assert(Polytope_T.inside(box, x));
       }
       {
-         FT v[4] = {1,-1,1,-1};
-         assert(Polytope_T.inside(box, (FT*)&v));
+         for(int i=0;i<n;i++) {x[i]=1-2*(i%2==0);}
+         assert(Polytope_T.inside(box, x));
       }
       {
-         FT v[4] = {-3,0,0,0};
-         assert(Polytope_T.inside(box, (FT*)&v));
+         for(int i=0;i<n;i++) {x[i]=-(i==0)*3.0;}
+         assert(Polytope_T.inside(box, x));
       }
 
       // Test Polytope_T.intersect:
       {
-         FT x[4] = {0.0,0.0,0.0,0.0};
-         FT d[4] = {0.1,-1.0,-0.9,0.2};
+         for(int i=0;i<n;i++) {x[i]=0; d[i]=-0.1 - (i==0)*0.9 + (i==1)*0.8;}
          FT t0,t1;
          Polytope_T.intersect(box, x, d, &t0, &t1);
          assert(t0==-2.0 && t1==2.0);
       }
       {
-         FT x[4] = {0.0,0.0,1.0,0.0};
-         FT d[4] = {0.0,0.0,-1.0,0.0};
+         for(int i=0;i<n;i++) {x[i]=(i==2); d[i]=(i==2)*-1;}
          FT t0,t1;
          Polytope_T.intersect(box, x, d, &t0, &t1);
          assert(t0==-1.0 && t1==3.0);
       }
       {
-         FT x[4] = {0.0,0.0,1.0,-1.5};
-         FT d[4] = {0.0,0.1,0.1,0.5};
+         for(int i=0;i<n;i++) {x[i]=(i==2)+(i==3)*-1.5; d[i]=0.1 + 0.4*(i==3);}
          FT t0,t1;
          Polytope_T.intersect(box, x, d, &t0, &t1);
          assert(t0==-1.0 && t1==7.0);
       }
       {
-         FT x[4] = {1.5,1.5,0.0,0.0};
-         FT d[4] = {1.0,-1.0,0.0,0.0};
+         for(int i=0;i<n;i++) {x[i]=(i<2)*1.5; d[i]=1*(i==0) + -1*(i==1);}
          FT t0,t1;
          Polytope_T.intersect(box, x, d, &t0, &t1);
          assert(t0==-0.5 && t1==0.5);
@@ -79,7 +78,7 @@ int main(int argc, char** argv) {
       // Test Polytope_T.intersectCoord
       void* cache = aligned_alloc(32, Polytope_T.cacheAlloc(box));
       {
-         FT x[4] = {0.0,0.0,0.0,0.0};
+         for(int i=0;i<n;i++) {x[i]=0;}
          Polytope_T.cacheReset(box,x,cache);
          for(int d=0;d<4;d++) {
             FT t0,t1;
@@ -88,7 +87,7 @@ int main(int argc, char** argv) {
          }
       }
       {
-         FT x[4] = {0.0,0.0,1.0,0.0};
+         for(int i=0;i<n;i++) {x[i]=(i==2);}
          Polytope_T.cacheReset(box,x,cache);
          FT t0,t1;
          Polytope_T.intersectCoord(box, x, 2, &t0, &t1, cache);
@@ -101,6 +100,8 @@ int main(int argc, char** argv) {
          assert(t0==-2.0 && t1==2.0);
       }
       free(cache);
+      free(d);
+      free(x);
       Polytope_free(box);
    }
 
@@ -110,110 +111,46 @@ int main(int argc, char** argv) {
    assert(std::abs(Ball_volume(10,1.0) - 2.550) <= 0.01);
    assert(std::abs(Ball_volume(11,1.0) - 1.884) <= 0.01);
 
-   // -------------- Sphere:
-   {   
-      FT center[4] = {0,1,0,0};
-      Sphere* s = Sphere_new(4,3.0,center);
-      //Sphere_T.print(s);
-      {
-         FT v[4] = {-1,0,0,0};
-         assert(Sphere_T.inside(s, (FT*)&v));
-      }
-      {
-         FT v[4] = {-3,0,0,0};
-         assert(!Sphere_T.inside(s, (FT*)&v));
-      }
-      {
-         FT v[4] = {0,3.99,0,0};
-         assert(Sphere_T.inside(s, (FT*)&v));
-      }
-      {
-         FT v[4] = {0,4.01,0,0};
-         assert(!Sphere_T.inside(s, (FT*)&v));
-      }
-
-      void* cache = aligned_alloc(32, Sphere_T.cacheAlloc(s));
-      {
-         FT x[4] = {0.0,1.0,0.0,0.0};
-         Sphere_T.cacheReset(s,x,cache);
-         FT d[4] = {1.0,0.0,0.0,0.0};
-         FT t0,t1;
-         Sphere_T.intersect(s, x, d, &t0, &t1);
-         assert(t0==-3.0 && t1==3.0);
-         for(int dd=0;dd<4;dd++) {
-            Sphere_T.intersectCoord(s, x, dd, &t0, &t1, cache);
-            assert(t0==-3.0 && t1==3.0);
-         }
-      }
-      {
-         FT x[4] = {0.0,0.0,0.0,0.0};
-         Sphere_T.cacheReset(s,x,cache);
-         FT d[4] = {0.0,1.0,0.0,0.0};
-         FT t0,t1;
-         Sphere_T.intersect(s, x, d, &t0, &t1);
-         assert(t0==-2.0 && t1==4.0);
-         Sphere_T.intersectCoord(s, x, 1, &t0, &t1, cache);
-         assert(t0==-2.0 && t1==4.0);
-      }
-      {
-         FT x[4] = {0.0,3.0,0.0,0.0};
-         Sphere_T.cacheReset(s,x,cache);
-         FT d[4] = {0.0,1.0,0.0,0.0};
-         FT t0,t1;
-         Sphere_T.intersect(s, x, d, &t0, &t1);
-         assert(t0==-5.0 && t1==1.0);
-         Sphere_T.intersectCoord(s, x, 1, &t0, &t1, cache);
-         assert(t0==-5.0 && t1==1.0);
-      }
-      {
-         FT x[4] = {0.0,1.0,0.0,0.0};
-         Sphere_T.cacheReset(s,x,cache);
-         FT d[4] = {1.0,1.0,1.0,1.0};
-         FT t0,t1;
-         Sphere_T.intersect(s, x, d, &t0, &t1);
-         assert(t0==-1.5 && t1==1.5);
-      }
-      free(cache);
-
-      Sphere_T.free(s);
-   }
-
    // ----------------- Ellipsoid
    { // test Ellipsoid_eval and Ellipsoid_normal Ellipsoid_T.inside
-      Ellipsoid* e = Ellipsoid_new(3); // simple sphere
-      FT n[3];
+      const int n = 3;
+      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+      FT* normal = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
       {
-         FT x[3] = {0,0,0};
+         for(int i=0;i<n;i++) {x[i]=0;}
 	 FT eval = Ellipsoid_eval(e, x);
 	 assert(eval == 0);
 	 assert(Ellipsoid_T.inside(e,x));
-         Ellipsoid_normal(e, x, n);
-	 assert(n[0]==0 && n[1]==0 && n[2]==0);
+         Ellipsoid_normal(e, x, normal);
+	 assert(normal[0]==0 && normal[1]==0 && normal[2]==0);
       }
       {
-         FT x[3] = {0,0,1};
+         for(int i=0;i<n;i++) {x[i]=(i==2);}
 	 FT eval = Ellipsoid_eval(e, x);
 	 assert(eval == 1.0);
 	 assert(Ellipsoid_T.inside(e,x));
-         Ellipsoid_normal(e, x, n);
-	 assert(n[0]==0 && n[1]==0 && n[2]==2);
+         Ellipsoid_normal(e, x, normal);
+	 assert(normal[0]==0 && normal[1]==0 && normal[2]==2);
       }
       {
-         FT x[3] = {0,2.0,0};
+         for(int i=0;i<n;i++) {x[i]=(i==1)*2;}
 	 FT eval = Ellipsoid_eval(e, x);
 	 assert(eval == 4.0);
 	 assert(!Ellipsoid_T.inside(e,x));
-         Ellipsoid_normal(e, x, n);
-	 assert(n[0]==0 && n[1]==4 && n[2]==0);
+         Ellipsoid_normal(e, x, normal);
+	 assert(normal[0]==0 && normal[1]==4 && normal[2]==0);
       } 
       {
-         FT x[3] = {3.0,4.0,0};
+         for(int i=0;i<n;i++) {x[i]=(i==0)*3 + (i==1)*4;}
 	 FT eval = Ellipsoid_eval(e, x);
 	 assert(eval == 25.0);
 	 assert(!Ellipsoid_T.inside(e,x));
-         Ellipsoid_normal(e, x, n);
-	 assert(n[0]==6 && n[1]==8 && n[2]==0);
+         Ellipsoid_normal(e, x, normal);
+	 assert(normal[0]==6 && normal[1]==8 && normal[2]==0);
       }
+      free(x);
+      free(normal);
       Ellipsoid_free(e);
    }
    { // test Ellipsoid_T.inside
@@ -223,7 +160,7 @@ int main(int argc, char** argv) {
          FT* Ai = Ellipsoid_get_Ai(e,i);
          Ai[i] = (i+1)*(i+1);
       }
-      FT x[n];
+      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
       {
          for(int i=0; i<n; i++) {x[i] = 0;}
 	 assert(Ellipsoid_T.inside(e,x));
@@ -236,6 +173,7 @@ int main(int argc, char** argv) {
          for(int i=0; i<n; i++) {x[i] = (i==j)*(1.1/(i+1.0));}
 	 assert(!Ellipsoid_T.inside(e,x));
       }
+      free(x);
       Ellipsoid_free(e);
    }
    for(int t=0; t<100; t++) {// test Ellipsoid_T.intersect
@@ -247,8 +185,8 @@ int main(int argc, char** argv) {
          Ai[i] = prng_get_random_double_in_range(1.1,2.0);
       }
       
-      FT x[n];
-      FT d[n];
+      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
       for(int i=0; i<n; i++) {
          x[i] = e->a[i] + prng_get_random_double_in_range(-1.0/n,1.0/n);
          d[i] = prng_get_random_double_normal();
@@ -270,6 +208,48 @@ int main(int argc, char** argv) {
       FT eval1 = Ellipsoid_eval(e, x1);
       assert(std::abs(eval0-1) < 0.000001);
       assert(std::abs(eval1-1) < 0.000001);
+
+      free(d);
+      free(x);
+      Ellipsoid_T.free(e);
+   } 
+   for(int t=0; t<100; t++) {// test Ellipsoid_T.intersectCoord
+      const int n = 20;
+      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+      for(int i=0; i<n; i++) {
+         e->a[i] = prng_get_random_double_in_range(-10,10);
+         FT* Ai = Ellipsoid_get_Ai(e,i);
+         Ai[i] = prng_get_random_double_in_range(1.1,2.0);
+      }
+      
+      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      int d = prng_get_random_int_in_range(0,n-1);
+      for(int i=0; i<n; i++) {
+         x[i] = e->a[i] + prng_get_random_double_in_range(-1.0/n,1.0/n);
+      }
+      
+      void* cache = aligned_alloc(32, Ellipsoid_T.cacheAlloc(e));
+      Ellipsoid_T.cacheReset(e,x,cache);
+      FT t0,t1;
+      Ellipsoid_T.intersectCoord(e, x, d, &t0, &t1, cache);
+      
+      assert(t0 < t1);
+      
+      // test if points are really on ellipse:
+      FT x0[n];
+      FT x1[n];
+      for(int i=0; i<n; i++) {
+         x0[i] = x[i] + t0*(i==d);
+         x1[i] = x[i] + t1*(i==d);
+      }
+      FT eval0 = Ellipsoid_eval(e, x0);
+      FT eval1 = Ellipsoid_eval(e, x1);
+      assert(std::abs(eval0-1) < 0.000001);
+      assert(std::abs(eval1-1) < 0.000001);
+
+      free(cache);
+      free(x);
+      Ellipsoid_T.free(e);
    } 
    { // test Ellipsoid_project
       Ellipsoid* e = Ellipsoid_new(3); // simple sphere
@@ -284,13 +264,17 @@ int main(int argc, char** argv) {
       A1[1] = 1.0;
       A2[2] = 0.5;
 
+      FT* x = (FT*)(aligned_alloc(32, 3*sizeof(FT)));
       for(int t=0; t<100; t++) {
-         FT x[3] = {std::fmod(t,13),std::fmod(t,11) - 12, std::fmod(t,0.7)};
+         x[0] = std::fmod(t,13);
+	 x[1] = std::fmod(t,11) - 12;
+	 x[2] = std::fmod(t,0.7);
          FT r = prng_get_random_double_in_range(0.1,20);
 	 Ellipsoid_project(e, r, x);
          FT eval = Ellipsoid_eval(e, x);
          assert(std::abs(eval-r) < 0.00001);
       }
+      free(x);
    }
    
    for(int t=0; t<100; t++) {// test Ellipsoid_minimize
@@ -307,13 +291,13 @@ int main(int argc, char** argv) {
       }
       
       {
-         FT x[n];
+         FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+         FT* n1 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+         FT* n2 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
          for(int i=0; i<n; i++) {
 	    x[i] = e2->a[i] + prng_get_random_double_normal();
 	 }
 
-         FT n1[n];
-         FT n2[n];
 	 FT r = prng_get_random_double_in_range(0.1,20);// change size of e2
 	 Ellipsoid_minimize(e2,r,e1,x); // test
          FT eval = Ellipsoid_eval(e2,x);
@@ -328,6 +312,10 @@ int main(int argc, char** argv) {
          for(int i=0;i<n;i++) { step[i] = n2[i] - n1[i] * dot / n1_2;}
 	 FT step2 = dotProduct(step,step,n);
 	 assert(std::abs(step2) < 0.0001);
+	 
+	 free(n2);
+	 free(n1);
+	 free(x);
       }
       
 
