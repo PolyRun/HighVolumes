@@ -148,17 +148,16 @@ extern Body_T Ellipsoid_T;
 // --------------------------------------------- Polytope
 
 struct Polytope {
-   FT* data; // size m * (n + 1)
+   FT* A; // size line * m
    // layout (row-wise):
-   // a0, a1, ... an, b, [buffering]
-   // a0, a1, ... an, b, [buffering] 
-   // ...
-   // basically always normal vector plus b adjacent
-   // this is hopefully good for cache, right?
+   // a0, a1, ... an, [buffering]
+   // a0, a1, ... an, [buffering] 
    // end of line: buffering for 32 byte allignment
    
+   FT* b; // size m
+
    //  A*x <= b
-   int line; // size of one row + b, plus buffer for allignment
+   int line; // size of one row plus buffer for allignment
    int n; // dimensions
    int m; // constraints
 };

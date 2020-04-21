@@ -94,16 +94,19 @@ Polytope* Polytope_new(int n, int m) {
    Polytope* o = (Polytope*) malloc(sizeof(Polytope));
    o->n = n;
    o->m = m;
-   o->line = ceil_cache(n+1,sizeof(FT)); // make sure next is also 32 alligned
-   o->data = (FT*)(aligned_alloc(32, o->line*m*sizeof(FT))); // align this to 32
-
+   o->line = ceil_cache(n,sizeof(FT)); // make sure next is also 32 alligned
+   int line_m = ceil_cache(m,sizeof(FT));
+   int size_A = o->line*m;
+   o->A = (FT*)(aligned_alloc(32, (size_A+line_m)*sizeof(FT))); // align this to 32
+   o->b = o->A + o->line*m;
+   for(int i=0;i<size_A+line_m;i++) {o->A[i]=0;}
    return o;
 }
 
 
 void Polytope_free(const void* o) {
    Polytope* p = (Polytope*)o;
-   free(p->data);
+   free(p->A);
    free(p);
 }
 
@@ -120,21 +123,21 @@ void Polytope_print(const void* o) {
 }
 
 inline FT* Polytope_get_Ai(const Polytope* p, int i) {
-   return &(p->data[i * (p->line)]);
+   return &(p->A[i * (p->line)]);
 }
 
 inline void Polytope_set_a(Polytope* p, int i, int x, FT a) {
-   p->data[i * (p->line) + x] = a;
+   p->A[i * (p->line) + x] = a;
 }
 inline void Polytope_set_b(Polytope* p, int i, FT b) {
-   p->data[i * (p->line) + p->n] = b;
+   p->b[i] = b;
 }
 
 inline FT Polytope_get_a(const Polytope* p, int i, int x) {
-   return p->data[i * (p->line) + x];
+   return p->A[i * (p->line) + x];
 }
 inline FT Polytope_get_b(const Polytope* p, int i) {
-   return p->data[i * (p->line) + p->n];
+   return p->b[i];
 }
 
 bool Polytope_inside_ref(const void* o, const FT* v) {
