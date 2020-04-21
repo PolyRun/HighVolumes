@@ -26,6 +26,12 @@ set(VOLUME_HEADER_FILES
 add_library(volume ${VOLUME_SOURCE_FILES} ${VOLUME_HEADER_FILES})
 target_link_libraries(volume PUBLIC glpk prng)
 
+set_target_properties(volume PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+   COMPILE_FLAGS -march=native
+)
 
 # ----------------------- volume_helper
 set(VOLUME_HELPER_SOURCE_FILES

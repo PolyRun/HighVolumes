@@ -19,6 +19,33 @@ int main(int argc, char** argv) {
    cliFun.postParse();
    
    // -------------------------------- start tests
+   
+   // -------- dotProduct:
+   {
+      auto o = dynamic_cast<CLIF_Option<dotProduct_f_t>*>(cliFun.getOption("dotProduct"));
+      for(auto it : o->fmap) {
+         std::cout << "Test dotProduct " << it.first << std::endl;
+         dotProduct = it.second;
+         
+         FT* u = (FT*)(aligned_alloc(32, 20*sizeof(FT)));
+         FT* v = (FT*)(aligned_alloc(32, 20*sizeof(FT)));
+         
+         for(int i=0;i<20;i++) {
+            u[i] = prng_get_random_double_in_range(1.1,2.0);
+            v[i] = prng_get_random_double_in_range(1.1,2.0);
+         }
+         for(int n=1;n<20;n++){
+            FT dot = dotProduct(u,v,n);
+            
+	    FT dotRef = 0;
+	    for(int i=0;i<n;i++) {dotRef += u[i]*v[i];}
+	    assert(std::abs(dot-dotRef) < 0.000001);
+	 }
+         free(u);
+         free(v);
+      }
+   }
+   // --------------------------------- Bodies:
    auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));
    for(auto it : o->fmap) {
       Polytope_T.intersectCoord = it.second;
@@ -294,6 +321,7 @@ int main(int argc, char** argv) {
          FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
          FT* n1 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
          FT* n2 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+         FT* step = (FT*)(aligned_alloc(32, n*sizeof(FT)));
          for(int i=0; i<n; i++) {
 	    x[i] = e2->a[i] + prng_get_random_double_normal();
 	 }
@@ -308,11 +336,11 @@ int main(int argc, char** argv) {
 	 FT n1_2 = dotProduct(n1,n1, n);
 	 FT dot = dotProduct(n1,n2, n);
 	 
-         FT step[n];
          for(int i=0;i<n;i++) { step[i] = n2[i] - n1[i] * dot / n1_2;}
 	 FT step2 = dotProduct(step,step,n);
 	 assert(std::abs(step2) < 0.0001);
 	 
+	 free(step);
 	 free(n2);
 	 free(n1);
 	 free(x);

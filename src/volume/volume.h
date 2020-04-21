@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <float.h>
 #include <math.h>
+#include <immintrin.h>
 
 #include <assert.h>
 
@@ -28,9 +29,11 @@ typedef struct Ellipsoid Ellipsoid;
 
 // --------------------------------------------- Vectors / General
 
-// simple vector product
+// dotProduct:
 //   assume no memory allignment!
-FT dotProduct(const FT* u, const FT* v, const int n);
+typedef FT (*dotProduct_f_t)(const FT* u, const FT* v, const int n);
+extern dotProduct_f_t dotProduct;
+#include "dotProduct.h"
 
 // intersect line x + t*d
 //           with ball(0,r)
