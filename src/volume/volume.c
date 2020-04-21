@@ -76,6 +76,7 @@ Body_T Polytope_T = {
 	.cacheUpdateCoord = Polytope_cacheUpdateCoord_ref,
         .shallowCutOracle = Polytope_shallowCutOracle_ref,
 	.transform = Polytope_transform_ref,
+        .boundingSphere = Polytope_bounding_ref
 };
 Body_T Sphere_T = {
         .print = Sphere_print,
@@ -100,6 +101,7 @@ Body_T Ellipsoid_T = {
 	.cacheUpdateCoord = Ellipsoid_cacheUpdateCoord_ref,
 	.shallowCutOracle = Ellipsoid_shallowCutOracle_ref,
 	.transform = Ellipsoid_transform_ref,
+        .boundingSphere = Ellipsoid_bounding_ref
 };
 
 Polytope* Polytope_new(int n, int m) {
@@ -808,7 +810,17 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    // 1. init_ellipsoid:
    //     idea: origin at 0, radius determined by min of all bodies
    printf("init_ellipsoid\n");
+
+   // compute an enclosing ball for each body and merge them
+   // note we want the center of the resulting ball to be in the intersection of all bodies
+   // moreover, the resulting ball should contain the intersection of all bodies
+   // in the worst case the intersection of all bodies is the union of all bodies
+
+   FT R2_prev, R2_cur;
+   FT *ori_prev = (FT *) malloc(n*sizeof(FT));
+   FT *ori_prev = (FT *) malloc(n*sizeof(FT));
    
+   /*
    FT R2 = 1e3; // TODO - ask sub bodies for radius, take min
    
    Ellipsoid* e = Ellipsoid_new_with_T(n); // origin zero
@@ -819,6 +831,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       Ti[i] = R2; // sphere with 
    }
    Ellipsoid_T.print(e);
+   */
    
    // 2. Cut steps
    printf("cut steps\n");

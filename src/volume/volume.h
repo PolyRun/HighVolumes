@@ -120,6 +120,10 @@ typedef bool (*shallowCutOracle_f_t)(const void*, const Ellipsoid*, FT*, FT*);
 // intput: body_in, body_out, matrix L, vector a, beta.
 typedef void (*transform_f_t)(const void*, void*, const Matrix*, FT*, FT);
 
+// input: body (ellipsoid or polytope), radius FT *r and center FT **ori
+// compute sphere with center ori and radius r that encloses the body
+typedef void (*boundingSphere_f_t)(const void *, FT *, FT **);
+
 typedef struct Body_T Body_T;
 struct Body_T {
    print_f_t print;
@@ -132,6 +136,7 @@ struct Body_T {
    cacheUpdateCoord_f_t cacheUpdateCoord;
    shallowCutOracle_f_t shallowCutOracle;
    transform_f_t transform;
+    boundingSphere_f_t boundingSphere;
 };
 
 extern Body_T Polytope_T;
