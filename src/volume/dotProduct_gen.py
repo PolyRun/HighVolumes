@@ -33,32 +33,37 @@ def emitVectorized(n):
    # --- load:
    for i in range(m):
       if(i<m-1 or rest==0):
-         emit("__m256d u{} = _mm256_load_pd(u+{});".format(i,i*4));
-         emit("__m256d v{} = _mm256_load_pd(v+{});".format(i,i*4));
+         emit("const __m256d u{} = _mm256_load_pd(u+{});".format(i,i*4));
+         emit("const __m256d v{} = _mm256_load_pd(v+{});".format(i,i*4));
       else:
          on = "0x"+"F"*16
-         emit("__m256i mask = _mm256_set_epi64x({}, {}, {}, {});".format(
+         emit("const __m256i mask = _mm256_set_epi64x({}, {}, {}, {});".format(
              0,
              on if (rest>=3) else 0,
              on if (rest>=2) else 0,
              on if (rest>=1) else 0));
-         emit("__m256d u{} = _mm256_maskload_pd(u+{},mask);".format(i,i*4));
-         emit("__m256d v{} = _mm256_maskload_pd(v+{},mask);".format(i,i*4));
+         emit("const __m256d u{} = _mm256_maskload_pd(u+{},mask);".format(i,i*4));
+         emit("const __m256d v{} = _mm256_maskload_pd(v+{},mask);".format(i,i*4));
 
    # --- compute:
-   # can surely be improved with multiple accumulaters
-   emit("__m256d sum = _mm256_set1_pd(0.0);");
-   for i in range(m):
-      emit("sum = _mm256_fmadd_pd(u{},v{},sum);".format(i,i));
+   emit("__m256d sum = _mm256_mul_pd(u{},v{});".format(0,0));
+   if(m==2):
+      emit("sum = _mm256_fmadd_pd(u{},v{},sum);".format(1,1));
+   elif(m>2):
+      emit("__m256d sum2 = _mm256_mul_pd(u{},v{});".format(1,1));
+      for i in range(2,m):
+         x = "" if (i%2==0) else "2";
+         emit("sum{} = _mm256_fmadd_pd(u{},v{},sum{});".format(x,i,i,x));
+      emit("sum = _mm256_add_pd(sum,sum2);");
    
    # --- collapse:
    # can probably be improved
    emit("sum = _mm256_hadd_pd(sum,sum);");
-   emit("sum = _mm256_permute4x64_pd(sum, 0b00100010);");
-   emit("sum = _mm256_hadd_pd(sum,sum);");
+   #emit("sum = _mm256_permute4x64_pd(sum, 0b00100010);");
+   #emit("sum = _mm256_hadd_pd(sum,sum);");
  
    # --- return:
-   emit("return sum[0];//TODO");
+   emit("return sum[0]+sum[2];");
 
    emit("break;");
    indent-=1
