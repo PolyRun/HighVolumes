@@ -13,6 +13,9 @@
  **/
 void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori);
 
+void Polytope_bounding_ref(const void *B, FT *R2, FT **ori);
+void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori);
+
 
 
 

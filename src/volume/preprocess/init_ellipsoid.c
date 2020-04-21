@@ -71,6 +71,7 @@ void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori){
         for (int j = 0; j < n; j++)
             (*Ori)[j] += glp_get_col_prim(lp, j + 1);
 
+        // note: sqrt(R2) will be diameter of bounding box 
         *R2 += (max - min) * (max - min);
     }
     for (int i = 0; i < n; i++){

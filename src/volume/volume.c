@@ -1,5 +1,5 @@
 #include "volume.h"
-
+#include "preprocess.h"
 
 FT dotProduct(const FT* u, const FT* v, const int n) {
    FT sum = 0.0;
@@ -806,15 +806,52 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    printf("init_ellipsoid\n");
 
    // compute an enclosing ball for each body and merge them
-   // note we want the center of the resulting ball to be in the intersection of all bodies
-   // moreover, the resulting ball should contain the intersection of all bodies
-   // in the worst case the intersection of all bodies is the union of all bodies
+   // TODO: is it ok if center of enclosing ball is not included in intersection of all bodies? i assume yes, the proof of theorem 3.3.9 in shallow beta-cut papersuggests that we only need that the starting ellipsoid contains all bodies
 
    FT R2_prev, R2_cur;
    FT *ori_prev = (FT *) malloc(n*sizeof(FT));
-   FT *ori_prev = (FT *) malloc(n*sizeof(FT));
+   FT *ori_cur = (FT *) malloc(n*sizeof(FT));
+   FT *dir = (FT *) malloc(n*sizeof(FT));
+
+   type[0]->boundingSphere(body_in[0], &R2_prev, &ori_prev);
    
-   FT R2 = 1e4; // TODO - ask sub bodies for radius, take min
+   // handle case where bcount > 1
+   for (int i = 1; i < bcount; i++){
+       type[i]->boundingSphere(body_in[i], &R2_cur, &ori_cur);
+
+       // vector between the two origins
+       for (int j = 0; j < n; j++) {
+           dir[j] = ori_prev[j] - ori_cur[j];
+       }
+       
+       // find the two points furthest away from each other in the two balls
+       // B(ori_cur, R2_cur), B(ori_prev, R2_prev)
+       FT dist = sqrt(dotProduct(dir, dir, n));
+       if (dist > 0){
+           for (int j = 0; j < n; j++){
+               dir[j] /= dist;
+               ori_cur[j] -= R2_cur * dir[j];
+               ori_prev[j] += R2_prev * dir[j];
+           }
+       
+           // choose new origin as average of two furthest-away points
+           for (int j = 0; j < n; j++){
+               ori_prev[j] = ori_prev[j] + (ori_cur[j] - ori_prev[j])/2;
+           }
+       }
+
+       // choose radius large enough to contain both balls
+       R2_prev = (sqrt(R2_prev) + sqrt(R2_cur) + dist) / 2;
+       R2_prev *= R2_prev;       
+   }
+
+   printf("R2: %f\nOri: ", R2_prev);
+   for (int i = 0; i < n; i++){
+       printf("%f ", ori_prev[i]);
+   }
+   printf("\n");
+   
+   //FT R2 = 1e4; // TODO - ask sub bodies for radius, take min
    // Note: tests run reliably with 1e3
    // for 1e4 we need the periodic inverse recalculation
    // but beyond 1e5, the tests will fail
@@ -826,11 +863,15 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    for(int i=0; i<n; i++) {
       FT* Ai = Ellipsoid_get_Ai(e,i);
       FT* Ti = Ellipsoid_get_Ti(e,i);
-      Ai[i] = 1.0/R2; // sphere with 
-      Ti[i] = R2; // sphere with 
+      Ai[i] = 1.0/R2_prev; // sphere with 
+      Ti[i] = R2_prev; // sphere with
+      e->a[i] = ori_prev[i];
    }
+   //free(ori_prev);
+   //free(ori_cur);
+   //free(dir);
    Ellipsoid_T.print(e);
-   */
+   
    
    // 2. Cut steps
    printf("cut steps\n");
