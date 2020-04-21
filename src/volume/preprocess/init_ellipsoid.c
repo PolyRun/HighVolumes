@@ -7,7 +7,7 @@
 
 
 
-void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori){
+void init_ellipsoid(const Polytope *Pol, FT *R2, FT **Ori){
     int n = Pol->n;
     int m = Pol->m;
     

@@ -11,7 +11,7 @@
  * \R2 return value: initial estimate of ellipsoid matrix is R2 * I
  * \Ori return value: initial estimate of central point of ellipsoid
  **/
-void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori);
+void init_ellipsoid(const Polytope *Pol, FT *R2, FT **Ori);
 
 void Polytope_bounding_ref(const void *B, FT *R2, FT **ori);
 void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori);
