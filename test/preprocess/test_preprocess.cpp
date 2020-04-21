@@ -142,12 +142,17 @@ void test_preprocess_generic() {
         assert(Polytope_T.inside(box_out, x));
         
 	// check intersections:
+        // note: the center of the ellipsoid is no longer guaranteed to be 0, so this test (d2 <= 4.0*n*n) doesn't work anymore
+        // we would need to know ori to replicate this...
+        // for now we can do the following simpler (yet weaker) test
 	FT d2 = 1;
 	for(int i=0;i<n;i++) {
 	    FT t0,t1;
             Polytope_T.intersectCoord(box_out, x, i, &t0, &t1, cache);
-            FT tmax = std::max(-t0,t1);
-	    d2 *= tmax;
+            //FT tmax = std::max(-t0,t1);
+            FT tavg = (t1 - t0)/2;
+	    //d2 *= tmax; 
+            d2 += tavg * tavg;
 	    assert(t0 <= -1 && t1 >= 1 && "walls do not cut inner ellipse");
 	    std::cout << t0 << " " << t1 << "\n";
 	}
@@ -165,8 +170,8 @@ void test_preprocess_generic() {
     {
         const int n = 10;
         FT det;
-        Ellipsoid* e1 = Ellipsoid_new(n);
-        Ellipsoid* e2 = Ellipsoid_new(n);
+        Ellipsoid* e1 = Ellipsoid_new_with_T(n);
+        Ellipsoid* e2 = Ellipsoid_new_with_T(n);
         for(int i=0; i<n; i++) {
             e1->a[i] = (i==1)*10;//prng_get_random_double_in_range(-0.1,0.1);
             e2->a[i] = (i==1)*10;//prng_get_random_double_in_range(-0.1,0.1);
@@ -176,8 +181,8 @@ void test_preprocess_generic() {
             Ai2[i] = prng_get_random_double_in_range(0.1,0.2);
         }
         void* body_in[2] = {e1, e2};
-        Ellipsoid* e1_out = Ellipsoid_new(n);
-        Ellipsoid* e2_out = Ellipsoid_new(n);
+        Ellipsoid* e1_out = Ellipsoid_new_with_T(n);
+        Ellipsoid* e2_out = Ellipsoid_new_with_T(n);
         void* body_out[2] = {e1_out, e2_out};
         Body_T* type[2] = {&Ellipsoid_T, &Ellipsoid_T};
 
@@ -227,7 +232,7 @@ void test_preprocess_generic() {
         const int n = 10;
         FT det;
 	Polytope* box = Polytope_new_box(n,1.0);
-        Ellipsoid* e = Ellipsoid_new(n);
+        Ellipsoid* e = Ellipsoid_new_with_T(n);
         for(int i=0; i<n; i++) {
             e->a[i] = (i==0)*1.7; // set on plane of box
             FT* Ai = Ellipsoid_get_Ai(e,i);
@@ -237,7 +242,7 @@ void test_preprocess_generic() {
 
         void* body_in[2] = {box, e};
 	Polytope* box_out = Polytope_new_box(n,1.0);
-        Ellipsoid* e_out = Ellipsoid_new(n);
+        Ellipsoid* e_out = Ellipsoid_new_with_T(n);
         void* body_out[2] = {box_out, e_out};
         Body_T* type[2] = {&Polytope_T, &Ellipsoid_T};
 
