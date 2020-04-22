@@ -5,6 +5,8 @@ import os
 import subprocess
 import pprint
 
+from plot import plot
+
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 BENCHMARKS = [{"name": "benchmark_test_macro", "configs":[("",""),("-r",{"1","2"})]},
          {"name": "benchmark_test_xyz_f", "configs":[("",""),("-r",{"2","3"})]},
@@ -31,6 +33,7 @@ if(len(sys.argv)>1):
 # ------ iterate over benchmarks chosen in DO_BENCHMARKS, subset of BENCHMARKS
 
 def run_benchmark(benchmark):
+   results = []
    bname = benchmark["name"]
    bconfigs = benchmark["configs"]
    for config in bconfigs:
@@ -43,12 +46,23 @@ def run_benchmark(benchmark):
          for line in proc.stdout:
             try:
                dict = eval(line)
+               results.append((("_"+config[0]+"_"+option).replace("__",""),dict))
                f.write(str(dict)+'\n')
             except:
                f.write(line.decode('utf-8'))
          f.close()
+   return results
 
+do_plot = True
+plot_name = None
+results = []
+
+if len(sys.argv) == 2:
+   plot_name = (DO_BENCHMARKS[0])["name"]
 
 for benchmark in DO_BENCHMARKS:
-   run_benchmark(benchmark)
+   result = run_benchmark(benchmark)
+   results.extend(result)
 
+if do_plot and results:
+   plot(sys.path[0], plot_name, results)

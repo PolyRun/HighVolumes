@@ -29,6 +29,9 @@ Polytope* Polytope_new_box(int n, FT r);
 class CLIFunctionsVolume : public CLIFunctions {
 public:
    CLIFunctionsVolume(CLI &cli) : CLIFunctions(cli) {
+      // initialize memory arrays of volume library
+      volume_lib_init(200,20);// max_n=200, max_b=20
+
       // please add your functions below.
       // 
       // handle to global variable used to reference current choice of function
@@ -36,11 +39,15 @@ public:
       // string for function name
       // string for default function name
       // map: function name -> function ptr
-
+      
       claimOpt('f',"Algorithm Functions");
       add(new CLIF_Option<xyz_f_t>(&xyz_f,'f',"xyz_f","xyz_f1", std::map<std::string, xyz_f_t>{
                                                      {"xyz_f1",xyz_f1},
 						     {"xyz_f2",xyz_f2} }));
+      add(new CLIF_Option<dotProduct_f_t>(&dotProduct,'f',"dotProduct","ref", std::map<std::string, dotProduct_f_t>{
+                                                     {"ref",dotProduct_ref},
+                                                     {"auto1",dotProduct_auto1},
+						     {"vec1",dotProduct_vec1} }));
 
       add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walk_ref", std::map<std::string, walk_f_t>{
                                                      {"walk_ref",walk_ref},

@@ -3,11 +3,12 @@
 #include <stdbool.h>
 #include <float.h>
 #include <math.h>
+#include <immintrin.h>
 
 #include <assert.h>
 
 #include "../random/prng.h"
-
+#include "cholesky.h"
 
 #ifndef HEADER_VOLUMES_H
 #define HEADER_VOLUMES_H
@@ -24,14 +25,15 @@ typedef double FT;
 
 // --------------------------------------------- Forward Declarations
 typedef struct Polytope Polytope;
-typedef struct Sphere Sphere;
 typedef struct Ellipsoid Ellipsoid;
 
 // --------------------------------------------- Vectors / General
 
-// simple vector product
+// dotProduct:
 //   assume no memory allignment!
-FT dotProduct(const FT* u, const FT* v, const int n);
+typedef FT (*dotProduct_f_t)(const FT* u, const FT* v, const int n);
+extern dotProduct_f_t dotProduct;
+#include "dotProduct.h"
 
 // intersect line x + t*d
 //           with ball(0,r)
@@ -44,6 +46,35 @@ FT Ball_volume(const int n, const FT r);
 
 // given n elements of b bytes, want to get smallest multiple of 32 bytes that fits this.
 int ceil_cache(const int n, const int b);
+
+
+// --------------------------------------------- Memory aligned matrix
+
+// maybe use this inside Polytope... splittig A and b of polytope might make sense for accessing anyway
+
+typedef struct Matrix {
+   FT* data; // size m * n
+   // layout (row-wise):
+   // a00, a01, ... a0n-1, [buffering]
+   // ...
+   // am-10, am-11, ... am-1n-1, [buffering] 
+   int line; // size of one row + b, plus buffer for allignment
+   int n; // dimensions
+   int m; // constraints   
+    
+} Matrix;
+
+
+Matrix* Matrix_new(int n, int m);
+void Matrix_free(const void* o);
+FT* Matrix_get_row(const Matrix* m, int i);
+void Matrix_set(Matrix* m, int i, int x, FT a);
+FT Matrix_get(const Matrix* m, int i, int x);
+void Matrix_print(const void* o);
+
+// given L (lower triangle), b, solve for x: Lx = b
+// simple forward substitution
+void Matrix_L_solve(const Matrix* o, FT* x, const FT* b);
 
 // --------------------------------------------- Sub-body Member functions
 
@@ -87,6 +118,15 @@ typedef void (*cacheUpdateCoord_f_t)(const void*, const int, const FT, void*);
 //    x in body: vT * x <= c
 typedef bool (*shallowCutOracle_f_t)(const void*, const Ellipsoid*, FT*, FT*);
 
+// Transform body after preprocessing
+// intput: body_in, body_out, matrix L, vector a, beta.
+typedef void (*transform_f_t)(const void*, void*, const Matrix*, FT*, FT);
+
+// input: body (ellipsoid or polytope)
+// output: radius FT *r and center FT **ori
+// compute sphere with center ori and radius r that encloses the body
+typedef void (*boundingSphere_f_t)(const void *, FT *, FT **);
+
 typedef struct Body_T Body_T;
 struct Body_T {
    print_f_t print;
@@ -98,26 +138,26 @@ struct Body_T {
    cacheReset_f_t cacheReset;
    cacheUpdateCoord_f_t cacheUpdateCoord;
    shallowCutOracle_f_t shallowCutOracle;
+   transform_f_t transform;
+    boundingSphere_f_t boundingSphere;
 };
 
 extern Body_T Polytope_T;
-extern Body_T Sphere_T;
 extern Body_T Ellipsoid_T;
 
 // --------------------------------------------- Polytope
 
 struct Polytope {
-   FT* data; // size m * (n + 1)
+   FT* A; // size line * m
    // layout (row-wise):
-   // a0, a1, ... an, b, [buffering]
-   // a0, a1, ... an, b, [buffering] 
-   // ...
-   // basically always normal vector plus b adjacent
-   // this is hopefully good for cache, right?
+   // a0, a1, ... an, [buffering]
+   // a0, a1, ... an, [buffering] 
    // end of line: buffering for 32 byte allignment
    
+   FT* b; // size m
+
    //  A*x <= b
-   int line; // size of one row + b, plus buffer for allignment
+   int line; // size of one row plus buffer for allignment
    int n; // dimensions
    int m; // constraints
 };
@@ -135,6 +175,7 @@ int  Polytope_cacheAlloc_ref(const void* o);
 void Polytope_cacheReset_ref(const void* o, const FT* x, void* cache);
 void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
+void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
 
 // Setters:
 void Polytope_set_a(Polytope* p, int i, int x, FT a);
@@ -148,25 +189,6 @@ FT Polytope_get_b(const Polytope* p, int i);
 
 // get pointer to ai
 FT* Polytope_get_Ai(const Polytope* p, int i);
-
-// --------------------------------------------- Sphere
-
-struct Sphere {
-   FT* center; // size n
-   FT r; // radius
-   int n; // dimensions
-};
-
-Sphere* Sphere_new(int n, FT r, const FT* c);
-
-void Sphere_free(const void* o);
-void Sphere_print(const void* o);
-bool Sphere_inside_ref(const void* o, const FT* v);
-void Sphere_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
-void Sphere_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-int  Sphere_cacheAlloc_ref(const void* o);
-void Sphere_cacheReset_ref(const void* o, const FT* x, void* cache);
-void Sphere_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 
 // --------------------------------------------- Ellipsoid
 
@@ -193,6 +215,7 @@ int  Ellipsoid_cacheAlloc_ref(const void* o);
 void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache);
 void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
+void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
 
 
 FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i); // get row i
@@ -212,12 +235,21 @@ void Ellipsoid_project(const Ellipsoid* e, const FT eFac, FT* x);
 // takes current x as initialization
 void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, FT* x);
 
+// recompute A from T (inverse)
+void Ellipsoid_A_from_T(Ellipsoid* e);
+
 // --------------------------------------------- Preprocessing
 
 void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
 
 
 // --------------------------------------------- Volume estimation
+
+// call this function at before any other function.
+// initializes memory arrays
+// set max_n to be at least as large as maximum dimension to ever be used
+// set max_b to be at least the number of sub-bodies ever used at one time
+void volume_lib_init(const int max_n, const int max_b);
 
 // number of points sampled per ball
 extern int step_size;

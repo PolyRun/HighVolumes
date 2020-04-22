@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
 file(COPY benchmark.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY plot.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(build-time-make-directory ALL
-   COMMAND ${CMAKE_COMMAND} -E make_directory out)
+   COMMAND ${CMAKE_COMMAND} -E make_directory out plots)
 
 project(benchmark_test_macro)
 
@@ -78,6 +79,32 @@ add_executable(benchmark_intersect benchmark_intersect.cpp)
 target_link_libraries(benchmark_intersect PUBLIC volume_helper)
 
 set_target_properties(benchmark_intersect PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+
+project(benchmark_preprocess)
+
+add_executable(benchmark_preprocess benchmark_preprocessing.cpp)
+
+target_link_libraries(benchmark_preprocess PUBLIC volume_helper)
+
+set_target_properties(benchmark_preprocess PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+
+project(benchmark_A1_polytope)
+
+add_executable(benchmark_A1_polytope benchmark_A1_polytope.cpp)
+
+target_link_libraries(benchmark_A1_polytope PUBLIC volume_helper)
+
+set_target_properties(benchmark_A1_polytope PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO

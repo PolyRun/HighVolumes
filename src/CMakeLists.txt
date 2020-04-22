@@ -18,14 +18,20 @@ add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
 
 # ----------------------- volume
 set(VOLUME_SOURCE_FILES
-   volume/volume.c volume/preprocess/init_ellipsoid.c volume/preprocess/preprocess.c
+   volume/volume.c volume/preprocess/init_ellipsoid.c volume/preprocess/preprocess.c volume/cholesky.c
 )
 set(VOLUME_HEADER_FILES
-   volume/volume.h volume/preprocess.h
+   volume/volume.h volume/preprocess.h volume/cholesky.h
 )
 add_library(volume ${VOLUME_SOURCE_FILES} ${VOLUME_HEADER_FILES})
 target_link_libraries(volume PUBLIC glpk prng)
 
+set_target_properties(volume PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+   COMPILE_FLAGS -march=native
+)
 
 # ----------------------- volume_helper
 set(VOLUME_HELPER_SOURCE_FILES

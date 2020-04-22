@@ -11,7 +11,10 @@
  * \R2 return value: initial estimate of ellipsoid matrix is R2 * I
  * \Ori return value: initial estimate of central point of ellipsoid
  **/
-void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori);
+void init_ellipsoid(const Polytope *Pol, FT *R2, FT **Ori);
+
+void Polytope_bounding_ref(const void *B, FT *R2, FT **ori);
+void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori);
 
 
 
@@ -23,3 +26,13 @@ void init_ellipsoid(Polytope *Pol, FT *R2, FT **Ori);
  * \param det: output: the determinant of the linear transformation applied to P in order to get Q
  **/
 void preprocess(Polytope *P, Polytope **Q, double *det);
+
+
+/**
+... same as before plus
+ * \param c1: counts number of cuts applied
+ * \param c2: counts number of iterations in first inner loop (where we check ori)
+ * \param c3: counts number of iterations in second inner loop (where we check the inner ellipsoid)
+ * \param c4: counts number of times we compute the cut in the first inner loop
+ **/
+void preprocess_opcount(Polytope *P, FT R2, FT *ori, Polytope **Q, double *det, int *iterations, int *loopone, int *looptwo, int *breakcond);

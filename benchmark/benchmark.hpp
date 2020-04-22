@@ -7,6 +7,7 @@
 #include "../src/util/cli.hpp"
 #include "../src/util/cli_functions.hpp"
 #include "../src/util/timer.hpp"
+#include "../src/util/tsc_x86.h"
 
 #ifndef BENCHMARK_H
 #define BENCHMARK_H
@@ -19,7 +20,12 @@
  **/
 class Benchmark_base {
     public:
-        Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_) : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_){}
+    Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_) : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_) {
+        timer = new Timer();
+    }
+
+    // overloaded constructer taking timer argument
+    Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_, Timer_generic *t) : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_), timer(t) {}
 
         /**
          * \brief Actuall performs the benchmark
@@ -44,14 +50,14 @@ class Benchmark_base {
             for (int i = 0; i < reps; ++i) {
 
                 // Run benchmark
-                timer.start();
+                timer->start();
                 double result = run();
-                timer.stop();
+                timer->stop();
 
                 results[i] = result;
                 results_sum += result;
 
-                measured_times[i] = timer.millisecs();            
+                measured_times[i] = timer->get_time();            
                 total_time += measured_times[i];
                 min_time = std::min(min_time, measured_times[i]);
                 max_time = std::max(max_time, measured_times[i]);
@@ -113,7 +119,7 @@ class Benchmark_base {
         int reps; // Number of repetitions in benchmark
         bool convergence; // Optional convergence output
         double last_result; // Value in last step;
-        Timer timer;
+        Timer_generic *timer;
         int warmup_reps;
 };
 
@@ -122,7 +128,7 @@ class Benchmark_base {
  **/
 class Benchmark_base_cli : public Benchmark_base{
     public:
-        Benchmark_base_cli(std::string name_, int reps_, bool convergence_, int warmup_reps_, CLIFunctions &cliFun_, bool benchmark_all_) : Benchmark_base(name_, reps_, convergence_, warmup_reps_), cliFun(cliFun_), benchmark_all(benchmark_all_){
+    Benchmark_base_cli(std::string name_, int reps_, bool convergence_, int warmup_reps_, CLIFunctions &cliFun_, bool benchmark_all_) : Benchmark_base(name_, reps_, convergence_, warmup_reps_), cliFun(cliFun_), benchmark_all(benchmark_all_){
         }
 
         virtual double run_benchmark() {
@@ -152,19 +158,19 @@ class Benchmark_base_cli : public Benchmark_base{
                     double result;
                     // Run benchmark
                     if (benchmark_all) {
-                        timer.start();
+                        timer->start();
                         result = run_selected();
-                        timer.stop();
+                        timer->stop();
                     } else {
-                        timer.start();
+                        timer->start();
                         result = run();
-                        timer.stop();
+                        timer->stop();
                     }
 
                     results[i] = result;
                     results_sum += result;
 
-                    measured_times[i] = timer.millisecs();            
+                    measured_times[i] = timer->get_time();            
                     total_time += measured_times[i];
                     min_time = std::min(min_time, measured_times[i]);
                     max_time = std::max(max_time, measured_times[i]);
