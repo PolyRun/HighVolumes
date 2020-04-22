@@ -306,7 +306,7 @@ int main(int argc, char **argv){
     int ntests = 1;
     int dim = 20;
     int nconstraints = 100;
-    std::cout << "\n-------------- TEST PREPROCESS EXAMPLE POLYTOPES\n"
+    std::cout << "\n-------------- TEST PREPROCESS RANDOM POLYTOPES:\n"
               << ntests << " random polytopes of dim " << dim << " with " << nconstraints << " constraints:\n";
     test_preprocess_random_polytopes(ntests, dim, nconstraints);
     
