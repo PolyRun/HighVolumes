@@ -177,19 +177,30 @@ void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void
 bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
 
-// Setters:
-void Polytope_set_a(Polytope* p, int i, int x, FT a);
-// for constraint i set coefficient for variable x to a
-void Polytope_set_b(Polytope* p, int i, FT b);
-// for constraint i set b
+// --------------- inline Accessors:
+static inline FT* Polytope_get_Ai(const Polytope* p, int i) __attribute__((always_inline));
+static inline FT* Polytope_get_Ai(const Polytope* p, int i) {
+   //return &(p->A[i * (p->line)]);
+   return p->A + (i * (p->line));
+}
 
-// Getters
-FT Polytope_get_a(const Polytope* p, int i, int x);
-FT Polytope_get_b(const Polytope* p, int i);
+static inline void Polytope_set_a(Polytope* p, int i, int x, FT a) __attribute__((always_inline));
+static inline void Polytope_set_a(Polytope* p, int i, int x, FT a) {
+   p->A[i * (p->line) + x] = a;
+}
+static inline void Polytope_set_b(Polytope* p, int i, FT b) __attribute__((always_inline));
+static inline void Polytope_set_b(Polytope* p, int i, FT b) {
+   p->b[i] = b;
+}
 
-// get pointer to ai
-FT* Polytope_get_Ai(const Polytope* p, int i);
-
+static inline FT Polytope_get_a(const Polytope* p, int i, int x) __attribute__((always_inline));
+static inline FT Polytope_get_a(const Polytope* p, int i, int x) {
+   return p->A[i * (p->line) + x];
+}
+static inline FT Polytope_get_b(const Polytope* p, int i) __attribute__((always_inline));
+static inline FT Polytope_get_b(const Polytope* p, int i) {
+   return p->b[i];
+}
 // --------------------------------------------- Ellipsoid
 
 struct Ellipsoid {
@@ -217,9 +228,19 @@ void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, voi
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
 
+// get row i of A
+static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) __attribute__((always_inline));
+static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) {
+   return e->A + i*e->line;
+}
 
-FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i); // get row i
-FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i); // get row i
+// get row i of T
+static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) __attribute__((always_inline));
+static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) {
+   assert(e->T && "T must be allocated");
+   return e->T + i*e->line;
+}
+
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x); // (x-a)T * A * (x-a)
 void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* n); // 2 * A * (x - a)  ==> not normalized
 

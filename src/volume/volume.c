@@ -122,24 +122,6 @@ void Polytope_print(const void* o) {
    }
 }
 
-inline FT* Polytope_get_Ai(const Polytope* p, int i) {
-   return &(p->A[i * (p->line)]);
-}
-
-inline void Polytope_set_a(Polytope* p, int i, int x, FT a) {
-   p->A[i * (p->line) + x] = a;
-}
-inline void Polytope_set_b(Polytope* p, int i, FT b) {
-   p->b[i] = b;
-}
-
-inline FT Polytope_get_a(const Polytope* p, int i, int x) {
-   return p->A[i * (p->line) + x];
-}
-inline FT Polytope_get_b(const Polytope* p, int i) {
-   return p->b[i];
-}
-
 bool Polytope_inside_ref(const void* o, const FT* v) {
    const Polytope* p = (Polytope*)o;
    for(int i=0; i<p->n; i++) {
@@ -400,16 +382,6 @@ Ellipsoid* Ellipsoid_new_with_T(int n) {
       e->a[i] = 0;
    }
    return e;
-}
-
-
-FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) {
-   return e->A + i*e->line;
-}
-
-FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) {
-   assert(e->T && "T must be allocated");
-   return e->T + i*e->line;
 }
 
 void Ellipsoid_free(const void* o) {

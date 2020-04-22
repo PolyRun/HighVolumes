@@ -30,7 +30,7 @@ set_target_properties(volume PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
-   COMPILE_FLAGS "-march=native -mfma -ffast-math"
+   COMPILE_FLAGS "-march=native -mfma -ffast-math -O3"
 )
 
 # ----------------------- volume_helper
