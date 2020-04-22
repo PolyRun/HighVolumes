@@ -29,7 +29,7 @@ void test_init_against_polyvest(Polytope *P){
 
     // this cast is legit according to
     // https://stackoverflow.com/questions/2923272/how-to-convert-vector-to-array
-    FT *polyvest_ori_array = &polyvest_ori[0];
+    FT *polyvest_ori_array = polyvest_ori.memptr();
     FT *highvolumes_ori_array = &ori[0];
     FT diff_ori = frobenius(polyvest_ori_array, highvolumes_ori_array, n, 1);
     FT diff_r2 = frobenius(&R2, &polyvest_R2, 1, 1);
