@@ -33,7 +33,7 @@ typedef struct Ellipsoid Ellipsoid;
 //   assume no memory allignment!
 typedef FT (*dotProduct_f_t)(const FT* u, const FT* v, const int n);
 extern dotProduct_f_t dotProduct;
-#include "dotProduct.h"
+#include "dotProduct/dotProduct.h"
 
 // intersect line x + t*d
 //           with ball(0,r)

@@ -3,7 +3,7 @@
 
 // dotProduct:
 dotProduct_f_t dotProduct = dotProduct_ref;
-#include "dotProduct.c"
+#include "dotProduct/dotProduct.c"
 
 void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1) {
    // y = x + d*t
