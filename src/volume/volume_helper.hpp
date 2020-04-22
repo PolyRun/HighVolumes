@@ -44,9 +44,11 @@ public:
       add(new CLIF_Option<xyz_f_t>(&xyz_f,'f',"xyz_f","xyz_f1", std::map<std::string, xyz_f_t>{
                                                      {"xyz_f1",xyz_f1},
 						     {"xyz_f2",xyz_f2} }));
-      add(new CLIF_Option<dotProduct_f_t>(&dotProduct,'f',"dotProduct","ref", std::map<std::string, dotProduct_f_t>{
+      add(new CLIF_Option<dotProduct_f_t>(&dotProduct,'f',"dotProduct","2acc", std::map<std::string, dotProduct_f_t>{
                                                      {"ref",dotProduct_ref},
+                                                     {"2acc",dotProduct_2acc},
                                                      {"auto1",dotProduct_auto1},
+                                                     {"auto2",dotProduct_auto2},
 						     {"vec1",dotProduct_vec1} }));
 
       add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walk_ref", std::map<std::string, walk_f_t>{

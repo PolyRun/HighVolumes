@@ -13,6 +13,9 @@ BENCHMARKS = [{"name": "benchmark_test_macro", "configs":[("",""),("-r",{"1","2"
          {"name": "benchmark_polyvest", "configs":[("",{""})]}
         ];
 
+# I want to: iterate over all possible dotProducts, and for n=1...50 -> plot x = n, y = time, colors for dotProducts
+#dotProduct = {"ref","auto1","auto2","vec1","2acc"}
+#BENCHMARKS = [{"name":"benchmark_dotProduct","configs":[("-r",{"100000"}),("-f",dotProduct)]}]
 
 # ---------------------------- Parse python args
 DO_BENCHMARKS = BENCHMARKS;

@@ -6,6 +6,17 @@ FT dotProduct_ref(const FT* u, const FT* v, const int n) {
    return sum;
 }
 
+FT dotProduct_2acc(const FT* u, const FT* v, const int n) {
+   FT sum0 = 0.0;
+   FT sum1 = 0.0;
+   for(int i=0; i<n-1; i+=2) {
+      sum0+= u[i]*v[i];
+      sum1+= u[i+1]*v[i+1];
+   }
+   if(n%2 == 1) {sum0+=u[n-1]*v[n-1];}
+   return sum0+sum1;
+}
+
 FT dotProduct_vec1(const FT* u, const FT* v, const int n) {
    __m256d sum = _mm256_set1_pd(0.0);
    
@@ -38,3 +49,4 @@ FT dotProduct_vec1(const FT* u, const FT* v, const int n) {
 }
 
 #include "dotProduct_auto1.c"
+#include "dotProduct_auto2.c"
