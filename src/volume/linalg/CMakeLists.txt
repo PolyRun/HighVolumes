@@ -2,12 +2,12 @@
 
 cmake_minimum_required(VERSION 3.6)
 
-# ----------------------- linalg
-set(LINALG_SOURCE_FILES
-   cholesky.c linalg.c
-)
-set(LINALG_HEADER_FILES
-   cholesky.h linalg.h
-)
-add_library(linalg ${LINALG_SOURCE_FILES} ${LINALG_HEADER_FILES})
+# --- add files to volume target in parent directory
+
+target_sources(volume PUBLIC
+${CMAKE_CURRENT_SOURCE_DIR}/cholesky.c
+${CMAKE_CURRENT_SOURCE_DIR}/linalg.c
+${CMAKE_CURRENT_SOURCE_DIR}/cholesky.h
+${CMAKE_CURRENT_SOURCE_DIR}/linalg.h)
+
 
