@@ -2,12 +2,8 @@
 
 cmake_minimum_required(VERSION 3.6)
 
-# ----------------------- matrix
-set(MATRIX_SOURCE_FILES
-   matrix.c
-)
-set(MATRIX_HEADER_FILES
-   matrix.h
-)
-add_library(matrix ${MATRIX_SOURCE_FILES} ${MATRIX_HEADER_FILES})
+# --- add files to volume target in parent directory
 
+target_sources(volume PUBLIC
+${CMAKE_CURRENT_SOURCE_DIR}/matrix.c
+${CMAKE_CURRENT_SOURCE_DIR}/matrix.h)

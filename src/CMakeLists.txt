@@ -2,12 +2,6 @@
 
 cmake_minimum_required(VERSION 3.6)
 
-add_subdirectory(volume/matrix)
-add_subdirectory(volume/ellipsoid)
-add_subdirectory(volume/polytope)
-add_subdirectory(volume/polytopeT)
-add_subdirectory(volume/linalg)
-
 
 # ----------------------- prng
 set(PRNG_SOURCE_FILES
@@ -19,15 +13,30 @@ set(PRNG_HEADER_FILES
 add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
 
 
+
+
+
+
 # ----------------------- volume
+
+
+
 set(VOLUME_SOURCE_FILES
    volume/volume.c volume/preprocess/init_ellipsoid.c volume/preprocess/preprocess.c 
 )
 set(VOLUME_HEADER_FILES
    volume/volume.h volume/preprocess/preprocess.h
 )
+
 add_library(volume ${VOLUME_SOURCE_FILES} ${VOLUME_HEADER_FILES})
-target_link_libraries(volume PUBLIC glpk prng matrix ellipsoid polytope polytopeT linalg)
+
+add_subdirectory(volume/linalg)
+add_subdirectory(volume/matrix)
+add_subdirectory(volume/ellipsoid)
+add_subdirectory(volume/polytope)
+add_subdirectory(volume/polytopeT)
+
+target_link_libraries(volume PUBLIC glpk prng)
 
 set_target_properties(volume PROPERTIES
    CXX_STANDARD 11

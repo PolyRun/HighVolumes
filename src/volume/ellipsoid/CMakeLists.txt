@@ -2,12 +2,9 @@
 
 cmake_minimum_required(VERSION 3.6)
 
-# ----------------------- matrix
-set(ELLIPSOID_SOURCE_FILES
-   ellipsoid.c
-)
-set(ELLIPSOID_HEADER_FILES
-   ellipsoid.h
-)
-add_library(ellipsoid ${ELLIPSOID_SOURCE_FILES} ${ELLIPSOID_HEADER_FILES})
+# --- add files to volume target in parent directory
 
+target_sources(volume PUBLIC
+${CMAKE_CURRENT_SOURCE_DIR}/ellipsoid.c
+${CMAKE_CURRENT_SOURCE_DIR}/ellipsoid.h
+)
