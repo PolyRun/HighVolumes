@@ -12,13 +12,6 @@
 #ifndef LINALG_H
 #define LINALG_H
 
-typedef double FT;
-#define FT_EPS DBL_EPSILON
-#define FT_MAX DBL_MAX
-#define FT_MIN DBL_MIN
-
-
-
 // dotProduct:
 //   assume no memory allignment!
 typedef FT (*dotProduct_f_t)(const FT* u, const FT* v, const int n);

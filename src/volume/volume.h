@@ -8,8 +8,8 @@
 #include <assert.h>
 
 #include "../random/prng.h"
-#include "linalg/cholesky.h"
 #include "ft.h"
+#include "linalg/linalg.h"
 
 #include "matrix/matrix.h"
 #include "polytope/polytope.h"
