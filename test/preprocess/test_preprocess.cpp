@@ -142,18 +142,18 @@ void test_preprocess_generic() {
 	// check origin 0 is inside:
         assert(Polytope_T.inside(box_out, x));
         
-	// check intersections:
-        // note: the center of the ellipsoid is no longer guaranteed to be 0, so this test (d2 <= 4.0*n*n) doesn't work anymore
-        // we would need to know ori to replicate this...
-        // for now we can do the following simpler (yet weaker) test
-	FT d2 = 1;
+	// Since the box was alligned, we know it is still alligned
+	// this is because the cutting planes were all alligned
+	// So now we measure from the origin to the sides.
+	// then we know how far the sides are out
+	// this way, we can find the corner furthest from the origin
+	// this cannot be too far out
+	FT d2 = 1;// squared distance of furthest point
 	for(int i=0;i<n;i++) {
 	    FT t0,t1;
             Polytope_T.intersectCoord(box_out, x, i, &t0, &t1, cache);
             FT tmax = std::max(-t0,t1);
-            //FT tavg = (t1 - t0)/2;
-	    d2 *= tmax; 
-            //d2 += tavg * tavg;
+	    d2 += tmax*tmax;
 	    assert(t0 <= -1 && t1 >= 1 && "walls do not cut inner ellipse");
 	    std::cout << t0 << " " << t1 << "\n";
 	}
