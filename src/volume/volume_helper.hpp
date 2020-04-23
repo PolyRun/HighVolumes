@@ -23,6 +23,7 @@ std::ostream& operator<<(std::ostream& os, const Polytope& p);
 std::ostream& operator<<(std::ostream& os, const Polytope* p);
 
 Polytope* Polytope_new_box(int n, FT r);
+PolytopeT* PolytopeT_new_box(int n, FT r);
 // allocates / generates cube polytope with radius r
 
 
@@ -58,6 +59,11 @@ public:
       add(new CLIF_Option<intersectCoord_f_t>(&Polytope_T.intersectCoord,'f',"Polytope_intersectCoord","cached_ref", std::map<std::string, intersectCoord_f_t>{
                                                      {"ref",Polytope_intersectCoord_ref},
 						     {"cached_ref",Polytope_intersectCoord_cached_ref} }));
+
+      add(new CLIF_Option<intersectCoord_f_t>(&PolytopeT_T.intersectCoord,'f',"PolytopeT_intersectCoord","cached_ref", std::map<std::string, intersectCoord_f_t>{
+                                                     {"ref",PolytopeT_intersectCoord_ref},
+						     {"cached_ref",PolytopeT_intersectCoord_cached_ref} }));
+
 
       // number parameters:
       claimOpt('c',"Algorithm Constants");

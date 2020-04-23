@@ -43,15 +43,9 @@ bool PolytopeT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
 void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
 
 // --------------- inline Accessors:
-static inline FT* PolytopeT_get_Ai(const PolytopeT* p, int i) __attribute__((always_inline));
-static inline FT* PolytopeT_get_Ai(const PolytopeT* p, int i) {
-   //return &(p->A[i * (p->line)]);
-   return p->A + (i * (p->line));
-}
-
 static inline void PolytopeT_set_a(PolytopeT* p, int i, int x, FT a) __attribute__((always_inline));
 static inline void PolytopeT_set_a(PolytopeT* p, int i, int x, FT a) {
-   p->A[i * (p->line) + x] = a;
+   p->A[i + (p->line) * x] = a;
 }
 static inline void PolytopeT_set_b(PolytopeT* p, int i, FT b) __attribute__((always_inline));
 static inline void PolytopeT_set_b(PolytopeT* p, int i, FT b) {
@@ -60,7 +54,7 @@ static inline void PolytopeT_set_b(PolytopeT* p, int i, FT b) {
 
 static inline FT PolytopeT_get_a(const PolytopeT* p, int i, int x) __attribute__((always_inline));
 static inline FT PolytopeT_get_a(const PolytopeT* p, int i, int x) {
-   return p->A[i * (p->line) + x];
+   return p->A[i + (p->line) * x];
 }
 static inline FT PolytopeT_get_b(const PolytopeT* p, int i) __attribute__((always_inline));
 static inline FT PolytopeT_get_b(const PolytopeT* p, int i) {
