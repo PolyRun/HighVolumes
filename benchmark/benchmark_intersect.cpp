@@ -73,12 +73,12 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
-
-    cli.addOption('r', "100", "number of repetitions");
     
     int n = 20;
+    int r = 100;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 100));
+    cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
     
     std::string generator = "cube";
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube", std::map<std::string, std::string>{
@@ -93,14 +93,12 @@ int main(int argc, char *argv[]){
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
-
-    int reps = std::stoi(cli.option('r'));
     
     if(intersect.compare("intersect")==0) {
-        Benchmark_intersect b("intersect", reps, true, 0, n, generator);
+        Benchmark_intersect b("intersect", r, true, 0, n, generator);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", reps, true, 0, n, generator);
+        Benchmark_intersectCoord b("intersectCoord", r, true, 0, n, generator);
         b.run_benchmark();
     }
 }

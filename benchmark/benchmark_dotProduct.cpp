@@ -37,12 +37,12 @@ class Benchmark_dotProduct : public Benchmark_base {
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
-
-    cli.addOption('r', "100", "number of repetitions");
     
     int n = 20;
+    int r = 100;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 100));
+    cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
    
     std::string uv = "uv";
     cliFun.add(new CLIF_Option<std::string>(&uv,'b',"uv","uv", std::map<std::string, std::string>{
@@ -53,8 +53,6 @@ int main(int argc, char *argv[]){
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    int reps = std::stoi(cli.option('r'));
-
-    Benchmark_dotProduct b("dotProduct", reps, true, 0, n, uv);
+    Benchmark_dotProduct b("dotProduct", r, true, 0, n, uv);
     b.run_benchmark();
 }

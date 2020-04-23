@@ -55,12 +55,12 @@ class Benchmark_A1 : public Benchmark_base {
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
-
-    cli.addOption('r', "100", "number of repetitions");
     
     int n = 20;
+    int r = 100;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 100));
+    cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"r","100", 1, 100000));
     
     std::string generator = "cube";
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube", std::map<std::string, std::string>{
@@ -71,8 +71,6 @@ int main(int argc, char *argv[]){
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    int reps = std::stoi(cli.option('r'));
-
-    Benchmark_A1 b("A1_volume", reps, true, 0, n, generator);
+    Benchmark_A1 b("A1_volume", r, true, 0, n, generator);
     b.run_benchmark();
 }
