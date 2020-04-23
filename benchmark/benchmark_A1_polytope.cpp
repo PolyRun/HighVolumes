@@ -59,7 +59,10 @@ int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
 
-    cli.addOption('r', "5", "number of repetitions");
+    
+    int r = 100;
+    cliFun.claimOpt('b',"Benchmarking configuration");
+    cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
     
     cli.addOption('P', "cube_2", "input polytope");
 
@@ -72,7 +75,6 @@ int main(int argc, char *argv[]){
 
     std::string path_from_exec = cli.getPathFromExec() + POLYEXP_BASE + cli.option('P');
 
-    int reps = std::stoi(cli.option('r'));
 
     Timer_generic *timer;
     if (std::stoi(cli.option('t')) == 0) {
@@ -84,6 +86,6 @@ int main(int argc, char *argv[]){
         timer = (Timer_generic *) &t;
     }
     //Tsc clocks = Tsc();
-    Benchmark_A1 b(reps, path_from_exec, timer);
+    Benchmark_A1 b(r, path_from_exec, timer);
     b.run_benchmark();
 }

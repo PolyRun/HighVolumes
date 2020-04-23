@@ -21,14 +21,14 @@ int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctions cliFun(cli);
 
-    cli.addOption('r', "100", "number of repetitions");
+    int r = 100;
+    cliFun.claimOpt('b',"Benchmarking configuration");
+    cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
   
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    int reps = std::stoi(cli.option('r'));
-
-    Test_macro *benchmark = new Test_macro("test_macro", reps, false, 0);
+    Test_macro *benchmark = new Test_macro("test_macro", r, false, 0);
     benchmark->run_benchmark();
 }
