@@ -18,12 +18,11 @@ PolytopeT* PolytopeT_new(int n, int m) {
    PolytopeT* o = (PolytopeT*) malloc(sizeof(PolytopeT));
    o->n = n;
    o->m = m;
-   o->line = ceil_cache(n,sizeof(FT)); // make sure next is also 32 alligned
-   int line_m = ceil_cache(m,sizeof(FT));
-   int size_A = o->line*m;
-   o->A = (FT*)(aligned_alloc(32, (size_A+line_m)*sizeof(FT))); // align this to 32
-   o->b = o->A + o->line*m;
-   for(int i=0;i<size_A+line_m;i++) {o->A[i]=0;}
+   o->line = ceil_cache(m,sizeof(FT)); // make sure next is also 32 alligned
+   int size_A = o->line*n;
+   o->A = (FT*)(aligned_alloc(32, (size_A+o->line)*sizeof(FT))); // align this to 32
+   o->b = o->A + size_A;
+   for(int i=0;i<size_A+o->line;i++) {o->A[i]=0;}
    return o;
 }
 
@@ -70,12 +69,14 @@ void PolytopeT_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT
       //   if orthogonal (d*ai = 0), then no intersection
       //   if <0, then same direction -> t0
       //   if >0, then opp  direction -> t1
-      const FT* ai = PolytopeT_get_Ai(p,i);
       const FT b = PolytopeT_get_b(p, i);
-      const FT dai = dotProduct(d,ai,n);
-      // Note: if base-vector: could just pick i'th entry!
+      FT dai = 0;// dotProduct(d,ai,n);
+      FT aix = 0;// dotProduct(x,ai,n);
+      for(int j=0;j<n;j++) {
+         dai+= d[j] * PolytopeT_get_a(p,i,j);
+         aix+= x[j] * PolytopeT_get_a(p,i,j);
+      }
       
-      //printf("dai: %f %f\n",dai,FT_EPS);
 
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
 
@@ -85,7 +86,7 @@ void PolytopeT_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT
       //   
       //   t = (b - ai*x)/(d*ai)
       
-      FT t = (b - dotProduct(ai,x,n)) / dai;
+      FT t = (b - aix) / dai;
       //printf("t: %f\n",t);
       
       if(dai < 0.0) {
@@ -108,15 +109,17 @@ void PolytopeT_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t
    
    FT t00 = -FT_MAX;// tmp variables for t0, t1
    FT t11 = FT_MAX;
-
+   
    for(int i=0; i<m; i++) {
-      const FT* ai = PolytopeT_get_Ai(p,i);
       const FT b = PolytopeT_get_b(p, i);
-      const FT dai = ai[d]; // dot product with unit vector dim d
+      const FT dai = PolytopeT_get_a(p,i,d); // dot product with unit vector dim d
       
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
       
-      const FT aix = dotProduct(ai,x,n);
+      FT aix = 0;//dotProduct(ai,x,n);
+      for(int j=0;j<n;j++) {
+         aix += x[j] * PolytopeT_get_a(p,i,j);
+      }
       assert(aix == Aix[i] && "Cache must be accurate!");
       FT t = (b - aix) / dai;
       
@@ -142,9 +145,9 @@ void PolytopeT_intersectCoord_cached_ref(const void* o, const FT* x, const int d
    FT t11 = FT_MAX;
 
    for(int i=0; i<m; i++) {
-      const FT* ai = PolytopeT_get_Ai(p,i);
+      //const FT* ai = PolytopeT_get_Ai(p,i);
       const FT b = PolytopeT_get_b(p, i);
-      const FT dai = ai[d]; // dot product with unit vector dim d
+      const FT dai = PolytopeT_get_a(p,i,d); // dot product with unit vector dim d
       
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
       
@@ -176,8 +179,11 @@ void PolytopeT_cacheReset_ref(const void* o, const FT* x, void* cache) {
    const int n = p->n;
    const int m = p->m;
    for(int i=0; i<m; i++) {
-      const FT* ai = PolytopeT_get_Ai(p,i);
-      c[i] = dotProduct(ai,x,n);
+      FT dot = 0;
+      for(int j=0;j<n;j++) {
+         dot += x[j] * PolytopeT_get_a(p,i,j);
+      }
+      c[i] = dot;
    }
 }
 
@@ -201,19 +207,20 @@ bool PolytopeT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    // for all i, check if:
    //    Ai * x <= bi
    
-   int i0 = prng_get_random_int_in_range(0,m-1);// just an experiment to see if it helps balance things
-   for(int ii=0;ii<m;ii++) {
-      int i = (ii+i0) % m;
-      FT* Ai = PolytopeT_get_Ai(p,i);
-      FT bi = PolytopeT_get_b(p,i);
-      FT* x = e->a;
-      Ax[i] = dotProduct(Ai,x,n);
-      if(Ax[i] > bi) { // found one -> return (Ai, bi)
-         for(int j=0;j<n;j++) {v[j] = Ai[j];}
-	 *c = bi;
-         return true;
-      }
-   }
+   assert(false);
+   //int i0 = prng_get_random_int_in_range(0,m-1);// just an experiment to see if it helps balance things
+   //for(int ii=0;ii<m;ii++) {
+   //   int i = (ii+i0) % m;
+   //   FT* Ai = PolytopeT_get_Ai(p,i);
+   //   FT bi = PolytopeT_get_b(p,i);
+   //   FT* x = e->a;
+   //   Ax[i] = dotProduct(Ai,x,n);
+   //   if(Ax[i] > bi) { // found one -> return (Ai, bi)
+   //      for(int j=0;j<n;j++) {v[j] = Ai[j];}
+   //      *c = bi;
+   //      return true;
+   //   }
+   //}
    
 
    // check if inner Ellipsoid e = ( (2n)^-2 * T.inverse(), x) is in PolytopeT:
@@ -221,25 +228,26 @@ bool PolytopeT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    //   AiT * T * Ai <= (bi - AiT * x)^2 * (2n)^2
    const FT twon2 = 4.0*n*n;
    int i1 = prng_get_random_int_in_range(0,m-1);//ballance experiment
-   for(int ii=0;ii<m;ii++) {
-      int i = (ii+i1) % m;
-      FT* Ai = PolytopeT_get_Ai(p,i);
-      FT bi = PolytopeT_get_b(p,i);
-      
-      FT AitTAi = 0; // could be useful to cache...
-      for(int j=0;j<n;j++) {
-         FT* Tj = Ellipsoid_get_Ti(e,j);
-	 FT TjAi = dotProduct(Tj,Ai,n);
-         AitTAi += Ai[j] * TjAi;
-      }
-      
-      FT diff = bi - Ax[i];
-      if(AitTAi > diff*diff*twon2) { // found one -> return (Ai, bi)
-         for(int j=0;j<n;j++) {v[j] = Ai[j];}
-	 *c = bi;
-         return true;
-      }
-   }
+   assert(false);
+   //for(int ii=0;ii<m;ii++) {
+   //   int i = (ii+i1) % m;
+   //   FT* Ai = PolytopeT_get_Ai(p,i);
+   //   FT bi = PolytopeT_get_b(p,i);
+   //   
+   //   FT AitTAi = 0; // could be useful to cache...
+   //   for(int j=0;j<n;j++) {
+   //      FT* Tj = Ellipsoid_get_Ti(e,j);
+   //      FT TjAi = dotProduct(Tj,Ai,n);
+   //      AitTAi += Ai[j] * TjAi;
+   //   }
+   //   
+   //   FT diff = bi - Ax[i];
+   //   if(AitTAi > diff*diff*twon2) { // found one -> return (Ai, bi)
+   //      for(int j=0;j<n;j++) {v[j] = Ai[j];}
+   //      *c = bi;
+   //      return true;
+   //   }
+   //}
    
    // no half-plane violated inner ellipse
    return false;
@@ -255,12 +263,13 @@ void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT*
    // b' = b - A * a
    // b'' = b' / beta
    FT beta_r = 1.0 / beta; 
-   for (int i = 0; i < m; i++){
-      FT* Ai = PolytopeT_get_Ai(p_in,i);
-      FT bi = PolytopeT_get_b(p_in, i);
-      FT distance = bi - dotProduct(Ai, a, n);
-      PolytopeT_set_b(p_out, i, beta_r * distance);
-   }
+   assert(false);
+   //for (int i = 0; i < m; i++){
+   //   FT* Ai = PolytopeT_get_Ai(p_in,i);
+   //   FT bi = PolytopeT_get_b(p_in, i);
+   //   FT distance = bi - dotProduct(Ai, a, n);
+   //   PolytopeT_set_b(p_out, i, beta_r * distance);
+   //}
    
    // A'' = A' = A * L
    for (int i = 0; i < m; i++){
