@@ -36,7 +36,7 @@ add_subdirectory(volume/ellipsoid)
 add_subdirectory(volume/polytope)
 add_subdirectory(volume/polytopeT)
 
-target_link_libraries(volume PUBLIC glpk prng)
+target_link_libraries(volume PRIVATE glpk prng)
 
 set_target_properties(volume PROPERTIES
    CXX_STANDARD 11
