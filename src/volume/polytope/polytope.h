@@ -5,6 +5,8 @@
 #ifndef POLYTOPE_H
 #define POLYTOPE_H
 
+extern Body_T Polytope_T;
+
 typedef struct Polytope {
    FT* A; // size line * m
    // layout (row-wise):

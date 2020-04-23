@@ -1,6 +1,6 @@
 #include "ellipsoid.h"
 
-
+// TODO: move Body_T Ellipsoid_T here
 
 Ellipsoid* Ellipsoid_new(int n) {
    Ellipsoid* e = (Ellipsoid*) malloc(sizeof(Ellipsoid));

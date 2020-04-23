@@ -12,9 +12,12 @@
 #include "linalg/linalg.h"
 
 #include "matrix/matrix.h"
+
+typedef struct Body_T Body_T;
 #include "polytope/polytope.h"
 #include "ellipsoid/ellipsoid.h"
 #include "preprocess/preprocess.h"
+#include "body/body.h"
 
 #ifndef HEADER_VOLUMES_H
 #define HEADER_VOLUMES_H
@@ -24,72 +27,6 @@
 //#define PRINT_T
 //#define PRINT_TMI
 
-// input body
-typedef void (*print_f_t)(const void*);
-
-// input body
-typedef void (*free_f_t)(const void*);
-
-// input: body, point x
-typedef bool (*inside_f_t)(const void*,const FT*);
-
-// input: body, point x, direction d  -  output t0, t1
-// intersections: x+d*t0, x+d*t1
-typedef void (*intersect_f_t)(const void*,const FT*,const FT*,FT*,FT*);
-
-// input: body, point x, cooordinate i, cache  -  output t0, t1
-typedef void (*intersectCoord_f_t)(const void*,const FT*,const int,FT*,FT*,void*);
-
-// input: body - output: number of bites cache required
-typedef int (*cacheAlloc_f_t)(const void*);
-
-// input: body, vector x, cache
-typedef void (*cacheReset_f_t)(const void*, const FT*, void*);
-
-// input: body, dim d, dx on that dim, cache
-typedef void (*cacheUpdateCoord_f_t)(const void*, const int, const FT, void*);
-
-// Separation oracle used for preprocessing:
-//   If body inside E( (2n)^-2 * A, a):
-//       return false
-//   else:
-//       return true
-//       return a plane (v,c) for cutting much of ellipse E(A,a)
-//       such that vT * x <= c for all points in body
-//       and (2n)^-2 * vT * A * v <= (c - vT * a)^2
-//       (cut/touch inner ellipsoid)
-//
-// input: body, cost/cage ellipsoid
-// output: plane (normal v, const c)
-//    x in body: vT * x <= c
-typedef bool (*shallowCutOracle_f_t)(const void*, const Ellipsoid*, FT*, FT*);
-
-// Transform body after preprocessing
-// intput: body_in, body_out, matrix L, vector a, beta.
-typedef void (*transform_f_t)(const void*, void*, const Matrix*, FT*, FT);
-
-// input: body (ellipsoid or polytope)
-// output: radius FT *r and center FT **ori
-// compute sphere with center ori and radius r that encloses the body
-typedef void (*boundingSphere_f_t)(const void *, FT *, FT **);
-
-typedef struct Body_T Body_T;
-struct Body_T {
-   print_f_t print;
-   free_f_t free;
-   inside_f_t inside;
-   intersect_f_t intersect;
-   intersectCoord_f_t intersectCoord;
-   cacheAlloc_f_t cacheAlloc;
-   cacheReset_f_t cacheReset;
-   cacheUpdateCoord_f_t cacheUpdateCoord;
-   shallowCutOracle_f_t shallowCutOracle;
-   transform_f_t transform;
-    boundingSphere_f_t boundingSphere;
-};
-
-extern Body_T Polytope_T;
-extern Body_T Ellipsoid_T;
 
 
 // --------------------------------------------- Preprocessing

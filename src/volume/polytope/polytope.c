@@ -1,5 +1,18 @@
 #include "polytope.h"
 
+Body_T Polytope_T = {
+	.print = Polytope_print,
+        .free = Polytope_free,
+        .inside = Polytope_inside_ref,
+        .intersect = Polytope_intersect_ref,
+        .intersectCoord = Polytope_intersectCoord_ref,
+	.cacheAlloc = Polytope_cacheAlloc_ref,
+	.cacheReset = Polytope_cacheReset_ref,
+	.cacheUpdateCoord = Polytope_cacheUpdateCoord_ref,
+        .shallowCutOracle = Polytope_shallowCutOracle_ref,
+	.transform = Polytope_transform_ref,
+        .boundingSphere = Polytope_bounding_ref
+};
 
 Polytope* Polytope_new(int n, int m) {
    Polytope* o = (Polytope*) malloc(sizeof(Polytope));

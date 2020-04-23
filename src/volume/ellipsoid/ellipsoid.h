@@ -4,6 +4,8 @@
 #ifndef ELLIPSOID_H
 #define ELLIPSOID_H
 
+extern Body_T Ellipsoid_T;
+
 typedef struct Ellipsoid {
    FT* A; // row-wise
    // (x-a)T * A * (x-a)
