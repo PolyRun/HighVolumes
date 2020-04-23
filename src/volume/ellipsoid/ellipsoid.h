@@ -1,5 +1,5 @@
-#include "global.h"
-
+#include "../ft.h"
+#include "../linalg/linalg.h"
 
 #ifndef ELLIPSOID_H
 #define ELLIPSOID_H
@@ -42,6 +42,23 @@ void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, voi
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 
 void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
+
+
+
+// --------------------------------------------- Ellipsoid
+// get row i of A
+static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) __attribute__((always_inline));
+static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) {
+   return e->A + i*e->line;
+}
+
+// get row i of T
+static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) __attribute__((always_inline));
+static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) {
+   assert(e->T && "T must be allocated");
+   return e->T + i*e->line;
+}
+
 
 
 #endif

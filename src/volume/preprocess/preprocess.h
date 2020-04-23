@@ -1,4 +1,8 @@
-#include "volume.h"
+#include "../ft.h"
+#include "../matrix/matrix.h"
+#include "../polytope/polytope.h"
+#include "../ellipsoid/ellipsoid.h"
+#include "../linalg/linalg.h"
 
 
 

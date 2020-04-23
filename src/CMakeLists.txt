@@ -2,8 +2,10 @@
 
 cmake_minimum_required(VERSION 3.6)
 
-# MB: maybe not needed?
-# LINK_DIRECTORIES(/usr/include)
+add_subdirectory(volume/matrix)
+add_subdirectory(volume/ellipsoid)
+add_subdirectory(volume/polytope)
+add_subdirectory(volume/linalg)
 
 
 # ----------------------- prng
@@ -18,13 +20,13 @@ add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
 
 # ----------------------- volume
 set(VOLUME_SOURCE_FILES
-   volume/volume.c volume/preprocess/init_ellipsoid.c volume/preprocess/preprocess.c volume/cholesky.c volume/matrix.c volume/polytope.c volume/ellipsoid.c volume/global.c
+   volume/volume.c volume/preprocess/init_ellipsoid.c volume/preprocess/preprocess.c 
 )
 set(VOLUME_HEADER_FILES
-   volume/volume.h volume/preprocess.h volume/cholesky.h volume/matrix.h volume/polytope.h volume/ellipsoid.h volume/global.h
+   volume/volume.h volume/preprocess/preprocess.h
 )
 add_library(volume ${VOLUME_SOURCE_FILES} ${VOLUME_HEADER_FILES})
-target_link_libraries(volume PUBLIC glpk prng)
+target_link_libraries(volume PUBLIC glpk prng matrix ellipsoid polytope linalg)
 
 set_target_properties(volume PROPERTIES
    CXX_STANDARD 11
@@ -88,21 +90,3 @@ set_target_properties(silaeubl PROPERTIES
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
 )
-
-
-
-# ----------------------- test_preprocess
-#project(test_preprocess)
-
-#set(TEST_PREPROCESS_SOURCE_FILE
-#   test_preprocess.cpp
-#)
-#add_executable(test_preprocess ${TEST_PREPROCESS_SOURCE_FILE})
-
-#target_link_libraries(test_preprocess PUBLIC volume volume_helper)
-
-#set_target_properties(test_preprocess PROPERTIES
-#   CXX_STANDARD 11
-#   CXX_STANDARD_REQUIRED YES
-#   CXX_EXTENSIONS NO
-#)

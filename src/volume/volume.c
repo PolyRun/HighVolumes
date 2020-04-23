@@ -1,11 +1,10 @@
 #include "volume.h"
-#include "preprocess.h"
 
 
 
 // dotProduct:
 dotProduct_f_t dotProduct = dotProduct_ref;
-#include "dotProduct/dotProduct.c"
+#include "linalg/dotProduct/dotProduct.c"
 
 
 

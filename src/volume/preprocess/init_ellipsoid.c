@@ -3,7 +3,7 @@
 #include <string.h>
 #include <glpk.h>
 //#include "beta_cut.h"
-#include "../preprocess.h"
+#include "preprocess.h"
 
 
 

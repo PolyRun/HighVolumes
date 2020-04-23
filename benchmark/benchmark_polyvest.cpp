@@ -4,7 +4,7 @@
 #include "../src/volume/volume_helper.hpp"
 
 extern "C" { // must be included C stlye
-#include "../src/volume/preprocess.h"
+#include "../src/volume/volume.h"
 }
 
 class Polyvest : public Benchmark_base {

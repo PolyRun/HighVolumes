@@ -1,4 +1,4 @@
-#include "global.h"
+#include "linalg.h"
 
 
 void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1) {

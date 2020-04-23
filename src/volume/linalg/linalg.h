@@ -6,10 +6,11 @@
 #include <immintrin.h>
 #include <assert.h>
 
-#include "../random/prng.h"
+#include "../../random/prng.h"
 #include "cholesky.h"
 
-
+#ifndef LINALG_H
+#define LINALG_H
 
 typedef double FT;
 #define FT_EPS DBL_EPSILON
@@ -39,3 +40,4 @@ FT Ball_volume(const int n, const FT r);
 // given n elements of b bytes, want to get smallest multiple of 32 bytes that fits this.
 int ceil_cache(const int n, const int b);
 
+#endif

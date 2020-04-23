@@ -8,11 +8,13 @@
 #include <assert.h>
 
 #include "../random/prng.h"
-#include "cholesky.h"
+#include "linalg/cholesky.h"
+#include "ft.h"
 
-#include "matrix.h"
-#include "polytope.h"
-#include "ellipsoid.h"
+#include "matrix/matrix.h"
+#include "polytope/polytope.h"
+#include "ellipsoid/ellipsoid.h"
+#include "preprocess/preprocess.h"
 
 #ifndef HEADER_VOLUMES_H
 #define HEADER_VOLUMES_H
@@ -89,46 +91,6 @@ struct Body_T {
 extern Body_T Polytope_T;
 extern Body_T Ellipsoid_T;
 
-// --------------------------------------------- Polytope
-// --------------- inline Accessors:
-static inline FT* Polytope_get_Ai(const Polytope* p, int i) __attribute__((always_inline));
-static inline FT* Polytope_get_Ai(const Polytope* p, int i) {
-   //return &(p->A[i * (p->line)]);
-   return p->A + (i * (p->line));
-}
-
-static inline void Polytope_set_a(Polytope* p, int i, int x, FT a) __attribute__((always_inline));
-static inline void Polytope_set_a(Polytope* p, int i, int x, FT a) {
-   p->A[i * (p->line) + x] = a;
-}
-static inline void Polytope_set_b(Polytope* p, int i, FT b) __attribute__((always_inline));
-static inline void Polytope_set_b(Polytope* p, int i, FT b) {
-   p->b[i] = b;
-}
-
-static inline FT Polytope_get_a(const Polytope* p, int i, int x) __attribute__((always_inline));
-static inline FT Polytope_get_a(const Polytope* p, int i, int x) {
-   return p->A[i * (p->line) + x];
-}
-static inline FT Polytope_get_b(const Polytope* p, int i) __attribute__((always_inline));
-static inline FT Polytope_get_b(const Polytope* p, int i) {
-   return p->b[i];
-}
-
-
-// --------------------------------------------- Ellipsoid
-// get row i of A
-static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) __attribute__((always_inline));
-static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) {
-   return e->A + i*e->line;
-}
-
-// get row i of T
-static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) __attribute__((always_inline));
-static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) {
-   assert(e->T && "T must be allocated");
-   return e->T + i*e->line;
-}
 
 // --------------------------------------------- Preprocessing
 

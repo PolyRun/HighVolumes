@@ -1,4 +1,5 @@
-#include "global.h"
+#include "../ft.h"
+#include "../linalg/linalg.h"
 
 #ifndef MATRIX_H
 #define MATRIX_H
