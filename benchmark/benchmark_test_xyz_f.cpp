@@ -3,9 +3,9 @@
 #include "../src/volume/volume_helper.hpp"
 
 
-class Test_xyz_f : public Benchmark_base_cli {
+class Test_xyz_f : public Benchmark_base {
     public:
-        Test_xyz_f(std::string name, int reps, bool convergence, int warmup_reps, CLIFunctionsVolume &cliFun, bool benchmark_all) : Benchmark_base_cli(name, reps, convergence, warmup_reps, cliFun, benchmark_all) {}
+        Test_xyz_f(std::string name, int reps, bool convergence, int warmup_reps) : Benchmark_base(name, reps, convergence, warmup_reps) {}
 
         void initialize () {
             box = Polytope_new_box(4,2);
@@ -15,22 +15,6 @@ class Test_xyz_f : public Benchmark_base_cli {
         }
         double run () {
             xyz_f(box,0.1,4);
-        }
-        int get_nr_functions(){
-            auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
-            return o->fmap.size();
-        }
-        void select(int s){
-            auto o = dynamic_cast<CLIF_Option<xyz_f_t>*>(cliFun.getOption("xyz_f"));
-            auto it = o->fmap.begin();
-            for (int i = 0; i < s; ++i) {
-                it ++;
-            }
-            selected = it->second;
-            name_selected = it->first;
-        }
-        double run_selected(){
-            selected(box,0.1,4);
         }
 
     private:
@@ -50,12 +34,6 @@ int main(int argc, char *argv[]){
 
     int reps = std::stoi(cli.option('r'));
 
-    Test_xyz_f *benchmark = new Test_xyz_f("test_xyz_f", reps, false, 0, cliFun, false);
+    Test_xyz_f *benchmark = new Test_xyz_f("test_xyz_f", reps, false, 0);
     benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", reps, false, 0, cliFun, true);
-    benchmark->run_benchmark();
-    benchmark = new Test_xyz_f("test_xyz_f", reps, true, 0, cliFun, false);
-    benchmark->run_benchmark();
-    /*benchmark = new Test_xyz_f("test_xyz_f", reps, true, 0, cliFun, true);
-    benchmark->run_benchmark();*/
 }
