@@ -6,7 +6,7 @@ import subprocess
 import pprint
 import operator
 
-from plot import plot
+from plot import plot, plot_input
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
@@ -23,20 +23,23 @@ for index, item in enumerate(dotProduct):
 
 # --- Benchmarks
 '''
-	OUTDATED!!!
-    id:            unique benchmark id
+    id:            unique benchmark id, used for COMPARE
     name:          name of the file to benchmark
-    run_configs:   CLI options that determine different functions to be executed
-                   format: ("-option_name", {"option_value0", "option_value1", ...})
+    fun_configs:   CLI options that determine the function to be selected
+                   format: funListName -> Definded above
+    run_configs:   CLI options that determine different benchmark configurations to be executed
+                   format: ["opt-char0=opt-value0", "opt-char1=opt-value1", ...]
     input_configs: CLI options that determine different inputs for functions
-                   format: ("-option_name", {{option_set0}, "option_value1", ...})
-                           option_set can either be different option_values or ONE entry of the predefined structure {"i", operator, increment, lower_bound, upper_bound}.
-                           In this case, there is a loop that iterates over the desired range and only 
+                   format: ("option-char", ["option-val0", "option-val1", ...])
+				           or the following format:
+                           ("option-char", ["i", operator, increment, lower_bound, upper_bound].
+                           In this case, there is a loop that iterates over the desired range
+						Only one option-char is available
 '''
 BENCHMARKS = [{"id": 0, "name": "benchmark_test_macro", "fun_configs":[], "run_configs":["r=10"], "input_configs":[]},
          {"id": 1, "name": "benchmark_test_xyz_f", "fun_configs": xyz_f, "run_configs":[], "input_configs":[]},
          {"id": 2, "name": "benchmark_polyvest", "fun_configs":[], "run_configs":[], "input_configs":[]},
-         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",["i", operator.add, 32, 1, 50])]}
+         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",["i", operator.add, 10, 1, 50])]}
         ];
 
 # --- Functions that should be compared
@@ -63,7 +66,8 @@ if(len(sys.argv)>1):
 # ------ iterate over benchmarks chosen in DO_BENCHMARKS, subset of BENCHMARKS
 
 def run_benchmark(benchmark):
-   compare_results = []
+   results = []
+   no_biconfig = False
    bid = benchmark["id"]
    bname = benchmark["name"]
    bfconfigs = benchmark["fun_configs"]
@@ -74,6 +78,7 @@ def run_benchmark(benchmark):
    if not brconfigs:
       brconfigs.append("")
    if not biconfigs:
+      no_biconfig = True
       biconfigs.append(("",[""]))
    for fconfig in bfconfigs:
       for rconfig in brconfigs:
@@ -91,13 +96,11 @@ def run_benchmark(benchmark):
                   print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
                   myenv = os.environ;
                   proc = subprocess.Popen([sys.path[0]+"/"+bname, config_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-                  #proc = subprocess.Popen([sys.path[0]+"/"+bname, "-r=10"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
                   f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_")).replace("__","")+".out", "w")
                   for line in proc.stdout:
                      try:
                         dict = eval(line)
-                        if bid in COMPARE:
-                           compare_results.append((("_"+config_string.replace(" ", "_")).replace("__",""),dict))
+                        results.append((fconfig, dict, ival))
                         f.write(str(dict)+'\n')
                      except:
                         f.write(line.decode('utf-8'))
@@ -116,20 +119,25 @@ def run_benchmark(benchmark):
                   for line in proc.stdout:
                      try:
                         dict = eval(line)
-                        if bid in COMPARE:
-                           compare_results.append(((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict))
+                        results.append(((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict))
                         f.write(str(dict)+'\n')
                      except:
                         f.write(line.decode('utf-8'))
                   f.close()
-   return compare_results
+   
+   if no_biconfig:
+      plot(sys.path[0], bname, results)
+   else:
+      plot_input(sys.path[0], bname, results, icname)
+   
+   if bid in COMPARE:
+      return results
+   else:
+      return []
 
 do_plot = True
-plot_name = None
+plot_name = "benchmark_comparison"
 compare_results = []
-
-if len(sys.argv) == 2:
-   plot_name = (DO_BENCHMARKS[0])["name"]
 
 for benchmark in DO_BENCHMARKS:
    result = run_benchmark(benchmark)
