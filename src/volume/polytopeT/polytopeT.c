@@ -11,7 +11,7 @@ Body_T PolytopeT_T = {
 	.cacheUpdateCoord = PolytopeT_cacheUpdateCoord_ref,
         .shallowCutOracle = PolytopeT_shallowCutOracle_ref,
 	.transform = PolytopeT_transform_ref,
-        .boundingSphere = NULL,//PolytopeT_bounding_ref
+        .boundingSphere = PolytopeT_bounding_ref
 };
 
 PolytopeT* PolytopeT_new(int n, int m) {
@@ -281,3 +281,8 @@ void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT*
       }
    }
 }
+
+void PolytopeT_bounding_ref(const void *B, FT *R2, FT **ori) {
+   assert(false && "not implemented");
+}
+
