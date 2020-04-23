@@ -207,20 +207,20 @@ bool PolytopeT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    // for all i, check if:
    //    Ai * x <= bi
    
-   assert(false);
-   //int i0 = prng_get_random_int_in_range(0,m-1);// just an experiment to see if it helps balance things
-   //for(int ii=0;ii<m;ii++) {
-   //   int i = (ii+i0) % m;
-   //   FT* Ai = PolytopeT_get_Ai(p,i);
-   //   FT bi = PolytopeT_get_b(p,i);
-   //   FT* x = e->a;
-   //   Ax[i] = dotProduct(Ai,x,n);
-   //   if(Ax[i] > bi) { // found one -> return (Ai, bi)
-   //      for(int j=0;j<n;j++) {v[j] = Ai[j];}
-   //      *c = bi;
-   //      return true;
-   //   }
-   //}
+   int i0 = prng_get_random_int_in_range(0,m-1);// just an experiment to see if it helps balance things
+   for(int ii=0;ii<m;ii++) {
+      int i = (ii+i0) % m;
+      FT bi = PolytopeT_get_b(p,i);
+      FT* x = e->a;
+      FT Axi = 0;// dotProduct(Ai,x,n);
+      for(int j=0;j<n;j++) {Axi += x[j] * PolytopeT_get_a(p,i,j);}
+      Ax[i] = Axi;
+      if(Ax[i] > bi) { // found one -> return (Ai, bi)
+         for(int j=0;j<n;j++) {v[j] = PolytopeT_get_a(p,i,j);}
+         *c = bi;
+         return true;
+      }
+   }
    
 
    // check if inner Ellipsoid e = ( (2n)^-2 * T.inverse(), x) is in PolytopeT:
@@ -228,26 +228,25 @@ bool PolytopeT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    //   AiT * T * Ai <= (bi - AiT * x)^2 * (2n)^2
    const FT twon2 = 4.0*n*n;
    int i1 = prng_get_random_int_in_range(0,m-1);//ballance experiment
-   assert(false);
-   //for(int ii=0;ii<m;ii++) {
-   //   int i = (ii+i1) % m;
-   //   FT* Ai = PolytopeT_get_Ai(p,i);
-   //   FT bi = PolytopeT_get_b(p,i);
-   //   
-   //   FT AitTAi = 0; // could be useful to cache...
-   //   for(int j=0;j<n;j++) {
-   //      FT* Tj = Ellipsoid_get_Ti(e,j);
-   //      FT TjAi = dotProduct(Tj,Ai,n);
-   //      AitTAi += Ai[j] * TjAi;
-   //   }
-   //   
-   //   FT diff = bi - Ax[i];
-   //   if(AitTAi > diff*diff*twon2) { // found one -> return (Ai, bi)
-   //      for(int j=0;j<n;j++) {v[j] = Ai[j];}
-   //      *c = bi;
-   //      return true;
-   //   }
-   //}
+   for(int ii=0;ii<m;ii++) {
+      int i = (ii+i1) % m;
+      FT bi = PolytopeT_get_b(p,i);
+      
+      FT AitTAi = 0; // could be useful to cache...
+      for(int j=0;j<n;j++) {
+         FT* Tj = Ellipsoid_get_Ti(e,j);
+         FT TjAi = 0;// dotProduct(Tj,Ai,n);
+         for(int k=0;k<n;k++) { TjAi += Tj[k] * PolytopeT_get_a(p,i,k);}
+	 AitTAi += TjAi * PolytopeT_get_a(p,i,j);
+      }
+      
+      FT diff = bi - Ax[i];
+      if(AitTAi > diff*diff*twon2) { // found one -> return (Ai, bi)
+         for(int j=0;j<n;j++) {v[j] = PolytopeT_get_a(p,i,j);}
+         *c = bi;
+         return true;
+      }
+   }
    
    // no half-plane violated inner ellipse
    return false;
