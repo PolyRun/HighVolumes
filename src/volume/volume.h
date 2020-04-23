@@ -10,77 +10,17 @@
 #include "../random/prng.h"
 #include "cholesky.h"
 
+#include "matrix.h"
+#include "polytope.h"
+#include "ellipsoid.h"
+
 #ifndef HEADER_VOLUMES_H
 #define HEADER_VOLUMES_H
-
-typedef double FT;
-#define FT_EPS DBL_EPSILON
-#define FT_MAX DBL_MAX
-#define FT_MIN DBL_MIN
 
 //#define DEBUG_MSG
 //#define DEBUG
 //#define PRINT_T
 //#define PRINT_TMI
-
-// --------------------------------------------- Forward Declarations
-typedef struct Polytope Polytope;
-typedef struct Ellipsoid Ellipsoid;
-
-// --------------------------------------------- Vectors / General
-
-// dotProduct:
-//   assume no memory allignment!
-typedef FT (*dotProduct_f_t)(const FT* u, const FT* v, const int n);
-extern dotProduct_f_t dotProduct;
-#include "dotProduct/dotProduct.h"
-
-// intersect line x + t*d
-//           with ball(0,r)
-// assume x is in ball
-// return t0,t1 for intersections
-void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1);
-
-// calculate volume exactly for n-dim ball with radius r
-FT Ball_volume(const int n, const FT r);
-
-// given n elements of b bytes, want to get smallest multiple of 32 bytes that fits this.
-int ceil_cache(const int n, const int b);
-
-
-// --------------------------------------------- Memory aligned matrix
-
-// maybe use this inside Polytope... splittig A and b of polytope might make sense for accessing anyway
-
-typedef struct Matrix {
-   FT* data; // size m * n
-   // layout (row-wise):
-   // a00, a01, ... a0n-1, [buffering]
-   // ...
-   // am-10, am-11, ... am-1n-1, [buffering] 
-   int line; // size of one row + b, plus buffer for allignment
-   int n; // dimensions
-   int m; // constraints   
-    
-} Matrix;
-
-
-Matrix* Matrix_new(int n, int m);
-void Matrix_free(const void* o);
-FT* Matrix_get_row(const Matrix* m, int i);
-void Matrix_set(Matrix* m, int i, int x, FT a);
-FT Matrix_get(const Matrix* m, int i, int x);
-void Matrix_print(const void* o);
-
-// given L (lower triangle), b, solve for x: Lx = b
-// simple forward substitution
-void Matrix_L_solve(const Matrix* o, FT* x, const FT* b);
-
-// invert positive-definite symmetric matrix In
-// and store in out
-void Matrix_invert_pdsym(const Matrix *In, Matrix *Out);
-
-// --------------------------------------------- Sub-body Member functions
 
 // input body
 typedef void (*print_f_t)(const void*);
@@ -150,37 +90,6 @@ extern Body_T Polytope_T;
 extern Body_T Ellipsoid_T;
 
 // --------------------------------------------- Polytope
-
-struct Polytope {
-   FT* A; // size line * m
-   // layout (row-wise):
-   // a0, a1, ... an, [buffering]
-   // a0, a1, ... an, [buffering] 
-   // end of line: buffering for 32 byte allignment
-   
-   FT* b; // size m
-
-   //  A*x <= b
-   int line; // size of one row plus buffer for allignment
-   int n; // dimensions
-   int m; // constraints
-};
-
-// Constructor
-Polytope* Polytope_new(int n, int m);
-
-void Polytope_free(const void* o);
-void Polytope_print(const void* o);
-bool Polytope_inside_ref(const void* o, const FT* v);
-void Polytope_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
-void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-void Polytope_intersectCoord_cached_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-int  Polytope_cacheAlloc_ref(const void* o);
-void Polytope_cacheReset_ref(const void* o, const FT* x, void* cache);
-void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
-bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
-void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
-
 // --------------- inline Accessors:
 static inline FT* Polytope_get_Ai(const Polytope* p, int i) __attribute__((always_inline));
 static inline FT* Polytope_get_Ai(const Polytope* p, int i) {
@@ -205,33 +114,9 @@ static inline FT Polytope_get_b(const Polytope* p, int i) __attribute__((always_
 static inline FT Polytope_get_b(const Polytope* p, int i) {
    return p->b[i];
 }
+
+
 // --------------------------------------------- Ellipsoid
-
-struct Ellipsoid {
-   FT* A; // row-wise
-   // (x-a)T * A * (x-a)
-   FT* a;
-   int line; // size of one row of A, plus buffer for allignment
-   int n;
-   FT* T; // inverse of A
-   // only used for preprocessing
-   // only non-NULL if generated with Ellipsoid_new_with_T(n)
-};
-
-Ellipsoid* Ellipsoid_new(int n);
-Ellipsoid* Ellipsoid_new_with_T(int n);// only use if you need T!
-
-void Ellipsoid_free(const void* o);
-void Ellipsoid_print(const void* o);
-bool Ellipsoid_inside_ref(const void* o, const FT* v);
-void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
-void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-int  Ellipsoid_cacheAlloc_ref(const void* o);
-void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache);
-void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
-bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
-void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
-
 // get row i of A
 static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) __attribute__((always_inline));
 static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) {
@@ -244,25 +129,6 @@ static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) {
    assert(e->T && "T must be allocated");
    return e->T + i*e->line;
 }
-
-FT Ellipsoid_eval(const Ellipsoid* e, const FT* x); // (x-a)T * A * (x-a)
-void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* n); // 2 * A * (x - a)  ==> not normalized
-
-// internal: push x on surface of e: (x-a)T * A * (x-a) = eFac
-void Ellipsoid_project(const Ellipsoid* e, const FT eFac, FT* x);
-
-
-// Constrained to e, minimize f -> write into x
-// e = (A,a), f=(B,b)
-// (x-a)T * A * (x-a) = eFac
-// min_x (x-b)T * B * (x-b)
-//
-// takes current x as initialization
-void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, FT* x);
-
-// recompute A from T (inverse)
-void Ellipsoid_A_from_T(Ellipsoid* e);
-
 
 // --------------------------------------------- Preprocessing
 
