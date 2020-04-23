@@ -130,9 +130,10 @@ void test_preprocess_generic() {
         void* body_out[1] = {box_out};
         Body_T* type[1] = {&Polytope_T};
 
+	Polytope_T.print(box);
         preprocess_ref(n, 1, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
         
-	//Polytope_T.print(box_out);
+	Polytope_T.print(box_out);
         
         FT* x = (FT*)aligned_alloc(32, n*sizeof(FT));
         void* cache = aligned_alloc(32, Polytope_T.cacheAlloc(box_out));
@@ -149,14 +150,14 @@ void test_preprocess_generic() {
 	for(int i=0;i<n;i++) {
 	    FT t0,t1;
             Polytope_T.intersectCoord(box_out, x, i, &t0, &t1, cache);
-            //FT tmax = std::max(-t0,t1);
-            FT tavg = (t1 - t0)/2;
-	    //d2 *= tmax; 
-            d2 += tavg * tavg;
+            FT tmax = std::max(-t0,t1);
+            //FT tavg = (t1 - t0)/2;
+	    d2 *= tmax; 
+            //d2 += tavg * tavg;
 	    assert(t0 <= -1 && t1 >= 1 && "walls do not cut inner ellipse");
 	    std::cout << t0 << " " << t1 << "\n";
 	}
-	std::cout << "d2 " << d2 << "\n";
+	std::cout << "d2 " << d2 << " vs " << (4*n*n)<< "\n";
 	assert(d2 <= 4.0*n*n && "box not outside ellipse");
         
 	free(x);

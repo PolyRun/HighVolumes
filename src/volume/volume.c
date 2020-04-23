@@ -269,6 +269,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
       exit(1);		
    }
+   Matrix_print(L);
    
    //printf("\nL:\n");
    //for(int i=0;i<n;i++) {
