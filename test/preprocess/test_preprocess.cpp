@@ -172,16 +172,16 @@ void test_preprocess_generic() {
         Polytope_T.free(box);
         Polytope_T.free(box_out);
     }
-    //{
-    //    const int n = 10;
-    //    PolytopeT* box = PolytopeT_new_box(n,0.5);
-    //    PolytopeT* box_out = PolytopeT_new_box(n,1.0);
+    {
+        const int n = 10;
+        PolytopeT* box = PolytopeT_new_box(n,0.5);
+        PolytopeT* box_out = PolytopeT_new_box(n,1.0);
 
-    //    test_preprocess_generic_box(n, &PolytopeT_T, box, box_out);
+        test_preprocess_generic_box(n, &PolytopeT_T, box, box_out);
 
-    //    PolytopeT_T.free(box);
-    //    PolytopeT_T.free(box_out);
-    //}
+        PolytopeT_T.free(box);
+        PolytopeT_T.free(box_out);
+    }
     
     {
         const int n = 10;

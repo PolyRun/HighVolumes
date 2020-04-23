@@ -6,5 +6,6 @@ cmake_minimum_required(VERSION 3.6)
 
 target_sources(volume PUBLIC
 ${CMAKE_CURRENT_SOURCE_DIR}/polytope.c
+${CMAKE_CURRENT_SOURCE_DIR}/polytope_glpk.c
 ${CMAKE_CURRENT_SOURCE_DIR}/polytope.h
 )

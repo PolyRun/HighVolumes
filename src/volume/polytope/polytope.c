@@ -274,10 +274,4 @@ void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* 
    }
 }
 
-// TODO: put in own function
-void Polytope_bounding_ref(const void *B, FT *R2, FT **Ori){
-    const Polytope *P = (Polytope *) B;
-    init_ellipsoid(P, R2, Ori);
-}
-
 

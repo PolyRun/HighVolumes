@@ -262,13 +262,13 @@ void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT*
    // b' = b - A * a
    // b'' = b' / beta
    FT beta_r = 1.0 / beta; 
-   assert(false);
-   //for (int i = 0; i < m; i++){
-   //   FT* Ai = PolytopeT_get_Ai(p_in,i);
-   //   FT bi = PolytopeT_get_b(p_in, i);
-   //   FT distance = bi - dotProduct(Ai, a, n);
-   //   PolytopeT_set_b(p_out, i, beta_r * distance);
-   //}
+   for (int i = 0; i < m; i++){
+      //FT* Ai = PolytopeT_get_Ai(p_in,i);
+      FT bi = PolytopeT_get_b(p_in, i);
+      FT distance = bi;// - dotProduct(Ai, a, n);
+      for(int j=0;j<n;j++) {distance -= a[j] * PolytopeT_get_a(p_in,i,j);}
+      PolytopeT_set_b(p_out, i, beta_r * distance);
+   }
    
    // A'' = A' = A * L
    for (int i = 0; i < m; i++){
@@ -282,7 +282,4 @@ void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT*
    }
 }
 
-void PolytopeT_bounding_ref(const void *B, FT *R2, FT **ori) {
-   assert(false && "not implemented");
-}
 
