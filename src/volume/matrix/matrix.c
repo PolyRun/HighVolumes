@@ -6,7 +6,7 @@ Matrix* Matrix_new(int n, int m) {
    o->m = m;
    o->line = ceil_cache(n,sizeof(FT)); // make sure next is also 32 alligned
    o->data = (FT*)(aligned_alloc(32, o->line*m*sizeof(FT))); // align this to 32
-
+   for(int i=0;i<(o->line*m);i++) {o->data[i]=0;}
    return o;
 }
 
