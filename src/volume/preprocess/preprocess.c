@@ -1,5 +1,5 @@
 //#include "beta_cut.h"
-#include "../preprocess.h"
+#include "preprocess.h"
 #include <assert.h>
 
 #define FLOATWIDTH 15

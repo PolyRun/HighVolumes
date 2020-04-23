@@ -4,7 +4,7 @@
 
 extern "C" { // must be included C stlye
 #include "volume/volume.h"
-    #include "volume/preprocess.h"
+    #include "volume/preprocess/preprocess.h"
 }
 
 #include "peterem.hpp"

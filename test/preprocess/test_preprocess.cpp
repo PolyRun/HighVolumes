@@ -3,7 +3,7 @@
 #include "test_helpers.hpp"
 
 extern "C" { // must be included C stlye
-#include "../../src/volume/preprocess.h"
+#include "../../src/volume/volume.h"
 }
 
 std::string path_from_exec = "";
@@ -118,55 +118,71 @@ void test_preprocess_random_polytopes(int ntests, int dim, int nconstraints){
     
 }
 
+void test_preprocess_generic_box(const int n, Body_T* type_, void* box, void* box_out) {
+   FT det;
+   void* body_in[1] = {box};
+   void* body_out[1] = {box_out};
+   Body_T* type[1] = {type_};
+
+   type_->print(box);
+   preprocess_ref(n, 1, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+   
+   type_->print(box_out);
+   
+   FT* x = (FT*)aligned_alloc(32, n*sizeof(FT));
+   void* cache = aligned_alloc(32, type_->cacheAlloc(box_out));
+   for(int i=0;i<n;i++) {x[i]=0;}
+   type_->cacheReset(box_out,x,cache);
+   // check origin 0 is inside:
+   assert(type_->inside(box_out, x));
+   
+   // Since the box was alligned, we know it is still alligned
+   // this is because the cutting planes were all alligned
+   // So now we measure from the origin to the sides.
+   // then we know how far the sides are out
+   // this way, we can find the corner furthest from the origin
+   // this cannot be too far out
+   FT d2 = 1;// squared distance of furthest point
+   for(int i=0;i<n;i++) {
+       FT t0,t1;
+       type_->intersectCoord(box_out, x, i, &t0, &t1, cache);
+       FT tmax = std::max(-t0,t1);
+       d2 += tmax*tmax;
+       assert(t0 <= -1 && t1 >= 1 && "walls do not cut inner ellipse");
+       std::cout << t0 << " " << t1 << "\n";
+   }
+   std::cout << "d2 " << d2 << " vs " << (4*n*n)<< "\n";
+   assert(d2 <= 4.0*n*n && "box not outside ellipse");
+   
+   free(x);
+   free(cache);
+   std::cout << "det: " << det << std::endl;
+}
+   
 void test_preprocess_generic() {
     std::cout << "\n ----------- TEST GENERIC PREPROCESSING:\n";
    
     {
         const int n = 10;
-        FT det;
 	Polytope* box = Polytope_new_box(n,0.5);
-        void* body_in[1] = {box};
 	Polytope* box_out = Polytope_new_box(n,1.0);
-        void* body_out[1] = {box_out};
-        Body_T* type[1] = {&Polytope_T};
 
-        preprocess_ref(n, 1, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
-        
-	//Polytope_T.print(box_out);
-        
-        FT* x = (FT*)aligned_alloc(32, n*sizeof(FT));
-        void* cache = aligned_alloc(32, Polytope_T.cacheAlloc(box_out));
-	for(int i=0;i<n;i++) {x[i]=0;}
-	Polytope_T.cacheReset(box_out,x,cache);
-	// check origin 0 is inside:
-        assert(Polytope_T.inside(box_out, x));
-        
-	// check intersections:
-        // note: the center of the ellipsoid is no longer guaranteed to be 0, so this test (d2 <= 4.0*n*n) doesn't work anymore
-        // we would need to know ori to replicate this...
-        // for now we can do the following simpler (yet weaker) test
-	FT d2 = 1;
-	for(int i=0;i<n;i++) {
-	    FT t0,t1;
-            Polytope_T.intersectCoord(box_out, x, i, &t0, &t1, cache);
-            //FT tmax = std::max(-t0,t1);
-            FT tavg = (t1 - t0)/2;
-	    //d2 *= tmax; 
-            d2 += tavg * tavg;
-	    assert(t0 <= -1 && t1 >= 1 && "walls do not cut inner ellipse");
-	    std::cout << t0 << " " << t1 << "\n";
-	}
-	std::cout << "d2 " << d2 << "\n";
-	assert(d2 <= 4.0*n*n && "box not outside ellipse");
-        
-	free(x);
-	free(cache);
+	test_preprocess_generic_box(n, &Polytope_T, box, box_out);
+
         Polytope_T.free(box);
         Polytope_T.free(box_out);
-	
-	std::cout << "det: " << det << std::endl;
     }
-     
+    //{
+    //    const int n = 10;
+    //    PolytopeT* box = PolytopeT_new_box(n,0.5);
+    //    PolytopeT* box_out = PolytopeT_new_box(n,1.0);
+
+    //    test_preprocess_generic_box(n, &PolytopeT_T, box, box_out);
+
+    //    PolytopeT_T.free(box);
+    //    PolytopeT_T.free(box_out);
+    //}
+    
     {
         const int n = 10;
         FT det;

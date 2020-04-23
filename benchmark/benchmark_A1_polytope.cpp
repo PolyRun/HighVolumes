@@ -3,7 +3,7 @@
 #include "../src/util/timer.hpp"
 
 extern "C" {
-#include "../src/volume/preprocess.h"
+#include "../src/volume/volume.h"
 }
 
 #define POLYEXP_BASE ((string) "../../polyvest/examples/")

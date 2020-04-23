@@ -2,7 +2,6 @@
 
 extern "C" { // must be included C stlye
 #include "../../src/volume/volume.h"
-#include "../../src/volume/preprocess.h"
 }
 
 #include "../../src/volume/volume_helper.hpp"
@@ -15,6 +14,7 @@ void test() {
    
    Polytope* box = Polytope_new_box(n,2);
    Polytope* box2 = Polytope_new_box(n,1);
+   PolytopeT* box3 = PolytopeT_new_box(n,2);
    Polytope_T.print(box);
    
    Ellipsoid* e = Ellipsoid_new(n);
@@ -30,26 +30,32 @@ void test() {
    
    void* body2[2] = {box, box2};
    Body_T* type2[2] = {&Polytope_T, &Polytope_T};
+   
+   void* body3[1] = {box3};
+   Body_T* type3[1] = {&PolytopeT_T};
 
    for(int i=0; i<5; i++) {
       FT rx = 0.1*i;
       FT r0 = 1.5 - rx;
       FT r1 = 5.0 + rx;
       FT vbox = volume_ref(n,r0,r1,  1,(const void**)&box,  (const Body_T**)&type);
+      FT vboxT = volume_ref(n,r0,r1,  1,(const void**)&body3,  (const Body_T**)&type3);
       FT vs   = volume_ref(n,r0,r1,  1,(const void**)&e,    (const Body_T**)&type[1]);
       FT v    = volume_ref(n,r0,r1,  2,(const void**)&body, (const Body_T**)&type);
       FT vbox2 = volume_ref(n,r0*0.5,r1,  2,(const void**)&body2, (const Body_T**)&type2);
       
-      std::cout << "\nbox: " << vbox << " vs 256\n";
+      std::cout << "\nbox: " << vbox << "\n";
+      std::cout << "\nboxT: " << vboxT << "\n";
       FT vs_ref = Ball_volume(n,3.0);
       std::cout << "sphere: " << vs << " vs " << vs_ref << "\n";
       std::cout << "intersection: " << v << "\n";
-      std::cout << "\nbox2: " << vbox2 << " vs 16\n";
+      std::cout << "\nbox2: " << vbox2 << "\n";
 
       assert(std::abs(vbox - std::pow(4,n)) <= 10); // Not great, want to get more accuracy
+      assert(std::abs(vboxT - std::pow(4,n)) <= 10); 
       assert(std::abs(vs_ref - vs) <= 10);
       assert(vbox > v && vs > v);
-      assert(std::abs(vbox2 - 16) <= 1.0);
+      assert(std::abs(vbox2 - std::pow(2,n)) <= 1.0);
    }
 
 

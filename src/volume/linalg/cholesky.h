@@ -2,7 +2,7 @@
 #ifndef CHOLESKY_H
 #define CHOLESKY_H
 
-#include "volume.h"
+#include "../volume.h"
 
 /**
  * \brief cholesky factorization

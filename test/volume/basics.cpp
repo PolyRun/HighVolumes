@@ -2,13 +2,146 @@
 
 extern "C" { // must be included C stlye
 #include "../../src/volume/volume.h"
-#include "../../src/volume/preprocess.h"
 }
 
 #include "../../src/volume/volume_helper.hpp"
 
 #include "../../src/util/cli.hpp"
 #include "../../src/util/cli_functions.hpp"
+
+void test_box_inside(const int n, Body_T* type, void* body) {
+   FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   {
+      for(int i=0;i<n;i++) {x[i]=0;}
+      assert(type->inside(body, x));
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i==2)*3;}
+      assert(!type->inside(body, x));
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=2;}
+      assert(type->inside(body, x));
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=1-2*(i%2==0);}
+      assert(type->inside(body, x));
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=-(i==0)*3.0;}
+      assert(type->inside(body, x));
+   }
+   free(x);
+   free(d);
+}
+
+void test_box_intersect(const int n, Body_T* type, void* box) {
+   FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+
+   // Test Polytope_T.intersect:
+   {
+      for(int i=0;i<n;i++) {x[i]=0; d[i]=-0.1 - (i==0)*0.9 + (i==1)*0.8;}
+      FT t0,t1;
+      type->intersect(box, x, d, &t0, &t1);
+      assert(t0==-2.0 && t1==2.0);
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i==2); d[i]=(i==2)*-1;}
+      FT t0,t1;
+      type->intersect(box, x, d, &t0, &t1);
+      assert(t0==-1.0 && t1==3.0);
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i==2)+(i==3)*-1.5; d[i]=0.1 + 0.4*(i==3);}
+      FT t0,t1;
+      type->intersect(box, x, d, &t0, &t1);
+      assert(t0==-1.0 && t1==7.0);
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i<2)*1.5; d[i]=1*(i==0) + -1*(i==1);}
+      FT t0,t1;
+      type->intersect(box, x, d, &t0, &t1);
+      assert(t0==-0.5 && t1==0.5);
+   }
+   free(x);
+   free(d);
+}
+
+void test_box_intersectCoord(const int n, Body_T* type, void* box) {
+   FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+
+   // Test Polytope_T.intersectCoord
+   void* cache = aligned_alloc(32, type->cacheAlloc(box));
+   {
+      for(int i=0;i<n;i++) {x[i]=0;}
+      type->cacheReset(box,x,cache);
+      for(int d=0;d<4;d++) {
+         FT t0,t1;
+         type->intersectCoord(box, x, 0, &t0, &t1, cache);
+         assert(t0==-2.0 && t1==2.0);
+      }
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i==2);}
+      type->cacheReset(box,x,cache);
+      FT t0,t1;
+      type->intersectCoord(box, x, 2, &t0, &t1, cache);
+      assert(t0==-3.0 && t1==1.0);
+      type->intersectCoord(box, x, 0, &t0, &t1, cache);
+      assert(t0==-2.0 && t1==2.0);
+      type->intersectCoord(box, x, 1, &t0, &t1, cache);
+      assert(t0==-2.0 && t1==2.0);
+      type->intersectCoord(box, x, 3, &t0, &t1, cache);
+      assert(t0==-2.0 && t1==2.0);
+   }
+   free(cache);
+   free(d);
+   free(x);
+}
+
+void test_box_cutOracle(const int n, Body_T* type, void* box) {
+   FT* v = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT c;
+
+   Ellipsoid* e = Ellipsoid_new_with_T(n); // simple sphere
+   for(int i=0; i<n; i++) {
+      e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
+      FT* Ai = Ellipsoid_get_Ai(e,i);
+      FT* Ti = Ellipsoid_get_Ai(e,i);
+      FT r = prng_get_random_double_in_range(1.9*n,2.2*n);
+      Ai[i] = 1.0 / (r*r);
+      Ti[i] = (r*r);
+   }
+   
+   {// fully inside inner ellipsoid:
+      bool doCut = type->shallowCutOracle(box, e, v, &c);
+      assert(!doCut && "center of ellipsoid");
+   }
+
+   for(int i=0;i<n;i++) {// center outside polytope
+      for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-3.0)*n + prng_get_random_double_in_range(-0.5,0.5); }
+
+      bool doCut = type->shallowCutOracle(box, e, v, &c);
+      assert(doCut && "outer ellipsoid");
+      assert(c==1.0);
+      for(int j=0;j<n;j++) { assert(v[j]==(i==j)*-1.0);}
+   }
+
+   for(int i=0;i<n;i++) {// center inside, but violate inner ellipsoid
+      for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-3.0) + prng_get_random_double_in_range(-0.1,0.1); }
+
+      bool doCut = type->shallowCutOracle(box, e, v, &c);
+      assert(doCut && "inner ellipsoid");
+      assert(c==1.0);
+      for(int j=0;j<n;j++) { assert(v[j]==(i==j)*-1.0);}
+   }
+   
+   Ellipsoid_free(e);
+   free(v);
+}
 
 int main(int argc, char** argv) {
    CLI cli(argc,argv,"test_volume_basics");
@@ -45,7 +178,7 @@ int main(int argc, char** argv) {
          free(v);
       }
    }
-   // --------------------------------- Bodies:
+   // --------------------------------- Polytope:
    auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));
    for(auto it : o->fmap) {
       Polytope_T.intersectCoord = it.second;
@@ -54,82 +187,28 @@ int main(int argc, char** argv) {
       // Generate new polytope box, n dim, 2 radius
       const int n = 10;
       Polytope* box = Polytope_new_box(n,2);
-      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-      FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-      {
-         for(int i=0;i<n;i++) {x[i]=0;}
-	 assert(Polytope_T.inside(box, x));
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i==2)*3;}
-         assert(!Polytope_T.inside(box, x));
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=2;}
-         assert(Polytope_T.inside(box, x));
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=1-2*(i%2==0);}
-         assert(Polytope_T.inside(box, x));
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=-(i==0)*3.0;}
-         assert(Polytope_T.inside(box, x));
-      }
 
-      // Test Polytope_T.intersect:
-      {
-         for(int i=0;i<n;i++) {x[i]=0; d[i]=-0.1 - (i==0)*0.9 + (i==1)*0.8;}
-         FT t0,t1;
-         Polytope_T.intersect(box, x, d, &t0, &t1);
-         assert(t0==-2.0 && t1==2.0);
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i==2); d[i]=(i==2)*-1;}
-         FT t0,t1;
-         Polytope_T.intersect(box, x, d, &t0, &t1);
-         assert(t0==-1.0 && t1==3.0);
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i==2)+(i==3)*-1.5; d[i]=0.1 + 0.4*(i==3);}
-         FT t0,t1;
-         Polytope_T.intersect(box, x, d, &t0, &t1);
-         assert(t0==-1.0 && t1==7.0);
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i<2)*1.5; d[i]=1*(i==0) + -1*(i==1);}
-         FT t0,t1;
-         Polytope_T.intersect(box, x, d, &t0, &t1);
-         assert(t0==-0.5 && t1==0.5);
-      }
-      // Test Polytope_T.intersectCoord
-      void* cache = aligned_alloc(32, Polytope_T.cacheAlloc(box));
-      {
-         for(int i=0;i<n;i++) {x[i]=0;}
-         Polytope_T.cacheReset(box,x,cache);
-         for(int d=0;d<4;d++) {
-            FT t0,t1;
-            Polytope_T.intersectCoord(box, x, 0, &t0, &t1, cache);
-            assert(t0==-2.0 && t1==2.0);
-         }
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i==2);}
-         Polytope_T.cacheReset(box,x,cache);
-         FT t0,t1;
-         Polytope_T.intersectCoord(box, x, 2, &t0, &t1, cache);
-         assert(t0==-3.0 && t1==1.0);
-         Polytope_T.intersectCoord(box, x, 0, &t0, &t1, cache);
-         assert(t0==-2.0 && t1==2.0);
-         Polytope_T.intersectCoord(box, x, 1, &t0, &t1, cache);
-         assert(t0==-2.0 && t1==2.0);
-         Polytope_T.intersectCoord(box, x, 3, &t0, &t1, cache);
-         assert(t0==-2.0 && t1==2.0);
-      }
-      free(cache);
-      free(d);
-      free(x);
+      test_box_inside(n, &Polytope_T, box);
+      test_box_intersect(n, &Polytope_T, box);
+      test_box_intersectCoord(n, &Polytope_T, box);
+      
       Polytope_free(box);
+   }
+
+   auto oT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeT_intersectCoord"));
+   for(auto it : oT->fmap) {
+      PolytopeT_T.intersectCoord = it.second;
+      std::cout << "Test PolytopeT for intersectCoord " << it.first << std::endl;
+
+      // Generate new polytope box, n dim, 2 radius
+      const int n = 10;
+      PolytopeT* box = PolytopeT_new_box(n,2);
+
+      test_box_inside(n, &PolytopeT_T, box);
+      test_box_intersect(n, &PolytopeT_T, box);
+      test_box_intersectCoord(n, &PolytopeT_T, box);
+      
+      PolytopeT_free(box);
    }
 
    // Check ball volume:
@@ -356,45 +435,17 @@ int main(int argc, char** argv) {
       const int n = 20;
       Polytope* box = Polytope_new_box(n,1.0);
       
-      FT* v = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-      FT c;
-
-      Ellipsoid* e = Ellipsoid_new_with_T(n); // simple sphere
-      for(int i=0; i<n; i++) {
-         e->a[i] = prng_get_random_double_in_range(-0.1,0.1);
-         FT* Ai = Ellipsoid_get_Ai(e,i);
-         FT* Ti = Ellipsoid_get_Ai(e,i);
-         FT r = prng_get_random_double_in_range(1.9*n,2.2*n);
-	 Ai[i] = 1.0 / (r*r);
-	 Ti[i] = (r*r);
-      }
+      test_box_cutOracle(n, &Polytope_T, box);
       
-      {// fully inside inner ellipsoid:
-         bool doCut = Polytope_T.shallowCutOracle(box, e, v, &c);
-         assert(!doCut && "center of ellipsoid");
-      }
-
-      for(int i=0;i<n;i++) {// center outside polytope
-	 for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-3.0)*n + prng_get_random_double_in_range(-0.5,0.5); }
-
-         bool doCut = Polytope_T.shallowCutOracle(box, e, v, &c);
-	 assert(doCut && "outer ellipsoid");
-	 assert(c==1.0);
-	 for(int j=0;j<n;j++) { assert(v[j]==(i==j)*-1.0);}
-      }
-
-      for(int i=0;i<n;i++) {// center inside, but violate inner ellipsoid
-	 for(int j=0;j<n;j++) { e->a[j] = (i==j)*(-3.0) + prng_get_random_double_in_range(-0.1,0.1); }
- 
-         bool doCut = Polytope_T.shallowCutOracle(box, e, v, &c);
-	 assert(doCut && "inner ellipsoid");
-	 assert(c==1.0);
-	 for(int j=0;j<n;j++) { assert(v[j]==(i==j)*-1.0);}
-      }
-
-      Ellipsoid_free(e);
-      free(v);
       Polytope_free(box);
+   }
+   {// PolytopeT_T.shallowCutOracle
+      const int n = 20;
+      PolytopeT* box = PolytopeT_new_box(n,1.0);
+      
+      test_box_cutOracle(n, &PolytopeT_T, box);
+      
+      PolytopeT_free(box);
    }
    {// Ellipsoid_T.shallowCutOracle
       std::cout << "Ellipsoid oracle:\n";
