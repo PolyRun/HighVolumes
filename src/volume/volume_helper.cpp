@@ -16,6 +16,20 @@ Polytope* Polytope_new_box(int n, FT r) {
    return p;
 }
 
+PolytopeT* PolytopeT_new_box(int n, FT r) {
+   PolytopeT* p = PolytopeT_new(n, 2*n);
+
+   for(int i=0; i<n; i++) {// for each dim
+      PolytopeT_set_b(p, i,   r);
+      PolytopeT_set_b(p, i+n, r);
+      for(int x=0; x<n; x++) {
+         PolytopeT_set_a(p, i,   x, (x==i)?1:0);
+         PolytopeT_set_a(p, i+n, x, (x==i)?-1:0);
+      }
+   }
+
+   return p;
+}
 
 void make_random_poly(const std::vector<double> &ell, int m, Polytope **ret){
 

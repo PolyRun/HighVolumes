@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
          free(v);
       }
    }
-   // --------------------------------- Bodies:
+   // --------------------------------- Polytope:
    auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));
    for(auto it : o->fmap) {
       Polytope_T.intersectCoord = it.second;
@@ -152,6 +152,22 @@ int main(int argc, char** argv) {
       test_box_intersectCoord(n, &Polytope_T, box);
       
       Polytope_free(box);
+   }
+
+   auto oT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeT_intersectCoord"));
+   for(auto it : oT->fmap) {
+      PolytopeT_T.intersectCoord = it.second;
+      std::cout << "Test PolytopeT for intersectCoord " << it.first << std::endl;
+
+      // Generate new polytope box, n dim, 2 radius
+      const int n = 10;
+      PolytopeT* box = PolytopeT_new_box(n,2);
+
+      test_box_inside(n, &PolytopeT_T, box);
+      test_box_intersect(n, &PolytopeT_T, box);
+      test_box_intersectCoord(n, &PolytopeT_T, box);
+      
+      PolytopeT_free(box);
    }
 
    // Check ball volume:
