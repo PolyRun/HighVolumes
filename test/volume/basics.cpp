@@ -9,6 +9,99 @@ extern "C" { // must be included C stlye
 #include "../../src/util/cli.hpp"
 #include "../../src/util/cli_functions.hpp"
 
+void test_box_inside(const int n, Body_T* type, void* body) {
+   FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   {
+      for(int i=0;i<n;i++) {x[i]=0;}
+      assert(type->inside(body, x));
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i==2)*3;}
+      assert(!type->inside(body, x));
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=2;}
+      assert(type->inside(body, x));
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=1-2*(i%2==0);}
+      assert(type->inside(body, x));
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=-(i==0)*3.0;}
+      assert(type->inside(body, x));
+   }
+   free(x);
+   free(d);
+}
+
+void test_box_intersect(const int n, Body_T* type, void* box) {
+   FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+
+   // Test Polytope_T.intersect:
+   {
+      for(int i=0;i<n;i++) {x[i]=0; d[i]=-0.1 - (i==0)*0.9 + (i==1)*0.8;}
+      FT t0,t1;
+      type->intersect(box, x, d, &t0, &t1);
+      assert(t0==-2.0 && t1==2.0);
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i==2); d[i]=(i==2)*-1;}
+      FT t0,t1;
+      type->intersect(box, x, d, &t0, &t1);
+      assert(t0==-1.0 && t1==3.0);
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i==2)+(i==3)*-1.5; d[i]=0.1 + 0.4*(i==3);}
+      FT t0,t1;
+      type->intersect(box, x, d, &t0, &t1);
+      assert(t0==-1.0 && t1==7.0);
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i<2)*1.5; d[i]=1*(i==0) + -1*(i==1);}
+      FT t0,t1;
+      type->intersect(box, x, d, &t0, &t1);
+      assert(t0==-0.5 && t1==0.5);
+   }
+   free(x);
+   free(d);
+}
+
+void test_box_intersectCoord(const int n, Body_T* type, void* box) {
+   FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+
+   // Test Polytope_T.intersectCoord
+   void* cache = aligned_alloc(32, type->cacheAlloc(box));
+   {
+      for(int i=0;i<n;i++) {x[i]=0;}
+      type->cacheReset(box,x,cache);
+      for(int d=0;d<4;d++) {
+         FT t0,t1;
+         type->intersectCoord(box, x, 0, &t0, &t1, cache);
+         assert(t0==-2.0 && t1==2.0);
+      }
+   }
+   {
+      for(int i=0;i<n;i++) {x[i]=(i==2);}
+      type->cacheReset(box,x,cache);
+      FT t0,t1;
+      type->intersectCoord(box, x, 2, &t0, &t1, cache);
+      assert(t0==-3.0 && t1==1.0);
+      type->intersectCoord(box, x, 0, &t0, &t1, cache);
+      assert(t0==-2.0 && t1==2.0);
+      type->intersectCoord(box, x, 1, &t0, &t1, cache);
+      assert(t0==-2.0 && t1==2.0);
+      type->intersectCoord(box, x, 3, &t0, &t1, cache);
+      assert(t0==-2.0 && t1==2.0);
+   }
+   free(cache);
+   free(d);
+   free(x);
+}
+
 int main(int argc, char** argv) {
    CLI cli(argc,argv,"test_volume_basics");
    CLIFunctionsVolume cliFun(cli);
@@ -53,81 +146,11 @@ int main(int argc, char** argv) {
       // Generate new polytope box, n dim, 2 radius
       const int n = 10;
       Polytope* box = Polytope_new_box(n,2);
-      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-      FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-      {
-         for(int i=0;i<n;i++) {x[i]=0;}
-	 assert(Polytope_T.inside(box, x));
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i==2)*3;}
-         assert(!Polytope_T.inside(box, x));
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=2;}
-         assert(Polytope_T.inside(box, x));
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=1-2*(i%2==0);}
-         assert(Polytope_T.inside(box, x));
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=-(i==0)*3.0;}
-         assert(Polytope_T.inside(box, x));
-      }
 
-      // Test Polytope_T.intersect:
-      {
-         for(int i=0;i<n;i++) {x[i]=0; d[i]=-0.1 - (i==0)*0.9 + (i==1)*0.8;}
-         FT t0,t1;
-         Polytope_T.intersect(box, x, d, &t0, &t1);
-         assert(t0==-2.0 && t1==2.0);
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i==2); d[i]=(i==2)*-1;}
-         FT t0,t1;
-         Polytope_T.intersect(box, x, d, &t0, &t1);
-         assert(t0==-1.0 && t1==3.0);
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i==2)+(i==3)*-1.5; d[i]=0.1 + 0.4*(i==3);}
-         FT t0,t1;
-         Polytope_T.intersect(box, x, d, &t0, &t1);
-         assert(t0==-1.0 && t1==7.0);
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i<2)*1.5; d[i]=1*(i==0) + -1*(i==1);}
-         FT t0,t1;
-         Polytope_T.intersect(box, x, d, &t0, &t1);
-         assert(t0==-0.5 && t1==0.5);
-      }
-      // Test Polytope_T.intersectCoord
-      void* cache = aligned_alloc(32, Polytope_T.cacheAlloc(box));
-      {
-         for(int i=0;i<n;i++) {x[i]=0;}
-         Polytope_T.cacheReset(box,x,cache);
-         for(int d=0;d<4;d++) {
-            FT t0,t1;
-            Polytope_T.intersectCoord(box, x, 0, &t0, &t1, cache);
-            assert(t0==-2.0 && t1==2.0);
-         }
-      }
-      {
-         for(int i=0;i<n;i++) {x[i]=(i==2);}
-         Polytope_T.cacheReset(box,x,cache);
-         FT t0,t1;
-         Polytope_T.intersectCoord(box, x, 2, &t0, &t1, cache);
-         assert(t0==-3.0 && t1==1.0);
-         Polytope_T.intersectCoord(box, x, 0, &t0, &t1, cache);
-         assert(t0==-2.0 && t1==2.0);
-         Polytope_T.intersectCoord(box, x, 1, &t0, &t1, cache);
-         assert(t0==-2.0 && t1==2.0);
-         Polytope_T.intersectCoord(box, x, 3, &t0, &t1, cache);
-         assert(t0==-2.0 && t1==2.0);
-      }
-      free(cache);
-      free(d);
-      free(x);
+      test_box_inside(n, &Polytope_T, box);
+      test_box_intersect(n, &Polytope_T, box);
+      test_box_intersectCoord(n, &Polytope_T, box);
+      
       Polytope_free(box);
    }
 
