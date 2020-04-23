@@ -1,4 +1,5 @@
 // imported by volume.c
+#include "dotProduct.h"
 
 FT dotProduct_ref(const FT* u, const FT* v, const int n) {
    FT sum = 0.0;
@@ -48,5 +49,3 @@ FT dotProduct_vec1(const FT* u, const FT* v, const int n) {
    return sum[0];
 }
 
-#include "dotProduct_auto1.c"
-#include "dotProduct_auto2.c"

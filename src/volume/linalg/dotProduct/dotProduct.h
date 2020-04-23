@@ -1,4 +1,7 @@
-// imported by volume.h
+#ifndef HEADER_DOTPRODUCT_H
+#define HEADER_DOTPRODUCT_H
+
+#include "../linalg.h"
 
 // Reference impl:
 FT dotProduct_ref(const FT* u, const FT* v, const int n);
@@ -13,3 +16,4 @@ FT dotProduct_vec1(const FT* u, const FT* v, const int n);
 
 FT dotProduct_auto1(const FT* u, const FT* v, const int n);
 FT dotProduct_auto2(const FT* u, const FT* v, const int n);
+#endif // HEADER_DOTPRODUCT_H
