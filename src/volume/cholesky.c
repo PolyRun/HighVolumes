@@ -35,6 +35,35 @@ inline int cholesky(FT *A, FT *Trans, int n){
 }
 
 
+int cholesky_matrix(const Matrix *M, Matrix *L){
+    int n = M->n;
+    
+    // Decomposing the matrix M into Lower Triangular 
+    for (int i = 0; i < n; i++) {
+        FT *Mi = Matrix_get_row(M, i);
+        for (int j = 0; j <= i; j++) { 
+            FT sum = 0;
+
+            // L_{j,j} = sqrt(T_{j,j} - sum_{k = 0}^{j-1} L_{j, k}^2)
+            if (j == i) {
+                FT *Lj = Matrix_get_row(L, j);
+                sum = dotProduct(Lj, Lj, j);
+                Matrix_set(L, j, j, sqrt(Mi[j] - sum));
+            }
+            // for j < i
+            // L_{i,j} = 1/L_{j,j} * (T_{i,j} - sum_{k = 0}^{j-1} l_{i,k} * l_{j, k})
+            else {
+                FT *Li = Matrix_get_row(L, i);
+                FT *Lj = Matrix_get_row(L, j);
+                FT sum = dotProduct(Li, Lj, j);
+                Matrix_set(L, i, j, 1/Lj[j] * (Mi[j] - sum));
+            } 
+        } 
+    }
+    return 0;
+}
+
+
 int cholesky_ellipsoid(const Ellipsoid *E, Matrix *L){
     int n = E->n;
     

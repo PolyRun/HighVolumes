@@ -11,6 +11,7 @@
  * \param n the number of rows and cols of A
  **/
 int cholesky(FT *A, FT *Trans, int n);
+int cholesky_matrix(const Matrix *M, Matrix *L);
 int cholesky_ellipsoid(const Ellipsoid *T, Matrix *L);
 
 

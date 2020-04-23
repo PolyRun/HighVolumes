@@ -103,7 +103,22 @@ void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori){
     // note we can ignore center a for this
     // note the linear function e_i is maximized by sqrt(T_ii)
     // note we choose R2 = sum_{i} (max e_i - min e_i)^2 as for polytopes
+    Matrix *T = Matrix_new(n,n);
+
+    // once ellipsoid has matrix members this copying won't be necessary
+    // but for now we do it, as we want to be 32byte aligned in as many functions as possible
+    Matrix *A = Matrix_new(n,n);
     for (int i = 0; i < n; i++){
-        *R2 += 4*Ellipsoid_get_Ti(E, i)[i];
+        FT *Ai = Matrix_get_row(A, i);
+        FT *Ei = Ellipsoid_get_Ai(E, i);
+        for (int j = 0; j < n; j++){
+            Ai[j] = Ei[j];
+        }
+    }
+
+    
+    Matrix_invert_pdsym(A, T);
+    for (int i = 0; i < n; i++){
+        *R2 += 4*Matrix_get_row(T, i)[i];
     }  
 }

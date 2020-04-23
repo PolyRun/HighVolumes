@@ -76,6 +76,10 @@ void Matrix_print(const void* o);
 // simple forward substitution
 void Matrix_L_solve(const Matrix* o, FT* x, const FT* b);
 
+// invert positive-definite symmetric matrix In
+// and store in out
+void Matrix_invert_pdsym(const Matrix *In, Matrix *Out);
+
 // --------------------------------------------- Sub-body Member functions
 
 // input body
@@ -258,6 +262,7 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
 
 // recompute A from T (inverse)
 void Ellipsoid_A_from_T(Ellipsoid* e);
+
 
 // --------------------------------------------- Preprocessing
 
