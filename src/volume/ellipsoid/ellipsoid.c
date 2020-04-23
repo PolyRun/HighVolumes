@@ -280,7 +280,10 @@ void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori){
     Matrix_invert_pdsym(A, T);
     for (int i = 0; i < n; i++){
         *R2 += 4*Matrix_get_row(T, i)[i];
-    }  
+    }
+
+    Matrix_free(T); 
+    Matrix_free(A); 
 }
 
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {
