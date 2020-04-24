@@ -1,3 +1,6 @@
+#ifndef HEADER_VOLUME_HELPER_HPP
+#define HEADER_VOLUME_HELPER_HPP
+
 #include <iostream>
 #include <cassert>
 #include <vector>
@@ -13,11 +16,9 @@ extern "C" { // must be included C stlye
 }
 
 #include "../util/cli_functions.hpp"
+#include "../util/performance_counter.hpp"
 #include "../../polyvest/vol.h"
-
-#ifndef HEADER_VOLUME_HELPER_HPP
-#define HEADER_VOLUME_HELPER_HPP
-
+#include "volume_cost.hpp"
 
 std::ostream& operator<<(std::ostream& os, const Polytope& p);
 std::ostream& operator<<(std::ostream& os, const Polytope* p);
@@ -32,6 +33,16 @@ public:
    CLIFunctionsVolume(CLI &cli) : CLIFunctions(cli) {
       // initialize memory arrays of volume library
       volume_lib_init(200,20);// max_n=200, max_b=20
+      
+      // test:
+      pc_stack().add((void*)xyz_f1, new PC_Cost_Wrapper<xyz_cost_f>(xyz_f1_cost,"xyz_f1"));
+      
+      {// open scope for frame
+         PC_Frame<xyz_cost_f> frame((void*)xyz_f1);
+         frame.costf()(10);
+      }
+
+      std::cout << "stack: " << pc_stack().flops() << " " << pc_stack().bytes() << "\n";
 
       // please add your functions below.
       // 

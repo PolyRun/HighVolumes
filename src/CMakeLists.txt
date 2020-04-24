@@ -45,16 +45,31 @@ set_target_properties(volume PROPERTIES
    COMPILE_FLAGS "-march=native -mfma -ffast-math -O3"
 )
 
+# ----------------------- performance_counter
+set(PERFORMANCE_COUNTER_SOURCES_FILES
+   util/performance_counter.cpp
+)
+set(PERFORMANCE_COUNTER_HEADER_FILES
+   util/performance_counter.hpp
+)
+add_library(performance_counter ${PERFORMANCE_COUNTER_SOURCES_FILES} ${PERFORMANCE_COUNTER_HEADER_FILES})
+
+set_target_properties(performance_counter PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
 # ----------------------- volume_helper
 set(VOLUME_HELPER_SOURCE_FILES
-   volume/volume_helper.cpp
+   volume/volume_helper.cpp volume/volume_cost.cpp
 )
 set(VOLUME_HELPER_HEADER_FILES
    volume/volume_helper.hpp
 )
 add_library(volume_helper ${VOLUME_HELPER_SOURCE_FILES} ${VOLUME_HELPER_HEADER_FILES})
 
-target_link_libraries(volume_helper PUBLIC volume)
+target_link_libraries(volume_helper PUBLIC volume performance_counter)
 
 set_target_properties(volume_helper PROPERTIES
    CXX_STANDARD 11
