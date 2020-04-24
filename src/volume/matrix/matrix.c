@@ -49,6 +49,7 @@ void Matrix_L_solve(const Matrix* o, FT* x, const FT* b) {
       for(int j=0;j<i;j++) {
          sum += x[j] * Li[j];
       }
+      //assert(abs(Li[i]) > 1e-8 && "numerically unstable");
       x[i] = (b[i] - sum) / Li[i];
    }
 }

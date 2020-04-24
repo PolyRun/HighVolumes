@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "../ft.h"
 #include "../linalg/linalg.h"
 

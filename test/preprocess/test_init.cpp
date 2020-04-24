@@ -1,6 +1,6 @@
 #include <iostream>
 #include "../../src/volume/volume_helper.hpp"
-#include "test_helpers.hpp"
+#include "../test_helpers.hpp"
 
 extern "C" { // must be included C stlye
 #include "../../src/volume/volume.h"
