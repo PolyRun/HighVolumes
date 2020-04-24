@@ -62,6 +62,7 @@ public:
 
       add(new CLIF_Option<intersectCoord_f_t>(&PolytopeT_T.intersectCoord,'f',"PolytopeT_intersectCoord","cached_ref", std::map<std::string, intersectCoord_f_t>{
                                                      {"ref",PolytopeT_intersectCoord_ref},
+						     {"cached_nc1",PolytopeT_intersectCoord_cached_nc1},
 						     {"cached_ref",PolytopeT_intersectCoord_cached_ref} }));
 
 
