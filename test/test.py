@@ -14,6 +14,10 @@ TESTS = [{"name": "volume/test_volume_basics",
          {"name": "preprocess/test_preprocess",
           "timeout": 30},
          {"name": "preprocess/test_init",
+          "timeout": 10},
+         {"name": "preprocess/unit_test",
+          "timeout": 10},
+         {"name": "matrix/matrix_unit_test",
           "timeout": 10}
         ];
 

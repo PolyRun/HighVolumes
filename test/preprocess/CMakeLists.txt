@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-add_library(test_helper test_helpers.cpp test_helpers.hpp)
-
-
 project(test_preprocess)
 
 OPTION(OUTPUT_MACRO "all debug output in source files is printed" OFF)

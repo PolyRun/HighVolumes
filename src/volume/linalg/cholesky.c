@@ -21,6 +21,10 @@ inline int cholesky(FT *A, FT *Trans, int n){
                 for (int k = 0; k < j; k++) {
                     sum += Trans[j*n+k] * Trans[j*n+k];
                 }
+                if (A[j*n+j] < sum){
+                    // matrix not pd
+                    return 1;
+                }
                 Trans[j*n+j] = sqrt(A[j*n+j] - sum); 
             }
             else { 
@@ -48,6 +52,10 @@ int cholesky_matrix(const Matrix *M, Matrix *L){
             if (j == i) {
                 FT *Lj = Matrix_get_row(L, j);
                 sum = dotProduct(Lj, Lj, j);
+                if (Mi[j] < sum){
+                    // matrix not pd
+                    return 1;
+                }
                 Matrix_set(L, j, j, sqrt(Mi[j] - sum));
             }
             // for j < i
@@ -77,6 +85,11 @@ int cholesky_ellipsoid(const Ellipsoid *E, Matrix *L){
             if (j == i) {
                 FT *Lj = Matrix_get_row(L, j);
                 sum = dotProduct(Lj, Lj, j);
+                if (Ti[j] <= sum){
+                    Matrix_print(L);
+                    printf("%f <= %f\n", Ti[j], sum);
+                    return 1;
+                }
                 Matrix_set(L, j, j, sqrt(Ti[j] - sum));
             }
             // for j < i
