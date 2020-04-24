@@ -33,8 +33,7 @@ bool PolytopeT_inside_ref(const void* o, const FT* v);
 
 void PolytopeT_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
 void PolytopeT_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-void PolytopeT_intersectCoord_cached_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-
+#include "intersectCoord/intersectCoord.h"// see variants
 
 int  PolytopeT_cacheAlloc_ref(const void* o);
 void PolytopeT_cacheReset_ref(const void* o, const FT* x, void* cache);
