@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <algorithm>
+#include <vector>
 
 #include "../src/util/cli.hpp"
 #include "../src/util/cli_functions.hpp"
@@ -36,9 +37,9 @@ class Benchmark_base {
             double mean_time;
             double std_dev = 0.0;
             double total_time = 0;
-            double measured_times[reps];
+	    std::vector<double> measured_times(reps);
             
-            double results[reps];
+	    std::vector<double> results(reps);
             double results_sum = 0.0;
 
             // Initialize
