@@ -18,6 +18,14 @@ class Benchmark_A1 : public Benchmark_base {
 		type[0] = &Polytope_T;
 		r0 = 1.0;
 		r1 = std::sqrt(n);
+	    }else if(generator.compare("cubeT") == 0) {
+		bcount = 1;
+	        body = (void**)malloc(bcount*sizeof(void*));
+	        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
+                body[0] = PolytopeT_new_box(n,1);
+		type[0] = &PolytopeT_T;
+		r0 = 1.0;
+		r1 = std::sqrt(n);
 	    }else if(generator.compare("sphere") == 0) {
 		bcount = 1;
 	        body = (void**)malloc(bcount*sizeof(void*));
@@ -60,11 +68,12 @@ int main(int argc, char *argv[]){
     int r = 100;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 100));
-    cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"r","100", 1, 100000));
+    cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
     
     std::string generator = "cube";
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube", std::map<std::string, std::string>{
                                                      {"cube","cube"},
+                                                     {"cubeT","cubeT"},
 						     {"sphere","sphere"} }));
 
     cliFun.preParse();

@@ -1,4 +1,8 @@
-#include "volume.h"
+#include "../ft.h"
+#include "../matrix/matrix.h"
+#include "../polytope/polytope.h"
+#include "../ellipsoid/ellipsoid.h"
+#include "../linalg/linalg.h"
 
 
 
@@ -13,8 +17,6 @@
  **/
 void init_ellipsoid(const Polytope *Pol, FT *R2, FT **Ori);
 
-void Polytope_bounding_ref(const void *B, FT *R2, FT **ori);
-void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori);
 
 
 

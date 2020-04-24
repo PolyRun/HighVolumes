@@ -3,7 +3,7 @@
 #include "test_helpers.hpp"
 
 extern "C" { // must be included C stlye
-#include "../../src/volume/preprocess.h"
+#include "../../src/volume/volume.h"
 }
 
 

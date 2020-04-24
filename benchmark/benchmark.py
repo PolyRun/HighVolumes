@@ -39,7 +39,7 @@ for index, item in enumerate(dotProduct):
 BENCHMARKS = [{"id": 0, "name": "benchmark_test_macro", "fun_configs":[], "run_configs":["r=10"], "input_configs":[]},
          {"id": 1, "name": "benchmark_test_xyz_f", "fun_configs": xyz_f, "run_configs":[], "input_configs":[]},
          {"id": 2, "name": "benchmark_polyvest", "fun_configs":[], "run_configs":[], "input_configs":[]},
-         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",["i", operator.add, 10, 1, 50])]}
+         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=1000000"], "input_configs":[("n",["i", operator.add, 10, 1, 50])]}
         ];
 
 # --- Functions that should be compared
