@@ -1,3 +1,22 @@
+// Performance_Counter Utility
+//
+// Build a recursive structure corresponding to your code.
+// Make sure you count for the correct function choice.
+//
+// PC_Stack: keeps track of the function stack, and how often the current funciton was called.
+//           maps function choice (void*) to PC_Cost_Wrapper, which holds the cost function
+// 
+// Register functions:
+// pc_stack().add((void*)someFunction, new PC_Cost_Wrapper<someFunction_cost_f>(someFunction_cost,"someFunction"));
+//
+// Call cost function:
+//   pc_stack().reset();
+//   {
+//      PC_Frame<someCost_cost_f> frame((void*)someFunction); // provide function or variable holding function choice
+//      frame.costf()(cost_function_inputs);
+//   }
+//   pc_stack().print();
+
 
 #ifndef HEADER_PERFORMANCE_COUNTER_HPP
 #define HEADER_PERFORMANCE_COUNTER_HPP
@@ -43,6 +62,9 @@ public:
    void reset() {
       flops_ = 0;
       bytes_ = 0;
+      current_reps = 1;
+      reps.clear();
+      frames.clear();
    }
    void print() {
       std::cout << "PC_Stack: flops: " << flops_ << ", bytes: " << bytes_ << "\n";
@@ -94,8 +116,9 @@ class PC_Frame : public PC_Frame_Base {
 public:
    PC_Frame(void* f, size_t reps=1) {
       PC_Cost_Wrapper_Base* b = pc_stack().get(f);
+      assert(b && "must find cost_wrapper for f! - did you register all functions?");
       wrapper = dynamic_cast<PC_Cost_Wrapper<CF_t>*>(b);
-      assert(wrapper && "must find cost_wrapper for f!");
+      assert(wrapper && "cost_wrapper must have correct cost function type!");
       pc_stack().pushFrame(name(), reps);
    }
    CF_t costf() {return wrapper->costf;}

@@ -94,6 +94,19 @@ void Polytope_cacheUpdateCoord_cost_ref(const void* o) {
    // add m
    pc_stack().log(2*m,2*m*sizeof(FT), "update cached dotProduct");
 }
+void Polytope_cacheReset_cost_ref(const void* o) {
+   const Polytope* p = (Polytope*)o;
+   const int n = p->n;
+   const int m = p->m;
+
+   {// frame for dotProduct: m times ai*x
+      PC_Frame<dotProduct_cost_f> frame((void*)dotProduct, m);
+      frame.costf()(n);
+   }
+
+   // write m  (c)
+   pc_stack().log(0,m, "write results");
+}
 
 void PolytopeT_intersect_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
@@ -148,6 +161,16 @@ void PolytopeT_cacheUpdateCoord_cost_ref(const void* o) {
    // add m
    pc_stack().log(2*m,2*m*sizeof(FT), "update cached dotProduct");
 }
+void PolytopeT_cacheReset_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   // read n*m + n   (A, x)
+   // write m  (c)
+   // mul n*m
+   // add n*m
+   pc_stack().log(2*m*n,n*m + n + m, "recompute dotproduct");
+}
 
 void Ellipsoid_intersect_cost_ref(const void* o) {
    const Ellipsoid* e = (Ellipsoid*)o;
@@ -176,6 +199,9 @@ void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o) {
    const Ellipsoid* p = (Ellipsoid*)o;
    pc_stack().log(0,0, "no cache");
 }
+void Ellipsoid_cacheReset_cost_ref(const void* o) {
+   pc_stack().log(0,0, "no cache");
+}
 
 void volume_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
    pc_stack().log(0,n*sizeof(FT), "init_x");
@@ -192,6 +218,17 @@ void volume_cost_ref(const int n, const int bcount, const void** body, const Bod
    {// frame for walk
       PC_Frame<walk_cost_f> frame((void*)walk_f,s);
       frame.costf()(n,bcount,body,type);
+   }
+   
+   // rest of ops:
+   // div 1 * l
+   // mul 1 * l
+   // write n * l  (reset x)
+   pc_stack().log(2*l,n*l*sizeof(FT), "end of layer");
+
+   for(int c=0;c<bcount;c++) {// body intersect
+         PC_Frame<intersect_cost_f> frame((void*)type[c]->cacheReset, l);// per layer
+         frame.costf()(body[c]);
    }
 }
 void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
