@@ -51,6 +51,15 @@ class Benchmark_A1 : public Benchmark_base {
         double run () {
             return volume(n, r0, r1, bcount, (const void**)body, (const Body_T**)type);
 	}
+    public:
+	void performance_count() {
+	    pc_stack().reset();
+            {
+               PC_Frame<volume_cost_f> frame((void*)volume_ref);
+               frame.costf()(n, bcount, (const void**)body, (const Body_T**)type);
+            }
+            pc_stack().print();
+	}
     private:
 	const std::string generator;
 	int n;
@@ -82,4 +91,5 @@ int main(int argc, char *argv[]){
 
     Benchmark_A1 b("A1_volume", r, true, 0, n, generator);
     b.run_benchmark();
+    b.performance_count();
 }

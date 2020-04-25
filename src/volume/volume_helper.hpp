@@ -37,12 +37,21 @@ public:
       // test:
       pc_stack().add((void*)xyz_f1, new PC_Cost_Wrapper<xyz_cost_f>(xyz_f1_cost,"xyz_f1"));
       
+      pc_stack().add((void*)dotProduct_ref, new PC_Cost_Wrapper<dotProduct_cost_f>(dotProduct_cost_ref,"dotProduct_ref"));
+      
+      pc_stack().add((void*)vectorNorm_ref, new PC_Cost_Wrapper<vectorNorm_cost_f>(vectorNorm_cost_ref,"vectorNorm_ref"));
+      
+      pc_stack().add((void*)volume_ref, new PC_Cost_Wrapper<volume_cost_f>(volume_cost_ref,"volume_ref"));
+      pc_stack().add((void*)walk_ref, new PC_Cost_Wrapper<walk_cost_f>(walk_cost_ref,"walk_ref"));
+      pc_stack().add((void*)walkCoord_ref, new PC_Cost_Wrapper<walk_cost_f>(walkCoord_cost_ref,"walkCoord_ref"));
+      
+      pc_stack().add((void*)Ball_intersectCoord_ref, new PC_Cost_Wrapper<Ball_intersectCoord_cost_f>(Ball_intersectCoord_cost_ref,"Ball_intersectCoord_ref"));
+      
       {// open scope for frame
          PC_Frame<xyz_cost_f> frame((void*)xyz_f);
          frame.costf()(10);
       }
-
-      std::cout << "stack: " << pc_stack().flops() << " " << pc_stack().bytes() << "\n";
+      pc_stack().print();
 
       // please add your functions below.
       // 
@@ -62,6 +71,9 @@ public:
                                                      {"auto1",dotProduct_auto1},
                                                      {"auto2",dotProduct_auto2},
 						     {"vec1",dotProduct_vec1} }));
+      
+      add(new CLIF_Option<vectorNorm_f_t>(&vectorNorm,'f',"vectorNorm","ref", std::map<std::string, vectorNorm_f_t>{
+						     {"ref",vectorNorm_ref} }));
 
       add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walk_ref", std::map<std::string, walk_f_t>{
                                                      {"walk_ref",walk_ref},

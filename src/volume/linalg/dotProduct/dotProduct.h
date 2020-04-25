@@ -16,4 +16,9 @@ FT dotProduct_vec1(const FT* u, const FT* v, const int n);
 
 FT dotProduct_auto1(const FT* u, const FT* v, const int n);
 FT dotProduct_auto2(const FT* u, const FT* v, const int n);
+
+// ------------------------------ vectorNorm
+FT vectorNorm_ref(const FT* v, const int n);
+
+
 #endif // HEADER_DOTPRODUCT_H

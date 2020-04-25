@@ -16,6 +16,8 @@
 //   assume no memory allignment!
 typedef FT (*dotProduct_f_t)(const FT* u, const FT* v, const int n);
 extern dotProduct_f_t dotProduct;
+typedef FT (*vectorNorm_f_t)(const FT* v, const int n);
+extern vectorNorm_f_t vectorNorm;
 #include "dotProduct/dotProduct.h"
 
 // intersect line x + t*d
@@ -24,7 +26,9 @@ extern dotProduct_f_t dotProduct;
 // return t0,t1 for intersections
 void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1);
 
-void Ball_intersectCoord(const int n, const FT r, const FT* x, const int d, FT* t0, FT* t1);
+typedef void (*Ball_intersectCoord_f_t)(const int, const FT, const FT*, const int, FT*, FT*);
+extern Ball_intersectCoord_f_t Ball_intersectCoord;
+void Ball_intersectCoord_ref(const int n, const FT r, const FT* x, const int d, FT* t0, FT* t1);
 
     
 // calculate volume exactly for n-dim ball with radius r

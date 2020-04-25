@@ -22,8 +22,10 @@ void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, F
    *t0 = (-b - detSqrt) * 0.5 * ainv;
 }
 
-void Ball_intersectCoord(const int n, const FT r, const FT* x, const int d, FT* t0, FT* t1) {
-   FT x2 = dotProduct(x,x,n);
+
+Ball_intersectCoord_f_t Ball_intersectCoord = Ball_intersectCoord_ref;
+void Ball_intersectCoord_ref(const int n, const FT r, const FT* x, const int d, FT* t0, FT* t1) {
+   FT x2 = vectorNorm(x,n);
    const FT d2 = 1.0;
    FT xd = x[d]; // dot product with unit vector dim d
 

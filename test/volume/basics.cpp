@@ -178,6 +178,29 @@ int main(int argc, char** argv) {
          free(v);
       }
    }
+   // -------- vectorNorm:
+   {
+      auto o = dynamic_cast<CLIF_Option<vectorNorm_f_t>*>(cliFun.getOption("vectorNorm"));
+      for(auto it : o->fmap) {
+         std::cout << "Test vectorNorm " << it.first << std::endl;
+         vectorNorm = it.second;
+         
+         FT* v = (FT*)(aligned_alloc(32, 20*sizeof(FT)));
+         
+         for(int i=0;i<20;i++) {
+            v[i] = prng_get_random_double_in_range(1.1,2.0);
+         }
+         for(int n=1;n<20;n++){
+            FT dot = vectorNorm(v,n);
+            
+	    FT dotRef = 0;
+	    for(int i=0;i<n;i++) {dotRef += v[i]*v[i];}
+	    assert(std::abs(dot-dotRef) < 0.000001);
+	 }
+         free(v);
+      }
+   }
+ 
    // --------------------------------- Polytope:
    auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));
    for(auto it : o->fmap) {

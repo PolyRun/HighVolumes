@@ -63,6 +63,9 @@ extern walk_f_t walk_f;
 typedef FT (*volume_f_t)(const int, const FT, const FT, const int, const void**,const Body_T**);
 
 extern volume_f_t volume;
+extern size_t pc_volume_l;// for performance_counter
+extern size_t pc_volume_steps;
+
 FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
 
 

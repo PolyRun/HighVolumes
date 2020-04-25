@@ -369,6 +369,9 @@ void volume_lib_init(const int max_n, const int max_b) {
 
 volume_f_t volume = volume_ref;
 
+size_t pc_volume_l = 0;
+size_t pc_volume_steps = 0;
+
 FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
    //
    // Ideas:
@@ -410,6 +413,8 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
 
    
    const int l = ceil(n*log(r1/r0) / log(2.0));
+   pc_volume_l = l; // performance_counter
+   pc_volume_steps = 0; // performance_counter
    printf("steps: %d\n",l);
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
@@ -441,6 +446,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
       //   printf("m: %f\n",m);
       //}
       for(int i=count; i<step_size; i++) { // sample required amount of points
+         pc_volume_steps++; // performance_counter
          walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
         
          // find right Bm:
