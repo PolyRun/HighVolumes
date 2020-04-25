@@ -134,7 +134,7 @@ void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t
       for(int j=0; j<n; j++) {
          Az += Ai[j] * (x[j] - e->a[j]);
       }
-      b += (i==d) * Az;
+      b += (i==d) * Az; // selection
       c += (x[i] - e->a[i]) * Az;
    }
    b *= 2.0;

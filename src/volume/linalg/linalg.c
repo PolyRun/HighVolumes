@@ -1,14 +1,14 @@
 #include "linalg.h"
 
-
-void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1) {
+Ball_intersect_f_t Ball_intersect = Ball_intersect_ref;
+void Ball_intersect_ref(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1) {
    // y = x + d*t
    // y^2 = r^2
    //
    // x^2 - r^2 + 2x*d*t + d^2*t^2 = 0
    
-   FT x2 = dotProduct(x,x,n);
-   FT d2 = dotProduct(d,d,n);
+   FT x2 = vectorNorm(x,n);
+   FT d2 = vectorNorm(d,n);
    FT xd = dotProduct(x,d,n);
 
    FT a = d2;

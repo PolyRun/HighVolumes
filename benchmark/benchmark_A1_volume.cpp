@@ -55,7 +55,7 @@ class Benchmark_A1 : public Benchmark_base {
 	void performance_count() {
 	    pc_stack().reset();
             {
-               PC_Frame<volume_cost_f> frame((void*)volume_ref);
+               PC_Frame<volume_cost_f> frame((void*)volume);
                frame.costf()(n, bcount, (const void**)body, (const Body_T**)type);
             }
             pc_stack().print();

@@ -24,7 +24,9 @@ extern vectorNorm_f_t vectorNorm;
 //           with ball(0,r)
 // assume x is in ball
 // return t0,t1 for intersections
-void Ball_intersect(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1);
+typedef void (*Ball_intersect_f_t)(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1);
+extern Ball_intersect_f_t Ball_intersect;
+void Ball_intersect_ref(const int n, const FT r, const FT* x, const FT* d, FT* t0, FT* t1);
 
 typedef void (*Ball_intersectCoord_f_t)(const int, const FT, const FT*, const int, FT*, FT*);
 extern Ball_intersectCoord_f_t Ball_intersectCoord;
