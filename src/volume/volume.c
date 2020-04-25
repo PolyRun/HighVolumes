@@ -367,7 +367,9 @@ void volume_lib_init(const int max_n, const int max_b) {
    volume_cache_ptr = (aligned_alloc(32, cache_size*sizeof(FT))); // align this to 32
 }
 
-FT volume_ref(const int n, const FT r0, const FT r1, int bcount, const void** body, const Body_T** type) {
+volume_f_t volume = volume_ref;
+
+FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
    //
    // Ideas:
    //  try unit vector

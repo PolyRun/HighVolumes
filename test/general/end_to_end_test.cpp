@@ -40,7 +40,7 @@ void test_polyvest_example(int index) {
     FT outer_radius = 1000000000000;
 
     FT volume;
-    volume = volume_ref(dims, inner_radius, outer_radius, normalized_bodies, body_types);
+    volume = volume(dims, inner_radius, outer_radius, normalized_bodies, body_types);
 
     std::cout << "Volume of " << exp_paths[index] << ": " << volume << std::endl;
 

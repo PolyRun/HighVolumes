@@ -43,7 +43,7 @@ protected:
     void reset () {}
 
     double run () {
-        return volume_ref(n, 1, 2*n, 1, (const void **) bodies, (const Body_T **) types) * det;
+        return volume(n, 1, 2*n, 1, (const void **) bodies, (const Body_T **) types) * det;
     }
     
 private:

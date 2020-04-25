@@ -38,11 +38,11 @@ void test() {
       FT rx = 0.1*i;
       FT r0 = 1.5 - rx;
       FT r1 = 5.0 + rx;
-      FT vbox = volume_ref(n,r0,r1,  1,(const void**)&box,  (const Body_T**)&type);
-      FT vboxT = volume_ref(n,r0,r1,  1,(const void**)&body3,  (const Body_T**)&type3);
-      FT vs   = volume_ref(n,r0,r1,  1,(const void**)&e,    (const Body_T**)&type[1]);
-      FT v    = volume_ref(n,r0,r1,  2,(const void**)&body, (const Body_T**)&type);
-      FT vbox2 = volume_ref(n,r0*0.5,r1,  2,(const void**)&body2, (const Body_T**)&type2);
+      FT vbox = volume(n,r0,r1,  1,(const void**)&box,  (const Body_T**)&type);
+      FT vboxT = volume(n,r0,r1,  1,(const void**)&body3,  (const Body_T**)&type3);
+      FT vs   = volume(n,r0,r1,  1,(const void**)&e,    (const Body_T**)&type[1]);
+      FT v    = volume(n,r0,r1,  2,(const void**)&body, (const Body_T**)&type);
+      FT vbox2 = volume(n,r0*0.5,r1,  2,(const void**)&body2, (const Body_T**)&type2);
       
       std::cout << "\nbox: " << vbox << "\n";
       std::cout << "\nboxT: " << vboxT << "\n";

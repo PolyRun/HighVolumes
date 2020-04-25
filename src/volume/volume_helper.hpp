@@ -38,7 +38,7 @@ public:
       pc_stack().add((void*)xyz_f1, new PC_Cost_Wrapper<xyz_cost_f>(xyz_f1_cost,"xyz_f1"));
       
       {// open scope for frame
-         PC_Frame<xyz_cost_f> frame((void*)xyz_f1);
+         PC_Frame<xyz_cost_f> frame((void*)xyz_f);
          frame.costf()(10);
       }
 

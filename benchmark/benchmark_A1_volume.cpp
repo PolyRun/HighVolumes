@@ -49,7 +49,7 @@ class Benchmark_A1 : public Benchmark_base {
             // nothing to reset
 	}
         double run () {
-            return volume_ref(n, r0, r1, bcount, (const void**)body, (const Body_T**)type);
+            return volume(n, r0, r1, bcount, (const void**)body, (const Body_T**)type);
 	}
     private:
 	const std::string generator;
