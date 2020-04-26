@@ -52,7 +52,7 @@ bool test_matrix_invert_pdsym_random(int n){
     
     for (int i = 0; i < n; i++){
         for (int j = 0; j <= i; j++){
-            Matrix_set(L, i, j, prng_get_random_double_in_range(-100, 100));
+            Matrix_set(L, i, j, prng_get_random_double_in_range(2, 20));
         }
         for (int j = i+1; j < n; j++){
             Matrix_set(L, i, j, 0);
@@ -83,6 +83,9 @@ bool test_matrix_invert_pdsym_random(int n){
             FT *Mj = Matrix_get_row(M, j);
             FT res = dotProduct(Minvi, Mj, n);
 
+            assert(std::isfinite(res) && "Matrix_invert_pdsym returned nans\n");
+
+            /*
             if (!std::isfinite(res)){
                 Matrix_print((void *) Minv);
                 cout << "\n";
@@ -93,7 +96,7 @@ bool test_matrix_invert_pdsym_random(int n){
                 }
                 return false;
             }
-            
+            */            
             maxdif = (i == j) ?
                 maxdif = max(maxdif, abs(res - 1)) :
                 abs(res);
@@ -101,7 +104,8 @@ bool test_matrix_invert_pdsym_random(int n){
     }
 
     cout << "maxdif: " << maxdif << "\n";
-    return true;
+
+    assert(maxdif < 1e-5 && "M * Minv = I\n");
     
 }
 
@@ -117,9 +121,9 @@ int main(){
     test_matrix_invert_pdsym();
    
     prng_init();
-    int i = 5;
-    while(test_matrix_invert_pdsym_random(i)){
-        i++;
+    
+    for (int i = 20; i < 50; i++) {
+        test_matrix_invert_pdsym_random(i);
     }
 
 

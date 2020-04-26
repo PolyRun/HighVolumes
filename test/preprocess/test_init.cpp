@@ -86,7 +86,7 @@ int main(int argc, char **argv){
     std::cout << "\n-------------- TEST INIT EXAMPLE POLYTOPES:\n";
     
     Polytope *P;
-    for (int i = 0; i < 33; i++){
+    for (int i = 0; i < NEXAMPLE_POLYTOPES; i++){
 
         std::cout << "TESTING " << path_from_exec + exp_paths[i] << std::endl;
         

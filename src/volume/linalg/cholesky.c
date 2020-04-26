@@ -98,7 +98,7 @@ int cholesky_ellipsoid(const Ellipsoid *E, Matrix *L){
                 FT *Li = Matrix_get_row(L, i);
                 FT *Lj = Matrix_get_row(L, j);
                 FT sum = dotProduct(Li, Lj, j);
-                Matrix_set(L, i, j, 1/Lj[j] * (Ti[j] - sum));
+                Matrix_set(L, i, j, 1.0/Lj[j] * (Ti[j] - sum));
             } 
         } 
     }

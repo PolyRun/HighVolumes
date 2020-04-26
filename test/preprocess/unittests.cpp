@@ -45,12 +45,11 @@ void test_cholesky_random(int n){
     // generate random L matrix
     Matrix *L = Matrix_new(n, n);
 
-    int cnt = prng_get_random_int_in_range(1, 5000);
     for (int i = 0; i < n; i++){
-        // i think this test is buggy...
-        // need figure out with what input it craps up and why
+        // a larger range incurs larger relative errors...
+        // also cholesky can fail if range gets too large
         for (int j = 0; j <= i; j++){
-            Matrix_set(L, i, j, 1+((103217 * (cnt++)) % 97)); //prng_get_random_int_in_range(1, 100));
+            Matrix_set(L, i, j, prng_get_random_double_in_range(2, 20));
         }
         for (int j = i+1; j < n; j++){
             Matrix_set(L, i, j, 0);
@@ -73,16 +72,15 @@ void test_cholesky_random(int n){
     Matrix *R = Matrix_new(n,n);
     int err = cholesky_ellipsoid(E, R);
 
-    //assert(err == 0 && "cholesky failed due to numerical problems");
+    assert(err == 0 && "cholesky failed due to numerical problems");
+    /*
     if (err){
         cout << "cholesky failed due to numerical problems!\n"
              << "n: " << n << "\n";
-
-        //Ellipsoid_print(E);
-
-        //Matrix_print(L);
+        Ellipsoid_print(E);
+        Matrix_print(L);
     }
-
+    */
     FT maxdif = 0;
     for (int i = 0; i < n; i++){
         FT *Rrowi = Matrix_get_row(R, i);
@@ -103,8 +101,10 @@ void test_cholesky_random(int n){
         }
     }
 
-    //cout << "maxdif " << maxdif << "\n";
-
+    /*
+    cout << "maxdif " << maxdif << "\n"
+         << "n " << n << "\n";
+    */
     assert(maxdif < 1e-10 && "R * RT != E.T\n");
                         
 
