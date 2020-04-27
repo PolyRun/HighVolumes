@@ -21,6 +21,9 @@ Body_T Ellipsoid_T = {
         .boundingSphere = Ellipsoid_bounding_ref
 };
 
+
+preprocess_f_t preprocess_generic = preprocess_ref;
+
 void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det) {
    // 1. init_ellipsoid:
    //     idea: origin at 0, radius determined by min of all bodies

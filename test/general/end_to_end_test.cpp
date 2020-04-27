@@ -31,7 +31,7 @@ void test_polyvest_example(int index) {
     Polytope *normalized_bodies[nums] = {P_normalized};
     Body_T   *body_types[nums]        = {&Polytope_T};
 
-    preprocess_ref(dims, nums, (const void **) bodies,
+    preprocess_generic(dims, nums, (const void **) bodies,
                                (const void **) normalized_bodies,
                                body_types,
                                scaling_factor);
