@@ -3,7 +3,8 @@
 
 #include "../../src/volume/volume.h"
 #include "../../src/volume/volume_helper.hpp"
-#include "../../src/volume/volume_ellipsoid.h"
+#include "../../src/volume/ellipsoid/ellipsoid.h"
+#include "../../src/volume/polytopeT/polytopeT.h"
 
 struct Solved_Body {
     Body_T **body;
@@ -17,19 +18,19 @@ struct Solved_Body generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper
 
     int num_constraints = 2*dims;
 
-    Polytope *hyperrectangle = Polytope_new(dims, num_constraints);
+    PolytopeT_T *hyperrectangle = PolytopeT_new(dims, num_constraints);
 
     // Lower bounds
     for (int i = 0; i < dims; i++) {
         // Ax >= b means that -Ax <= -b
-        Polytope_set_a(hyperrectangle, i, i, -1);
-        Polytope_set_b(hyperrectangle, i, -lower_bound[i]);
+        PolytopeT_set_a(hyperrectangle, i, i, -1);
+        PolytopeT_set_b(hyperrectangle, i, -lower_bound[i]);
     }
 
     // Upper bounds
     for (int i = 0; i < dims; i++) {
-        Polytope_set_a(hyperrectangle, i + dims, i, 1);
-        Polytope_set_b(hyperrectangle, i, upper_bound[i]);
+        PolytopeT_set_a(hyperrectangle, i + dims, i, 1);
+        PolytopeT_set_b(hyperrectangle, i, upper_bound[i]);
     }
 
     FT volume = 1.0;
@@ -66,22 +67,22 @@ struct Solved_Body generate_cross_polytope(int dims) {
     // This cross-polytope is defined by ± x_1 ± x_2 ... ± x_n <= 1
     int num_constraints = (1 << dims);
 
-    Polytope *cross_polytope = Polytope_new(dims, num_constraints);
+    PolytopeT_T *cross_polytope = PolytopeT_new(dims, num_constraints);
 
     for (int i = 0; i < num_constraints; i++) {
         for (int j = 0; j < dims; j++) {
             // i is a number from 0 to 2^dims - 1
             // We check its j-th bit to decide whether we want x_j or -x_j
-            FT plus_minus_1 = 1.0 - 2 * (i & (1 << j) >> j);
-            Polytope_set_a(cross_polytope, i, j, plus_minus_1);
+            FT plus_minus_1 = 1.0 - 2 * ((i & (1 << j)) >> j);
+            PolytopeT_set_a(cross_polytope, i, j, plus_minus_1);
         }
     }
 
     for (int i = 0; i < num_constraints; i++) {
-        Polytope_set_b(cross_polytope, i, 1);
+        PolytopeT_set_b(cross_polytope, i, 1);
     }
 
-    // volume of a cross polytope is 2^n / n!
+    // Volume of a cross polytope is 2^n / n!
     long n_factorial = 1;
     for (long i = 1; i <= dims; i++) {
         n_factorial *= i;
@@ -104,23 +105,24 @@ struct Solved_Body generate_simplex(int dims) {
     // and one more constraint x_1 + ... + x_n <= 2
     // If the constraint was "<= 1", then its volume would be 1 / n!
     // But by scaling every side by two, its volume becomes 2^n / n!
-    // This prevents the volume from going to zero too fast.
+    // This prevents the volume from going to zero too fast
     int num_constraints = dims + 1;
 
-    Polytope *simplex = Polytope_new(dims, num_constraints);
+    PolytopeT_T *simplex = PolytopeT_new(dims, num_constraints);
 
     // x_i >= 0
     for (int i = 0; i < dims; i++) {
-        Polytope_set_a(simplex, i, i, -1);
-        Polytope_set_b(simplex, i, 0);
+        PolytopeT_set_a(simplex, i, i, -1);
+        PolytopeT_set_b(simplex, i, 0);
     }
+
     // x_1 + ... x_n <= 2
     for (int i = 0; i < dims; i++) {
-        Polytope_set_a(simplex, dims, i, 1);
+        PolytopeT_set_a(simplex, dims, i, 1);
     }
-    Polytope_set_b(simplex, dims, 2);
+    PolytopeT_set_b(simplex, dims, 2);
 
-    // Again, volume = 2^n / n!
+    // Again, volume = 2^n / n!, just like the cross polytope!
     long n_factorial = 1;
     for (long i = 1; i <= dims; i++) {
         n_factorial *= i;
@@ -163,9 +165,12 @@ struct Solved_Body generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_boun
 
 }
 
+// This function is out of order, because read_polyvest_p() doesn't exist anymore
+// We need to reimplement it anyway to return PolytopeT_T instead of Polytope
+/*
 struct Solved_Body generate_solved_polyvest_polytope(int index) {
 
-    Polytope *polytope;
+    PolytopeT_T *polytope;
 
     int error = read_polyvest_p(exp_paths[index], polytope);
 
@@ -186,6 +191,7 @@ struct Solved_Body generate_solved_polyvest_polytope(int index) {
     return result;
 
 }
+*/ 
 
 
 #endif
