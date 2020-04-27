@@ -68,15 +68,19 @@ class Benchmark_base {
 
             }
             
-            // Run performance_counter and free memory
-	    finalize();
-
 	    // process time:
             mean_time = total_time/reps;
             for (int i = 0; i < reps; ++i) {
                 std_dev += pow(measured_times[i] - mean_time, 2.0);
             }
             std_dev = sqrt(std_dev/reps);
+
+	    // Run performance_counter and free memory
+	    finalize();
+	    if(pc_flops > 0 || pc_bytes > 0 ) {
+	       std::cout << "Avg flops/cycle: " << pc_flops/min_time << "\n";
+	       std::cout << "Avg bytes/cycle: " << pc_bytes/min_time << "\n";
+	    }
 
             // Dictionary output
             std::cout << "{'time': {";

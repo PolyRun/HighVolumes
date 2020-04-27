@@ -215,9 +215,22 @@ void volume_cost_ref(const int n, const int bcount, const void** body, const Bod
    size_t l = pc_volume_l; // get from last execution
    size_t s = pc_volume_steps;
 
-   {// frame for walk
-      PC_Frame<walk_cost_f> frame((void*)walk_f,s);
-      frame.costf()(n,bcount,body,type);
+   {// frame for steps loop
+      PC_Frame_Base loop("steps",s);
+      {
+         PC_Frame<walk_cost_f> frame((void*)walk_f);
+         frame.costf()(n,bcount,body,type);
+      }
+
+      {// frame for vectorNorm: x
+         PC_Frame<vectorNorm_cost_f> frame((void*)vectorNorm); // vectorNorms
+         frame.costf()(n);
+      }
+      
+      // log 2
+      // div 2
+      // mul 2
+      pc_stack().log(6,0, "find layer: logs!");
    }
    
    // rest of ops:

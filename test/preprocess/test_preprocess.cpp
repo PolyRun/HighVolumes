@@ -125,7 +125,7 @@ void test_preprocess_generic_box(const int n, Body_T* type_, void* box, void* bo
    Body_T* type[1] = {type_};
 
    type_->print(box);
-   preprocess_ref(n, 1, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+   preprocess_generic(n, 1, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
    
    type_->print(box_out);
    
@@ -202,7 +202,7 @@ void test_preprocess_generic() {
         void* body_out[2] = {e1_out, e2_out};
         Body_T* type[2] = {&Ellipsoid_T, &Ellipsoid_T};
 
-        preprocess_ref(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+        preprocess_generic(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
         
 	std::cout << "e1_out:\n";
         Ellipsoid_T.print(e1_out);
@@ -262,7 +262,7 @@ void test_preprocess_generic() {
         void* body_out[2] = {box_out, e_out};
         Body_T* type[2] = {&Polytope_T, &Ellipsoid_T};
 
-        preprocess_ref(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+        preprocess_generic(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
         
 	std::cout << "det: " << det << std::endl;
 

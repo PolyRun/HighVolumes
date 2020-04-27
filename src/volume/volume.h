@@ -32,6 +32,8 @@ typedef struct Body_T Body_T;
 
 // --------------------------------------------- Preprocessing
 
+typedef void (*preprocess_f_t)(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
+extern preprocess_f_t preprocess_generic;
 void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
 
 
