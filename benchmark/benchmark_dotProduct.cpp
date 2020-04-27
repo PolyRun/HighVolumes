@@ -27,14 +27,15 @@ class Benchmark_dotProduct : public Benchmark_base {
             dotProduct(u,v,n);
 	    return 0;
 	}
-    public:
-	void performance_count() {
+	void finalize() {
 	    pc_stack().reset();
             {
                PC_Frame<dotProduct_cost_f> frame((void*)dotProduct);
                frame.costf()(n);
             }
             pc_stack().print();
+	    pc_flops = pc_stack().flops();
+	    pc_bytes = pc_stack().bytes();
 	}
     private:
 	int n;
@@ -64,5 +65,4 @@ int main(int argc, char *argv[]){
 
     Benchmark_dotProduct b("dotProduct", r, true, 0, n, uv);
     b.run_benchmark();
-    b.performance_count();
 }

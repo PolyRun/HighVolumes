@@ -68,7 +68,10 @@ class Benchmark_base {
 
             }
             
-	        // process time:
+            // Run performance_counter and free memory
+	    finalize();
+
+	    // process time:
             mean_time = total_time/reps;
             for (int i = 0; i < reps; ++i) {
                 std_dev += pow(measured_times[i] - mean_time, 2.0);
@@ -96,6 +99,9 @@ class Benchmark_base {
                     
                 std::cout << "'name_c': '"<< name << "', 'mean': '" << results_mean << "', 'min': '" << results_min << "', 'max': '" << results_max << "', 'std_dev': '" << results_std_dev << "'";
             }
+
+	    std::cout << "}, 'performance_counter': {";
+	    std::cout << "'flops': " << pc_flops << ", 'bytes': " << pc_bytes;
             std::cout << "}}" << std::endl;
         }
 
@@ -115,6 +121,16 @@ class Benchmark_base {
          * Runs the function (only function call to prevent overhead)
          **/
         virtual double run() = 0;
+        
+	/*
+	 * Called at end, just before measurements are printed
+	 * Use to free up memory, and run performance counter (flops / bytes)
+	 **/
+	virtual void finalize() {
+	    std::cout << "Finalize (defalut).\n";
+	    pc_flops = 0;
+	    pc_bytes = 0;
+	}
 
         std::string name; // Name of the benchmark that is displayed in output
         int reps; // Number of repetitions in benchmark
@@ -122,6 +138,10 @@ class Benchmark_base {
         double last_result; // Value in last step;
         Timer_generic *timer;
         int warmup_reps;
+
+	// performance_counter results:
+	size_t pc_flops = 0;
+	size_t pc_bytes = 0;
 };
 
 
