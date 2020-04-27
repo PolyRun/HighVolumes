@@ -16,6 +16,9 @@ class Benchmark_intersect : public Benchmark_base {
 	    if(generator.compare("cube") == 0) {
                 body = Polytope_new_box(n,1);
 		type = &Polytope_T;
+	    }else if(generator.compare("cubeT") == 0) {
+                body = PolytopeT_new_box(n,1);
+		type = &PolytopeT_T;
 	    }else if(generator.compare("sphere") == 0) {
 	        Ellipsoid* e = Ellipsoid_new(n);
                 for(int i=0;i<n;i++) {
@@ -48,6 +51,16 @@ class Benchmark_intersect : public Benchmark_base {
 	    type->intersect(body, x, d, &t0, &t1);
             return t0-t1;
 	}
+	void finalize() {
+	    pc_stack().reset();
+            {
+                PC_Frame<intersect_cost_f> frame((void*)type->intersect);
+                frame.costf()(body);
+            }
+            pc_stack().print();
+	    pc_flops = pc_stack().flops();
+	    pc_bytes = pc_stack().bytes();
+	}
     protected:
 	const std::string generator;
 	int n;
@@ -62,6 +75,17 @@ class Benchmark_intersect : public Benchmark_base {
 class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
         Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &generator) : Benchmark_intersect(name, reps, convergence, warmup_reps, n, generator) {}
+    
+    	void finalize() {
+	    pc_stack().reset();
+            {
+                PC_Frame<intersect_cost_f> frame((void*)type->intersectCoord);
+                frame.costf()(body);
+            }
+            pc_stack().print();
+	    pc_flops = pc_stack().flops();
+	    pc_bytes = pc_stack().bytes();
+	}
     protected:
         double run () {
 	    FT t0, t1;
@@ -83,6 +107,7 @@ int main(int argc, char *argv[]){
     std::string generator = "cube";
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube", std::map<std::string, std::string>{
                                                      {"cube","cube"},
+                                                     {"cubeT","cubeT"},
 						     {"sphere","sphere"} }));
     
     std::string intersect = "intersect";

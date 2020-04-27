@@ -240,7 +240,7 @@ void volume_cost_ref(const int n, const int bcount, const void** body, const Bod
    pc_stack().log(2*l,n*l*sizeof(FT), "end of layer");
 
    for(int c=0;c<bcount;c++) {// body intersect
-         PC_Frame<intersect_cost_f> frame((void*)type[c]->cacheReset, l);// per layer
+         PC_Frame<cacheReset_cost_f> frame((void*)type[c]->cacheReset, l);// per layer
          frame.costf()(body[c]);
    }
 }
