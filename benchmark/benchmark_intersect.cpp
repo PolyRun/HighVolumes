@@ -101,8 +101,8 @@ int main(int argc, char *argv[]){
     int n = 20;
     int r = 100;
     cliFun.claimOpt('b',"Benchmarking configuration");
-    cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 100));
-    cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
+    cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 200));
+    cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 10000000));
     
     std::string generator = "cube";
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube", std::map<std::string, std::string>{

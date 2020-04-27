@@ -128,6 +128,8 @@ void PolytopeT_intersectCoord_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
    const int n = p->n;
    const int m = p->m;
+   
+   pc_stack().log(0,0, "Note: early 'continue' can speed up things!");
 
    {// frame for dotProduct: m times ai*x
       PC_Frame<dotProduct_cost_f> frame((void*)dotProduct, m);
