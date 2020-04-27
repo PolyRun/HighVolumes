@@ -25,6 +25,7 @@
 #include <map>
 #include <iostream>
 #include <deque>
+#include "table.hpp"
 
 class PC_Cost_Wrapper_Base {
    void virtual placeholder() {};// just to make things polymorphic ;)
@@ -39,7 +40,7 @@ public:
 
 class PC_Stack {
 public:
-   PC_Stack() {}
+   PC_Stack() : table(Table({"Stack","split","calls","flops","bytes","Flops","Bytes","tag"})) {}
    void add(void* f, PC_Cost_Wrapper_Base* wrapper) {
       functions[f] = wrapper;
    }
@@ -56,6 +57,15 @@ public:
 	        << " (" << _flops << " " << _bytes << ") "
 	        << " (" << _flops*current_reps << " " << _bytes*current_reps << ") "
 		<< tag <<  "\n";
+      
+      table.addRow({
+		    {"Stack",getPath()},
+		    {"bytes",std::to_string(_bytes)},
+		    {"Bytes",std::to_string(_bytes*current_reps)},
+		    {"flops",std::to_string(_flops)},
+		    {"Flops",std::to_string(_flops*current_reps)},
+		    {"tag",tag}});
+
       flops_ += _flops*current_reps;
       bytes_ += _bytes*current_reps;
    }
@@ -68,6 +78,7 @@ public:
    }
    void print() {
       std::cout << "PC_Stack: flops: " << flops_ << ", bytes: " << bytes_ << "\n";
+      table.print();
    }
    size_t flops() {return flops_;}
    size_t bytes() {return bytes_;}
@@ -76,6 +87,10 @@ public:
       current_reps *= reps_;
       frames.push_back(name);
       std::cout << "> " << getPath() << " " << reps_ << " " << current_reps <<  "\n";
+      table.addRow({
+		    {"Stack",getPath()},
+		    {"split",std::to_string(reps_)},
+		    {"calls",std::to_string(current_reps)}});
    }
    void popFrame() {
       std::cout << "< " << getPath() <<  "\n";
@@ -97,6 +112,7 @@ private:
    std::deque<size_t> reps;
    std::deque<std::string> frames;
    size_t current_reps = 1;
+   Table table;
 };
 
 PC_Stack& pc_stack();
