@@ -453,7 +453,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
          walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
         
          // find right Bm:
-         const FT x2 = dotProduct(x,x,n); // normalized radius
+         const FT x2 = vectorNorm(x,n); // normalized radius
          const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));
          const int mm = ceil(mmm);
 	 const int m = (mm>0)?mm:0; // find index of balls
