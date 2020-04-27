@@ -93,6 +93,9 @@ def run_benchmark(benchmark):
                      config_string = "-b {}, {}={},".format(rconfig, icname, ival).replace(", =,", ",").replace(", -b ,", ",").replace("-b ,", "")
                   else:
                      config_string = "-f {}, -b {}, {}={},".format(fconfig, rconfig, icname, ival).replace(", =,", ",").replace(", -b ,", ",").replace("-b ,", "")
+                  if len(config_string) > 0:
+                     while config_string[-1] == ",":
+                        config_string = config_string[:-1]
                   print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
                   myenv = os.environ;
                   proc = subprocess.Popen([sys.path[0]+"/"+bname, config_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
@@ -112,6 +115,9 @@ def run_benchmark(benchmark):
                      config_string = "-b {}, {}={},".format(rconfig, icname, ival).replace(", =,", ",").replace(", -b ,", ",").replace("-b ,", "")
                   else:
                      config_string = "-f {}, -b {}, {}={},".format(fconfig, rconfig, icname, ival).replace(", =,", ",").replace(", -b ,", ",").replace("-b ,", "")
+                  if len(config_string) > 0:
+                     while config_string[-1] == ",":
+                        config_string = config_string[:-1]
                   print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
                   myenv = os.environ;
                   proc = subprocess.Popen([sys.path[0]+"/"+bname, config_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
