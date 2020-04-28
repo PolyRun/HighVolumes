@@ -1,5 +1,13 @@
 #include "volume_examples.hpp"
 
+Solved_Body* generate_body(const std::string &generator) {
+    if(generator.compare("cube_10") == 0) {
+       return generate_unit_hypercube(10);	
+    } else if(generator.compare("cube_20") == 0) {
+       return generate_unit_hypercube(20);	
+    }
+}
+
 Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bounds) {
     int num_constraints = 2*dims;
 
@@ -31,7 +39,6 @@ Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bound
 }
 
 Solved_Body* generate_unit_hypercube(int dims) {
-
     FT lower_bounds[dims];
     FT upper_bounds[dims];
 

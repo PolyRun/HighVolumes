@@ -19,6 +19,9 @@ public:
     FT volume;
 };
 
+Solved_Body* generate_body(const std::string &generator);
+
+
 // Please provide lower_and upper bounds for each dimension of the rectangle
 // See function generate_unit_hypercube for an example
 Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bounds);
