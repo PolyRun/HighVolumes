@@ -4,58 +4,28 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &generator) : Benchmark_base(name, reps, convergence, warmup_reps), n(n), generator(generator) {}
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator) : Benchmark_base(name, reps, convergence, warmup_reps), generator(generator) {}
 
     protected:
         void initialize () {
             std::cout << "initializing A1 data..." << std::endl;
             
-	    if(generator.compare("cube") == 0) {
-		bcount = 1;
-	        body = (void**)malloc(bcount*sizeof(void*));
-	        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
-                body[0] = Polytope_new_box(n,1);
-		type[0] = &Polytope_T;
-		r0 = 1.0;
-		r1 = std::sqrt(n);
-	    }else if(generator.compare("cubeT") == 0) {
-		bcount = 1;
-	        body = (void**)malloc(bcount*sizeof(void*));
-	        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
-                body[0] = PolytopeT_new_box(n,1);
-		type[0] = &PolytopeT_T;
-		r0 = 1.0;
-		r1 = std::sqrt(n);
-	    }else if(generator.compare("sphere") == 0) {
-		bcount = 1;
-	        body = (void**)malloc(bcount*sizeof(void*));
-	        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
-		Ellipsoid* e = Ellipsoid_new(n);
-                for(int i=0;i<n;i++) {
-                    FT* Ai = Ellipsoid_get_Ai(e,i);
-                    Ai[i] = 1.0/4.0;
-		    e->a[i] = (i==0);
-                }
-		body[0] = e;
-		type[0] = &Ellipsoid_T;
-		r0 = 1.0;
-		r1 = 3.0;
-	    } else {
-	        std::cout << "Error: did not find generator " << generator << "\n";
-		assert(false);
-	    }
-        }
+            solved_body = solved_body_generator()->get(generator);
+	    assert(solved_body->is_preprocessed);
+	    r0 = 1.0;
+	    r1 = 2*solved_body->n;
+	}
         void reset () {
             // nothing to reset
 	}
         double run () {
-            return volume(n, r0, r1, bcount, (const void**)body, (const Body_T**)type);
+            return volume(solved_body->n, r0, r1, solved_body->bcount, (const void**)solved_body->body, (const Body_T**)solved_body->type)-solved_body->volume;
 	}
 	void finalize() {
 	    pc_stack().reset();
             {
                PC_Frame<volume_cost_f> frame((void*)volume);
-               frame.costf()(n, bcount, (const void**)body, (const Body_T**)type);
+               frame.costf()(solved_body->n, solved_body->bcount, (const void**)solved_body->body, (const Body_T**)solved_body->type);
             }
             pc_stack().print();
 	    pc_flops = pc_stack().flops();
@@ -63,10 +33,7 @@ class Benchmark_A1 : public Benchmark_base {
 	}
     private:
 	const std::string generator;
-	int n;
-	int bcount;
-	void** body;
-	Body_T** type;
+	Solved_Body* solved_body;
 	FT r0,r1;
 };
 
@@ -74,22 +41,18 @@ int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
     
-    int n = 20;
     int r = 100;
     cliFun.claimOpt('b',"Benchmarking configuration");
-    cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 100));
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
     
     std::string generator = "cube";
-    cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube", std::map<std::string, std::string>{
-                                                     {"cube","cube"},
-                                                     {"cubeT","cubeT"},
-						     {"sphere","sphere"} }));
+    auto &gen_names = solved_body_generator()->identity();
+    cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_0.5_10", gen_names));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    Benchmark_A1 b("A1_volume", r, true, 0, n, generator);
+    Benchmark_A1 b("A1_volume", r, true, 0, generator);
     b.run_benchmark();
 }

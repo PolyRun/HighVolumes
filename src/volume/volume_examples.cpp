@@ -1,11 +1,20 @@
 #include "volume_examples.hpp"
 
-Solved_Body* generate_body(const std::string &generator) {
-    if(generator.compare("cube_10") == 0) {
-       return generate_unit_hypercube(10);	
-    } else if(generator.compare("cube_20") == 0) {
-       return generate_unit_hypercube(20);	
-    }
+
+Solved_Body_Generator::Solved_Body_Generator() {
+    add("cube_0.5_10", []() {
+        return generate_unit_hypercube(10);
+    });
+    add("cube_0.5_20", []() {
+        return generate_unit_hypercube(20);
+    });
+}
+
+
+Solved_Body_Generator* solved_body_generator_ = NULL;
+Solved_Body_Generator* solved_body_generator() {
+    if(!solved_body_generator_) {solved_body_generator_ = new Solved_Body_Generator();}
+    return solved_body_generator_;
 }
 
 Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bounds) {
@@ -31,7 +40,7 @@ Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bound
         volume *= upper_bounds[i] - lower_bounds[i];
     }
 
-    Solved_Body* result = new Solved_Body(1);
+    Solved_Body* result = new Solved_Body(1,dims);
     result->body[0] = hyperrectangle;
     result->type[0] = &PolytopeT_T;
     result->volume = volume;
@@ -78,7 +87,7 @@ Solved_Body* generate_cross_polytope(int dims) {
     FT volume = ((FT) num_constraints) / n_factorial;
 
     int bcount = 1;
-    Solved_Body *result = new Solved_Body(bcount);
+    Solved_Body *result = new Solved_Body(bcount, dims);
     result->body[0] = cross_polytope;
     result->type[0] = &PolytopeT_T;
     result->volume = volume;
@@ -117,7 +126,7 @@ Solved_Body* generate_simplex(int dims) {
     FT volume = ((FT) num_constraints) / n_factorial;
 
     int bcount = 1;
-    Solved_Body *result = new Solved_Body(bcount);
+    Solved_Body *result = new Solved_Body(bcount, dims);
     result->body[0] = simplex;
     result->type[0] = &PolytopeT_T;
     result->volume = volume;
@@ -147,7 +156,7 @@ Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds) {
     }
 
     int bcount = 1;
-    Solved_Body *result = new Solved_Body(bcount);
+    Solved_Body *result = new Solved_Body(bcount, dims);
     result->body[0] = ellipsoid;
     result->type[0] = &Ellipsoid_T;
     result->volume = volume;

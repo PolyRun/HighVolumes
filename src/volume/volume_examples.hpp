@@ -5,7 +5,7 @@
 
 class Solved_Body {
 public:
-    Solved_Body(const int bcount) : bcount(bcount) {
+    Solved_Body(const int bcount, const int n) : bcount(bcount), n(n) {
        body = (void**)malloc(bcount*sizeof(void*));
        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
     }
@@ -17,10 +17,32 @@ public:
     Body_T **type;
     int bcount;
     FT volume;
+    int n;
+    bool is_preprocessed = false;
 };
 
-Solved_Body* generate_body(const std::string &generator);
+class Solved_Body_Generator {
+public:
+    Solved_Body_Generator(); // here all the generators are registered!
+    Solved_Body* get(std::string name) {
+        auto it = generators.find(name);
+	if(it!=generators.end()) {
+	    return it->second();
+	} else {
+	    return NULL;
+	}
+    }
+    void add(std::string name, std::function<Solved_Body*()> gen) {
+        generators[name] = gen;
+	identity_[name] = name;
+    }
+    const std::map<std::string, std::string>& identity() {return identity_;}
+private:
+    std::map<std::string, std::function<Solved_Body*()>> generators;
+    std::map<std::string, std::string> identity_;
+};
 
+Solved_Body_Generator* solved_body_generator();
 
 // Please provide lower_and upper bounds for each dimension of the rectangle
 // See function generate_unit_hypercube for an example
