@@ -31,7 +31,7 @@ class Benchmark_base {
         /**
          * \brief Actuall performs the benchmark
          **/
-        virtual double run_benchmark() {
+        virtual void run_benchmark() {
             double min_time = std::numeric_limits<double>::max();
             double max_time = -1;
             double mean_time;
