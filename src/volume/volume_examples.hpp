@@ -19,24 +19,16 @@ public:
     FT volume;
 };
 
+Solved_Body* generate_body(const std::string &generator);
+
+
 // Please provide lower_and upper bounds for each dimension of the rectangle
 // See function generate_unit_hypercube for an example
 Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bounds);
 
-//struct Solved_Body generate_unit_hypercube(int dims) {
-//
-//    FT lower_bounds[dims];
-//    FT upper_bounds[dims];
-//
-//    for (int i = 0; i < dims; i++) {
-//        lower_bounds[i] = -0.5;
-//        upper_bounds[i] = +0.5;
-//    }
-//
-//    return generate_hyperrectangle(dims, lower_bounds, upper_bounds);
-//    
-//}
-//
+Solved_Body* generate_unit_hypercube(int dims);
+
+
 //// A cross polytope is the n-dimensional generalisation of a octahedron
 //// Here it is designed such that its corners are distance 1 away from the origin
 //// Careful! A cross polytope has 2^n hyperplanes. Don't set n too large!

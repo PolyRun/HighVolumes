@@ -1,5 +1,13 @@
 #include "volume_examples.hpp"
 
+Solved_Body* generate_body(const std::string &generator) {
+    if(generator.compare("cube_10") == 0) {
+       return generate_unit_hypercube(10);	
+    } else if(generator.compare("cube_20") == 0) {
+       return generate_unit_hypercube(20);	
+    }
+}
+
 Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bounds) {
     int num_constraints = 2*dims;
 
@@ -30,20 +38,18 @@ Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bound
     return result;
 }
 
-//struct Solved_Body generate_unit_hypercube(int dims) {
-//
-//    FT lower_bounds[dims];
-//    FT upper_bounds[dims];
-//
-//    for (int i = 0; i < dims; i++) {
-//        lower_bounds[i] = -0.5;
-//        upper_bounds[i] = +0.5;
-//    }
-//
-//    return generate_hyperrectangle(dims, lower_bounds, upper_bounds);
-//    
-//}
-//
+Solved_Body* generate_unit_hypercube(int dims) {
+    FT lower_bounds[dims];
+    FT upper_bounds[dims];
+
+    for (int i = 0; i < dims; i++) {
+        lower_bounds[i] = -0.5;
+        upper_bounds[i] = +0.5;
+    }
+
+    return generate_hyperrectangle(dims, lower_bounds, upper_bounds);
+}
+
 //// A cross polytope is the n-dimensional generalisation of a octahedron
 //// Here it is designed such that its corners are distance 1 away from the origin
 //// Careful! A cross polytope has 2^n hyperplanes. Don't set n too large!
