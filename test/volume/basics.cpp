@@ -157,8 +157,8 @@ int main(int argc, char** argv) {
    {
       auto o = dynamic_cast<CLIF_Option<dotProduct_f_t>*>(cliFun.getOption("dotProduct"));
       for(auto it : o->fmap) {
-         std::cout << "Test dotProduct " << it.first << std::endl;
-         dotProduct = it.second;
+         std::cout << "Test dotProduct " << it.first << " - " << it.second.second << std::endl;
+         dotProduct = it.second.first;
          
          FT* u = (FT*)(aligned_alloc(32, 20*sizeof(FT)));
          FT* v = (FT*)(aligned_alloc(32, 20*sizeof(FT)));
@@ -182,8 +182,8 @@ int main(int argc, char** argv) {
    {
       auto o = dynamic_cast<CLIF_Option<vectorNorm_f_t>*>(cliFun.getOption("vectorNorm"));
       for(auto it : o->fmap) {
-         std::cout << "Test vectorNorm " << it.first << std::endl;
-         vectorNorm = it.second;
+         std::cout << "Test vectorNorm " << it.first << " - " << it.second.second << std::endl;
+         vectorNorm = it.second.first;
          
          FT* v = (FT*)(aligned_alloc(32, 20*sizeof(FT)));
          
@@ -204,8 +204,8 @@ int main(int argc, char** argv) {
    // --------------------------------- Polytope:
    auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));
    for(auto it : o->fmap) {
-      Polytope_T.intersectCoord = it.second;
-      std::cout << "Test Polytope for intersectCoord " << it.first << std::endl;
+      Polytope_T.intersectCoord = it.second.first;
+      std::cout << "Test Polytope for intersectCoord " << it.first << " - " << it.second.second << std::endl;
 
       // Generate new polytope box, n dim, 2 radius
       const int n = 10;
@@ -220,8 +220,8 @@ int main(int argc, char** argv) {
 
    auto oT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeT_intersectCoord"));
    for(auto it : oT->fmap) {
-      PolytopeT_T.intersectCoord = it.second;
-      std::cout << "Test PolytopeT for intersectCoord " << it.first << std::endl;
+      PolytopeT_T.intersectCoord = it.second.first;
+      std::cout << "Test PolytopeT for intersectCoord " << it.first << " - " << it.second.second << std::endl;
 
       // Generate new polytope box, n dim, 2 radius
       const int n = 10;

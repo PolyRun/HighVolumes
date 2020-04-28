@@ -55,9 +55,9 @@ int main(int argc, char *argv[]){
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000000));
    
     std::string uv = "uv";
-    cliFun.add(new CLIF_Option<std::string>(&uv,'b',"uv","uv", std::map<std::string, std::string>{
-                                                     {"uv","uv"},
-						     {"vv","vv"} }));
+    cliFun.add(new CLIF_Option<std::string>(&uv,'b',"uv","uv", {
+                                                     {"uv",{"uv", "separate input vectors"}},
+						     {"vv",{"vv", "same input vector (like norm)"}} }));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}

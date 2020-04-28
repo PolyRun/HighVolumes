@@ -83,31 +83,31 @@ public:
       // map: function name -> function ptr
       
       claimOpt('f',"Algorithm Functions");
-      add(new CLIF_Option<xyz_f_t>(&xyz_f,'f',"xyz_f","xyz_f1", std::map<std::string, xyz_f_t>{
-                                                     {"xyz_f1",xyz_f1},
-						     {"xyz_f2",xyz_f2} }));
-      add(new CLIF_Option<dotProduct_f_t>(&dotProduct,'f',"dotProduct","2acc", std::map<std::string, dotProduct_f_t>{
-                                                     {"ref",dotProduct_ref},
-                                                     {"2acc",dotProduct_2acc},
-                                                     {"auto1",dotProduct_auto1},
-                                                     {"auto2",dotProduct_auto2},
-						     {"vec1",dotProduct_vec1} }));
+      add(new CLIF_Option<xyz_f_t>(&xyz_f,'f',"xyz_f","xyz_f1", {
+                                                     {"xyz_f1", {xyz_f1, "test 1"}},
+						     {"xyz_f2", {xyz_f2, "test 2"}} }));
+      add(new CLIF_Option<dotProduct_f_t>(&dotProduct,'f',"dotProduct","2acc", {
+                                                     {"ref",  {dotProduct_ref, "ref"}},
+                                                     {"2acc", {dotProduct_2acc, "2 accumulators"}},
+                                                     {"auto1",{dotProduct_auto1,"auto gen 1"}},
+                                                     {"auto2",{dotProduct_auto2,"auto gen 2"}},
+						     {"vec1", {dotProduct_vec1,"vectorize"}} }));
       
-      add(new CLIF_Option<vectorNorm_f_t>(&vectorNorm,'f',"vectorNorm","ref", std::map<std::string, vectorNorm_f_t>{
-						     {"ref",vectorNorm_ref} }));
+      add(new CLIF_Option<vectorNorm_f_t>(&vectorNorm,'f',"vectorNorm","ref", {
+						     {"ref", {vectorNorm_ref, "ref"}} }));
 
-      add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walk_ref", std::map<std::string, walk_f_t>{
-                                                     {"walk_ref",walk_ref},
-						     {"walkCoord_ref",walkCoord_ref} }));
+      add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walk_ref", {
+                                                     {"walk_ref",{walk_ref, "random direction walk (ref)"}},
+						     {"walkCoord_ref",{walkCoord_ref, "coordinate walk (ref)"}} }));
 
-      add(new CLIF_Option<intersectCoord_f_t>(&Polytope_T.intersectCoord,'f',"Polytope_intersectCoord","cached_ref", std::map<std::string, intersectCoord_f_t>{
-                                                     {"ref",Polytope_intersectCoord_ref},
-						     {"cached_ref",Polytope_intersectCoord_cached_ref} }));
+      add(new CLIF_Option<intersectCoord_f_t>(&Polytope_T.intersectCoord,'f',"Polytope_intersectCoord","cached_ref", {
+                                                     {"ref",        {Polytope_intersectCoord_ref, "no cache (ref)"}},
+						     {"cached_ref", {Polytope_intersectCoord_cached_ref, "with cache (ref)"}} }));
 
-      add(new CLIF_Option<intersectCoord_f_t>(&PolytopeT_T.intersectCoord,'f',"PolytopeT_intersectCoord","cached_ref", std::map<std::string, intersectCoord_f_t>{
-                                                     {"ref",PolytopeT_intersectCoord_ref},
-						     {"cached_nc1",PolytopeT_intersectCoord_cached_nc1},
-						     {"cached_ref",PolytopeT_intersectCoord_cached_ref} }));
+      add(new CLIF_Option<intersectCoord_f_t>(&PolytopeT_T.intersectCoord,'f',"PolytopeT_intersectCoord","cached_ref", {
+                                                     {"ref",        {PolytopeT_intersectCoord_ref, "no cache (ref)"}},
+						     {"cached_nc1", {PolytopeT_intersectCoord_cached_nc1, "with cache, nc1"}},
+						     {"cached_ref", {PolytopeT_intersectCoord_cached_ref,"with cache (ref)"}} }));
 
 
       // number parameters:

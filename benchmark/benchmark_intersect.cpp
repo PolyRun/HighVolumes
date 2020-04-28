@@ -4,58 +4,44 @@
 
 class Benchmark_intersect : public Benchmark_base {
     public:
-        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &generator) : Benchmark_base(name, reps, convergence, warmup_reps), n(n), generator(generator) {}
+        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator) : Benchmark_base(name, reps, convergence, warmup_reps), generator(generator) {}
 
     protected:
         void initialize () {
             std::cout << "initializing intersect data..." << std::endl;
 	    
+	    solved_body = solved_body_generator()->get(generator);
+	    assert(solved_body->is_normalized);
+	    assert(solved_body->bcount == 1);
+	    
+	    int n = solved_body->n;
 	    x = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
 	    d = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-            
-	    if(generator.compare("cube") == 0) {
-                body = Polytope_new_box(n,1);
-		type = &Polytope_T;
-	    }else if(generator.compare("cubeT") == 0) {
-                body = PolytopeT_new_box(n,1);
-		type = &PolytopeT_T;
-	    }else if(generator.compare("sphere") == 0) {
-	        Ellipsoid* e = Ellipsoid_new(n);
-                for(int i=0;i<n;i++) {
-                    FT* Ai = Ellipsoid_get_Ai(e,i);
-                    Ai[i] = 1.0/4.0;
-		    e->a[i] = (i==0);
-                }
-		body = e;
-		type = &Ellipsoid_T;
-	    } else {
-	        std::cout << "Error: did not find generator " << generator << "\n";
-		assert(false);
-	    }
-            
-	    int cache_size = type->cacheAlloc(body);
+	    
+	    int cache_size = solved_body->type[0]->cacheAlloc(solved_body->body[0]);
             cache = aligned_alloc(32, cache_size); // align this to 32
 
 	    reset();
         }
         void reset () {
+	    int n = solved_body->n;
             for(int i=0; i<n;i++) {
 	        x[i] = prng_get_random_double_0_1()*0.1;
 	        d[i] = prng_get_random_double_normal();
 	    }
-	    type->cacheReset(body, x, cache);
+	    solved_body->type[0]->cacheReset(solved_body->body[0], x, cache);
 	    dd = prng_get_random_int_in_range(0,n-1);
 	}
         double run () {
 	    FT t0, t1;
-	    type->intersect(body, x, d, &t0, &t1);
+	    solved_body->type[0]->intersect(solved_body->body[0], x, d, &t0, &t1);
             return t0-t1;
 	}
 	void finalize() {
 	    pc_stack().reset();
             {
-                PC_Frame<intersect_cost_f> frame((void*)type->intersect);
-                frame.costf()(body);
+                PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersect);
+                frame.costf()(solved_body->body[0]);
             }
             pc_stack().print();
 	    pc_flops = pc_stack().flops();
@@ -63,9 +49,7 @@ class Benchmark_intersect : public Benchmark_base {
 	}
     protected:
 	const std::string generator;
-	int n;
-	void* body;
-	Body_T* type;
+	Solved_Body* solved_body;
 	FT* x;
 	FT* d;
 	int dd;
@@ -74,13 +58,13 @@ class Benchmark_intersect : public Benchmark_base {
 
 class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
-        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &generator) : Benchmark_intersect(name, reps, convergence, warmup_reps, n, generator) {}
+        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator) : Benchmark_intersect(name, reps, convergence, warmup_reps, generator) {}
     
     	void finalize() {
 	    pc_stack().reset();
             {
-                PC_Frame<intersect_cost_f> frame((void*)type->intersectCoord);
-                frame.costf()(body);
+                PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord);
+                frame.costf()(solved_body->body[0]);
             }
             pc_stack().print();
 	    pc_flops = pc_stack().flops();
@@ -89,7 +73,7 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
     protected:
         double run () {
 	    FT t0, t1;
-	    type->intersectCoord(body, x, dd, &t0, &t1, cache);
+	    solved_body->type[0]->intersectCoord(solved_body->body[0], x, dd, &t0, &t1, cache);
             return 0;
 	}
 };
@@ -98,32 +82,28 @@ int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
     
-    int n = 20;
     int r = 100;
     cliFun.claimOpt('b',"Benchmarking configuration");
-    cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 200));
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 10000000));
     
     std::string generator = "cube";
-    cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube", std::map<std::string, std::string>{
-                                                     {"cube","cube"},
-                                                     {"cubeT","cubeT"},
-						     {"sphere","sphere"} }));
+    auto &gen_map = solved_body_generator()->gen_map();
+    cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_r1.0_10", gen_map));
     
     std::string intersect = "intersect";
-    cliFun.add(new CLIF_Option<std::string>(&intersect,'b',"intersect","intersect", std::map<std::string, std::string>{
-                                                     {"intersect","intersect"},
-						     {"intersectCoord","intersectCoord"} }));
-
+    cliFun.add(new CLIF_Option<std::string>(&intersect,'b',"intersect","intersect", {
+                                                     {"intersect",      {"intersect",     "random direction intersection"}},
+						     {"intersectCoord", {"intersectCoord","coordinate direction intersection"}} }));
+    
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
     
     if(intersect.compare("intersect")==0) {
-        Benchmark_intersect b("intersect", r, true, 0, n, generator);
+        Benchmark_intersect b("intersect", r, true, 0, generator);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", r, true, 0, n, generator);
+        Benchmark_intersectCoord b("intersectCoord", r, true, 0, generator);
         b.run_benchmark();
     }
 }

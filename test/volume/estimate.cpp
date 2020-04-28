@@ -75,8 +75,8 @@ int main(int argc, char** argv) {
 
    auto o = dynamic_cast<CLIF_Option<walk_f_t>*>(cliFun.getOption("walk_f"));
    for(auto it : o->fmap) {
-      std::cout << "## run walk_f: " << it.first << std::endl;
-      walk_f = it.second; // test for all walk functions
+      std::cout << "## run walk_f: " << it.first << " - " << it.second.second << std::endl;
+      walk_f = it.second.first; // test for all walk functions
       test();
       std::cout << "## done." << std::endl;
    }

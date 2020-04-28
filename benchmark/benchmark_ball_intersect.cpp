@@ -79,9 +79,9 @@ int main(int argc, char *argv[]){
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 10000000));
     
     std::string intersect = "intersect";
-    cliFun.add(new CLIF_Option<std::string>(&intersect,'b',"intersect","intersect", std::map<std::string, std::string>{
-                                                     {"intersect","intersect"},
-						     {"intersectCoord","intersectCoord"} }));
+    cliFun.add(new CLIF_Option<std::string>(&intersect,'b',"intersect","intersect", {
+                                                     {"intersect",      {"intersect",     "random direction intersection"}},
+						     {"intersectCoord", {"intersectCoord","coordinate direction intersection"}} }));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}

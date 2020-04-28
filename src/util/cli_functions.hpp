@@ -41,7 +41,7 @@ template <class F_t>
 class CLIF_Option : public CLIF_OptionBase {
 public:
    CLIF_Option(F_t* var, const signed char opt, const std::string &name, const std::string &val,
-	       const std::map<std::string, F_t> &m)
+	       const std::map<std::string, std::pair<F_t,std::string>> &m)
    : var_(var), CLIF_OptionBase(opt,name,val), fmap(m) {}
    
    void virtual postParse(CLI &cli) {
@@ -51,13 +51,14 @@ public:
          std::cout << "Error: bad choice for: " << opt_ << " " << name_ << "\n";
 	 std::cout << "       viable options:\n";
 	 for(const auto it : fmap) {
-	    std::cout << "           " << it.first << "\n";
+	    std::cout << "           " << it.first << " - " << it.second.second << "\n";
 	 }
 	 std::exit(0);
       }
-      *var_ = fmap.at(cli.parameters(opt_).get(name_,""));
+      *var_ = fmap.at(cli.parameters(opt_).get(name_,"")).first;
    }
-   const std::map<std::string, F_t> fmap; // map holding all the options
+   std::map<std::string, std::pair<F_t,std::string>> fmap; // map holding all the options
+   // maps name to {value, description}
 private:
    F_t* var_; // global variable that will hold final choice
 };

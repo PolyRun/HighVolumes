@@ -2,11 +2,15 @@
 
 
 Solved_Body_Generator::Solved_Body_Generator() {
-    add("cube_0.5_10", []() {
-        return generate_unit_hypercube(10);
+    add("cube_r1.0_10", "basic 10-dim cube, centered, side=2", []() {
+        Solved_Body* sb = generate_centered_hypercube(10,1.0);
+        sb->is_normalized = true;
+	return sb;
     });
-    add("cube_0.5_20", []() {
-        return generate_unit_hypercube(20);
+    add("cube_r1.0_20", "basic 20-dim cube, centered, side=2", []() {
+        Solved_Body* sb = generate_centered_hypercube(20,1.0);
+        sb->is_normalized = true;
+	return sb;
     });
 }
 
@@ -47,13 +51,13 @@ Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bound
     return result;
 }
 
-Solved_Body* generate_unit_hypercube(int dims) {
+Solved_Body* generate_centered_hypercube(int dims, FT r) {
     FT lower_bounds[dims];
     FT upper_bounds[dims];
 
     for (int i = 0; i < dims; i++) {
-        lower_bounds[i] = -0.5;
-        upper_bounds[i] = +0.5;
+        lower_bounds[i] = -r;
+        upper_bounds[i] = +r;
     }
 
     return generate_hyperrectangle(dims, lower_bounds, upper_bounds);

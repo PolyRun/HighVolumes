@@ -11,7 +11,7 @@ class Benchmark_A1 : public Benchmark_base {
             std::cout << "initializing A1 data..." << std::endl;
             
             solved_body = solved_body_generator()->get(generator);
-	    assert(solved_body->is_preprocessed);
+	    assert(solved_body->is_normalized);
 	    r0 = 1.0;
 	    r1 = 2*solved_body->n;
 	}
@@ -46,8 +46,8 @@ int main(int argc, char *argv[]){
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
     
     std::string generator = "cube";
-    auto &gen_names = solved_body_generator()->identity();
-    cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_0.5_10", gen_names));
+    auto &gen_map = solved_body_generator()->gen_map();
+    cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_r1.0_10", gen_map));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}

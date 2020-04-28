@@ -18,7 +18,7 @@ public:
     int bcount;
     FT volume;
     int n;
-    bool is_preprocessed = false;
+    bool is_normalized = false;
 };
 
 class Solved_Body_Generator {
@@ -32,25 +32,27 @@ public:
 	    return NULL;
 	}
     }
-    void add(std::string name, std::function<Solved_Body*()> gen) {
+    void add(const std::string &name, const std::string &desc, std::function<Solved_Body*()> gen) {
         generators[name] = gen;
-	identity_[name] = name;
+	gen_map_[name] = {name,desc};
     }
-    const std::map<std::string, std::string>& identity() {return identity_;}
+    const std::map<std::string, std::pair<std::string, std::string>>& gen_map() {return gen_map_;}
 private:
     std::map<std::string, std::function<Solved_Body*()>> generators;
-    std::map<std::string, std::string> identity_;
+    std::map<std::string, std::pair<std::string,std::string>> gen_map_;
+    // map name to {name, desc}
+    // used for CLI
 };
 
 Solved_Body_Generator* solved_body_generator();
 
 // Please provide lower_and upper bounds for each dimension of the rectangle
-// See function generate_unit_hypercube for an example
+// See function generate_centered_hypercube for an example
 Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bounds);
 
 // A convenience function for generate_hyperrectangle()
-// where lower and upper bounds are -0.5 and 0.5 resp.
-Solved_Body* generate_unit_hypercube(int dims);
+// where lower and upper bounds are -r and r resp.
+Solved_Body* generate_centered_hypercube(int dims,FT r);
 
 // A cross polytope is the n-dimensional generalisation of a octahedron
 // Here it is designed such that its corners are distance 1 away from the origin
