@@ -19,6 +19,7 @@ extern "C" { // must be included C stlye
 #include "../util/performance_counter.hpp"
 #include "../../polyvest/vol.h"
 #include "volume_cost.hpp"
+#include "volume_examples.hpp"
 
 std::ostream& operator<<(std::ostream& os, const Polytope& p);
 std::ostream& operator<<(std::ostream& os, const Polytope* p);

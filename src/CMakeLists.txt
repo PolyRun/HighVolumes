@@ -62,7 +62,7 @@ set_target_properties(performance_counter PROPERTIES
 
 # ----------------------- volume_helper
 set(VOLUME_HELPER_SOURCE_FILES
-   volume/volume_helper.cpp volume/volume_cost.cpp
+   volume/volume_helper.cpp volume/volume_cost.cpp volume/volume_examples.cpp
 )
 set(VOLUME_HELPER_HEADER_FILES
    volume/volume_helper.hpp
