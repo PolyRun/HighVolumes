@@ -128,6 +128,8 @@ void PolytopeT_intersectCoord_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
    const int n = p->n;
    const int m = p->m;
+   
+   pc_stack().log(0,0, "Note: early 'continue' can speed up things!");
 
    {// frame for dotProduct: m times ai*x
       PC_Frame<dotProduct_cost_f> frame((void*)dotProduct, m);
@@ -240,7 +242,7 @@ void volume_cost_ref(const int n, const int bcount, const void** body, const Bod
    pc_stack().log(2*l,n*l*sizeof(FT), "end of layer");
 
    for(int c=0;c<bcount;c++) {// body intersect
-         PC_Frame<intersect_cost_f> frame((void*)type[c]->cacheReset, l);// per layer
+         PC_Frame<cacheReset_cost_f> frame((void*)type[c]->cacheReset, l);// per layer
          frame.costf()(body[c]);
    }
 }
