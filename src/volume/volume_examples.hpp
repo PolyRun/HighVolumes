@@ -37,12 +37,16 @@ public:
     Solved_Body* transform(const Matrix* L, const FT det, const FT* a, const FT beta);
     Solved_Body* scale(const FT beta);
     Solved_Body* rotate();
-    
+    Solved_Body* preprocess(); // make normalized via preprocessing
+
     void **body;
     Body_T **type;
     int bcount;
     FT volume;
     int n;
+
+    // is_normalized: body is contained in B(0,2n), and contains B(0,1)
+    // this is required for estimation without preprocessing
     bool is_normalized = false;
 };
 

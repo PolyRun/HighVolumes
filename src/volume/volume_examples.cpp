@@ -52,6 +52,25 @@ Solved_Body_Generator::Solved_Body_Generator() {
        });
     }
 
+    // simplex_polytope
+    std::vector<int> simplex_n = {2,3,10,20,40,60,100,200};
+    for(int n : simplex_n) {
+       std::string nstr = std::to_string(n);
+       add("simplex_"+nstr, "simplex polytope, dim-"+nstr+", x_i>=0, oneNorm(x)<=2", [n]() {
+           Solved_Body* sb = generate_simplex(n);
+           sb->is_normalized = false;
+           return sb;
+       });
+       add("simplex_preprocessed_"+nstr, "simplex polytope, dim-"+nstr+", x_i>=0, oneNorm(x)<=2 [preprocessed]", [n]() {
+           Solved_Body* s = generate_simplex(n);
+           Solved_Body* sb = s->preprocess();
+           delete s;
+           sb->is_normalized = true;
+           return sb;
+       });
+    } 
+    
+
     // ellipsoids:
     std::vector<int> ball_n = {3,10,20,40,60,100};
     for(int n : cross_n) {
@@ -124,6 +143,16 @@ Solved_Body::rotate() {
     Solved_Body* sb = transform(L,1.0,a,1.0);
     free(a);
     Matrix_free(L);
+    return sb;
+}
+
+Solved_Body*
+Solved_Body::preprocess() {
+    Solved_Body* sb = clone();
+    FT proc_det = 1;
+    preprocess_generic(n, bcount, (const void**)body, sb->body, (const Body_T**)type, &proc_det);
+    sb->is_normalized = true;
+    sb->volume = volume / proc_det;
     return sb;
 }
 
@@ -239,7 +268,7 @@ Solved_Body* generate_simplex(int dims) {
     for (long i = 1; i <= dims; i++) {
         n_factorial *= i;
     }
-    FT volume = ((FT) num_constraints) / n_factorial;
+    FT volume = std::pow(2,dims) / n_factorial;
 
     int bcount = 1;
     Solved_Body *result = new Solved_Body(bcount, dims);
