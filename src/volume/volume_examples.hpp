@@ -31,6 +31,9 @@ public:
     
     Solved_Body* clone();
     
+    // take this and other, make the intersection
+    Solved_Body* join(const Solved_Body* other); // volume will be unknown (0)
+    
     // x = (L * y + a)*beta
     // smaller beta, body grows
     // det = det(L)
@@ -67,6 +70,7 @@ public:
 	gen_map_[name] = {name,desc};
     }
     const std::map<std::string, std::pair<std::string, std::string>>& gen_map() {return gen_map_;}
+    const std::map<std::string, std::function<Solved_Body*()>>& gen() {return generators;}
 private:
     std::map<std::string, std::function<Solved_Body*()>> generators;
     std::map<std::string, std::pair<std::string,std::string>> gen_map_;

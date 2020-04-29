@@ -53,7 +53,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     }
 
     // simplex_polytope
-    std::vector<int> simplex_n = {2,3,10,20,40,60,100,200};
+    std::vector<int> simplex_n = {2,3,10,20,40};
     for(int n : simplex_n) {
        std::string nstr = std::to_string(n);
        add("simplex_"+nstr, "simplex polytope, dim-"+nstr+", x_i>=0, oneNorm(x)<=2", [n]() {
@@ -71,7 +71,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     } 
     
 
-    // ellipsoids:
+    // ball - ellipsoids:
     std::vector<int> ball_n = {3,10,20,40,60,100};
     for(int n : cross_n) {
        std::string nstr = std::to_string(n);
@@ -88,6 +88,34 @@ Solved_Body_Generator::Solved_Body_Generator() {
            return sb;
        });
     }
+
+    // half-ball / ellipsoids
+    std::vector<int> half_n = {3,10,20,40,60,100};
+    for(int n : half_n) {
+       std::string nstr = std::to_string(n);
+       add("half_"+nstr, "half-ball (ball+cube), dim-"+nstr+"", [n]() {
+           Solved_Body* ball = generate_centered_ball(n,1.0);
+           FT lb[n];
+           FT ub[n];
+	   for(int i=0;i<n;i++) {lb[i] = -1; ub[i]=1;}
+	   lb[0]=0; // truncate
+	   ub[0]=1;
+	   Solved_Body* c0 = generate_hyperrectangle(n, lb,ub);
+           
+	   Solved_Body* h0 = ball->join(c0);
+	   h0->volume = ball->volume / 2.0;
+	   
+	   //Solved_Body* h1 = h0->rotate();
+           
+	   Solved_Body* sb = h0->preprocess();
+           
+	   delete ball;
+	   delete c0;
+	   delete h0;
+	   //delete h1;
+	   return sb;
+       });
+    }
 }
 
 Solved_Body*
@@ -98,6 +126,23 @@ Solved_Body::clone() {
     for(int b=0; b<bcount; b++) {
        sb->type[b] = type[b];
        sb->body[b] = type[b]->clone(body[b]);
+    }
+    return sb;
+}
+
+Solved_Body*
+Solved_Body::join(const Solved_Body* other) {
+    assert(n==other->n);
+    Solved_Body* sb = new Solved_Body(bcount + other->bcount,n);
+    sb->volume = 0;// volume unknown
+    sb->is_normalized = false;
+    for(int b=0; b<bcount; b++) {
+       sb->type[b] = type[b];
+       sb->body[b] = type[b]->clone(body[b]);
+    }
+    for(int b=0; b<other->bcount; b++) {
+       sb->type[bcount+b] = other->type[b];
+       sb->body[bcount+b] = other->type[b]->clone(other->body[b]);
     }
     return sb;
 }

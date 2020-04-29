@@ -25,4 +25,18 @@ set_target_properties(test_volume_estimate PROPERTIES
 )
 
 
+project(test_volume_examples)
+
+add_executable(test_volume_examples examples.cpp)
+
+target_link_libraries(test_volume_examples PUBLIC volume_helper)
+
+set_target_properties(test_volume_examples PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+
+
 
