@@ -41,7 +41,7 @@ for index, item in enumerate(dotProduct):
 BENCHMARKS = [{"id": 0, "name": "benchmark_test_macro", "fun_configs":[], "run_configs":["r="+STD_REPS], "input_configs":[]},
          {"id": 1, "name": "benchmark_test_xyz_f", "fun_configs": xyz_f, "run_configs":["r="+STD_REPS], "input_configs":[]},
          {"id": 2, "name": "benchmark_polyvest", "fun_configs":[], "run_configs":["r="+STD_REPS], "input_configs":[]},
-         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",[1,4,32, 64])]}#, "input_configs":[("n",["i", operator.mul, 2, 1, 16])]}
+         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",["i", operator.mul, 2, 1, 64])]}
         ];
 
 # --- Functions that should be compared
@@ -129,7 +129,7 @@ def run_benchmark(benchmark):
                         fconfig_string = fconfig
                         config_string = config_string + "-f \"" + fconfig_string + "\""
                      if rconfig != "":
-                        bconfig_string = "{}, {}={}".format(rconfig, icname, ival)
+                        bconfig_string = "{},{}={}".format(rconfig, icname, ival)
                         config_string = config_string + " -b \"" + bconfig_string + "\""
                      print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
                      myenv = os.environ;
@@ -156,7 +156,7 @@ def run_benchmark(benchmark):
                         fconfig_string = fconfig
                         config_string = config_string + "-f " + fconfig_string
                      if rconfig != "":
-                        bconfig_string = "{}, {}={}".format(rconfig, icname, ival)
+                        bconfig_string = "{},{}={}".format(rconfig, icname, ival)
                         config_string = config_string + " -b " + bconfig_string
                      print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
                      myenv = os.environ;
