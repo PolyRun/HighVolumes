@@ -41,7 +41,7 @@ for index, item in enumerate(dotProduct):
 BENCHMARKS = [{"id": 0, "name": "benchmark_test_macro", "fun_configs":[], "run_configs":["r="+STD_REPS], "input_configs":[]},
          {"id": 1, "name": "benchmark_test_xyz_f", "fun_configs": xyz_f, "run_configs":["r="+STD_REPS], "input_configs":[]},
          {"id": 2, "name": "benchmark_polyvest", "fun_configs":[], "run_configs":["r="+STD_REPS], "input_configs":[]},
-         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",["i", operator.mul, 2, 1, 16])]}#,"input_configs":[("n",[1,4,7])]}#, "input_configs":[("n",["i", operator.mul, 2, 1, 16])]}
+         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",[1,4,32, 64])]}#, "input_configs":[("n",["i", operator.mul, 2, 1, 16])]}
         ];
 
 # --- Functions that should be compared
@@ -108,7 +108,7 @@ def run_benchmark(benchmark):
             for line in proc.stdout:
                try:
                   dict = eval(line)
-                  results.append((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict)
+                  results.append(((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict))
                   f.write(str(dict)+'\n')
                except:
                   f.write(line.decode('utf-8'))
@@ -168,7 +168,7 @@ def run_benchmark(benchmark):
                      for line in proc.stdout:
                         try:
                            dict = eval(line)
-                           results.append((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict, ival)
+                           results.append(((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict, ival))
                            f.write(str(dict)+'\n')
                         except:
                            f.write(line.decode('utf-8'))
