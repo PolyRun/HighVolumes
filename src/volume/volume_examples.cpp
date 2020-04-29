@@ -11,6 +11,13 @@ Solved_Body_Generator::Solved_Body_Generator() {
            sb->is_normalized = true;
            return sb;
        });
+       add("cube_rot_r1.0_"+nstr, "basic "+nstr+"-dim cube, centered, randomly rotated, side=2 [normalized]", [n]() {
+           Solved_Body* s = generate_centered_hypercube(n,1.0);
+           Solved_Body* sb = s->rotate();
+	   delete s;
+	   sb->is_normalized = true;
+           return sb;
+       });
        add("cube_r1.2_"+nstr, "basic "+nstr+"-dim cube, centered, side=2.4 [normalized]", [n]() {
            Solved_Body* sb = generate_centered_hypercube(n,1.2);
            sb->is_normalized = true;
@@ -31,6 +38,15 @@ Solved_Body_Generator::Solved_Body_Generator() {
            Solved_Body* s = generate_cross_polytope(n);
            Solved_Body* sb = s->scale(1.0/n);
            delete s;
+           sb->is_normalized = true;
+           return sb;
+       });
+       add("cross_rot_rn_"+nstr, "cross polytope, dim-"+nstr+", randomly rotated, oneNorm(x) <= n [normalized]", [n]() {
+           Solved_Body* s1 = generate_cross_polytope(n);
+           Solved_Body* s2 = s1->scale(1.0/n);
+           Solved_Body* sb = s2->rotate();
+           delete s1;
+           delete s2;
            sb->is_normalized = true;
            return sb;
        });
@@ -68,13 +84,12 @@ Solved_Body::clone() {
 }
 
 Solved_Body*
-Solved_Body::transform(const Matrix* L, const FT* a, const FT beta) {
+Solved_Body::transform(const Matrix* L, const FT det, const FT* a, const FT beta) {
     Solved_Body* sb = clone();
     for(int b=0; b<bcount; b++) {
 	type[b]->transform(body[b],sb->body[b],L,a,beta);
     }
-    sb->volume = volume / std::pow(beta,n);
-    // TODO: make volume dependent on L too!
+    sb->volume = volume / std::pow(beta,n) / det;
     return sb;
 }
 
@@ -86,7 +101,27 @@ Solved_Body::scale(const FT beta) {
         Matrix_set(L, i, i, 1.0);
         a[i] = 0;
     }
-    Solved_Body* sb = transform(L,a,beta);
+    Solved_Body* sb = transform(L,1.0,a,beta);
+    free(a);
+    Matrix_free(L);
+    return sb;
+}
+
+Solved_Body*
+Solved_Body::rotate() {
+    Matrix* L = Matrix_new(n,n);
+    FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+    for(int i=0;i<n;i++) {
+        Matrix_set(L, i, i, 1.0);
+        a[i] = 0;
+    }
+    for(int i=0;i<n;i++) {
+        for(int j=0;j<n;j++) {
+	    FT angle = prng_get_random_double_in_range(0,2*M_PI); 
+            Matrix_rotate(L, i, j, angle);
+        }
+    }
+    Solved_Body* sb = transform(L,1.0,a,1.0);
     free(a);
     Matrix_free(L);
     return sb;

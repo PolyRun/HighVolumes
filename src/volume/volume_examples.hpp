@@ -33,8 +33,10 @@ public:
     
     // x = (L * y + a)*beta
     // smaller beta, body grows
-    Solved_Body* transform(const Matrix* L, const FT* a, const FT beta);
+    // det = det(L)
+    Solved_Body* transform(const Matrix* L, const FT det, const FT* a, const FT beta);
     Solved_Body* scale(const FT beta);
+    Solved_Body* rotate();
     
     void **body;
     Body_T **type;

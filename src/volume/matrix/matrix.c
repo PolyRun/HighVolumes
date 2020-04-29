@@ -89,3 +89,16 @@ void Matrix_invert_pdsym(const Matrix *In, Matrix *Out){
     Matrix_free(Linvt);
     Matrix_free(L);
 }
+
+void Matrix_rotate(Matrix *m, const int i, const int j, const FT angle) {
+    if(i==j) {return;}
+    const int n = m->n;
+    FT s = sin(angle);
+    FT c = cos(angle);
+    for(int k=0;k<n;k++) {
+        FT vi = Matrix_get(m, i, k);
+        FT vj = Matrix_get(m, j, k);
+	Matrix_set(m, i, k, c*vi - s*vj);
+	Matrix_set(m, j, k, s*vi + c*vj);
+    }
+}

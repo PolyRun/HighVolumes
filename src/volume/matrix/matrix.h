@@ -32,4 +32,12 @@ void Matrix_print(const void* o);
 void Matrix_L_solve(const Matrix* o, FT* x, const FT* b);
 void Matrix_invert_pdsym(const Matrix *In, Matrix *Out);
 
+// rotate matrix on axis i,j with angle (in radians)
+//
+// like multiplying with:
+// 1
+//   cos(a) -sin(a)   --- line i
+//   sin(a) cos(a)    --- line j
+void Matrix_rotate(Matrix *m, const int i, const int j, const FT angle);
+
 #endif
