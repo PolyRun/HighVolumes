@@ -108,7 +108,7 @@ def run_benchmark(benchmark):
             for line in proc.stdout:
                try:
                   dict = eval(line)
-                  results.append((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict)
+                  results.append(((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict))
                   f.write(str(dict)+'\n')
                except:
                   f.write(line.decode('utf-8'))
