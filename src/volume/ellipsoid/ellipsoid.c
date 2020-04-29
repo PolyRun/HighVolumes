@@ -201,7 +201,7 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
 
    for(int i=0;i<n;i++) {x0[i]=prng_get_random_double_normal();}// random direction
    for(int i=0;i<n;i++) {x1[i]=this->a[i] + x0[i];}
-   for(int i=0;i<n;i++) {x0[i]=this->a[i] + x0[i];}
+   for(int i=0;i<n;i++) {x0[i]=this->a[i] - x0[i];}
    FT beta2 = 1.0 / (4*n*n);
    Ellipsoid_minimize(this,1, e, x0);
    Ellipsoid_minimize(this,1, e, x1);
@@ -430,7 +430,7 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
       }
    } while(dot > 0.00000001);
    
-   printf("steps taken: %d\n",count);
+   printf("steps taken: %d, dot %.12f, eval: %.12f\n",count, dot, eval);
    
    //for(int i=0; i<n; i++) {printf(" %.12f", x[i]);}// debug
    //printf("\n");

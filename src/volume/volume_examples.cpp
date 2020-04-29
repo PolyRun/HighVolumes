@@ -93,7 +93,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     std::vector<int> half_n = {2,3,4,5,10,20,40,60,100};
     for(int n : half_n) {
        std::string nstr = std::to_string(n);
-       add("half_"+nstr, "half-ball (ball+cube), dim-"+nstr+"", [n]() {
+       add("half_preprocessed_"+nstr, "half-ball (ball+cube), dim-"+nstr+" !!! broken ???", [n]() {
            Solved_Body* ball = generate_centered_ball(n,1.0);
            FT lb[n];
            FT ub[n];
@@ -103,6 +103,28 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   Solved_Body* c0 = generate_hyperrectangle(n, lb,ub);
            
 	   Solved_Body* h0 = ball->join(c0);
+	   h0->volume = ball->volume / 2.0;
+	   
+	   h0->print();
+	   Solved_Body* sb = h0->preprocess();
+           
+	   delete ball;
+	   delete c0;
+	   delete h0;
+	   //delete h1;
+	   return sb;
+       });
+       add("half_"+nstr, "half-ball (ball+cube), dim-"+nstr+" [normalized]", [n]() {
+           Solved_Body* ball = generate_centered_ball(n,1.0);
+           FT lb[n];
+           FT ub[n];
+	   for(int i=0;i<n;i++) {lb[i] = -1; ub[i]=1;}
+	   lb[0]=0; // truncate
+	   ub[0]=1;
+	   Solved_Body* c0 = generate_hyperrectangle(n, lb,ub);
+           
+	   Solved_Body* h0 = c0->join(ball);// inverted order is trouble??
+	   //Solved_Body* h0 = ball->join(c0);// inverted order is trouble??
 	   h0->volume = ball->volume / 2.0;
 	   
 	   h0->print();
