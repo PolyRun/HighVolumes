@@ -10,6 +10,8 @@ from plot import plot, plot_input
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
+STD_REPS = "10"
+
 # --- Available functions for CLI
 # List all function version choices for a benchmark that you want to execute here.
 xyz_f = ["xyz_f1", "xyz_f2"]
@@ -36,10 +38,10 @@ for index, item in enumerate(dotProduct):
                            In this case, there is a loop that iterates over the desired range
 						Only one option-char is available
 '''
-BENCHMARKS = [{"id": 0, "name": "benchmark_test_macro", "fun_configs":[], "run_configs":["r=10"], "input_configs":[]},
-         {"id": 1, "name": "benchmark_test_xyz_f", "fun_configs": xyz_f, "run_configs":[], "input_configs":[]},
-         {"id": 2, "name": "benchmark_polyvest", "fun_configs":[], "run_configs":[], "input_configs":[]},
-         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=1000000"], "input_configs":[("n",["i", operator.add, 10, 1, 50])]}
+BENCHMARKS = [{"id": 0, "name": "benchmark_test_macro", "fun_configs":[], "run_configs":["r="+STD_REPS], "input_configs":[]},
+         {"id": 1, "name": "benchmark_test_xyz_f", "fun_configs": xyz_f, "run_configs":["r="+STD_REPS], "input_configs":[]},
+         {"id": 2, "name": "benchmark_polyvest", "fun_configs":[], "run_configs":["r="+STD_REPS], "input_configs":[]},
+         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",["i", operator.mul, 2, 1, 16])]}#,"input_configs":[("n",[1,4,7])]}#, "input_configs":[("n",["i", operator.mul, 2, 1, 16])]}
         ];
 
 # --- Functions that should be compared
@@ -82,60 +84,99 @@ def run_benchmark(benchmark):
       biconfigs.append(("",[""]))
    for fconfig in bfconfigs:
       for rconfig in brconfigs:
-         for iconfigs in biconfigs:
-            icname = iconfigs[0]
-            ioptions = iconfigs[1]
-            if ioptions[0] == "i":
-               i = ioptions[3]
-               while i <= ioptions[4]:
-                  ival = str(i)
-                  if fconfig == "":
-                     config_string = "-b {}, {}={},".format(rconfig, icname, ival).replace(", =,", ",").replace(", -b ,", ",").replace("-b ,", "")
-                  else:
-                     config_string = "-f {}, -b {}, {}={},".format(fconfig, rconfig, icname, ival).replace(", =,", ",").replace(", -b ,", ",").replace("-b ,", "")
-                  if len(config_string) > 0:
-                     while config_string[-1] == ",":
-                        config_string = config_string[:-1]
-                  print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
-                  myenv = os.environ;
-                  proc = subprocess.Popen([sys.path[0]+"/"+bname, config_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-                  f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_")).replace("__","")+".out", "w")
-                  for line in proc.stdout:
-                     try:
-                        dict = eval(line)
-                        results.append((fconfig, dict, ival))
-                        f.write(str(dict)+'\n')
-                     except:
-                        f.write(line.decode('utf-8'))
-                  f.close()
-                  i = ioptions[1](i, ioptions[2])
+         if no_biconfig:
+            fconfig_string = ""
+            bconfig_string = ""
+            config_string = ""
+            if fconfig != "":
+               fconfig_string = fconfig
+               config_string = config_string + "-f \"" + fconfig_string + "\""
+            if rconfig != "":
+               bconfig_string = rconfig
+               config_string = config_string + "-b \"" + bconfig_string + "\""
+            print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
+            myenv = os.environ;
+            if fconfig_string == "":
+               proc = subprocess.Popen([sys.path[0]+"/"+bname,'-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+            elif bconfig_string == "":
+               proc = subprocess.Popen([sys.path[0]+"/"+bname,'-f',fconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+            elif bconfig_string == "" and bconfig_string == "":
+               proc = subprocess.Popen([sys.path[0]+"/"+bname], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
             else:
-               for ival in ioptions:
-                  if fconfig == "":
-                     config_string = "-b {}, {}={},".format(rconfig, icname, ival).replace(", =,", ",").replace(", -b ,", ",").replace("-b ,", "")
-                  else:
-                     config_string = "-f {}, -b {}, {}={},".format(fconfig, rconfig, icname, ival).replace(", =,", ",").replace(", -b ,", ",").replace("-b ,", "")
-                  if len(config_string) > 0:
-                     while config_string[-1] == ",":
-                        config_string = config_string[:-1]
-                  print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
-                  myenv = os.environ;
-                  proc = subprocess.Popen([sys.path[0]+"/"+bname, config_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-                  f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_").replace(",", "")).replace("__","")+".out", "w")
-                  for line in proc.stdout:
-                     try:
-                        dict = eval(line)
-                        results.append(((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict))
-                        f.write(str(dict)+'\n')
-                     except:
-                        f.write(line.decode('utf-8'))
-                  f.close()
-   
+               proc = subprocess.Popen([sys.path[0]+"/"+bname,'-f',fconfig_string,'-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+            f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_").replace(",", "")).replace("__","")+".out", "w")
+            for line in proc.stdout:
+               try:
+                  dict = eval(line)
+                  results.append((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict)
+                  f.write(str(dict)+'\n')
+               except:
+                  f.write(line.decode('utf-8'))
+            f.close()
+		 
+         else:
+            for iconfigs in biconfigs:
+               icname = iconfigs[0]
+               ioptions = iconfigs[1]
+               if ioptions[0] == "i":
+                  i = ioptions[3]
+                  while i <= ioptions[4]:
+                     ival = str(i)
+                     fconfig_string = ""
+                     bconfig_string = ""
+                     config_string = ""
+                     if fconfig != "":
+                        fconfig_string = fconfig
+                        config_string = config_string + "-f \"" + fconfig_string + "\""
+                     if rconfig != "":
+                        bconfig_string = "{}, {}={}".format(rconfig, icname, ival)
+                        config_string = config_string + " -b \"" + bconfig_string + "\""
+                     print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
+                     myenv = os.environ;
+                     if fconfig_string == "":
+                        proc = subprocess.Popen([sys.path[0]+"/"+bname, '-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+                     else:
+                        proc = subprocess.Popen([sys.path[0]+"/"+bname, '-f', fconfig_string, '-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+                     f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_")).replace("__","")+".out", "w")
+                     for line in proc.stdout:
+                        try:
+                           dict = eval(line)
+                           results.append((fconfig, dict, ival))
+                           f.write(str(dict)+'\n')
+                        except:
+                           f.write(line.decode('utf-8'))
+                     f.close()
+                     i = ioptions[1](i, ioptions[2])
+               else:
+                  for ival in ioptions:
+                     fconfig_string = ""
+                     bconfig_string = ""
+                     config_string = ""
+                     if fconfig != "":
+                        fconfig_string = fconfig
+                        config_string = config_string + "-f " + fconfig_string
+                     if rconfig != "":
+                        bconfig_string = "{}, {}={}".format(rconfig, icname, ival)
+                        config_string = config_string + " -b " + bconfig_string
+                     print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
+                     myenv = os.environ;
+                     if fconfig_string == "":
+                        proc = subprocess.Popen([sys.path[0]+"/"+bname, '-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+                     else:
+                        proc = subprocess.Popen([sys.path[0]+"/"+bname, '-f', fconfig_string, '-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
+                     f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_").replace(",", "")).replace("__","")+".out", "w")
+                     for line in proc.stdout:
+                        try:
+                           dict = eval(line)
+                           results.append((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict, ival)
+                           f.write(str(dict)+'\n')
+                        except:
+                           f.write(line.decode('utf-8'))
+                     f.close()
    if no_biconfig:
       plot(sys.path[0], bname, results)
    else:
       plot_input(sys.path[0], bname, results, icname)
-   
    if bid in COMPARE:
       return results
    else:
