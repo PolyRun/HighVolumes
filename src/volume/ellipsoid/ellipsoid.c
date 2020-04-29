@@ -41,6 +41,23 @@ void Ellipsoid_free(const void* o) {
    free(e);
 }
 
+void* Ellipsoid_clone(const void* o) {
+   Ellipsoid* old = (Ellipsoid*)o;
+   const int n = old->n;
+   Ellipsoid* e = Ellipsoid_new(n);
+ 
+   for(int i=0; i<n; i++) {
+      for(int j=0; j<n; j++) {
+	 e->A[i*e->line + j] = old->A[i*e->line + j];
+      }
+      e->a[i] = old->a[i];
+   }
+   
+   return e;
+}
+
+
+
 void Ellipsoid_print(const void* o) {
    Ellipsoid* e = (Ellipsoid*)o;
    const int n = e->n;
@@ -206,7 +223,7 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    return true;
 }
 
-void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta) {
+void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, const FT* a, const FT beta) {
    Ellipsoid* e_in = (Ellipsoid*)o_in;
    Ellipsoid* e_out = (Ellipsoid*)o_out;
    const int n = e_in->n;

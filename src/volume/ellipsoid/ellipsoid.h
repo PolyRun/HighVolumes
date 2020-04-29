@@ -21,6 +21,7 @@ typedef struct Ellipsoid {
 Ellipsoid* Ellipsoid_new(int n);
 Ellipsoid* Ellipsoid_new_with_T(int n);
 void Ellipsoid_free(const void* o);
+void* Ellipsoid_clone(const void* o);
 void Ellipsoid_print(const void* o);
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x);
 void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* normal);
@@ -43,7 +44,7 @@ void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, voi
 
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 
-void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
+void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, const FT* a, const FT beta);
 
 void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori);
 

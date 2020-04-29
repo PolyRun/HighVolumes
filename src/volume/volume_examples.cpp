@@ -2,6 +2,7 @@
 
 
 Solved_Body_Generator::Solved_Body_Generator() {
+    // cube
     add("cube_r1.0_10", "basic 10-dim cube, centered, side=2", []() {
         Solved_Body* sb = generate_centered_hypercube(10,1.0);
         sb->is_normalized = true;
@@ -12,8 +13,76 @@ Solved_Body_Generator::Solved_Body_Generator() {
         sb->is_normalized = true;
 	return sb;
     });
+    
+    // cross_polytope
+    add("cross_r1.0_3", "cross polytope, dim-3, oneNorm(x) <= 1", []() {
+        Solved_Body* sb = generate_cross_polytope(3);
+        sb->is_normalized = false;
+	return sb;
+    });
+    add("cross_rn_3", "cross polytope, dim-3, oneNorm(x) <= n", []() {
+        const int n = 3;
+        Solved_Body* s = generate_cross_polytope(n);
+        Solved_Body* sb = s->scale(1.0/n);
+        delete s;
+	sb->is_normalized = true;
+	return sb;
+    });
+
+    // ellipsoids:
+    add("ball_r1.0_3", "ball ellipsoid, dim-3, radius 1", []() {
+        const int n = 3;
+        Solved_Body* sb = generate_centered_ball(n,1.0);
+        sb->is_normalized = true;
+	return sb;
+    });
+    add("ball_rn_3", "ball ellipsoid, dim-3, radius 1", []() {
+        const int n = 3;
+        Solved_Body* s = generate_centered_ball(n,1.0);
+        Solved_Body* sb = s->scale(1.0/n);
+        delete s;
+        sb->is_normalized = true;
+	return sb;
+    });
+
 }
 
+Solved_Body*
+Solved_Body::clone() {
+    Solved_Body* sb = new Solved_Body(bcount,n);
+    sb->volume = volume;
+    sb->is_normalized = is_normalized;
+    for(int b=0; b<bcount; b++) {
+       sb->type[b] = type[b];
+       sb->body[b] = type[b]->clone(body[b]);
+    }
+    return sb;
+}
+
+Solved_Body*
+Solved_Body::transform(const Matrix* L, const FT* a, const FT beta) {
+    Solved_Body* sb = clone();
+    for(int b=0; b<bcount; b++) {
+	type[b]->transform(body[b],sb->body[b],L,a,beta);
+    }
+    sb->volume = volume / std::pow(beta,n);
+    // TODO: make volume dependent on L too!
+    return sb;
+}
+
+Solved_Body*
+Solved_Body::scale(const FT beta) {
+    Matrix* L = Matrix_new(n,n);
+    FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+    for(int i=0;i<n;i++) {
+        Matrix_set(L, i, i, 1.0);
+        a[i] = 0;
+    }
+    Solved_Body* sb = transform(L,a,beta);
+    free(a);
+    Matrix_free(L);
+    return sb;
+}
 
 Solved_Body_Generator* solved_body_generator_ = NULL;
 Solved_Body_Generator* solved_body_generator() {
@@ -142,7 +211,7 @@ Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds) {
 
     Ellipsoid *ellipsoid = Ellipsoid_new(dims);
 
-    FT volume = 1.0;
+    FT volume = Ball_volume(dims,1.0);// unit ball volume
 
     for (int i = 0; i < dims; i++) {
         FT radius_i = (upper_bounds[i] - lower_bounds[i]) / 2;
@@ -168,14 +237,14 @@ Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds) {
 
 }
 
-Solved_Body* generate_unit_ball(int dims) {
+Solved_Body* generate_centered_ball(int dims, FT r) {
 
     FT lower_bounds[dims];
     FT upper_bounds[dims];
 
     for (int i = 0; i < dims; i++) {
-        lower_bounds[i] = -0.5;
-        upper_bounds[i] = +0.5;
+        lower_bounds[i] = -r;
+        upper_bounds[i] = +r;
     }
 
     return generate_ellipsoid(dims, lower_bounds, upper_bounds);

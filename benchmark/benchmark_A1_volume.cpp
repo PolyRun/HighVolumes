@@ -11,6 +11,7 @@ class Benchmark_A1 : public Benchmark_base {
             std::cout << "initializing A1 data..." << std::endl;
             
             solved_body = solved_body_generator()->get(generator);
+	    solved_body->print();
 	    assert(solved_body->is_normalized);
 	    r0 = 1.0;
 	    r1 = 2*solved_body->n;
@@ -19,7 +20,9 @@ class Benchmark_A1 : public Benchmark_base {
             // nothing to reset
 	}
         double run () {
-            return volume(solved_body->n, r0, r1, solved_body->bcount, (const void**)solved_body->body, (const Body_T**)solved_body->type)-solved_body->volume;
+	    FT res = volume(solved_body->n, r0, r1, solved_body->bcount, (const void**)solved_body->body, (const Body_T**)solved_body->type);
+	    FT exact = solved_body->volume;
+	    return (res - exact)/exact;
 	}
 	void finalize() {
 	    pc_stack().reset();

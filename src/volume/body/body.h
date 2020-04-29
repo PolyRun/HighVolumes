@@ -8,6 +8,9 @@ typedef void (*print_f_t)(const void*);
 // input body
 typedef void (*free_f_t)(const void*);
 
+// input body
+typedef void* (*clone_f_t)(const void*);
+
 // input: body, point x
 typedef bool (*inside_f_t)(const void*,const FT*);
 
@@ -44,7 +47,10 @@ typedef bool (*shallowCutOracle_f_t)(const void*, const Ellipsoid*, FT*, FT*);
 
 // Transform body after preprocessing
 // intput: body_in, body_out, matrix L, vector a, beta.
-typedef void (*transform_f_t)(const void*, void*, const Matrix*, FT*, FT);
+// old X-space
+// new Y-space
+// x = (L * y + a)*beta
+typedef void (*transform_f_t)(const void*, void*, const Matrix*, const FT*, const FT);
 
 // input: body (ellipsoid or polytope)
 // output: radius FT *r and center FT **ori
@@ -54,6 +60,7 @@ typedef void (*boundingSphere_f_t)(const void *, FT *, FT **);
 struct Body_T {
    print_f_t print;
    free_f_t free;
+   clone_f_t clone;
    inside_f_t inside;
    intersect_f_t intersect;
    intersectCoord_f_t intersectCoord;
@@ -62,7 +69,7 @@ struct Body_T {
    cacheUpdateCoord_f_t cacheUpdateCoord;
    shallowCutOracle_f_t shallowCutOracle;
    transform_f_t transform;
-    boundingSphere_f_t boundingSphere;
+   boundingSphere_f_t boundingSphere;
 };
 
 

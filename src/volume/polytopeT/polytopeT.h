@@ -27,6 +27,7 @@ typedef struct PolytopeT {
 PolytopeT* PolytopeT_new(int n, int m);
 
 void PolytopeT_free(const void* o);
+void* PolytopeT_clone(const void* o);
 
 void PolytopeT_print(const void* o);
 bool PolytopeT_inside_ref(const void* o, const FT* v);
@@ -39,7 +40,7 @@ int  PolytopeT_cacheAlloc_ref(const void* o);
 void PolytopeT_cacheReset_ref(const void* o, const FT* x, void* cache);
 void PolytopeT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 bool PolytopeT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
-void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta);
+void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, const FT* a, const FT beta);
 void PolytopeT_bounding_ref(const void *B, FT *R2, FT **ori);
 
 // --------------- inline Accessors:

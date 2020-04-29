@@ -10,6 +10,7 @@ dotProduct_f_t dotProduct = dotProduct_ref;
 Body_T Ellipsoid_T = {
         .print = Ellipsoid_print,
 	.free = Ellipsoid_free,
+	.clone = Ellipsoid_clone,
 	.inside = Ellipsoid_inside_ref,
 	.intersect = Ellipsoid_intersect_ref,
 	.intersectCoord = Ellipsoid_intersectCoord_ref,

@@ -3,6 +3,7 @@
 Body_T Polytope_T = {
 	.print = Polytope_print,
         .free = Polytope_free,
+        .clone = Polytope_clone,
         .inside = Polytope_inside_ref,
         .intersect = Polytope_intersect_ref,
         .intersectCoord = Polytope_intersectCoord_ref,
@@ -34,6 +35,20 @@ void Polytope_free(const void* o) {
    free(p);
 }
 
+void* Polytope_clone(const void* o) {
+   Polytope* old = (Polytope*)o;
+   const int n = old->n;
+   const int m = old->m;
+   Polytope* p = Polytope_new(n,m);
+   
+   for(int i=0; i<m; i++) {
+      for(int j=0; j<n; j++) {
+         Polytope_set_a(p, i,j, Polytope_get_a(old,i,j));
+      }
+      Polytope_set_b(p, i, Polytope_get_b(old,i));
+   }
+   return p;
+}
 
 void Polytope_print(const void* o) {
    const Polytope* p = (Polytope*)o;
@@ -245,7 +260,7 @@ bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT*
    return false;
 }
 
-void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, FT* a, FT beta) {
+void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, const FT* a, const FT beta) {
    const Polytope* p_in = (Polytope*)o_in;
    Polytope* p_out = (Polytope*)o_out;
    const int n = p_in->n;

@@ -8,11 +8,34 @@ public:
     Solved_Body(const int bcount, const int n) : bcount(bcount), n(n) {
        body = (void**)malloc(bcount*sizeof(void*));
        type = (Body_T**)malloc(bcount*sizeof(Body_T*));
+       for(int b=0; b<bcount; b++) {
+           body[b] = NULL;
+           type[b] = NULL;
+       }
     }
     ~Solved_Body() {
+       for(int b=0; b<bcount; b++) {
+          if(body[b]) {
+	     type[b]->free(body[b]);
+	  }
+       }
        delete body;
        delete type;
     }
+    void print() {
+       std::cout << "Solved_Body: n="<<n<<", bcount="<<bcount<<", volume="<<volume<<"\n";
+       for(int b=0; b<bcount; b++) {
+          type[b]->print(body[b]);
+       }
+    }
+    
+    Solved_Body* clone();
+    
+    // x = (L * y + a)*beta
+    // smaller beta, body grows
+    Solved_Body* transform(const Matrix* L, const FT* a, const FT beta);
+    Solved_Body* scale(const FT beta);
+    
     void **body;
     Body_T **type;
     int bcount;
@@ -21,6 +44,7 @@ public:
     bool is_normalized = false;
 };
 
+// ----------------------------------------------------------- Solved_Body Generator
 class Solved_Body_Generator {
 public:
     Solved_Body_Generator(); // here all the generators are registered!
@@ -46,6 +70,9 @@ private:
 
 Solved_Body_Generator* solved_body_generator();
 
+
+// ----------------------------------------------------------- Generator Functions
+
 // Please provide lower_and upper bounds for each dimension of the rectangle
 // See function generate_centered_hypercube for an example
 Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bounds);
@@ -68,8 +95,8 @@ Solved_Body* generate_simplex(int dims);
 Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds);
 
 // A convience function for generate_ellipsoid()
-// where lower and upper bounds are -0.5 and 0.5 resp.
-Solved_Body* generate_unit_ball(int dims);
+// where lower and upper bounds are -r and r resp.
+Solved_Body* generate_centered_ball(int dims, FT r);
 //
 //// This function is out of order, because read_polyvest_p() doesn't exist anymore
 //// We need to reimplement it anyway to return PolytopeT instead of Polytope
