@@ -3,48 +3,56 @@
 
 Solved_Body_Generator::Solved_Body_Generator() {
     // cube
-    add("cube_r1.0_10", "basic 10-dim cube, centered, side=2", []() {
-        Solved_Body* sb = generate_centered_hypercube(10,1.0);
-        sb->is_normalized = true;
-	return sb;
-    });
-    add("cube_r1.0_20", "basic 20-dim cube, centered, side=2", []() {
-        Solved_Body* sb = generate_centered_hypercube(20,1.0);
-        sb->is_normalized = true;
-	return sb;
-    });
+    std::vector<int> cube_n = {3,10,20,40,60,100};
+    for(int n : cube_n) {
+       std::string nstr = std::to_string(n);
+       add("cube_r1.0_"+nstr, "basic "+nstr+"-dim cube, centered, side=2 [normalized]", [n]() {
+           Solved_Body* sb = generate_centered_hypercube(n,1.0);
+           sb->is_normalized = true;
+           return sb;
+       });
+       add("cube_r1.2_"+nstr, "basic "+nstr+"-dim cube, centered, side=2.4 [normalized]", [n]() {
+           Solved_Body* sb = generate_centered_hypercube(n,1.2);
+           sb->is_normalized = true;
+           return sb;
+       });
+    }
     
     // cross_polytope
-    add("cross_r1.0_3", "cross polytope, dim-3, oneNorm(x) <= 1", []() {
-        Solved_Body* sb = generate_cross_polytope(3);
-        sb->is_normalized = false;
-	return sb;
-    });
-    add("cross_rn_3", "cross polytope, dim-3, oneNorm(x) <= n", []() {
-        const int n = 3;
-        Solved_Body* s = generate_cross_polytope(n);
-        Solved_Body* sb = s->scale(1.0/n);
-        delete s;
-	sb->is_normalized = true;
-	return sb;
-    });
+    std::vector<int> cross_n = {3,4,5,6,7,8,9,10,11,12,13};
+    for(int n : cross_n) {
+       std::string nstr = std::to_string(n);
+       add("cross_r1.0_"+nstr, "cross polytope, dim-"+nstr+", oneNorm(x) <= 1", [n]() {
+           Solved_Body* sb = generate_cross_polytope(n);
+           sb->is_normalized = false;
+           return sb;
+       });
+       add("cross_rn_"+nstr, "cross polytope, dim-"+nstr+", oneNorm(x) <= n [normalized]", [n]() {
+           Solved_Body* s = generate_cross_polytope(n);
+           Solved_Body* sb = s->scale(1.0/n);
+           delete s;
+           sb->is_normalized = true;
+           return sb;
+       });
+    }
 
     // ellipsoids:
-    add("ball_r1.0_3", "ball ellipsoid, dim-3, radius 1", []() {
-        const int n = 3;
-        Solved_Body* sb = generate_centered_ball(n,1.0);
-        sb->is_normalized = true;
-	return sb;
-    });
-    add("ball_rn_3", "ball ellipsoid, dim-3, radius 1", []() {
-        const int n = 3;
-        Solved_Body* s = generate_centered_ball(n,1.0);
-        Solved_Body* sb = s->scale(1.0/n);
-        delete s;
-        sb->is_normalized = true;
-	return sb;
-    });
-
+    std::vector<int> ball_n = {3,10,20,40,60,100};
+    for(int n : cross_n) {
+       std::string nstr = std::to_string(n);
+       add("ball_r1.0_"+nstr, "ball ellipsoid, centered, dim-"+nstr+", radius 1 [normalized]", [n]() {
+           Solved_Body* sb = generate_centered_ball(n,1.0);
+           sb->is_normalized = true;
+           return sb;
+       });
+       add("ball_rn_"+nstr, "ball ellipsoid, centered ,dim-"+nstr+", radius n [normalized]", [n]() {
+           Solved_Body* s = generate_centered_ball(n,1.0);
+           Solved_Body* sb = s->scale(1.0/n);
+           delete s;
+           sb->is_normalized = true;
+           return sb;
+       });
+    }
 }
 
 Solved_Body*
@@ -105,7 +113,7 @@ Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bound
     // Upper bounds
     for (int i = 0; i < dims; i++) {
         PolytopeT_set_a(hyperrectangle, i + dims, i, 1);
-        PolytopeT_set_b(hyperrectangle, i, upper_bounds[i]);
+        PolytopeT_set_b(hyperrectangle, i + dims, upper_bounds[i]);
     }
 
     FT volume = 1.0;
