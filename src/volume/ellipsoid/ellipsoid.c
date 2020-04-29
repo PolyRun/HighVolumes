@@ -260,10 +260,11 @@ void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, con
 
    free(LtB);
    
-   // b'' = b' = L.inverse() * (a-b)
+   // b'' = b' = L.inverse() * (a-b) / beta
    FT* ab = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-   for(int i=0;i<n;i++) {ab[i] = a[i] - e_in->a[i];}
+   for(int i=0;i<n;i++) {ab[i] = e_in->a[i]-a[i];}
    Matrix_L_solve(L, e_out->a, ab);
+   for(int i=0;i<n;i++) {e_out->a[i] /= beta;}
    free(ab);
 }
 

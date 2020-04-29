@@ -14,7 +14,7 @@ void test_intersect(Solved_Body* sb) {
    FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
    for(int i=0;i<n;i++) {x[i] = 0;}
    FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-   for(int t=0;t<n*1000;t++) {
+   for(int t=0;t<n*200;t++) {
       for(int i=0;i<n;i++) {d[i] = prng_get_random_double_normal();}
       FT d2 = vectorNorm(d,n);
       

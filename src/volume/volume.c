@@ -261,9 +261,9 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    // b' = L.inverse() * (a-b)
    //
    // grow by 1/beta:
-   // (y - b')T * B' * (y - b') <= 1/beta
+   // (y - b')T * B' * (y - b') <= 1
    // B'' = B' * beta^2 
-   // b'' = b'
+   // b'' = b' / beta
 
    printf("Transform\n");
   

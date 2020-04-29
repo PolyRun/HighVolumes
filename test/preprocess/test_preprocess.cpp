@@ -294,6 +294,134 @@ void test_preprocess_generic() {
 	Ellipsoid_T.free(e);
 	Ellipsoid_T.free(e_out);
     }
+
+    {
+        const int n = 10;
+        FT det;
+	Polytope* box = Polytope_new_box(n,1.0);
+        Polytope_set_b(box,n,0);
+	Ellipsoid* e = Ellipsoid_new(n);
+
+        void* body_in[2] = {box, e};
+	Polytope* box_out = Polytope_new_box(n,1.0);
+        Ellipsoid* e_out = Ellipsoid_new(n);
+        void* body_out[2] = {box_out, e_out};
+        Body_T* type[2] = {&Polytope_T, &Ellipsoid_T};
+
+	std::cout << "e_in:\n";
+        Ellipsoid_T.print(e);
+	std::cout << "box_in:\n";
+	Polytope_T.print(box);
+
+
+        preprocess_generic(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+        
+	std::cout << "det: " << det << std::endl;
+
+	std::cout << "e_out:\n";
+        Ellipsoid_T.print(e_out);
+	std::cout << "box_out:\n";
+	Polytope_T.print(box_out);
+
+        // inside test:
+        FT* x = (FT*)aligned_alloc(32, n*sizeof(FT));
+	for(int i=0;i<n;i++) {
+	    {// inner ellipsoid
+                for(int j=0;j<n;j++) {x[j]=(i==j);}// init vector
+                bool i1 = Polytope_T.inside(box_out,x);
+                bool i2 = Ellipsoid_T.inside(e_out,x);
+		std::cout << "inner " << i1 << " " << i2 << "\n";
+		assert(i1 && i2 && "inner ellipsoid points must be in both");
+	    }
+	    {// outer ellipsoid
+                for(int j=0;j<n;j++) {x[j]=(i==j)*2*n;}// init vector
+                bool i1 = Polytope_T.inside(box_out,x);
+                bool i2 = Ellipsoid_T.inside(e_out,x);
+		std::cout << "outer " << i1 << " " << i2 << "\n";
+		assert((!i1 && !i2) && "outer ellipsoid points must be outside at least one");
+            }
+	}
+
+	// center of ellipsoid should still be on the edge of the box:
+	for(int i=0;i<n;i++) {x[i] = e_out->a[i];}
+	FT x2 = vectorNorm(x,n);
+	assert(x2 >= 1.0);
+	
+	x[0]-=0.001;
+	assert(!Polytope_T.inside(box_out,x));
+	x[0]+=0.002;
+	assert(Polytope_T.inside(box_out,x));
+
+        free(x);
+	Polytope_T.free(box);
+	Polytope_T.free(box_out);
+	Ellipsoid_T.free(e);
+	Ellipsoid_T.free(e_out);
+    }
+    {
+        const int n = 10;
+        FT det;
+	PolytopeT* box = PolytopeT_new_box(n,1.0);
+        PolytopeT_set_b(box,n,0);
+	Ellipsoid* e = Ellipsoid_new(n);
+
+        void* body_in[2] = {box, e};
+	PolytopeT* box_out = PolytopeT_new_box(n,1.0);
+        Ellipsoid* e_out = Ellipsoid_new(n);
+        void* body_out[2] = {box_out, e_out};
+        Body_T* type[2] = {&PolytopeT_T, &Ellipsoid_T};
+
+	std::cout << "e_in:\n";
+        Ellipsoid_T.print(e);
+	std::cout << "box_in:\n";
+	PolytopeT_T.print(box);
+
+
+        preprocess_generic(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
+        
+	std::cout << "det: " << det << std::endl;
+
+	std::cout << "e_out:\n";
+        Ellipsoid_T.print(e_out);
+	std::cout << "box_out:\n";
+	PolytopeT_T.print(box_out);
+
+        // inside test:
+        FT* x = (FT*)aligned_alloc(32, n*sizeof(FT));
+	for(int i=0;i<n;i++) {
+	    {// inner ellipsoid
+                for(int j=0;j<n;j++) {x[j]=(i==j);}// init vector
+                bool i1 = PolytopeT_T.inside(box_out,x);
+                bool i2 = Ellipsoid_T.inside(e_out,x);
+		std::cout << "inner " << i1 << " " << i2 << "\n";
+		assert(i1 && i2 && "inner ellipsoid points must be in both");
+	    }
+	    {// outer ellipsoid
+                for(int j=0;j<n;j++) {x[j]=(i==j)*2*n;}// init vector
+                bool i1 = PolytopeT_T.inside(box_out,x);
+                bool i2 = Ellipsoid_T.inside(e_out,x);
+		std::cout << "outer " << i1 << " " << i2 << "\n";
+		assert((!i1 && !i2) && "outer ellipsoid points must be outside at least one");
+            }
+	}
+
+	// center of ellipsoid should still be on the edge of the box:
+	for(int i=0;i<n;i++) {x[i] = e_out->a[i];}
+	FT x2 = vectorNorm(x,n);
+	assert(x2 >= 1.0);
+	
+	x[0]-=0.001;
+	assert(!PolytopeT_T.inside(box_out,x));
+	x[0]+=0.002;
+	assert(PolytopeT_T.inside(box_out,x));
+
+        free(x);
+	PolytopeT_T.free(box);
+	PolytopeT_T.free(box_out);
+	Ellipsoid_T.free(e);
+	Ellipsoid_T.free(e_out);
+    }
+
 }
 
 int main(int argc, char **argv){

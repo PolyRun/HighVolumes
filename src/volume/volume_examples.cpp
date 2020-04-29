@@ -73,7 +73,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
 
     // ball - ellipsoids:
     std::vector<int> ball_n = {3,10,20,40,60,100};
-    for(int n : cross_n) {
+    for(int n : ball_n) {
        std::string nstr = std::to_string(n);
        add("ball_r1.0_"+nstr, "ball ellipsoid, centered, dim-"+nstr+", radius 1 [normalized]", [n]() {
            Solved_Body* sb = generate_centered_ball(n,1.0);
@@ -90,7 +90,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     }
 
     // half-ball / ellipsoids
-    std::vector<int> half_n = {3,10,20,40,60,100};
+    std::vector<int> half_n = {2,3,4,5,10,20,40,60,100};
     for(int n : half_n) {
        std::string nstr = std::to_string(n);
        add("half_"+nstr, "half-ball (ball+cube), dim-"+nstr+"", [n]() {
@@ -105,8 +105,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   Solved_Body* h0 = ball->join(c0);
 	   h0->volume = ball->volume / 2.0;
 	   
-	   //Solved_Body* h1 = h0->rotate();
-           
+	   h0->print();
 	   Solved_Body* sb = h0->preprocess();
            
 	   delete ball;
@@ -116,6 +115,34 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   return sb;
        });
     }
+
+    // 2-box
+    std::vector<int> twobox_n = {3,10,20,40,60,100};
+    for(int n : twobox_n) {
+       std::string nstr = std::to_string(n);
+       add("2box_"+nstr, "2 boxes, dim-"+nstr+"", [n]() {
+           FT lb[n];
+           FT ub[n];
+	   for(int i=0;i<n;i++) {lb[i] = -1; ub[i]=1;}
+	   lb[0]=0; // truncate
+	   ub[0]=1;
+	   Solved_Body* c0 = generate_hyperrectangle(n, lb,ub);
+	   for(int i=0;i<n;i++) {lb[i] = -1; ub[i]=1;}
+	   lb[1]=0; // truncate
+	   ub[1]=1;
+	   Solved_Body* c1 = generate_hyperrectangle(n, lb,ub);
+           
+	   Solved_Body* c2 = c0->join(c1);
+	   c2->volume = c1->volume / 2.0;
+	   Solved_Body* sb = c2->preprocess();
+           
+	   delete c0;
+	   delete c1;
+	   delete c2;
+	   return sb;
+       });
+    }
+
 }
 
 Solved_Body*
@@ -184,6 +211,10 @@ Solved_Body::rotate() {
 	    FT angle = prng_get_random_double_in_range(0,2*M_PI); 
             Matrix_rotate(L, i, j, angle);
         }
+    }
+    for(int b=0; b<bcount; b++) {
+       assert(type[b]==&Polytope_T || type[b]==&PolytopeT_T);
+       // it is not safe to transform Ellipsoid with non-L matrix
     }
     Solved_Body* sb = transform(L,1.0,a,1.0);
     free(a);

@@ -30,7 +30,7 @@ void test_box_inside(const int n, Body_T* type, void* body) {
    }
    {
       for(int i=0;i<n;i++) {x[i]=-(i==0)*3.0;}
-      assert(type->inside(body, x));
+      assert(!type->inside(body, x));
    }
    free(x);
    free(d);

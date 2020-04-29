@@ -62,7 +62,7 @@ void PolytopeT_print(const void* o) {
 
 bool PolytopeT_inside_ref(const void* o, const FT* v) {
    const PolytopeT* p = (PolytopeT*)o;
-   for(int i=0; i<p->n; i++) {
+   for(int i=0; i<p->m; i++) {
       FT sum = 0;
       for(int x=0; x<p->n; x++) { sum+= v[x] * PolytopeT_get_a(p, i, x);}
       if(sum > PolytopeT_get_b(p, i)) {return false;}
