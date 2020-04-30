@@ -8,6 +8,16 @@
   * could implement versions for different n?
   * vectorNorm should also be checked - not benchmarked yet
 
+* Ball\_intersect
+  * at about 2 fpc
+  * basically 2 vectorNorms and a dotProduct
+  * fuse vectorNorm and dotProduct, less reads
+  * maybe vectorize?
+
+* Ball\_intersectCoord 
+  * is only a vectorNorm + div + sqrt
+  * probably hard to do much beyond vectorNorm?
+
 * Polytope vs PolytopeT
   * row vs column matrix A. allows for different impl, especially when vectorizing
 
@@ -37,9 +47,16 @@
   * Maybe there could be a way to cache the MVM? Maybe in the intersectCoord case this could lead to something.
 ![ellipsoid-intersect](./optimizations/opt1_intersect_ellipsoid_100.jpeg)
 
+# Big picture
+
+* Some Polytopes have a ballanced n vs m, like cube and simplex
+* some have n << m, like cross -> much more focus on intersect / intersectCoord
+
+[Experiment Log (with vtune)](./optimizations/LOG.md)
+
+# Optimizations to consider
 
 * Parallelize to multiple walk points x
   * reduce intersection to MMM
   * probably produces lots of work (new signatures, more tests, etc)
-
 
