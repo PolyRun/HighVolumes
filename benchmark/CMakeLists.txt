@@ -123,3 +123,16 @@ set_target_properties(benchmark_A1_polytope PROPERTIES
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
 )
+
+
+project(convergence)
+
+add_executable(convergence convergence.cpp)
+
+target_link_libraries(convergence PUBLIC volume_helper)
+
+set_target_properties(convergence PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)

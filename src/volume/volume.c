@@ -419,7 +419,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
    const int l = ceil(n*log(r1/r0) / log(2.0));
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
-   printf("steps: %d\n",l);
+   //printf("steps: %d\n",l);
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
    
@@ -437,7 +437,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
       FT kk = log(rk/r0)/(-log(stepFac));
-      printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
+      //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
       //{
       //   FT rtest = (rk*rk)*0.99;
@@ -472,7 +472,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
       FT ak = (FT)step_size / (FT)count;
       volume *= ak;
 
-      printf("count: %d, volume: %f\n",count,volume);
+      //printf("count: %d, volume: %f\n",count,volume);
 
       // x = stepFac * x   -> guarantee that in next smaller ball
       for(int j=0;j<n;j++) {x[j] *= stepFac;}
