@@ -92,6 +92,7 @@ void Polytope_cacheUpdateCoord_cost_ref(const void* o) {
    // write m
    // mul m
    // add m
+   // MB: i think this should be 3m memory transfer as we need to count writes as well
    pc_stack().log(2*m,2*m*sizeof(FT), "update cached dotProduct");
 }
 void Polytope_cacheReset_cost_ref(const void* o) {
