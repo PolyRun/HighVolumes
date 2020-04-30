@@ -4,13 +4,14 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator) : Benchmark_base(name, reps, convergence, warmup_reps), generator(generator) {}
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, bool polytopeTranspose)
+		: Benchmark_base(name, reps, convergence, warmup_reps), generator(generator), polytopeTranspose(polytopeTranspose) {}
 
     protected:
         void initialize () {
             std::cout << "initializing A1 data..." << std::endl;
             
-            solved_body = solved_body_generator()->get(generator);
+            solved_body = solved_body_generator()->get(generator,polytopeTranspose);
 	    solved_body->print();
 	    assert(solved_body->is_normalized);
 	    r0 = 1.0;
@@ -38,6 +39,7 @@ class Benchmark_A1 : public Benchmark_base {
 	const std::string generator;
 	Solved_Body* solved_body;
 	FT r0,r1;
+	bool polytopeTranspose = false;
 };
 
 int main(int argc, char *argv[]){
@@ -51,11 +53,16 @@ int main(int argc, char *argv[]){
     std::string generator = "cube";
     auto &gen_map = solved_body_generator()->gen_map();
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_r1.0_10", gen_map));
+    
+    bool polytopeTranspose = false;
+    cliFun.add(new CLIF_Option<bool>(&polytopeTranspose,'b',"polytopeTranspose","false", {
+                                                     {"false",{false, "Polytope format / rows"}},
+						     {"true",{true, "PolytopeT format / columns"}} }));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    Benchmark_A1 b("A1_volume", r, true, 0, generator);
+    Benchmark_A1 b("A1_volume", r, true, 0, generator, polytopeTranspose);
     b.run_benchmark();
 }

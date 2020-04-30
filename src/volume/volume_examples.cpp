@@ -254,6 +254,19 @@ Solved_Body::preprocess() {
     return sb;
 }
 
+void
+Solved_Body::polytopeTranspose() {
+    for(int b=0; b<bcount; b++) {
+       if(type[b]==&Polytope_T) {
+          Polytope* p = (Polytope*)body[b];
+	  PolytopeT* pt = Polytope_to_PolytopeT(p);
+	  Polytope_free(p);
+	  body[b] = pt;
+	  type[b] = &PolytopeT_T;
+       }
+    }
+}
+
 Solved_Body_Generator* solved_body_generator_ = NULL;
 Solved_Body_Generator* solved_body_generator() {
     if(!solved_body_generator_) {solved_body_generator_ = new Solved_Body_Generator();}
@@ -263,19 +276,19 @@ Solved_Body_Generator* solved_body_generator() {
 Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bounds) {
     int num_constraints = 2*dims;
 
-    PolytopeT *hyperrectangle = PolytopeT_new(dims, num_constraints);
+    Polytope *hyperrectangle = Polytope_new(dims, num_constraints);
 
     // Lower bounds
     for (int i = 0; i < dims; i++) {
         // Ax >= b means that -Ax <= -b
-        PolytopeT_set_a(hyperrectangle, i, i, -1);
-        PolytopeT_set_b(hyperrectangle, i, -lower_bounds[i]);
+        Polytope_set_a(hyperrectangle, i, i, -1);
+        Polytope_set_b(hyperrectangle, i, -lower_bounds[i]);
     }
 
     // Upper bounds
     for (int i = 0; i < dims; i++) {
-        PolytopeT_set_a(hyperrectangle, i + dims, i, 1);
-        PolytopeT_set_b(hyperrectangle, i + dims, upper_bounds[i]);
+        Polytope_set_a(hyperrectangle, i + dims, i, 1);
+        Polytope_set_b(hyperrectangle, i + dims, upper_bounds[i]);
     }
 
     FT volume = 1.0;
@@ -285,7 +298,7 @@ Solved_Body* generate_hyperrectangle(int dims, FT *lower_bounds, FT *upper_bound
 
     Solved_Body* result = new Solved_Body(1,dims);
     result->body[0] = hyperrectangle;
-    result->type[0] = &PolytopeT_T;
+    result->type[0] = &Polytope_T;
     result->volume = volume;
     return result;
 }
@@ -307,19 +320,19 @@ Solved_Body* generate_cross_polytope(int dims) {
     // This cross-polytope is defined by ± x_1 ± x_2 ... ± x_n <= 1
     int num_constraints = (1 << dims);
 
-    PolytopeT *cross_polytope = PolytopeT_new(dims, num_constraints);
+    Polytope *cross_polytope = Polytope_new(dims, num_constraints);
 
     for (int i = 0; i < num_constraints; i++) {
         for (int j = 0; j < dims; j++) {
             // i is a number from 0 to 2^dims - 1
             // We check its j-th bit to decide whether we want x_j or -x_j
             FT plus_minus_1 = 1.0 - 2 * ((i & (1 << j)) >> j);
-            PolytopeT_set_a(cross_polytope, i, j, plus_minus_1);
+            Polytope_set_a(cross_polytope, i, j, plus_minus_1);
         }
     }
 
     for (int i = 0; i < num_constraints; i++) {
-        PolytopeT_set_b(cross_polytope, i, 1);
+        Polytope_set_b(cross_polytope, i, 1);
     }
 
     // Volume of a cross polytope is 2^n / n!
@@ -332,7 +345,7 @@ Solved_Body* generate_cross_polytope(int dims) {
     int bcount = 1;
     Solved_Body *result = new Solved_Body(bcount, dims);
     result->body[0] = cross_polytope;
-    result->type[0] = &PolytopeT_T;
+    result->type[0] = &Polytope_T;
     result->volume = volume;
     return result;
 
@@ -347,19 +360,19 @@ Solved_Body* generate_simplex(int dims) {
     // This prevents the volume from going to zero too fast
     int num_constraints = dims + 1;
 
-    PolytopeT *simplex = PolytopeT_new(dims, num_constraints);
+    Polytope *simplex = Polytope_new(dims, num_constraints);
 
     // x_i >= 0
     for (int i = 0; i < dims; i++) {
-        PolytopeT_set_a(simplex, i, i, -1);
-        PolytopeT_set_b(simplex, i, 0);
+        Polytope_set_a(simplex, i, i, -1);
+        Polytope_set_b(simplex, i, 0);
     }
 
     // x_1 + ... x_n <= 2
     for (int i = 0; i < dims; i++) {
-        PolytopeT_set_a(simplex, dims, i, 1);
+        Polytope_set_a(simplex, dims, i, 1);
     }
-    PolytopeT_set_b(simplex, dims, 2);
+    Polytope_set_b(simplex, dims, 2);
 
     // Again, volume = 2^n / n!, just like the cross polytope!
     long n_factorial = 1;
@@ -371,7 +384,7 @@ Solved_Body* generate_simplex(int dims) {
     int bcount = 1;
     Solved_Body *result = new Solved_Body(bcount, dims);
     result->body[0] = simplex;
-    result->type[0] = &PolytopeT_T;
+    result->type[0] = &Polytope_T;
     result->volume = volume;
     return result;
 
@@ -422,11 +435,11 @@ Solved_Body* generate_centered_ball(int dims, FT r) {
 }
 //
 //// This function is out of order, because read_polyvest_p() doesn't exist anymore
-//// We need to reimplement it anyway to return PolytopeT instead of Polytope
+//// We need to reimplement it anyway to return Polytope instead of Polytope
 ///*
 //struct Solved_Body generate_solved_polyvest_polytope(int index) {
 //
-//    PolytopeT *polytope;
+//    Polytope *polytope;
 //
 //    int error = read_polyvest_p(exp_paths[index], polytope);
 //

@@ -50,6 +50,19 @@ void* Polytope_clone(const void* o) {
    return p;
 }
 
+PolytopeT* Polytope_to_PolytopeT(const Polytope* p){
+   const int n = p->n;
+   const int m = p->m;
+   PolytopeT* pt = PolytopeT_new(n,m);
+   for(int i=0; i<m; i++) {
+      for(int j=0; j<n; j++) {
+         PolytopeT_set_a(pt, i,j, Polytope_get_a(p,i,j));
+      }
+      PolytopeT_set_b(pt, i, Polytope_get_b(p,i));
+   }
+   return pt;
+}
+
 void Polytope_print(const void* o) {
    const Polytope* p = (Polytope*)o;
    printf("Polytope: n=%d, m=%d\n",p->n,p->m);
