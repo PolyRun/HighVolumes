@@ -88,12 +88,11 @@ void Polytope_cacheUpdateCoord_cost_ref(const void* o) {
    const Polytope* p = (Polytope*)o;
    const int n = p->n;
    const int m = p->m;
-   // read m
+   // read 2*m
    // write m
    // mul m
    // add m
-   // MB: i think this should be 3m memory transfer as we need to count writes as well
-   pc_stack().log(2*m,2*m*sizeof(FT), "update cached dotProduct");
+   pc_stack().log(2*m,3*m*sizeof(FT), "update cached dotProduct");
 }
 void Polytope_cacheReset_cost_ref(const void* o) {
    const Polytope* p = (Polytope*)o;
@@ -154,11 +153,11 @@ void PolytopeT_cacheUpdateCoord_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
    const int n = p->n;
    const int m = p->m;
-   // read m
+   // read 2*m
    // write m
    // mul m
    // add m
-   pc_stack().log(2*m,2*m*sizeof(FT), "update cached dotProduct");
+   pc_stack().log(2*m,3*m*sizeof(FT), "update cached dotProduct");
 }
 void PolytopeT_cacheReset_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
