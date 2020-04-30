@@ -1,4 +1,5 @@
 #include "volume_examples.hpp"
+#include <cstdlib>
 
 
 Solved_Body_Generator::Solved_Body_Generator() {
@@ -165,6 +166,58 @@ Solved_Body_Generator::Solved_Body_Generator() {
        });
     }
 
+
+    // Polyvest Polytopes:
+    std::vector<std::string> polyvest_list = {
+        "cc_8_10",
+        "cc_8_11",
+        "cross_13",
+        "cross_7",
+        "cross_9",
+        "cube_10",
+        "cube_10_2",
+        "cube_14",
+        "cube_14_2",
+        "cube_15",
+        "cube_2",
+        "cube_20",
+        "cube_25",
+        "cube_30",
+        "cube_35",
+        "cube_40",
+        "cube_5",
+        "cube_80",
+        "ex_1",
+        "ex_2",
+        "fm_6",
+        "rect_3",
+        "rh_1",
+        "rh_2",
+        "rh_20_40",
+        "rh_3",
+        "rh_30_60",
+        "rh_4",
+        "rh_40_80",
+        "simplex_10",
+        "simplex_14",
+        "simplex_15",
+        "simplex_20"
+    };
+    if(const char* env_p = std::getenv("POLYVEST_PATH")) {
+	std::string path = env_p;
+	for(auto f : polyvest_list) {
+	    std::string pname = "polyvest_"+f;
+	    std::string fpath = path+f;
+	    add(pname, "One of polyvest polytopes, read from file.",[fpath]() {
+                //
+                return generate_read_polyvest_polytope(fpath);
+            });
+        }
+    } else {
+	std::cout << "ERROR: POLYVEST_PATH not set!\n" << std::endl;
+	std::cout << "try: export POLYVEST_PATH='../polyvest/examples/'\n";
+	std::exit(0);
+    }
 }
 
 Solved_Body*
@@ -433,6 +486,21 @@ Solved_Body* generate_centered_ball(int dims, FT r) {
     return generate_ellipsoid(dims, lower_bounds, upper_bounds);
 
 }
+
+Solved_Body* generate_read_polyvest_polytope(const std::string &fileName) {
+    Polytope *P;
+    int err = read_polyvest_p(fileName, &P);
+    assert(!err &&
+           "couldn't read example polytope");
+
+    Solved_Body *result = new Solved_Body(1, P->n);
+    result->body[0] = P;
+    result->type[0] = &Polytope_T;
+    result->volume = 0; // unknown
+    
+    return result;
+}
+
 //
 //// This function is out of order, because read_polyvest_p() doesn't exist anymore
 //// We need to reimplement it anyway to return Polytope instead of Polytope

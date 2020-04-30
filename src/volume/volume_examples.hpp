@@ -110,34 +110,8 @@ Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds);
 // A convience function for generate_ellipsoid()
 // where lower and upper bounds are -r and r resp.
 Solved_Body* generate_centered_ball(int dims, FT r);
-//
-//// This function is out of order, because read_polyvest_p() doesn't exist anymore
-//// We need to reimplement it anyway to return PolytopeT instead of Polytope
-///*
-//struct Solved_Body generate_solved_polyvest_polytope(int index) {
-//
-//    PolytopeT *polytope;
-//
-//    int error = read_polyvest_p(exp_paths[index], polytope);
-//
-//    assert(error != 1 && "Cannot generate polyvest polytope. Aborting");
-//
-//    vol::Polyvest_p reference_polytope(polytope->n, polytope->m);
-//    polyvest_convert(polytope, &reference_polytope);
-//
-//    int step_size = 10;
-//
-//    reference_polytope.Preprocess();
-//    reference_polytope.EstimateVol(step_size);
-//    FT volume = (FT) reference_polytope.Volume();
-//
-//    int bcount = 1;
-//    Body_T *body[bcount] = { polytope };
-//    struct Solved_Body result = { body, bcount, volume };
-//    return result;
-//
-//}
-//*/ 
+
+Solved_Body* generate_read_polyvest_polytope(const std::string &fileName);
 
 
 #endif
