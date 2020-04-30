@@ -41,6 +41,7 @@ public:
     Solved_Body* scale(const FT beta);
     Solved_Body* rotate();
     Solved_Body* preprocess(); // make normalized via preprocessing
+    void polytopeTranspose();// make all Polytope to PolytopeT
 
     void **body;
     Body_T **type;
@@ -57,10 +58,12 @@ public:
 class Solved_Body_Generator {
 public:
     Solved_Body_Generator(); // here all the generators are registered!
-    Solved_Body* get(std::string name) {
+    Solved_Body* get(std::string name, bool polytopeTranspose = false) {
         auto it = generators.find(name);
 	if(it!=generators.end()) {
-	    return it->second();
+	    auto sb = it->second();
+	    if(polytopeTranspose) {sb->polytopeTranspose();}
+	    return sb;
 	} else {
 	    return NULL;
 	}

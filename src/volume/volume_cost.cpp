@@ -131,11 +131,7 @@ void PolytopeT_intersectCoord_cost_ref(const void* o) {
    const int m = p->m;
    
    pc_stack().log(0,0, "Note: early 'continue' can speed up things!");
-
-   {// frame for dotProduct: m times ai*x
-      PC_Frame<dotProduct_cost_f> frame((void*)dotProduct, m);
-      frame.costf()(n);
-   }
+   pc_stack().log(m*n*2,m*n*2*sizeof(FT), "dotProduct implemented locally because column-format");
 
    // read m + m (all of b, ai[d])
    // compares ??? do we count these?
@@ -184,7 +180,7 @@ void Ellipsoid_intersect_cost_ref(const void* o) {
    size_t mul = 2*n*n + 3*n + 6; // Az, Ad, dt*Ad, dt*Az, zt*Az, eq
    // sqrt 1
    // div 1
-   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "read cache, calculate");
+   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "2 MVM (parallel), some VVM");
 }
 void Ellipsoid_intersectCoord_cost_ref(const void* o) {
    const Ellipsoid* e = (Ellipsoid*)o;
@@ -196,7 +192,7 @@ void Ellipsoid_intersectCoord_cost_ref(const void* o) {
    // sqrt 1
    // div 1
 
-   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "read cache, calculate");
+   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "1 MVM, 1 VVM");
 }
 void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o) {
    const Ellipsoid* p = (Ellipsoid*)o;

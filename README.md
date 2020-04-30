@@ -4,6 +4,11 @@ ASL group project
 
 [Sources we use for the Algorithm.](./papers/README.md)
 
+# Optimizations
+
+[Lists of completed optimizations and ideas to try.](./OPTIMIZATIONS.md)
+
+
 # dependencies
 
 You must install: GLPK and
