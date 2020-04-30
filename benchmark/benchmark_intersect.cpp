@@ -4,13 +4,14 @@
 
 class Benchmark_intersect : public Benchmark_base {
     public:
-        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator) : Benchmark_base(name, reps, convergence, warmup_reps), generator(generator) {}
+        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose)
+		: Benchmark_base(name, reps, convergence, warmup_reps), generator(generator), polytopeTranspose(polytopeTranspose){}
 
     protected:
         void initialize () {
             std::cout << "initializing intersect data..." << std::endl;
 	    
-	    solved_body = solved_body_generator()->get(generator);
+	    solved_body = solved_body_generator()->get(generator, polytopeTranspose);
 	    assert(solved_body->is_normalized);
 	    assert(solved_body->bcount == 1);
 	    
@@ -54,11 +55,13 @@ class Benchmark_intersect : public Benchmark_base {
 	FT* d;
 	int dd;
 	void* cache;
+	bool polytopeTranspose = false;
 };
 
 class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
-        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator) : Benchmark_intersect(name, reps, convergence, warmup_reps, generator) {}
+        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose)
+		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeTranspose) {}
     
     	void finalize() {
 	    pc_stack().reset();
@@ -95,15 +98,20 @@ int main(int argc, char *argv[]){
                                                      {"intersect",      {"intersect",     "random direction intersection"}},
 						     {"intersectCoord", {"intersectCoord","coordinate direction intersection"}} }));
     
+    bool polytopeTranspose = false;
+    cliFun.add(new CLIF_Option<bool>(&polytopeTranspose,'b',"polytopeTranspose","false", {
+                                                     {"false",{false, "Polytope format / rows"}},
+						     {"true",{true, "PolytopeT format / columns"}} }));
+
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
     
     if(intersect.compare("intersect")==0) {
-        Benchmark_intersect b("intersect", r, true, 0, generator);
+        Benchmark_intersect b("intersect", r, true, 0, generator, polytopeTranspose);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", r, true, 0, generator);
+        Benchmark_intersectCoord b("intersectCoord", r, true, 0, generator, polytopeTranspose);
         b.run_benchmark();
     }
 }
