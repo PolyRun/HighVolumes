@@ -82,6 +82,8 @@ void LP_to_boundingSphere(const int n, glp_prob* lp, FT *R2, FT *Ori) {
     parm.msg_lev = GLP_MSG_ERR;
 
     *R2 = 0;
+    for (int j = 0; j < n; j++) {Ori[j] = 0;}
+    
     //get max/min bounds in each of the n dimensions
     for (int i = 0; i < n; i++){
         FT max, min;

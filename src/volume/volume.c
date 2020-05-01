@@ -34,23 +34,28 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    // TODO: is it ok if center of enclosing ball is not included in intersection of all bodies? i assume yes, the proof of theorem 3.3.9 in shallow beta-cut papersuggests that we only need that the starting ellipsoid contains all bodies
 
    FT R2, R2_new;
-   FT *ori = (FT *) malloc(n*sizeof(FT));
-   FT *ori_new = (FT *) malloc(n*sizeof(FT));
-   FT *dir = (FT *) malloc(n*sizeof(FT));
+   FT* ori     = (FT*)aligned_alloc(32, n*sizeof(FT)); // align this to 32
+   FT* ori_new = (FT*)aligned_alloc(32, n*sizeof(FT)); // align this to 32
+   FT* dir     = (FT*)aligned_alloc(32, n*sizeof(FT)); // align this to 32
+   
 
    type[0]->boundingSphere(body_in[0], &R2, ori);
    
    for (int i = 1; i < bcount; i++){
        type[i]->boundingSphere(body_in[i], &R2_new, ori_new);
-
+       //for(int j=0;j<n;j++) {printf("%.12f ",ori_new[j]);} printf(" ori_new\n");
+       //for(int j=0;j<n;j++) {printf("%.12f ",ori[j]);} printf(" ori\n");
        // vector between the two origins
        for (int j = 0; j < n; j++) {
            dir[j] = ori[j] - ori_new[j];
        }
-       FT dist = sqrt(dotProduct(dir, dir, n));
+       //for(int j=0;j<n;j++) {printf("%.12f ",dir[j]);} printf(" dir\n");
+       FT dist2 = vectorNorm(dir, n);
+       FT dist = sqrt(dist2);
        FT R = sqrt(R2);
        FT R_new = sqrt(R_new);
 
+       //printf("dist %.12f, R %.12f, R_new %.12f\n",dist,R,R_new);
        assert((dist < R + R_new) && "balls must intersect");
        
        // one ball contained in the other
