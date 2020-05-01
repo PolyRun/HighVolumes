@@ -44,10 +44,14 @@ class Benchmark_base {
 
             // Initialize
             initialize();
+
+	    std::cout << "Benchmark Warmup ("<< warmup_reps <<")\n";
             for (int i = 0; i < warmup_reps; ++i) {
                 run();
+		reset();
             }
 
+	    std::cout << "Benchmark Measurement ("<< reps <<")\n";
             for (int i = 0; i < reps; ++i) {
 
                 // Run benchmark

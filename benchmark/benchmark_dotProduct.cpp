@@ -50,9 +50,11 @@ int main(int argc, char *argv[]){
     
     int n = 20;
     int r = 100;
+    int warmup = 0;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 1000));
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000000));
+    cliFun.add(new CLIF_OptionNumber<int>(&warmup,'b',"warmup","0", 0, 10000000));
    
     std::string uv = "uv";
     cliFun.add(new CLIF_Option<std::string>(&uv,'b',"uv","uv", {
@@ -63,6 +65,6 @@ int main(int argc, char *argv[]){
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    Benchmark_dotProduct b("dotProduct", r, true, 0, n, uv);
+    Benchmark_dotProduct b("dotProduct", r, true, warmup, n, uv);
     b.run_benchmark();
 }

@@ -47,9 +47,12 @@ int main(int argc, char *argv[]){
     CLIFunctionsVolume cliFun(cli);
     
     int r = 100;
+    int warmup = 0;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
-    
+    cliFun.add(new CLIF_OptionNumber<int>(&warmup,'b',"warmup","0", 0, 100000));
+ 
+
     std::string generator = "cube";
     auto &gen_map = solved_body_generator()->gen_map();
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_r1.0_10", gen_map));
@@ -63,6 +66,6 @@ int main(int argc, char *argv[]){
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    Benchmark_A1 b("A1_volume", r, true, 0, generator, polytopeTranspose);
+    Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeTranspose);
     b.run_benchmark();
 }
