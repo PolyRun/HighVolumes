@@ -295,8 +295,8 @@ void test_preprocess_generic() {
 	Ellipsoid_T.free(e_out);
     }
 
-    for(int s=0;s<4;s++){
-        if(s==1 or s==3){continue;} // TODO remove, bug hides somewhere here!
+    for(int s=0;s<6;s++){
+        if(s==1 or s==3 or s==4 or s==5){continue;} // TODO remove, bug hides somewhere here!
 	const int n = 10;
         FT det;
 
@@ -304,17 +304,17 @@ void test_preprocess_generic() {
 	void* body_out[2];
 	Body_T* type[2];
 	Ellipsoid* e_out;
-	void* box_out;
-	Body_T* box_out_type;
+	void* other_out;
+	Body_T* other_out_type;
 	switch(s) {
 	   case 0: case 1: {// Polytope
 	      Polytope* box = Polytope_new_box(n,1.0);
 	      Polytope_set_b(box,n,0);
-	      box_out = Polytope_new_box(n,1.0);
+	      other_out = Polytope_new_box(n,1.0);
 	      body_in[s] = box;
-	      body_out[s] = box_out;
+	      body_out[s] = other_out;
 	      type[s] = &Polytope_T;
-	      box_out_type = &Polytope_T;
+	      other_out_type = &Polytope_T;
 	      
 	      Ellipsoid* e = Ellipsoid_new(n);
               e_out = Ellipsoid_new(n);
@@ -326,11 +326,11 @@ void test_preprocess_generic() {
 	   case 2: case 3: {// PolytopeT
 	      PolytopeT* box = PolytopeT_new_box(n,1.0);
 	      PolytopeT_set_b(box,n,0);
-	      box_out = PolytopeT_new_box(n,1.0);
+	      other_out = PolytopeT_new_box(n,1.0);
 	      body_in[s-2] = box;
-	      body_out[s-2] = box_out;
+	      body_out[s-2] = other_out;
 	      type[s-2] = &PolytopeT_T;
-	      box_out_type = &PolytopeT_T;
+	      other_out_type = &PolytopeT_T;
 	      
 	      Ellipsoid* e = Ellipsoid_new(n);
               e_out = Ellipsoid_new(n);
@@ -339,7 +339,22 @@ void test_preprocess_generic() {
 	      type[3-s] = &Ellipsoid_T;
 	      break;
 	   }
-
+	   case 4: case 5: {// 2 ellipsoids
+	      Ellipsoid* e2 = Ellipsoid_new(n);
+	      other_out = Ellipsoid_new(n);
+	      e2->a[0]=1.0;
+	      body_in[s-4] = e2;
+	      body_out[s-4] = other_out;
+	      type[s-4] = &Ellipsoid_T;
+	      other_out_type = &Ellipsoid_T;
+	      
+	      Ellipsoid* e = Ellipsoid_new(n);
+              e_out = Ellipsoid_new(n);
+	      body_in[5-s] = e;
+	      body_out[5-s] = e_out;
+	      type[5-s] = &Ellipsoid_T;
+	      break;
+	   }
 	}
 	std::cout << "\nInput Bodies for setting " << s << "\n";
 	for(int b=0;b<2;b++) {
@@ -380,9 +395,9 @@ void test_preprocess_generic() {
 	assert(x2 >= 1.0);
 	
 	x[0]-=0.001;
-	assert(!box_out_type->inside(box_out,x));
+	assert(!other_out_type->inside(other_out,x));
 	x[0]+=0.002;
-	assert(box_out_type->inside(box_out,x));
+	assert(other_out_type->inside(other_out,x));
 
         free(x);
 	for(int b=0;b<2;b++) {
