@@ -39,6 +39,7 @@ public:
     // det = det(L)
     Solved_Body* transform(const Matrix* L, const FT det, const FT* a, const FT beta);
     Solved_Body* scale(const FT beta);
+    Solved_Body* translate(const FT* a);
     Solved_Body* rotate();
     Solved_Body* preprocess(); // make normalized via preprocessing
     void polytopeTranspose();// make all Polytope to PolytopeT

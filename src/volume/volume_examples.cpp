@@ -94,7 +94,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     std::vector<int> half_n = {2,3,4,5,10,20,40,60,100};
     for(int n : half_n) {
        std::string nstr = std::to_string(n);
-       add("half_preprocessed_"+nstr, "half-ball (ball+cube), dim-"+nstr+" !!! broken ???", [n]() {
+       add("half_preprocessed_"+nstr, "half-ball (ball+cube), dim-"+nstr+" [normalized]", [n]() {
            Solved_Body* ball = generate_centered_ball(n,1.0);
            FT lb[n];
            FT ub[n];
@@ -103,19 +103,17 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   ub[0]=1;
 	   Solved_Body* c0 = generate_hyperrectangle(n, lb,ub);
            
-	   Solved_Body* h0 = ball->join(c0);
+	   Solved_Body* h0 = c0->join(ball);
 	   h0->volume = ball->volume / 2.0;
 	   
-	   h0->print();
 	   Solved_Body* sb = h0->preprocess();
            
 	   delete ball;
 	   delete c0;
 	   delete h0;
-	   //delete h1;
 	   return sb;
        });
-       add("half_"+nstr, "half-ball (ball+cube), dim-"+nstr+" [normalized]", [n]() {
+       add("half_"+nstr, "half-ball (ball+cube), dim-"+nstr, [n]() {
            Solved_Body* ball = generate_centered_ball(n,1.0);
            FT lb[n];
            FT ub[n];
@@ -124,20 +122,41 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   ub[0]=1;
 	   Solved_Body* c0 = generate_hyperrectangle(n, lb,ub);
            
-	   Solved_Body* h0 = c0->join(ball);// inverted order is trouble??
-	   //Solved_Body* h0 = ball->join(c0);// inverted order is trouble??
+	   Solved_Body* h0 = c0->join(ball);
 	   h0->volume = ball->volume / 2.0;
 	   
-	   h0->print();
-	   Solved_Body* sb = h0->preprocess();
-           
 	   delete ball;
 	   delete c0;
+	   return h0;
+       });
+    }
+
+    // 2-sphere
+    std::vector<int> twosphere_n = {2,3,4,5,10,20,40,60,100};
+    for(int n : twosphere_n) {
+       std::string nstr = std::to_string(n);
+       add("2sphere_"+nstr, "2 spheres, dim-"+nstr+" - UNDER CONSTRUCTION !!!", [n]() {
+           Solved_Body* c0 = generate_centered_ball(n,1.0);
+           Solved_Body* c2 = generate_centered_ball(n,1.0);
+	   
+           FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+	   for(int i=0;i<n;i++) {a[i]=(i==0);}
+	   Solved_Body* c1 = c2->translate(a);
+	   
+	   Solved_Body* h0 = c0->join(c1);
+	   h0->volume = 0; // TODO!
+	   
+	   Solved_Body* sb = h0->preprocess();
+           
+	   delete c0;
+	   delete c1;
+	   delete c2;
 	   delete h0;
-	   //delete h1;
+	   free(a);
 	   return sb;
        });
     }
+
 
     // 2-box
     std::vector<int> twobox_n = {3,10,20,40,60,100};
@@ -296,6 +315,19 @@ Solved_Body::rotate() {
     Matrix_free(L);
     return sb;
 }
+
+Solved_Body*
+Solved_Body::translate(const FT* a) {
+    Matrix* L = Matrix_new(n,n);
+    for(int i=0;i<n;i++) {
+        Matrix_set(L, i, i, 1.0);
+    }
+    Solved_Body* sb = transform(L,1.0,a,1.0);
+    Matrix_free(L);
+    return sb;
+}
+
+
 
 Solved_Body*
 Solved_Body::preprocess() {
