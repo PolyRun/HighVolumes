@@ -38,10 +38,10 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    FT *ori_new = (FT *) malloc(n*sizeof(FT));
    FT *dir = (FT *) malloc(n*sizeof(FT));
 
-   type[0]->boundingSphere(body_in[0], &R2, &ori);
+   type[0]->boundingSphere(body_in[0], &R2, ori);
    
    for (int i = 1; i < bcount; i++){
-       type[i]->boundingSphere(body_in[i], &R2_new, &ori_new);
+       type[i]->boundingSphere(body_in[i], &R2_new, ori_new);
 
        // vector between the two origins
        for (int j = 0; j < n; j++) {
@@ -101,9 +101,9 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       Ti[i] = R2; // sphere with
       e->a[i] = ori[i];
    }
-   //free(ori);
-   //free(ori_new);
-   //free(dir);
+   free(ori);
+   free(ori_new);
+   free(dir);
    Ellipsoid_T.print(e);
    
    

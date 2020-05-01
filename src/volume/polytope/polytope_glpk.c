@@ -113,22 +113,22 @@ void LP_to_boundingSphere(const int n, glp_prob* lp, FT *R2, FT *Ori) {
 	
 }
 
-void Polytope_bounding_ref(const void *B, FT *R2, FT **Ori){
+void Polytope_bounding_ref(const void *B, FT *R2, FT *Ori){
     const Polytope *P = (Polytope *) B;
 
     glp_prob* lp = Polytope_get_lp(P);
-    *Ori = (FT *) calloc(P->n, sizeof(FT));
-    LP_to_boundingSphere(P->n, lp, R2, *Ori);
+    //*Ori = (FT *) calloc(P->n, sizeof(FT));
+    LP_to_boundingSphere(P->n, lp, R2, Ori);
 
     glp_delete_prob(lp);
 }
 
-void PolytopeT_bounding_ref(const void *B, FT *R2, FT **Ori){
+void PolytopeT_bounding_ref(const void *B, FT *R2, FT *Ori){
     const PolytopeT *P = (PolytopeT *) B;
 
     glp_prob* lp = PolytopeT_get_lp(P);
-    *Ori = (FT *) calloc(P->n, sizeof(FT));
-    LP_to_boundingSphere(P->n, lp, R2, *Ori);
+    //*Ori = (FT *) calloc(P->n, sizeof(FT));
+    LP_to_boundingSphere(P->n, lp, R2, Ori);
 
     glp_delete_prob(lp);
 }

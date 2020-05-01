@@ -46,7 +46,7 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
 
 void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, const FT* a, const FT beta);
 
-void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori);
+void Ellipsoid_bounding_ref(const void *B, FT *R2, FT *ori);
 
 
 // --------------------------------------------- Ellipsoid

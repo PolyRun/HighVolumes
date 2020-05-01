@@ -296,7 +296,6 @@ void test_preprocess_generic() {
     }
 
     for(int s=0;s<6;s++){
-        if(s==1 or s==3 or s==4 or s==5){continue;} // TODO remove, bug hides somewhere here!
 	const int n = 10;
         FT det;
 

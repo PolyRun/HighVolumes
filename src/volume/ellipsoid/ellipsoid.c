@@ -182,7 +182,7 @@ void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, voi
 }
 
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c) {
-   Ellipsoid* this = (Ellipsoid*)o;
+   const Ellipsoid* this = (const Ellipsoid*)o;
    const int n = this->n;
 
    // case 1: center of cage (e->a) is outside of body o:
@@ -194,7 +194,7 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
 
       return true;
    }
-
+   
    // run minimization to obtain a point where to cut:
    FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
    FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
@@ -210,6 +210,9 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    FT eval1 = Ellipsoid_eval(e,x1);
    
    //printf("eval: %f %f vs %f\n",eval0,eval1,beta2);
+   
+   //for(int i=0;i<n;i++) {printf("%.12f ",x0[i]);} printf(" - x0\n");
+   //for(int i=0;i<n;i++) {printf("%.12f ",x1[i]);} printf(" - x1\n");
    if(eval0 > beta2 && eval1 > beta2) {
       printf("no cut found!\n");
       return false; // both local minima too far out
@@ -268,13 +271,13 @@ void Ellipsoid_transform_ref(const void* o_in, void* o_out, const Matrix* L, con
    free(ab);
 }
 
-void Ellipsoid_bounding_ref(const void *B, FT *R2, FT **ori){
+void Ellipsoid_bounding_ref(const void *B, FT *R2, FT *ori){
 
     const Ellipsoid *E = (Ellipsoid *) B;
     int n = E->n;
     
     // center is trivially given
-    *ori = E->a;
+    for(int i=0;i<n;i++) {ori[i] = E->a[i];}
     
     // maximize each of the 2n linear functions e_i, -e_i
     // we could also compute eigenvalues of E but this seems more difficult
@@ -375,7 +378,11 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
    // for debugging:
    FT* tmp = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
 
+   //for(int i=0;i<n;i++) {printf("%.12f ",x[i]);} printf(" - x\n");
+   //Ellipsoid_T.print(e);
+   //Ellipsoid_T.print(f);
    Ellipsoid_project(e,eFac,x);
+   //for(int i=0;i<n;i++) {printf("%.12f ",x[i]);} printf(" - x\n");
    
    int count = 0;
    FT dot = FT_MAX; // step size
