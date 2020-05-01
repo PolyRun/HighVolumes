@@ -20,6 +20,8 @@
     * Else: vectorize MVM
 
 * What we could do if we have enough time:
+  * Benchmark Polyvest to show how we compare
+    * performance count, convergence, match for exact parameters
   * improve prng, mostly relevant for random direction intersection
   * parallelize sample point x
     * would lead to MMM for random direction intersect
