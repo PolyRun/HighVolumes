@@ -135,7 +135,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     std::vector<int> twosphere_n = {2,3,4,5,10,20,40,60,100};
     for(int n : twosphere_n) {
        std::string nstr = std::to_string(n);
-       add("2sphere_"+nstr, "2 spheres, dim-"+nstr+" - UNDER CONSTRUCTION !!!", [n]() {
+       add("2sphere_preprocessed_"+nstr, "2 spheres, dim-"+nstr+" [normalized]", [n]() {
            Solved_Body* c0 = generate_centered_ball(n,1.0);
            Solved_Body* c2 = generate_centered_ball(n,1.0);
 	   
@@ -144,7 +144,37 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   Solved_Body* c1 = c2->translate(a);
 	   
 	   Solved_Body* h0 = c0->join(c1);
-	   h0->volume = 0; // TODO!
+	   h0->volume = 0;
+
+	   // can calculate the volume as two n-ball segments
+	   //
+	   // S(n+1) = integrate Vn * sqrt(1-x^2)^n dx from 0.5 to 1
+	   //        = Vn * 2 * integrate (1-t)^(n/2)*t^(-1/2) 1/2 dt from 0.25 to 1
+	   //        = Vn * integrate (1-t)^(n/2)*t^(-1/2) dt from 0.25 to 1
+	   // 
+	   // calculate integral online
+	   //
+	   // links:
+	   // https://math.stackexchange.com/questions/15656/volumes-of-n-balls-what-is-so-special-about-n-5
+	   // https://en.wikipedia.org/wiki/Volume_of_an_n-ball
+	   // https://www.integral-calculator.com/
+
+	   std::map<int,FT> integrals = {
+	      {2,  0.6141848493043784},
+	      {3,  0.4166666666666667},
+	      {4,  0.2982588737687016},
+	      {5,  0.2208333333333333},
+	      {10, 0.06329139154289489}, // up to here accurate
+	      {20, 0.008368361860095765}, // seems to get worse from here...
+	      {40, 0.0002521299865559373},
+	      {60, 9.713735947843199 * 1e-6},
+	      {100,1.890073619906658 * 1e-8},
+	   };
+	   auto it = integrals.find(n);
+	   if(it != integrals.end()) {
+	      FT ball = Ball_volume(n-1,1.0);
+	      h0->volume = ball * it->second;
+	   }
 	   
 	   Solved_Body* sb = h0->preprocess();
            
@@ -222,20 +252,20 @@ Solved_Body_Generator::Solved_Body_Generator() {
         "simplex_15",
         "simplex_20"
     };
-    if(const char* env_p = std::getenv("POLYVEST_PATH")) {
-	std::string path = env_p;
-	for(auto f : polyvest_list) {
-	    std::string pname = "polyvest_"+f;
-	    std::string fpath = path+f;
-	    add(pname, "One of polyvest polytopes, read from file.",[fpath]() {
+    for(auto f : polyvest_list) {
+        std::string pname = "polyvest_"+f;
+	add(pname, "One of polyvest polytopes, read from file.",[f]() {
+	    if(const char* env_p = std::getenv("POLYVEST_PATH")) {
+	        std::string path = env_p;
+	        std::string fpath = path+f;
                 //
                 return generate_read_polyvest_polytope(fpath);
-            });
-        }
-    } else {
-	std::cout << "ERROR: POLYVEST_PATH not set!\n" << std::endl;
-	std::cout << "try: export POLYVEST_PATH='../polyvest/examples/'\n";
-	std::exit(0);
+            } else {
+	        std::cout << "ERROR: POLYVEST_PATH not set!\n" << std::endl;
+		std::cout << "try: export POLYVEST_PATH='../polyvest/examples/'\n";
+		std::exit(0);
+	    }
+	});
     }
 }
 
