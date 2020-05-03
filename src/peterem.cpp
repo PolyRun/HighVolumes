@@ -32,10 +32,11 @@ int main(int argc, char** argv) {
    
    Ellipsoid* e = Ellipsoid_new(n);
 
-   auto f = [&](FT x, FT y, FT &r, FT &g, FT &b) {
+   auto f = [&](FT x, FT y, FT z, FT &r, FT &g, FT &b) {
       FT xx = x*4*n-2*n;
       FT yy = y*4*n-2*n;
-      for(int i=0;i<n;i++) {p[i] = (i==0)*xx + (i==1)*yy;}
+      FT zz = z*4*n-2*n;
+      for(int i=0;i<n;i++) {p[i] = (i==0)*xx + (i==1)*yy + (i==2)*zz;}
      
       FT eval = Ellipsoid_eval(e,p);
       r = 0;
@@ -56,18 +57,23 @@ int main(int argc, char** argv) {
    {// ---------------------- IMG
       int width = 800;
       int height = 800;
+      int depth = 100;
       EVP::Image_BMP img(height,width);
-      for(int i=0; i<height; i++){
-          for(int j=0; j<width; j++){
-	      FT rr,gg,bb;
-	      f((double)i/height, (double)j/width, rr,gg,bb);
-              int r = (unsigned char)(rr*255); ///red
-              int g = (unsigned char)(gg*255); ///green
-              int b = (unsigned char)(bb*255); ///blue
-              img.set(j,i,r,g,b);
-	  }
+      for(int z=0;z<depth; z++) {
+         for(int i=0; i<height; i++){
+             for(int j=0; j<width; j++){
+                 FT rr,gg,bb;
+                 f((double)i/height, (double)j/width, (double)z/depth, rr,gg,bb);
+                 int r = (unsigned char)(rr*255); ///red
+                 int g = (unsigned char)(gg*255); ///green
+                 int b = (unsigned char)(bb*255); ///blue
+                 img.set(j,i,r,g,b);
+             }
+         }
+         std::string num = std::to_string(z);
+	 while(num.size() < 5) {num = "0"+num;}
+         img.toFile("out/peterem_out_"+num+".bmp");
       }
-      img.toFile("peterem_out.bmp");
    }// ---------------------- END IMG
 
    #ifdef NDEBUG
