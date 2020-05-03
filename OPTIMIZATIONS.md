@@ -1,5 +1,42 @@
 # Optimizations
 
+## Most important points (for Slides)
+
+* What we already did:
+  * Extended algo for Polytopes to also deal with Ellipsoids
+  * Tried intersect vs intersectCoord
+    * intersectCoord is much faster, not much worse in convergence
+    * we will not persue intersect further, it only consists of dotProducts anyway
+  * intersectCoord profits if Polytope matrix in column format (Polytope vs PolytopeT)
+  * Polytope.intersectCoord faster if cache dotProducts
+  * often dimensions of vectors/matrices are rather low (10-100)
+    * so it may not be possible to reach max performance (op density)
+
+* What we will still do:
+  * PolytopeT.intersectCoord
+    * vectorize, convert if/min/max (seem to cost most now)
+  * Ellipsoid.intersectCoord
+    * try to cache? and vectorize
+    * Else: vectorize MVM
+
+* What we could do if we have enough time:
+  * Benchmark Polyvest to show how we compare
+    * performance count, convergence, match for exact parameters
+  * improve prng, mostly relevant for random direction intersection
+  * parallelize sample point x
+    * would lead to MMM for random direction intersect
+    * Could increase op density
+  * extend to other convex quadratic bodies
+
+* A word on preprocessing
+  * Ellipsoid method (shallow-cut), implemented but will not optimize (scope)
+  * Cholesky decomp, matrix inverse, Sherman-Morisson, ...
+  * minimize quadratic function constrained to ellipsoid
+  * Lots of MVM, some MMM
+  * numerical precision issues
+
+## Detailed discussion
+
 * dotProduct / vectorNorm
   * 2 accumulators brought some speedup
   * input too small often - vectorization so far lead to no speedup
@@ -7,6 +44,16 @@
   * vectorization causes overhead to reduce final sum vector
   * could implement versions for different n?
   * vectorNorm should also be checked - not benchmarked yet
+
+* Ball\_intersect
+  * at about 2 fpc
+  * basically 2 vectorNorms and a dotProduct
+  * fuse vectorNorm and dotProduct, less reads
+  * maybe vectorize?
+
+* Ball\_intersectCoord 
+  * is only a vectorNorm + div + sqrt
+  * probably hard to do much beyond vectorNorm?
 
 * Polytope vs PolytopeT
   * row vs column matrix A. allows for different impl, especially when vectorizing
@@ -37,9 +84,19 @@
   * Maybe there could be a way to cache the MVM? Maybe in the intersectCoord case this could lead to something.
 ![ellipsoid-intersect](./optimizations/opt1_intersect_ellipsoid_100.jpeg)
 
+* Randomness - very costly for intersect
+  * could improve if required
+
+# Big picture
+
+* Some Polytopes have a ballanced n vs m, like cube and simplex
+* some have n << m, like cross -> much more focus on intersect / intersectCoord
+
+[Experiment Log (with vtune)](./optimizations/LOG.md)
+
+# Optimizations to consider
 
 * Parallelize to multiple walk points x
   * reduce intersection to MMM
   * probably produces lots of work (new signatures, more tests, etc)
-
 

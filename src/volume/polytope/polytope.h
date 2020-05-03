@@ -45,7 +45,7 @@ void Polytope_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void
 bool Polytope_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, const FT* a, const FT beta);
 
-void Polytope_bounding_ref(const void *B, FT *R2, FT **ori);
+void Polytope_bounding_ref(const void *B, FT *R2, FT *ori);
 
 // --------------- inline Accessors:
 static inline FT* Polytope_get_Ai(const Polytope* p, int i) __attribute__((always_inline));

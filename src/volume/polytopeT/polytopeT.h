@@ -41,7 +41,7 @@ void PolytopeT_cacheReset_ref(const void* o, const FT* x, void* cache);
 void PolytopeT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
 bool PolytopeT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, const FT* a, const FT beta);
-void PolytopeT_bounding_ref(const void *B, FT *R2, FT **ori);
+void PolytopeT_bounding_ref(const void *B, FT *R2, FT *ori);
 
 // --------------- inline Accessors:
 static inline void PolytopeT_set_a(PolytopeT* p, int i, int x, FT a) __attribute__((always_inline));

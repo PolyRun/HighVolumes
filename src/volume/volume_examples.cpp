@@ -1,4 +1,5 @@
 #include "volume_examples.hpp"
+#include <cstdlib>
 
 
 Solved_Body_Generator::Solved_Body_Generator() {
@@ -93,7 +94,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     std::vector<int> half_n = {2,3,4,5,10,20,40,60,100};
     for(int n : half_n) {
        std::string nstr = std::to_string(n);
-       add("half_preprocessed_"+nstr, "half-ball (ball+cube), dim-"+nstr+" !!! broken ???", [n]() {
+       add("half_preprocessed_"+nstr, "half-ball (ball+cube), dim-"+nstr+" [normalized]", [n]() {
            Solved_Body* ball = generate_centered_ball(n,1.0);
            FT lb[n];
            FT ub[n];
@@ -102,19 +103,17 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   ub[0]=1;
 	   Solved_Body* c0 = generate_hyperrectangle(n, lb,ub);
            
-	   Solved_Body* h0 = ball->join(c0);
+	   Solved_Body* h0 = c0->join(ball);
 	   h0->volume = ball->volume / 2.0;
 	   
-	   h0->print();
 	   Solved_Body* sb = h0->preprocess();
            
 	   delete ball;
 	   delete c0;
 	   delete h0;
-	   //delete h1;
 	   return sb;
        });
-       add("half_"+nstr, "half-ball (ball+cube), dim-"+nstr+" [normalized]", [n]() {
+       add("half_"+nstr, "half-ball (ball+cube), dim-"+nstr, [n]() {
            Solved_Body* ball = generate_centered_ball(n,1.0);
            FT lb[n];
            FT ub[n];
@@ -123,20 +122,71 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   ub[0]=1;
 	   Solved_Body* c0 = generate_hyperrectangle(n, lb,ub);
            
-	   Solved_Body* h0 = c0->join(ball);// inverted order is trouble??
-	   //Solved_Body* h0 = ball->join(c0);// inverted order is trouble??
+	   Solved_Body* h0 = c0->join(ball);
 	   h0->volume = ball->volume / 2.0;
 	   
-	   h0->print();
-	   Solved_Body* sb = h0->preprocess();
-           
 	   delete ball;
 	   delete c0;
+	   return h0;
+       });
+    }
+
+    // 2-sphere
+    std::vector<int> twosphere_n = {2,3,4,5,10,20,40,60,100};
+    for(int n : twosphere_n) {
+       std::string nstr = std::to_string(n);
+       add("2sphere_preprocessed_"+nstr, "2 spheres, dim-"+nstr+" [normalized]", [n]() {
+           Solved_Body* c0 = generate_centered_ball(n,1.0);
+           Solved_Body* c2 = generate_centered_ball(n,1.0);
+	   
+           FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+	   for(int i=0;i<n;i++) {a[i]=(i==0);}
+	   Solved_Body* c1 = c2->translate(a);
+	   
+	   Solved_Body* h0 = c0->join(c1);
+	   h0->volume = 0;
+
+	   // can calculate the volume as two n-ball segments
+	   //
+	   // S(n+1) = integrate Vn * sqrt(1-x^2)^n dx from 0.5 to 1
+	   //        = Vn * 2 * integrate (1-t)^(n/2)*t^(-1/2) 1/2 dt from 0.25 to 1
+	   //        = Vn * integrate (1-t)^(n/2)*t^(-1/2) dt from 0.25 to 1
+	   // 
+	   // calculate integral online
+	   //
+	   // links:
+	   // https://math.stackexchange.com/questions/15656/volumes-of-n-balls-what-is-so-special-about-n-5
+	   // https://en.wikipedia.org/wiki/Volume_of_an_n-ball
+	   // https://www.integral-calculator.com/
+
+	   std::map<int,FT> integrals = {
+	      {2,  0.6141848493043784},
+	      {3,  0.4166666666666667},
+	      {4,  0.2982588737687016},
+	      {5,  0.2208333333333333},
+	      {10, 0.06329139154289489}, // up to here accurate
+	      {20, 0.008368361860095765}, // seems to get worse from here...
+	      {40, 0.0002521299865559373},
+	      {60, 9.713735947843199 * 1e-6},
+	      {100,1.890073619906658 * 1e-8},
+	   };
+	   auto it = integrals.find(n);
+	   if(it != integrals.end()) {
+	      FT ball = Ball_volume(n-1,1.0);
+	      h0->volume = ball * it->second;
+	   }
+	   
+	   Solved_Body* sb = h0->preprocess();
+           
+	   delete c0;
+	   delete c1;
+	   delete c2;
 	   delete h0;
-	   //delete h1;
+	   free(a);
 	   return sb;
        });
     }
+
 
     // 2-box
     std::vector<int> twobox_n = {3,10,20,40,60,100};
@@ -165,6 +215,58 @@ Solved_Body_Generator::Solved_Body_Generator() {
        });
     }
 
+
+    // Polyvest Polytopes:
+    std::vector<std::string> polyvest_list = {
+        "cc_8_10",
+        "cc_8_11",
+        "cross_13",
+        "cross_7",
+        "cross_9",
+        "cube_10",
+        "cube_10_2",
+        "cube_14",
+        "cube_14_2",
+        "cube_15",
+        "cube_2",
+        "cube_20",
+        "cube_25",
+        "cube_30",
+        "cube_35",
+        "cube_40",
+        "cube_5",
+        "cube_80",
+        "ex_1",
+        "ex_2",
+        "fm_6",
+        "rect_3",
+        "rh_1",
+        "rh_2",
+        "rh_20_40",
+        "rh_3",
+        "rh_30_60",
+        "rh_4",
+        "rh_40_80",
+        "simplex_10",
+        "simplex_14",
+        "simplex_15",
+        "simplex_20"
+    };
+    for(auto f : polyvest_list) {
+        std::string pname = "polyvest_"+f;
+	add(pname, "One of polyvest polytopes, read from file.",[f]() {
+	    if(const char* env_p = std::getenv("POLYVEST_PATH")) {
+	        std::string path = env_p;
+	        std::string fpath = path+f;
+                //
+                return generate_read_polyvest_polytope(fpath);
+            } else {
+	        std::cout << "ERROR: POLYVEST_PATH not set!\n" << std::endl;
+		std::cout << "try: export POLYVEST_PATH='../polyvest/examples/'\n";
+		std::exit(0);
+	    }
+	});
+    }
 }
 
 Solved_Body*
@@ -243,6 +345,19 @@ Solved_Body::rotate() {
     Matrix_free(L);
     return sb;
 }
+
+Solved_Body*
+Solved_Body::translate(const FT* a) {
+    Matrix* L = Matrix_new(n,n);
+    for(int i=0;i<n;i++) {
+        Matrix_set(L, i, i, 1.0);
+    }
+    Solved_Body* sb = transform(L,1.0,a,1.0);
+    Matrix_free(L);
+    return sb;
+}
+
+
 
 Solved_Body*
 Solved_Body::preprocess() {
@@ -433,6 +548,21 @@ Solved_Body* generate_centered_ball(int dims, FT r) {
     return generate_ellipsoid(dims, lower_bounds, upper_bounds);
 
 }
+
+Solved_Body* generate_read_polyvest_polytope(const std::string &fileName) {
+    Polytope *P;
+    int err = read_polyvest_p(fileName, &P);
+    assert(!err &&
+           "couldn't read example polytope");
+
+    Solved_Body *result = new Solved_Body(1, P->n);
+    result->body[0] = P;
+    result->type[0] = &Polytope_T;
+    result->volume = 0; // unknown
+    
+    return result;
+}
+
 //
 //// This function is out of order, because read_polyvest_p() doesn't exist anymore
 //// We need to reimplement it anyway to return Polytope instead of Polytope

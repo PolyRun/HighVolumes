@@ -74,10 +74,12 @@ int main(int argc, char *argv[]){
     
     int n = 20;
     int r = 100;
+    int warmup = 0;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","20", 1, 200));
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 10000000));
-    
+    cliFun.add(new CLIF_OptionNumber<int>(&warmup,'b',"warmup","0", 0, 10000000));
+ 
     std::string intersect = "intersect";
     cliFun.add(new CLIF_Option<std::string>(&intersect,'b',"intersect","intersect", {
                                                      {"intersect",      {"intersect",     "random direction intersection"}},
@@ -88,10 +90,10 @@ int main(int argc, char *argv[]){
     cliFun.postParse();
     
     if(intersect.compare("intersect")==0) {
-        Benchmark_intersect b("intersect", r, true, 0, n);
+        Benchmark_intersect b("intersect", r, true, warmup, n);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", r, true, 0, n);
+        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, n);
         b.run_benchmark();
     }
 }
