@@ -13,6 +13,10 @@ extern "C" { // must be included C stlye
 #include "util/cli.hpp"
 #include "util/cli_functions.hpp"
 
+#include "util/image_bmp.hpp"
+
+
+
 int main(int argc, char** argv) {
    Timer t;
    t.start();
@@ -61,6 +65,23 @@ int main(int argc, char** argv) {
    std::cout << "ceil_cache: " << ceil_cache(1,sizeof(FT)) << "\n";
    std::cout << "ceil_cache: " << ceil_cache(4,sizeof(FT)) << "\n";
    std::cout << "ceil_cache: " << ceil_cache(5,sizeof(FT)) << "\n";
+   
+   {// ---------------------- IMG
+      int width = 200;
+      int height = 200;
+      EVP::Image_BMP img(height,width);
+      for(int i=0; i<height; i++){
+          for(int j=0; j<width; j++){
+              int r = (unsigned char)((double)i/height*255); ///red
+              int g = (unsigned char)((double)j/width*255); ///green
+              int b = (unsigned char)(((double)i+j)/(height+width)*255); ///blue
+              img.set(j,i,r,g,b);
+	  }
+      }
+      img.toFile("peterem_out.bmp");
+   }// ---------------------- END IMG
+
+
 
    #ifdef NDEBUG
    std::cout<< "## WARNING: DEBUG DISABLED!\n";
@@ -68,4 +89,7 @@ int main(int argc, char** argv) {
    std::cout<< "## TESTS COMPLETE.\n";
    #endif
 }
+
+
+
 
