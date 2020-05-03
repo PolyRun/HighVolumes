@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 file(COPY benchmark.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY benchmark2.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY plot.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(build-time-make-directory ALL
