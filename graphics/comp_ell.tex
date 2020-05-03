@@ -1,0 +1,36 @@
+
+
+% tikzpic.tex
+\documentclass[crop,tikz]{standalone}% 'crop' is the default for v1.0, before it was 'preview'
+%\usetikzlibrary{...}% tikz package already loaded by 'tikz' option
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+	
+\begin{tikzpicture}
+
+\begin{scope}
+ \clip(4,0) rectangle (16,7);
+ \draw (0,0) ellipse (16 and 7);
+\end{scope}
+
+
+
+\tikzstyle{node} = [draw, shape=circle, fill=black]
+\tikzstyle{intersection} = [draw, shape=circle, fill=black, scale=.5]
+
+  \draw 
+  node (x) [label=below:{$x$}, node] at (5,2){}
+  node (dir) at (7,4) {}
+  node (l3) [label=right:{$d \in_{\text{u.a.r.}} \mathbb{R}^n$}] at (6,3) {}
+  node(i1) [intersection] at (8.84, 5.84) {}
+  node (end) at (10,7) {}
+    
+  node (l2) [label=right:{$x^T A x = 1$}] at (12,5) {};
+  
+  \draw [->, line width=.5mm] (x.center) edge (dir.center);
+  \draw [dashed] (dir) edge (end.center);
+\end{tikzpicture}
+
+\end{document}
