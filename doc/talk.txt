@@ -1,0 +1,9 @@
+
+Talk:
+
+- Algorithm overview (slides, Jonathan)
+- Computations (slides, Jonathan)
+- Convergence -> not much difference between sphere and coord walk (readme file, Manuel)
+- Performance overview, where are hotspots (vtune/pc output, Emmanuel)
+- Performance plots: intersect functions (re-make plot with more bodies, Manuel)
+- What have we done - what will we still do (readme, Silvan)
