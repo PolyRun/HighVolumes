@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
       auto &bcount = solved_body->bcount;
       for(int c=0;c<bcount;c++) {
          if(type[c]->inside(body[c],p)) {
-	    r += 0.5;
+	    r += 1.0/bcount;
 	 }
       }
    };

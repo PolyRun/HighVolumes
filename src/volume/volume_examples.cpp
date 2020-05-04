@@ -187,6 +187,52 @@ Solved_Body_Generator::Solved_Body_Generator() {
        });
     }
 
+    // 2n-sphere
+    std::vector<int> twonsphere_n = {2,3,4,5,10,20,40,60,100};
+    for(int n : twonsphere_n) {
+       std::string nstr = std::to_string(n);
+       add("2nsphere_preprocessed_"+nstr, "2*n spheres, dim-"+nstr+" [normalized]", [n]() {
+           Solved_Body* c0 = NULL;//generate_centered_ball(n,1.0);
+           FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+	   
+	   for(int j=0;j<n;j++) {
+	      Solved_Body* c1 = generate_centered_ball(n,1.0);
+	      Solved_Body* c2 = generate_centered_ball(n,1.0);
+	      
+	      for(int i=0;i<n;i++) {a[i]=0;}
+	      
+	      a[j] = 0.6;
+	      Solved_Body* c1t = c1->translate(a);
+	      a[j] = -0.6;
+	      Solved_Body* c2t = c2->translate(a);
+	      
+	      Solved_Body* c3 = c1t->join(c2t);
+	      Solved_Body* tmp = c0;
+
+	      if(c0==NULL) {
+	         c0 = c3;
+	      } else {
+	         c0 = c0->join(c3);
+	         delete c3;
+	         delete tmp;
+	      }
+	      delete c1;
+	      delete c1t;
+	      delete c2;
+	      delete c2t;
+	   }
+
+	   Solved_Body* s0 = c0->shear();
+
+	   Solved_Body* sb = s0->preprocess();
+           sb->volume = 0;
+
+	   delete s0;
+	   delete c0;
+	   free(a);
+	   return sb;
+       });
+    }
 
     // 2-box
     std::vector<int> twobox_n = {3,10,20,40,60,100};
@@ -345,6 +391,26 @@ Solved_Body::rotate() {
     Matrix_free(L);
     return sb;
 }
+
+Solved_Body*
+Solved_Body::shear() {
+    Matrix* L = Matrix_new(n,n);
+    FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+    for(int i=0;i<n;i++) {
+	for(int j=0;j<i;j++) {
+	   FT s = prng_get_random_double_in_range(-0.6,0.6); 
+           Matrix_set(L, i, j, s);
+	}
+        Matrix_set(L, i, i, 1.0);
+        a[i] = 0;
+    }
+    Solved_Body* sb = transform(L,1.0,a,1.0);
+    free(a);
+    Matrix_free(L);
+    return sb;
+}
+
+
 
 Solved_Body*
 Solved_Body::translate(const FT* a) {
