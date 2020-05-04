@@ -198,64 +198,74 @@ void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o) {
    pc_stack().log(0,0, "no cache");
 }
 void Ellipsoid_cacheReset_cost_ref(const void* o) {
-   pc_stack().log(0,0, "no cache");
+   pc_stack().log(0, 0, "no cache");
 }
 
 void volume_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
-   pc_stack().log(0,n*sizeof(FT), "init_x");
+
+   pc_stack().log(0, n*sizeof(FT), "init_x");
    
-   pc_stack().log(0,0, "cacheAlloc");
-   pc_stack().log(0,0, "cacheReset - TODO");
+   pc_stack().log(0, 0, "cacheAlloc");
+   pc_stack().log(0, 0, "cacheReset - TODO");
    
-   pc_stack().log(0,0, "Ball_volume - TODO");
+   pc_stack().log(0, 0, "Ball_volume - TODO");
    
    // number of sampling layers (steps)
    size_t l = pc_volume_l; // get from last execution
    size_t s = pc_volume_steps;
 
-   {// frame for steps loop
+   // frame for steps loop
+   {
       PC_Frame_Base loop("steps",s);
       {
-         PC_Frame<walk_cost_f> frame((void*)walk_f);
-         frame.costf()(n,bcount,body,type);
+         PC_Frame<walk_cost_f> frame((void*) walk_f);
+         frame.costf()(n, bcount, body, type);
       }
 
       {// frame for vectorNorm: x
-         PC_Frame<vectorNorm_cost_f> frame((void*)vectorNorm); // vectorNorms
+         PC_Frame<vectorNorm_cost_f> frame((void*) vectorNorm); // vectorNorms
          frame.costf()(n);
       }
       
       // log 2
       // div 2
       // mul 2
-      pc_stack().log(6,0, "find layer: logs!");
+      pc_stack().log(6, 0, "find layer: logs!");
    }
    
    // rest of ops:
    // div 1 * l
    // mul 1 * l
-   // write n * l  (reset x)
-   pc_stack().log(2*l,n*l*sizeof(FT), "end of layer");
+   // read n * l and write n * l  (reset x)
+   pc_stack().log(2*l, 2*n*l*sizeof(FT), "end of layer");
 
-   for(int c=0;c<bcount;c++) {// body intersect
-         PC_Frame<cacheReset_cost_f> frame((void*)type[c]->cacheReset, l);// per layer
-         frame.costf()(body[c]);
+   // body intersect
+   for (int c = 0; c < bcount; c++) {
+      // per layer
+      PC_Frame<cacheReset_cost_f> frame((void*) type[c]->cacheReset, l);
+      frame.costf()(body[c]);
    }
+
 }
+
 void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
+
    int ws = walk_size;
-   {// frame for walk_size loop
+
+   // frame for walk_size loop
+   {
       PC_Frame_Base loop("loop",ws);
 
       pc_stack().log(0,n*sizeof(FT), "n random doubles - TODO");
       
       {// frame for Ball_intersect
-         PC_Frame<Ball_intersect_cost_f> frame((void*)Ball_intersect);
+         PC_Frame<Ball_intersect_cost_f> frame((void*) Ball_intersect);
          frame.costf()(n);
       }
       
-      for(int c=0;c<bcount;c++) {// body intersect
-         PC_Frame<intersect_cost_f> frame((void*)type[c]->intersect);
+      // body intersect
+      for(int c = 0; c < bcount; c++) {
+         PC_Frame<intersect_cost_f> frame((void*) type[c]->intersect);
          frame.costf()(body[c]);
       }
 
@@ -263,32 +273,43 @@ void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** ty
       
       pc_stack().log(2*n, 3*n*sizeof(FT)," x += d*t");
    }
+
 }
 
 void walkCoord_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
-   int ws = walk_size;
-   {// frame for walk_size loop
-      PC_Frame_Base loop("loop",ws);
 
-      pc_stack().log(0,0, "random int - TODO");
+   int ws = walk_size;
+
+   // frame for walk_size loop
+   {
+      PC_Frame_Base loop("loop", ws);
+
+      pc_stack().log(0, 0, "random int - TODO");
       
-      {// frame for Ball_intersectCoord
-         PC_Frame<Ball_intersectCoord_cost_f> frame((void*)Ball_intersectCoord);
+      // frame for Ball_intersectCoord
+      {
+         PC_Frame<Ball_intersectCoord_cost_f> frame((void*) Ball_intersectCoord);
          frame.costf()(n);
       }
       
-      for(int c=0;c<bcount;c++) {// body intersectCoord
-         PC_Frame<intersectCoord_cost_f> frame((void*)type[c]->intersectCoord);
+      // body intersectCoord
+      for (int c = 0; c < bcount; c++) {
+         PC_Frame<intersectCoord_cost_f> frame((void*) type[c]->intersectCoord);
          frame.costf()(body[c]);
       }
 
-      pc_stack().log(0,0, "random double - TODO");
+      pc_stack().log(0, 0, "random double - TODO");
+
+      // Reading and writing x[dd] with one add in between
+      pc_stack().log(1, 2, "x[dd] += t;");
       
-      for(int c=0;c<bcount;c++) {// body intersectCoord
-         PC_Frame<cacheUpdateCoord_cost_f> frame((void*)type[c]->cacheUpdateCoord);
+      // body intersectCoord
+      for(int c = 0; c < bcount; c++) {
+         PC_Frame<cacheUpdateCoord_cost_f> frame((void*) type[c]->cacheUpdateCoord);
          frame.costf()(body[c]);
       }
    }
+   
 }
 
 
