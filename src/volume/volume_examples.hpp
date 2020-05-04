@@ -41,6 +41,7 @@ public:
     Solved_Body* scale(const FT beta);
     Solved_Body* translate(const FT* a);
     Solved_Body* rotate();
+    Solved_Body* shear();// similar to rotate, but only L matrix
     Solved_Body* preprocess(); // make normalized via preprocessing
     void polytopeTranspose();// make all Polytope to PolytopeT
 
