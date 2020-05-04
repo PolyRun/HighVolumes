@@ -25,8 +25,8 @@ for index, item in enumerate(dotProduct):
    dotProduct[index] = "dotProduct="+item
 
 
-intersectbodies = ["cube_r1.0_10", "cube_r1.0_3"]
-intersectdims = {"cube_r1.0_10": '10', "cube_r1.0_3": '2'}
+intersectbodies = [ "cube_rot_r1.0_3", "cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40"]
+intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40'}
 
 
 # --- Benchmarks
@@ -219,6 +219,7 @@ def run_benchmark(bid, bname, config_strings):
          env = myenv
       );
       f = open(sys.path[0]+ "/out/" + bname + config_string_printable + ".out", "w")
+      f.write(config_string + "\n")
       for line in proc.stdout:
          print(line)
          try:
@@ -244,7 +245,7 @@ for benchmark in DO_BENCHMARKS:
    # get x-axis labels and add them to data
    if "xlabel" in benchmark: 
       result = list(map(lambda res: (*res, get_label(benchmark["xlabel"], res[0])), result))
-      plot_input(sys.path[0], bname, result, benchmark["xlabel"][0])
+      plot_input(sys.path[0], bname, result, benchmark["xlabel"][0], "dim")
    else:
       plot(sys.path[0], bname, result)
 

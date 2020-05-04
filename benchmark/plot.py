@@ -36,7 +36,7 @@ def plot(path, plot_name, dict_list):
     plt.clf()
 
 
-def plot_input(path, plot_name, dict_list, x_label):
+def plot_input(path, plot_name, dict_list, x_option, x_label):
     if plot_name == None:
         plot_name = "plot"
     plot_name = plot_name + "_"
@@ -49,7 +49,7 @@ def plot_input(path, plot_name, dict_list, x_label):
     time_function_std_devs = {}
     for dict in dict_list:
         # cut out x_label option
-        pattern = '{}=[^,]*'.format(x_label)
+        pattern = '{}=[^,]*'.format(x_option)
         name = ''.join(re.compile(pattern).split(dict[0]))
         time_dict = (dict[1])['time']
         ival = dict[2]
@@ -74,7 +74,7 @@ def plot_input(path, plot_name, dict_list, x_label):
     # Runtime Plot
     plt.title('Runtime comparison (mean)')
     plt.xlabel(x_label)
-    plt.ylabel('Mean time')
+    plt.ylabel('Mean time (cycles)')
 	
     bar_width = 0.1
     
@@ -111,7 +111,7 @@ def plot_input(path, plot_name, dict_list, x_label):
     # Performance plot
     plt.title('Performance comparison (mean)')
     plt.xlabel(x_label)
-    plt.ylabel('Flops/cycles(mean)')
+    plt.ylabel('flops/cycles(mean)')
 	
     x_ticks = []
     for val in x_values:
