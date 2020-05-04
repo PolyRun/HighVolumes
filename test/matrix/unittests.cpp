@@ -45,7 +45,7 @@ void test_matrix_invert_pdsym(){
 
 
 
-bool test_matrix_invert_pdsym_random(int n){
+void test_matrix_invert_pdsym_random(int n){
 
     // generate random L matrix
     Matrix *L = Matrix_new(n, n);

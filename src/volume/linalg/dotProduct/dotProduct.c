@@ -49,11 +49,15 @@ FT dotProduct_vec1(const FT* u, const FT* v, const int n) {
    return sum[0];
 }
 
-vectorNorm_f_t vectorNorm = vectorNorm_ref;
-FT vectorNorm_ref(const FT* v, const int n) {
+squaredNorm_f_t squaredNorm = squaredNorm_ref;
+FT squaredNorm_ref(const FT* v, const int dims) {
+
    FT sum = 0.0;
-   for(int i=0; i<n; i++) {sum+= v[i]*v[i];}
+   for (int i = 0; i < dims; i++) {
+      sum += v[i]*v[i];
+   }
    return sum;
+
 }
 
 

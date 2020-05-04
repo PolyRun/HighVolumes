@@ -10,20 +10,27 @@ extern "C" { // must be included C stlye
 #include "../../src/util/cli_functions.hpp"
 
 void test_intersect(Solved_Body* sb) {
+
    const int n = sb->n;
    FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-   for(int i=0;i<n;i++) {x[i] = 0;}
+   for(int i = 0; i < n; i++) {
+      x[i] = 0;
+   }
+
    FT* d = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-   for(int t=0;t<n*200;t++) {
-      for(int i=0;i<n;i++) {d[i] = prng_get_random_double_normal();}
-      FT d2 = vectorNorm(d,n);
+
+   for(int t = 0; t < n*200; t++) {
+      for(int i = 0; i < n; i++) {
+         d[i] = prng_get_random_double_normal();
+      }
+      FT d2 = squaredNorm(d,n);
       
       FT t0 = -FT_MAX;
       FT t1 = FT_MAX;
 
-      for(int b=0; b<sb->bcount; b++) {
-	 FT t0_,t1_;
-         sb->type[b]->intersect(sb->body[b], x,d,&t0_,&t1_);
+      for(int b = 0; b < sb->bcount; b++) {
+         FT t0_,t1_;
+         sb->type[b]->intersect(sb->body[b], x, d, &t0_, &t1_);
          t0 = std::max(t0,t0_);
          t1 = std::min(t1,t1_);
       }

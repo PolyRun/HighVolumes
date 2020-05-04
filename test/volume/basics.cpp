@@ -178,12 +178,12 @@ int main(int argc, char** argv) {
          free(v);
       }
    }
-   // -------- vectorNorm:
+   // -------- squaredNorm:
    {
-      auto o = dynamic_cast<CLIF_Option<vectorNorm_f_t>*>(cliFun.getOption("vectorNorm"));
+      auto o = dynamic_cast<CLIF_Option<squaredNorm_f_t>*>(cliFun.getOption("squaredNorm"));
       for(auto it : o->fmap) {
-         std::cout << "Test vectorNorm " << it.first << " - " << it.second.second << std::endl;
-         vectorNorm = it.second.first;
+         std::cout << "Test squaredNorm " << it.first << " - " << it.second.second << std::endl;
+         squaredNorm = it.second.first;
          
          FT* v = (FT*)(aligned_alloc(32, 20*sizeof(FT)));
          
@@ -191,7 +191,7 @@ int main(int argc, char** argv) {
             v[i] = prng_get_random_double_in_range(1.1,2.0);
          }
          for(int n=1;n<20;n++){
-            FT dot = vectorNorm(v,n);
+            FT dot = squaredNorm(v,n);
             
 	    FT dotRef = 0;
 	    for(int i=0;i<n;i++) {dotRef += v[i]*v[i];}
