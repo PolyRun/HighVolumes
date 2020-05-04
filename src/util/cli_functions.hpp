@@ -48,7 +48,7 @@ public:
       std::string key = cli.parameters(opt_).get(name_,"");
       const auto it = fmap.find(key);
       if(it==fmap.end()) {
-         std::cout << "Error: bad choice for: " << opt_ << " " << name_ << "\n";
+          std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
 	 std::cout << "       viable options:\n";
 	 for(const auto it : fmap) {
 	    std::cout << "           " << it.first << " - " << it.second.second << "\n";

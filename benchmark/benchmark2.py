@@ -25,6 +25,10 @@ for index, item in enumerate(dotProduct):
    dotProduct[index] = "dotProduct="+item
 
 
+intersectbodies = ["cube_r1.0_10", "cube_r1.0_3"]
+intersectdims = {"cube_r1.0_10": '10', "cube_r1.0_3": '2'}
+
+
 # --- Benchmarks
 '''
     id:            unique benchmark id, used for COMPARE
@@ -82,31 +86,31 @@ BENCHMARKS = [
           "fun_configs": dotProduct,
           "run_configs": ["r=100000"],
           "input_configs": [("n", [2**i for i in range(0,7)])],
-          "xlabel": ("n", [str(2**i) for i in range(0,7)])
        }
-    ]},
+    ],
+    "xlabel": ("n", {str(2**i): str(2**i) for i in range(0,7)})
+   },
    {"id": 4,
-    "name": "benchmark_intersection",
+    "name": "benchmark_intersect",
     "config": [
        {
           "fun_configs": ["Polytope_intersectCoord=cached_ref", "Polytope_intersectCoord=ref"],
           "run_configs": ["intersect=intersectCoord,polytopeTranspose=false"],
-          "input_configs": [("generator", intersectbodies)],
-          "xlabel": [("generator", intersectdims)]
+          "input_configs": [("generator", intersectbodies)]
        },
        {
-          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=ref"],
+          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref"],
           "run_configs": ["intersect=intersectCoord,polytopeTranspose=true"],
-          "input_configs": [("generator", intersectbodies)],
-          "xlabel": [("generator", intersectdims)]
+          "input_configs": [("generator", intersectbodies)]
        },
        {
           "fun_configs": [],
           "run_configs": ["intersect=intersect,polytopeTranspose=false", "intersect=intersect,polytopeTranspose=true"],
-          "input_configs": [("generator", intersectbodies)],
-          "xlabel": [("generator", intersectdims)]
+          "input_configs": [("generator", intersectbodies)]
        }
-    ]} 
+    ],
+    "xlabel": ("generator", intersectdims)
+   } 
 ]
 
 # --- Functions that should be compared
@@ -147,15 +151,15 @@ for
    cconf : conf
 """
 def get_config(config):
-   funs = ['-f "{}"'.format(fun) for fun in config["fun_configs"]] or [""]
-   inputs = ['-n "' + ','.join(c_prod) + '"' for c_prod in
+   funs = [('-f', fun) for fun in config["fun_configs"]] or [('','')]
+   inputs = [('-b', ','.join(c_prod)) for c_prod in
              itertools.product(
                 *(list(map(
                       lambda c: ['{}={}'.format(c[0], conf) for conf in c[1]],
                       config["input_configs"]
                 )) + [config["run_configs"]])
              )
-   ] or [""]
+   ] or [('','')]
    return itertools.product(funs, inputs)
 
 
@@ -166,29 +170,24 @@ config :: [dict]
 we extract all config strings from the elements of this list and concat them
 """
 def get_configs(benchmark):
-   return [conf_string for conf_string in get_config(conf) for conf in benchmark["config"]]
+   return [conf_string
+           for conf in benchmark["config"]
+           for conf_string in get_config(conf)
+   ]
 
 
 """
 get x-label from benchmark_string by:
 - matching on the option tag
 - getting the value
-- looking up the label of the value in the benchmark
+- looking up the label of the value in the xlabel
 
 this is ugly, but should work if we only choose labels on input_config...  
 """
-def get_label(benchmark, benchmark_string):
-   # all assertions needed for valid use of this function
-   assert("xlabel" in benchmark and
-          "input_configs" in benchmark and
-          len(benchmark["xlabel"]) > 1 and
-          isinstance(benchmark["xlabel"][0], str) and
-          len(benchmark["xlabel"]) == len(benchmark["input_configs"])
-   )
-   pattern = '\-n\s*".*{}=([^,"]*)'.format(benchmark["labelx"][0])
+def get_label(xlabel, benchmark_string):
+   pattern = '\-b\s*".*{}=([^,"]*)'.format(xlabel[0])
    strval = re.search(pattern, benchmark_string).group(1)
-   index = list(map(str, benchmark["input_configs"])).index(strval)
-   return benchmark["labelx"][2][index]
+   return xlabel[1][strval]
    
 
 
@@ -200,26 +199,31 @@ def run_benchmark(bid, bname, config_strings):
    results = []
 
    for runconf,inputconf in config_strings:
-      config_string = runconf + inputconf
+      config_string = '{} "{}" {} "{}"'.format(runconf[0], runconf[1], inputconf[0], inputconf[1])
       config_string_printable = (
          config_string
          .replace(" ", "_")
          .replace(",", "")
       ).replace("__","")
 
-      print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
+      print('# Running Benchmark \n{} {}\n'.format(sys.path[0]+"/"+bname, config_string));
       myenv = os.environ;
       proc = subprocess.Popen(
-         [sys.path[0]+"/"+bname, runconf, inputconf],
+         [sys.path[0]+"/"+bname,
+          runconf[0],
+          runconf[1],
+          inputconf[0],
+          inputconf[1]],
          stdout=subprocess.PIPE,
-         stderr=subprocess.PIPE,
+         #stderr=subprocess.PIPE,
          env = myenv
       );
       f = open(sys.path[0]+ "/out/" + bname + config_string_printable + ".out", "w")
       for line in proc.stdout:
+         print(line)
          try:
             dict = eval(line)
-            results.append((config_string_printable, dict))
+            results.append((config_string, dict))
             f.write(str(dict)+'\n')
          except:
             f.write(line.decode('utf-8'))
@@ -239,7 +243,7 @@ for benchmark in DO_BENCHMARKS:
    )
    # get x-axis labels and add them to data
    if "xlabel" in benchmark: 
-      result = list(map(lambda res: (*res, get_label(benchmark, res[0])), result))
+      result = list(map(lambda res: (*res, get_label(benchmark["xlabel"], res[0])), result))
       plot_input(sys.path[0], bname, result, benchmark["xlabel"][0])
    else:
       plot(sys.path[0], bname, result)
@@ -253,4 +257,5 @@ plot_name = "benchmark_comparison"
 
 if do_plot and compare_results:
    plot(sys.path[0], plot_name, compare_results)
+
 

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import re
 
 def plot(path, plot_name, dict_list):
     if plot_name == None:
@@ -47,7 +48,9 @@ def plot_input(path, plot_name, dict_list, x_label):
     time_function_heights = {}
     time_function_std_devs = {}
     for dict in dict_list:
-        name = "_"+dict[0].split("=")[1]
+        # cut out x_label option
+        pattern = '{}=[^,]*'.format(x_label)
+        name = ''.join(re.compile(pattern).split(dict[0]))
         time_dict = (dict[1])['time']
         ival = dict[2]
         time_fun_name = time_dict['name_t']+name
@@ -76,7 +79,7 @@ def plot_input(path, plot_name, dict_list, x_label):
     bar_width = 0.1
     
     y_pos = [ [] for j in range(len(time_function_names)) ]
-    y_pos[0] = np.arange(len(x_values))
+    y_pos[0] = list(range(len(x_values)))
 
     for i in range(1, len(time_function_names)):
         for j in range(len(y_pos[i-1])):            
@@ -131,4 +134,3 @@ def plot_input(path, plot_name, dict_list, x_label):
     plt.savefig(path+"/plots/"+plot_name+"performance_mean.png", bbox_inches = "tight")
 
     plt.clf()
-	
