@@ -1,5 +1,18 @@
 # Convergence
 
+In the following tables we plot the relative error of our algorithm on various bodies. 
+The tables always come in pairs, the upper table contains the data for coordinate walk, the lower for sphere walk.
+The tables plot how relative error behaves w.r.t. the steps and \#samples parameters:
+- steps indicates the number of sample points we discard 
+In particular we keep every 1/steps-th sample point and discard all others. This essentially controlls the randomness of the sample points considered
+(c.f. mixing time of markov chains and [hit-and-run mixes fast](https://link.springer.com/content/pdf/10.1007%2Fs101070050099.pdf))
+- #samples is the number of samples taken per shell in order to estimate the ratio between its volume and the volume of all smaller shells
+
+Our findings are:
+- Sphere walk (costlier, more randomness) and Coord walk yield comparable results for the same parameters
+- Increasing randomness by increasing the steps parameter does not consistently improve the error
+- Increasing \#samples increases precision
+
 ## Intersection of 2 hyperrectangles in various dimensions (2box_d)
 
 Dimension 3
