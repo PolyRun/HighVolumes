@@ -1,6 +1,6 @@
 # Optimizations
 
-## Most important points (for Slides)
+## Most important points
 
 * What we already did:
   * Extended algo for Polytopes to also deal with Ellipsoids
@@ -9,25 +9,25 @@
     * we will not persue intersect further, it only consists of dotProducts anyway
   * intersectCoord profits if Polytope matrix in column format (Polytope vs PolytopeT)
   * Polytope.intersectCoord faster if cache dotProducts
-  * often dimensions of vectors/matrices are rather low (10-100)
-    * so it may not be possible to reach max performance (op density)
+* often dimensions of vectors/matrices are rather low (10-100)
+  * so it may not be possible to reach max performance (op density)
 
 * What we will still do:
   * PolytopeT.intersectCoord
     * vectorize, convert if/min/max (seem to cost most now)
   * Ellipsoid.intersectCoord
-    * try to cache? and vectorize
+    * try to cache and vectorize
     * Else: vectorize MVM
 
 * What we could do if we have enough time:
-  * Benchmark Polyvest to show how we compare
-    * performance count, convergence, match for exact parameters
   * improve prng, mostly relevant for random direction intersection
   * parallelize sample point x
     * would lead to MMM for random direction intersect
     * Could increase op density
-  * extend to other convex quadratic bodies
-
+* extend to other convex quadratic bodies
+  * Benchmark Polyvest to show how we compare
+    - performance count, convergence, match for exact parameters
+  
 * A word on preprocessing
   * Ellipsoid method (shallow-cut), implemented but will not optimize (scope)
   * Cholesky decomp, matrix inverse, Sherman-Morisson, ...
@@ -86,6 +86,9 @@
 
 * Randomness - very costly for intersect
   * could improve if required
+  * Use a mersenne twister -> Vectorize it
+  * Use hardware randomness (int _rdrand64_step)
+  * Better randomness could have a positive effect on convergence
 
 # Big picture
 
