@@ -37,23 +37,23 @@
 
 ## Detailed discussion
 
-* dotProduct / vectorNorm
+* dotProduct / squaredNorm
   * 2 accumulators brought some speedup
   * input too small often - vectorization so far lead to no speedup
   * max 4 fps, fast around n=100, 2 fps below n=30
   * vectorization causes overhead to reduce final sum vector
   * could implement versions for different n?
-  * vectorNorm should also be checked - not benchmarked yet
+  * squaredNorm should also be checked - not benchmarked yet
 
 * Ball\_intersect
   * at about 2 fpc
-  * basically 2 vectorNorms and a dotProduct
-  * fuse vectorNorm and dotProduct, less reads
+  * basically 2 squaredNorms and a dotProduct
+  * fuse squaredNorm and dotProduct, less reads
   * maybe vectorize?
 
 * Ball\_intersectCoord 
-  * is only a vectorNorm + div + sqrt
-  * probably hard to do much beyond vectorNorm?
+  * is only a squaredNorm + div + sqrt
+  * probably hard to do much beyond squaredNorm?
 
 * Polytope vs PolytopeT
   * row vs column matrix A. allows for different impl, especially when vectorizing

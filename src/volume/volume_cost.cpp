@@ -1,6 +1,7 @@
 #include "volume_helper.hpp"
 #include "volume_cost.hpp"
 #include <cassert>
+
 void xyz_f1_cost(const int n) {
    pc_stack().log(n,2*n, "bogus");
 }
@@ -8,12 +9,16 @@ void xyz_f1_cost(const int n) {
 void dotProduct_cost_ref(const int n) {
    pc_stack().log(2*n,2*n*sizeof(FT), "dotProduct");
 }
-void vectorNorm_cost_ref(const int n) {
-   pc_stack().log(2*n,n*sizeof(FT), "vectorNorm");
+
+void squaredNorm_cost_ref(const int n) {
+   pc_stack().log(2*n, n*sizeof(FT), "squaredNorm");
 }
+
 void Ball_intersectCoord_cost_ref(const int n) {
-   {// frame for vectorNorm
-      PC_Frame<vectorNorm_cost_f> frame((void*)vectorNorm);
+
+   // frame for squaredNorm
+   {
+      PC_Frame<squaredNorm_cost_f> frame((void*) squaredNorm);
       frame.costf()(n);
    }
 
@@ -24,13 +29,16 @@ void Ball_intersectCoord_cost_ref(const int n) {
    // sqrt 1
    pc_stack().log(15,sizeof(FT), "quad. eq.");
 }
+
 void Ball_intersect_cost_ref(const int n) {
-   {// frame for vectorNorm
-      PC_Frame<vectorNorm_cost_f> frame((void*)vectorNorm,2); // 2 vectorNorms
+
+   // frame for squaredNorm
+   {
+      PC_Frame<squaredNorm_cost_f> frame((void*) squaredNorm, 2); // 2 squaredNorms
       frame.costf()(n);
    }
    {// frame for dotProduct
-      PC_Frame<dotProduct_cost_f> frame((void*)dotProduct);
+      PC_Frame<dotProduct_cost_f> frame((void*) dotProduct);
       frame.costf()(n);
    }
    
@@ -222,8 +230,9 @@ void volume_cost_ref(const int n, const int bcount, const void** body, const Bod
          frame.costf()(n, bcount, body, type);
       }
 
-      {// frame for vectorNorm: x
-         PC_Frame<vectorNorm_cost_f> frame((void*) vectorNorm); // vectorNorms
+      // frame for squaredNorm: x
+      {
+         PC_Frame<squaredNorm_cost_f> frame((void*) squaredNorm); // squaredNorm
          frame.costf()(n);
       }
       

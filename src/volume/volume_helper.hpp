@@ -42,7 +42,7 @@ public:
       pc_stack().add((void*)dotProduct_auto2, new PC_Cost_Wrapper<dotProduct_cost_f>(dotProduct_cost_ref,"dotProduct_auto2"));
       pc_stack().add((void*)dotProduct_vec1, new PC_Cost_Wrapper<dotProduct_cost_f>(dotProduct_cost_ref,"dotProduct_vec1"));
       
-      pc_stack().add((void*)vectorNorm_ref, new PC_Cost_Wrapper<vectorNorm_cost_f>(vectorNorm_cost_ref,"vectorNorm_ref"));
+      pc_stack().add((void*)squaredNorm, new PC_Cost_Wrapper<squaredNorm_cost_f>(squaredNorm_cost_ref,"squaredNorm_ref"));
       
       pc_stack().add((void*)Ball_intersect_ref, new PC_Cost_Wrapper<Ball_intersect_cost_f>(Ball_intersect_cost_ref,"Ball_intersect_ref"));
       pc_stack().add((void*)Ball_intersectCoord_ref, new PC_Cost_Wrapper<Ball_intersectCoord_cost_f>(Ball_intersectCoord_cost_ref,"Ball_intersectCoord_ref"));
@@ -93,8 +93,8 @@ public:
                                                      {"auto2",{dotProduct_auto2,"auto gen 2"}},
 						     {"vec1", {dotProduct_vec1,"vectorize"}} }));
       
-      add(new CLIF_Option<vectorNorm_f_t>(&vectorNorm,'f',"vectorNorm","ref", {
-						     {"ref", {vectorNorm_ref, "ref"}} }));
+      add(new CLIF_Option<squaredNorm_f_t>(&squaredNorm,'f',"squaredNorm","ref", {
+						     {"ref", {squaredNorm_ref, "ref"}} }));
 
       add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walk_ref", {
                                                      {"walk_ref",{walk_ref, "random direction walk (ref)"}},

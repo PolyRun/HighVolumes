@@ -389,8 +389,11 @@ void test_preprocess_generic() {
 	}
 
 	// center of ellipsoid should still be on the edge of the box:
-	for(int i=0;i<n;i++) {x[i] = e_out->a[i];}
-	FT x2 = vectorNorm(x,n);
+	for (int i = 0; i < n; i++) {
+        x[i] = e_out->a[i];
+    }
+
+	FT x2 = squaredNorm(x,n);
 	assert(x2 >= 1.0);
 	
 	x[0]-=0.001;

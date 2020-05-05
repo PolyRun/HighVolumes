@@ -10,8 +10,8 @@ void xyz_f1_cost(const int n);
 // ----------------------------------------------- linalg
 typedef void (*dotProduct_cost_f)(const int);
 void dotProduct_cost_ref(const int n);
-typedef void (*vectorNorm_cost_f)(const int);
-void vectorNorm_cost_ref(const int n);
+typedef void (*squaredNorm_cost_f)(const int);
+void squaredNorm_cost_ref(const int n);
 
 typedef void (*Ball_intersectCoord_cost_f)(const int);
 void Ball_intersectCoord_cost_ref(const int n);

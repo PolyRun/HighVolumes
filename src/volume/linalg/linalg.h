@@ -16,8 +16,8 @@
 //   assume no memory allignment!
 typedef FT (*dotProduct_f_t)(const FT* u, const FT* v, const int n);
 extern dotProduct_f_t dotProduct;
-typedef FT (*vectorNorm_f_t)(const FT* v, const int n);
-extern vectorNorm_f_t vectorNorm;
+typedef FT (*squaredNorm_f_t)(const FT* v, const int n);
+extern squaredNorm_f_t squaredNorm;
 #include "dotProduct/dotProduct.h"
 
 // intersect line x + t*d

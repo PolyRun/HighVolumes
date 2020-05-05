@@ -50,7 +50,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
            dir[j] = ori[j] - ori_new[j];
        }
        //for(int j=0;j<n;j++) {printf("%.12f ",dir[j]);} printf(" dir\n");
-       FT dist2 = vectorNorm(dir, n);
+       FT dist2 = squaredNorm(dir, n);
        FT dist = sqrt(dist2);
        FT R = sqrt(R2);
        FT R_new = sqrt(R_new);
@@ -441,7 +441,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
-      FT kk = log(rk/r0)/(-log(stepFac));
+      //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
       //{
@@ -459,7 +459,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
          walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
         
          // find right Bm:
-         const FT x2 = vectorNorm(x,n); // normalized radius
+         const FT x2 = squaredNorm(x,n); // normalized radius
          const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));
          const int mm = ceil(mmm);
 	 const int m = (mm>0)?mm:0; // find index of balls
