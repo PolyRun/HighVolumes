@@ -188,7 +188,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     }
 
     // 2n-sphere
-    std::vector<int> twonsphere_n = {2,3,4,5,10,20,40,60,100};
+    std::vector<int> twonsphere_n = {2,3,4,5};
     for(int n : twonsphere_n) {
        std::string nstr = std::to_string(n);
        add("2nsphere_preprocessed_"+nstr, "2*n spheres, dim-"+nstr+" [normalized]", [n]() {
