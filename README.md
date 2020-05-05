@@ -4,6 +4,10 @@ ASL group project
 
 [Sources we use for the Algorithm.](./papers/README.md)
 
+<img src="./img/cross.gif" width="300">
+<img src="./img/2ellipsoid.gif" width="300">
+<img src="./img/2n_sphere3.gif" width="300">
+
 # Optimizations
 
 [Lists of completed optimizations and ideas to try.](./OPTIMIZATIONS.md)
