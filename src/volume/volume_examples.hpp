@@ -39,6 +39,7 @@ public:
     // det = det(L)
     Solved_Body* transform(const Matrix* L, const FT det, const FT* a, const FT beta);
     Solved_Body* scale(const FT beta);
+    Solved_Body* scaleAxis(const FT* diag);
     Solved_Body* translate(const FT* a);
     Solved_Body* rotate();
     Solved_Body* shear();// similar to rotate, but only L matrix
@@ -105,6 +106,10 @@ Solved_Body* generate_cross_polytope(int dims);
 // meaning that all but one side are aligned with the axes
 // We therefore have n + 1 constraints
 Solved_Body* generate_simplex(int dims);
+
+// generate a polytope where each constraint touches at most k variables
+// this produces a sparse matrix with at most k non-zero entries per row/constraint
+Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r, const int num_constraints);
 
 // Generates an ellipse with predefined ranges for each axis
 Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds);

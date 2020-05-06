@@ -313,6 +313,40 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	    }
 	});
     }
+
+    // kvariable
+    std::vector<int> kvar_n = {2,3,4,5,10,20,40,60,100};
+    for(int n : kvar_n) {
+       std::string nstr = std::to_string(n);
+       add("kvar_"+nstr, "polytope with constraints of at most k-variables,"+nstr+"-dim [normalized]", [n]() {
+           Solved_Body* b1 = generate_kvariable_polytope(n,2,1.0,4*n);//k=2, r=1.0
+           
+	   std::cout << "\n# Generator: b1:\n";
+	   b1->print();
+
+	   FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+	   
+	   for(int i=0;i<n;i++) {a[i]=prng_get_random_double_in_range(-10,10);}
+	   Solved_Body* b2 = b1->translate(a);
+	   
+	   std::cout << "\n# Generator: b2 - translated:\n";
+	   b2->print();
+
+	   for(int i=0;i<n;i++) {a[i]=prng_get_random_double_in_range(0.1,10);}
+	   Solved_Body* b3 = b2->scaleAxis(a);
+	   
+	   std::cout << "\n# Generator: b3 - scaleAxis:\n";
+	   b3->print();
+	   
+	   Solved_Body* sb = b3->preprocess();
+           
+	   delete b1;
+	   delete b2;
+	   delete b3;
+	   free(a);
+           return sb;
+       });
+    }
 }
 
 Solved_Body*
@@ -367,6 +401,23 @@ Solved_Body::scale(const FT beta) {
     Matrix_free(L);
     return sb;
 }
+
+
+Solved_Body*
+Solved_Body::scaleAxis(const FT* diag) {
+    Matrix* L = Matrix_new(n,n);
+    FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+    for(int i=0;i<n;i++) {
+        Matrix_set(L, i, i, diag[i]);
+        a[i] = 0;
+    }
+    Solved_Body* sb = transform(L,1.0,a,1.0);
+    free(a);
+    Matrix_free(L);
+    return sb;
+}
+
+
 
 Solved_Body*
 Solved_Body::rotate() {
@@ -565,6 +616,71 @@ Solved_Body* generate_simplex(int dims) {
     int bcount = 1;
     Solved_Body *result = new Solved_Body(bcount, dims);
     result->body[0] = simplex;
+    result->type[0] = &Polytope_T;
+    result->volume = volume;
+    return result;
+
+}
+
+struct MyElement {
+    int index;
+    double r;
+
+    bool operator > (const MyElement& other) const {
+       return r > other.r;
+    }
+};
+
+void choosek(const int n, const int k, std::vector<int> &choice) {
+    std::vector<MyElement> e;
+    e.reserve(n);
+    for(int i=0;i<n;i++) {
+        e.push_back({i,prng_get_random_double_in_range(0,1)});
+    }
+    std::sort(e.begin(),e.end(),greater<MyElement>());
+    choice.resize(k,0);
+    for(int i=0;i<k;i++) {choice[i] = e[i].index;}
+}
+
+Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r, const int num_constraints) {
+    assert(k>=2);
+    assert(num_constraints >= 2*dims);
+    Polytope *p = Polytope_new(dims, num_constraints);
+    
+    // add cube at the end to make sure polytope is bounded.
+    const int rand_constr = num_constraints - 2*dims;
+
+    int j = 0;
+    std::vector<int> choice;
+    FT* d = (FT*)(aligned_alloc(32, dims*sizeof(FT))); // align this to 32
+    for(int c=0;c<rand_constr;c++) {
+        choosek(dims,k,choice);
+	for(int i=0;i<dims;i++) {d[i]=0;}
+	for(int i=0;i<k;i++) {d[choice[i]] = prng_get_random_double_normal();}
+	FT d2 = squaredNorm(d,dims);
+	FT dd = sqrt(d2);
+	for(int i=0;i<k;i++) {Polytope_set_a(p, j, choice[i], d[choice[i]]/dd);}
+	Polytope_set_b(p, j, r);
+	j++;
+    }
+    free(d);
+    
+    // add the cube:
+    for(int i=0;i<dims;i++) {
+        Polytope_set_a(p, j, i, -1);
+	Polytope_set_b(p, j, r);
+        j++;
+        Polytope_set_a(p, j, i, 1);
+	Polytope_set_b(p, j, r);
+        j++;
+    }
+    assert(j==num_constraints);
+    
+    FT volume = std::pow(2,dims);
+
+    int bcount = 1;
+    Solved_Body *result = new Solved_Body(bcount, dims);
+    result->body[0] = p;
     result->type[0] = &Polytope_T;
     result->volume = volume;
     return result;
