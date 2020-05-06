@@ -199,7 +199,7 @@ void Ellipsoid_intersectCoord_cost_ref(const void* o) {
    // sqrt 1
    // div 1
 
-   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "read cache, calculate");
+   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "1 MVM, 1 VVM");
 }
 
 void Ellipsoid_intersectCoord_cached_cost_ref(const void* o) {
@@ -212,7 +212,7 @@ void Ellipsoid_intersectCoord_cached_cost_ref(const void* o) {
    // sqrt 1
    // div 1
 
-   pc_stack().log(add + mul + 1 + 1, (n*n + 3*n)*sizeof(FT), "1 MVM, 1 VVM");
+   pc_stack().log(add + mul + 1 + 1, (n*n + 3*n)*sizeof(FT), "read cache, calculate");
 }
 
 void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o) {
