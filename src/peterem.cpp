@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
    auto f = [&](FT x, FT y, FT z, FT &r, FT &g, FT &b) {
       FT xx = x*4*n-2*n;
       FT yy = y*4*n-2*n;
-      FT zz = z*4*n-2*n;
+      FT zz = (z*4*n-2*n)/4.0;
       for(int i=0;i<n;i++) {p[i] = (i==0)*xx + (i==1)*yy + (i==2)*zz;}
      
       FT eval = Ellipsoid_eval(e,p);

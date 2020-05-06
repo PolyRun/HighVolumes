@@ -319,7 +319,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     for(int n : kvar_n) {
        std::string nstr = std::to_string(n);
        add("kvar_"+nstr, "polytope with constraints of at most k-variables,"+nstr+"-dim [normalized]", [n]() {
-           Solved_Body* b1 = generate_kvariable_polytope(n,2,1.0,4*n);//k=2, r=1.0
+           Solved_Body* b1 = generate_kvariable_polytope(n,2,1.0,10*n);//k=2, r=1.0
            
 	   std::cout << "\n# Generator: b1:\n";
 	   b1->print();
