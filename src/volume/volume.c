@@ -6,22 +6,6 @@
 dotProduct_f_t dotProduct = dotProduct_ref;
 #include "linalg/dotProduct/dotProduct.c"
 
-// TODO move
-Body_T Ellipsoid_T = {
-        .print = Ellipsoid_print,
-	.free = Ellipsoid_free,
-	.clone = Ellipsoid_clone,
-	.inside = Ellipsoid_inside_ref,
-	.intersect = Ellipsoid_intersect_ref,
-	.intersectCoord = Ellipsoid_intersectCoord_ref,
-	.cacheAlloc = Ellipsoid_cacheAlloc_ref,
-	.cacheReset = Ellipsoid_cacheReset_ref,
-	.cacheUpdateCoord = Ellipsoid_cacheUpdateCoord_ref,
-	.shallowCutOracle = Ellipsoid_shallowCutOracle_ref,
-	.transform = Ellipsoid_transform_ref,
-        .boundingSphere = Ellipsoid_bounding_ref
-};
-
 
 preprocess_f_t preprocess_generic = preprocess_ref;
 
