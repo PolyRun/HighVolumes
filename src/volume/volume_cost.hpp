@@ -41,6 +41,7 @@ void PolytopeT_cacheReset_cost_ref(const void* o);
 // ----------------------------------------------- Ellipsoid
 void Ellipsoid_intersect_cost_ref(const void* o);
 void Ellipsoid_intersectCoord_cost_ref(const void* o);
+void Ellipsoid_intersectCoord_cached_cost_ref(const void* o);
 void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o);
 void Ellipsoid_cacheReset_cost_ref(const void* o);
 

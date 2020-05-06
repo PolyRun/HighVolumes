@@ -1,6 +1,20 @@
 #include "ellipsoid.h"
 
-// TODO: move Body_T Ellipsoid_T here
+
+Body_T Ellipsoid_T = {
+        .print = Ellipsoid_print,
+	.free = Ellipsoid_free,
+	.clone = Ellipsoid_clone,
+	.inside = Ellipsoid_inside_ref,
+	.intersect = Ellipsoid_intersect_ref,
+	.intersectCoord = Ellipsoid_intersectCoord_ref,
+	.cacheAlloc = Ellipsoid_cacheAlloc_ref,
+	.cacheReset = Ellipsoid_cacheReset_ref,
+	.cacheUpdateCoord = Ellipsoid_cacheUpdateCoord_ref,
+	.shallowCutOracle = Ellipsoid_shallowCutOracle_ref,
+	.transform = Ellipsoid_transform_ref,
+        .boundingSphere = Ellipsoid_bounding_ref
+};
 
 Ellipsoid* Ellipsoid_new(int n) {
    Ellipsoid* e = (Ellipsoid*) malloc(sizeof(Ellipsoid));
@@ -138,6 +152,7 @@ void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT
 void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
    const int n = e->n;
+   FT* Az_c = (FT*)cache;
 
    FT* Ad = Ellipsoid_get_Ai(e,d);
    FT a = Ad[d];
@@ -166,19 +181,60 @@ void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t
    *t1 = (-b + sqrtDet) * aInv;
 }
 
-int  Ellipsoid_cacheAlloc_ref(const void* o) {
+void Ellipsoid_intersectCoord_cached_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
-   return 0; // no cache
+   const int n = e->n;
+   FT* Az_c = (FT*)cache;
+
+   FT* Ad = Ellipsoid_get_Ai(e,d);
+   FT a = Ad[d];
+   FT b = 0;
+   FT c = -1.0;
+   
+   // do multiplications same as in eval.
+   for(int i=0;i<n;i++) {
+      const FT* Ai = Ellipsoid_get_Ai(e,i);
+      FT Az = Az_c[i];
+      b += (i==d) * Az; // selection
+      c += (x[i] - e->a[i]) * Az;
+   }
+   b *= 2.0;
+
+   // find t:
+   const FT det = b*b - 4.0*a*c;
+   assert(det >= 0);
+   const FT sqrtDet = sqrt(det);
+   const FT aInv = 0.5/a;
+
+   *t0 = (-b - sqrtDet) * aInv;
+   *t1 = (-b + sqrtDet) * aInv;
+}
+
+int  Ellipsoid_cacheAlloc_ref(const void* o) {
+   const Ellipsoid* e = (Ellipsoid*)o;
+   return e->n * sizeof(FT);
 }
 
 void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache) {
-   Ellipsoid* e = (Ellipsoid*)o;
-   // no cache
+   const Ellipsoid* e = (Ellipsoid*)o;
+   FT* c = (FT*)cache;
+   const int n = e->n;
+   for(int i=0;i<n;i++) {
+      const FT* Ai = Ellipsoid_get_Ai(e,i);
+      c[i] = 0;
+      for(int j=0; j<n; j++) {
+         c[i] += Ai[j] * (x[j] - e->a[j]);
+      }
+   }
 }
 
 void Ellipsoid_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
-   // no cache
+   const int n = e->n;
+   FT* c = (FT*)cache;
+   for(int i=0; i<n; i++) {
+      c[i] += dx * Ellipsoid_get_a(e,i,d);
+   } 
 }
 
 bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c) {

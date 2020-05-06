@@ -36,6 +36,8 @@ void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT
 
 void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
 
+void Ellipsoid_intersectCoord_cached_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
+
 int  Ellipsoid_cacheAlloc_ref(const void* o);
 
 void Ellipsoid_cacheReset_ref(const void* o, const FT* x, void* cache);
@@ -59,6 +61,11 @@ static inline FT* Ellipsoid_get_Ai(const Ellipsoid* e, int i) {
 static inline void Ellipsoid_set_a(const Ellipsoid* e, int i, int x, FT value) __attribute__((always_inline));
 static inline void Ellipsoid_set_a(const Ellipsoid* e, int i, int x, FT value) {
    e->A[i * (e->line) + x] = value;
+}
+
+static inline FT Ellipsoid_get_a(const Ellipsoid* e, int i, int x) __attribute__((always_inline));
+static inline FT Ellipsoid_get_a(const Ellipsoid* e, int i, int x) {
+   return e->A[i * (e->line) + x];
 }
 
 // get row i of T

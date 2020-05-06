@@ -199,14 +199,39 @@ void Ellipsoid_intersectCoord_cost_ref(const void* o) {
    // sqrt 1
    // div 1
 
-   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "1 MVM, 1 VVM");
+   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "read cache, calculate");
 }
+
+void Ellipsoid_intersectCoord_cached_cost_ref(const void* o) {
+   const Ellipsoid* e = (Ellipsoid*)o;
+   const int n = e->n;
+   
+   // read: n^2 + n + n (all of A, all of a, all of x, cache)
+   size_t add = n + n + 3; // z = x-a, eq
+   size_t mul = n + 6; // Az, eq
+   // sqrt 1
+   // div 1
+
+   pc_stack().log(add + mul + 1 + 1, (n*n + 3*n)*sizeof(FT), "1 MVM, 1 VVM");
+}
+
 void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o) {
-   const Ellipsoid* p = (Ellipsoid*)o;
-   pc_stack().log(0,0, "no cache");
+   const Ellipsoid* e = (Ellipsoid*)o;
+   const int n = e->n;
+   // read 2*n
+   // write n
+   // mul n
+   // add n
+   pc_stack().log(2*n,3*n*sizeof(FT), "update cached MVM");
 }
 void Ellipsoid_cacheReset_cost_ref(const void* o) {
-   pc_stack().log(0, 0, "no cache");
+   const Ellipsoid* e = (Ellipsoid*)o;
+   const int n = e->n;
+   // read n*n + n   (A, x)
+   // write m  (c)
+   // mul n*n
+   // add n*n
+   pc_stack().log(2*n*n,n*n + n + n, "recompute MVM");
 }
 
 void volume_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
