@@ -186,17 +186,10 @@ void Ellipsoid_intersectCoord_cached_ref(const void* o, const FT* x, const int d
    const int n = e->n;
    FT* Az_c = (FT*)cache;
 
-   FT* Ad = Ellipsoid_get_Ai(e,d);
-   FT a = Ad[d];
-   FT b = 0;
+   FT a = Ellipsoid_get_a(e,d,d);
+   FT b = 2.0*Az_c[d];
    FT c = Az_c[n];
    
-   // do multiplications same as in eval.
-   for(int i=0;i<n;i++) {
-      FT Az = Az_c[i];
-      b += (i==d) * Az; // selection
-   }
-   b *= 2.0;
    // find t:
    const FT det = b*b - 4.0*a*c;
    assert(det >= 0);
