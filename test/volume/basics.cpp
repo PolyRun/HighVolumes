@@ -102,6 +102,37 @@ void test_box_intersectCoord(const int n, Body_T* type, void* box) {
    free(x);
 }
 
+void test_ellipsoid_intersectCoord(const int n, Body_T* type, Ellipsoid* e) {
+   FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   int d = prng_get_random_int_in_range(0,n-1);
+   for(int i=0; i<n; i++) {
+      x[i] = e->a[i] + prng_get_random_double_in_range(-1.0/n,1.0/n);
+   }
+      
+   void* cache = aligned_alloc(32, Ellipsoid_T.cacheAlloc(e));
+   Ellipsoid_T.cacheReset(e,x,cache);
+   FT t0,t1;
+   Ellipsoid_T.intersectCoord(e, x, d, &t0, &t1, cache);
+      
+   assert(t0 < t1);
+      
+   // test if points are really on ellipse:
+   FT x0[n];
+   FT x1[n];
+   for(int i=0; i<n; i++) {
+      x0[i] = x[i] + t0*(i==d);
+      x1[i] = x[i] + t1*(i==d);
+   }
+   FT eval0 = Ellipsoid_eval(e, x0);
+   FT eval1 = Ellipsoid_eval(e, x1);
+   assert(std::abs(eval0-1) < 0.000001);
+   assert(std::abs(eval1-1) < 0.000001);
+
+   free(cache);
+   free(x);
+}
+
+
 void test_box_cutOracle(const int n, Body_T* type, void* box) {
    FT* v = (FT*)(aligned_alloc(32, n*sizeof(FT)));
    FT c;
@@ -341,45 +372,29 @@ int main(int argc, char** argv) {
       free(d);
       free(x);
       Ellipsoid_T.free(e);
-   } 
-   for(int t=0; t<100; t++) {// test Ellipsoid_T.intersectCoord
-      const int n = 20;
-      Ellipsoid* e = Ellipsoid_new(n); // simple sphere
-      for(int i=0; i<n; i++) {
-         e->a[i] = prng_get_random_double_in_range(-10,10);
-         FT* Ai = Ellipsoid_get_Ai(e,i);
-         Ai[i] = prng_get_random_double_in_range(1.1,2.0);
-      }
-      
-      FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
-      int d = prng_get_random_int_in_range(0,n-1);
-      for(int i=0; i<n; i++) {
-         x[i] = e->a[i] + prng_get_random_double_in_range(-1.0/n,1.0/n);
-      }
-      
-      void* cache = aligned_alloc(32, Ellipsoid_T.cacheAlloc(e));
-      Ellipsoid_T.cacheReset(e,x,cache);
-      FT t0,t1;
-      Ellipsoid_T.intersectCoord(e, x, d, &t0, &t1, cache);
-      
-      assert(t0 < t1);
-      
-      // test if points are really on ellipse:
-      FT x0[n];
-      FT x1[n];
-      for(int i=0; i<n; i++) {
-         x0[i] = x[i] + t0*(i==d);
-         x1[i] = x[i] + t1*(i==d);
-      }
-      FT eval0 = Ellipsoid_eval(e, x0);
-      FT eval1 = Ellipsoid_eval(e, x1);
-      assert(std::abs(eval0-1) < 0.000001);
-      assert(std::abs(eval1-1) < 0.000001);
+   }
 
-      free(cache);
-      free(x);
-      Ellipsoid_T.free(e);
-   } 
+   auto oE = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Ellipsoid_intersectCoord"));
+   for(auto it : oE->fmap) {
+      Ellipsoid_T.intersectCoord = it.second.first;
+      std::cout << "Test Ellipsoid for intersectCoord " << it.first << " - " << it.second.second << std::endl;
+
+      for (int t = 0; t < 100; t++) {
+         // Generate new ellipsoid box, n dim
+         const int n = 20;
+         Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+         for(int i=0; i<n; i++) {
+            e->a[i] = prng_get_random_double_in_range(-10,10);
+            FT* Ai = Ellipsoid_get_Ai(e,i);
+            Ai[i] = prng_get_random_double_in_range(1.1,2.0);
+         }
+
+         test_ellipsoid_intersectCoord(n, &Ellipsoid_T, e);
+         
+         Ellipsoid_T.free(e);
+      }
+   }
+
    { // test Ellipsoid_project
       Ellipsoid* e = Ellipsoid_new(3); // simple sphere
       e->a[0] = 5.0;

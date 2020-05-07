@@ -55,6 +55,8 @@
   * is only a squaredNorm + div + sqrt
   * probably hard to do much beyond squaredNorm?
 
+[Plots for various intersect functions](./optimizations/plots.md)
+
 * Polytope vs PolytopeT
   * row vs column matrix A. allows for different impl, especially when vectorizing
 
