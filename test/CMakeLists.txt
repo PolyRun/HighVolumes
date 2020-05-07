@@ -6,6 +6,7 @@ add_subdirectory(general)
 add_subdirectory(volume)
 add_subdirectory(preprocess)
 add_subdirectory(matrix)
+add_subdirectory(jit)
 
 
 file(COPY test.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
