@@ -206,13 +206,13 @@ void Ellipsoid_intersectCoord_cached_cost_ref(const void* o) {
    const Ellipsoid* e = (Ellipsoid*)o;
    const int n = e->n;
    
-   // read: 1 + n+1 (one element of A, cache)
+   // read: 1 + 1+1 (one element of A, two elements out of cache)
    size_t add = 3; //  eq
    size_t mul = 6; // eq
    // sqrt 1
    // div 1
 
-   pc_stack().log(add + mul + 1 + 1, (1+n+1)*sizeof(FT), "read cache, calculate");
+   pc_stack().log(add + mul + 1 + 1, 3*sizeof(FT), "read cache, calculate");
 }
 
 void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o) {
