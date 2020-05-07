@@ -18,8 +18,17 @@ typedef struct jit_MemoryPages {
    size_t head;       // offset to mem, position of first non-used
 } jit_MemoryPages;
 
-extern jit_MemoryPages* jit_memoryPages;
+jit_MemoryPages* jit_memoryPages();
 
-int jit_estimate_memory(const size_t bytes_requested);
+// calculate how many pages one needs to fit bytes
+int jit_estimate_npages(const size_t bytes_requested);
+
+// push character to mem
+void jit_push(const uint8_t c);
+
+// print mem to stdout
+void jit_print();
+
+uint8_t* jit_head();
 
 #endif // HEADER_JIT_H
