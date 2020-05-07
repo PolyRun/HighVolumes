@@ -193,7 +193,6 @@ void Ellipsoid_intersectCoord_cached_ref(const void* o, const FT* x, const int d
    
    // do multiplications same as in eval.
    for(int i=0;i<n;i++) {
-      const FT* Ai = Ellipsoid_get_Ai(e,i);
       FT Az = Az_c[i];
       b += (i==d) * Az; // selection
    }
