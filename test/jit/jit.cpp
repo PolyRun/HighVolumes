@@ -247,6 +247,7 @@ int main() {
       for(int i=-10;i<20;i++) {
          long res = func2(i);
 	 std::cout << "table: " << i << " " << res << "\n";
+         assert((i<0 && res == 0)  || (i>8 && res==0) || (res==(i*i+5)));
       }
    }
 
