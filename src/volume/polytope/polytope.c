@@ -63,6 +63,62 @@ PolytopeT* Polytope_to_PolytopeT(const Polytope* p){
    return pt;
 }
 
+
+
+PolytopeCSC *Polytope_to_PolytopeCSC(const Polytope *O){
+    PolytopeCSC *P = malloc(sizeof(PolytopeCSC));
+
+    P->n = O->n;
+    P->m = O->m;
+
+    P->b = (FT *) aligned_alloc(32, P->m * sizeof(FT));
+    for (int i = 0; i < P->m; i++){
+        P->b[i] = Polytope_get_b(O, i);
+    }
+    
+    // maybe not necessary to align this?
+    P->col_start = (int *) aligned_alloc(32, (P->n+1)*sizeof(int));
+    memset(P->col_start, 0, P->n+1);
+    
+    // first count nr of elements per column
+    for (int i = 0; i < P->n; i++){
+        P->col_start[i+1] = P->col_start[i];
+        for (int j = 0; j < P->m; j++){
+            if (Polytope_get_a(O, j, i) != 0){
+                P->col_start[i+1]++;
+            }
+        }
+        //printf("col_start[%d] = %d\n", i+1, P->col_start[i+1]);
+        int cs = ceil_cache(P->col_start[i+1], sizeof(FT)) / 8;
+        P->col_start[i+1] = cs;
+        //printf("col_start[%d] = %d\n", i+1, P->col_start[i+1]);
+    }
+
+    
+    // second fill values into A and row indices into row_idx
+    P->A = (FT *) aligned_alloc(32, P->col_start[P->n] * sizeof(FT));
+    P->row_idx = (int *) aligned_alloc(32, P->col_start[P->n] * sizeof(int));
+
+    int idx = 0;
+    for (int i = 0; i < P->n; i++){
+        for (int j = 0; j < P->m; j++){
+            if (Polytope_get_a(O, j, i) != 0){
+                P->A[idx] = Polytope_get_a(O, j, i);
+                P->row_idx[idx] = j;
+                idx++;
+            }
+        }
+        for (; idx < P->col_start[i+1]; idx++){
+            P->row_idx[idx] = -1;
+        }
+    }
+
+    return P;
+}
+
+
+
+
 void Polytope_print(const void* o) {
    const Polytope* p = (Polytope*)o;
    printf("Polytope: n=%d, m=%d\n",p->n,p->m);

@@ -75,6 +75,40 @@ glp_prob* PolytopeT_get_lp(const PolytopeT* P) {
     return lp;
 }
 
+
+glp_prob* PolytopeCSC_get_lp(const PolytopeCSC* P) {
+    glp_prob* lp = get_lp(P->n,P->m);
+    const int n = P->n;
+    const int m = P->m;
+
+    //load constraints
+    // MB: is this 1-based indexing due to glp?
+    int *ind = (int *) malloc ((n+1) * sizeof(int));
+    for (int j = 1; j < n + 1; j++){
+        ind[j] = j;
+    }
+
+    FT *val = (FT *) malloc((n+1) * sizeof(FT));
+    for (int i = 1; i < m + 1; i++){
+        PolytopeCSC_get_Ai(P, i-1, val+1);        
+        glp_set_mat_row(lp, i, n, ind, val);
+        // note: A[i][n] = b[i]
+        glp_set_row_bnds(lp, i, GLP_UP, 0, P->b[i-1]);
+        
+    }
+    free(ind);
+    free(val);
+
+    // constraints on variables: free
+    for (int i = 1; i < n + 1; i++){
+        glp_set_col_bnds(lp, i, GLP_FR, 0, 0);
+    }
+
+    return lp;
+}
+
+
+
 void LP_to_boundingSphere(const int n, glp_prob* lp, FT *R2, FT *Ori) {
     //disable msg output
     glp_smcp parm;
@@ -135,4 +169,14 @@ void PolytopeT_bounding_ref(const void *B, FT *R2, FT *Ori){
     glp_delete_prob(lp);
 }
 
+
+
+void PolytopeCSC_bounding_ref(const void *o, FT *r, FT *ori){
+
+    const PolytopeCSC *P = (PolytopeCSC *) o;
+    glp_prob *lp = PolytopeCSC_get_lp(P);
+    LP_to_boundingSphere(P->n, lp, r, ori);
+    glp_delete_prob(lp);
+    
+}
 

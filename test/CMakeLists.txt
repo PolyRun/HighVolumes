@@ -6,6 +6,7 @@ add_subdirectory(general)
 add_subdirectory(volume)
 add_subdirectory(preprocess)
 add_subdirectory(matrix)
+add_subdirectory(polytopeCSC)
 add_subdirectory(jit)
 
 

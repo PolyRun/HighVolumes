@@ -499,6 +499,19 @@ Solved_Body::polytopeTranspose() {
     }
 }
 
+void
+Solved_Body::polytopeCSC(){
+    for (int b = 0; b < bcount; b++){
+        if (type[b] == &Polytope_T){
+            Polytope *p = (Polytope *) body[b];
+            PolytopeCSC *pcsc = Polytope_to_PolytopeCSC(p);
+            //Polytope_free(p);
+            body[b] = pcsc;
+            type[b] = &PolytopeCSC_T;
+        }
+    }
+}
+
 Solved_Body_Generator* solved_body_generator_ = NULL;
 Solved_Body_Generator* solved_body_generator() {
     if(!solved_body_generator_) {solved_body_generator_ = new Solved_Body_Generator();}

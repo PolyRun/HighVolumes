@@ -1,5 +1,6 @@
 #include "../ellipsoid/ellipsoid.h"
 #include "../polytopeT/polytopeT.h"
+#include "../polytopeCSC/polytopeCSC.h"
 #include "../ft.h"
 #include "../linalg/linalg.h"
 
@@ -30,6 +31,7 @@ Polytope* Polytope_new(int n, int m);
 void Polytope_free(const void* o);
 void* Polytope_clone(const void* o);
 PolytopeT* Polytope_to_PolytopeT(const Polytope* p);
+PolytopeCSC *Polytope_to_PolytopeCSC(const Polytope *p);
 
 void Polytope_print(const void* o);
 bool Polytope_inside_ref(const void* o, const FT* v);

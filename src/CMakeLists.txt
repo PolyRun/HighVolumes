@@ -41,6 +41,7 @@ add_subdirectory(volume/matrix)
 add_subdirectory(volume/ellipsoid)
 add_subdirectory(volume/polytope)
 add_subdirectory(volume/polytopeT)
+add_subdirectory(volume/polytopeCSC)
 
 target_link_libraries(volume PRIVATE glpk prng)
 

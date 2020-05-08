@@ -265,6 +265,26 @@ int main(int argc, char** argv) {
       PolytopeT_free(box);
    }
 
+
+   auto oCSC = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeCSC_intersectCoord"));
+   for (auto it : oCSC->fmap){
+       // test PolytopeCSC
+       std::cout << "Test PolytopeCSC for intersectCoord\n";
+
+       // Generate new polytope box, n dim, 2 radius
+       const int n = 10;
+       Polytope* boxx = Polytope_new_box(n,2);
+       PolytopeCSC *box = Polytope_to_PolytopeCSC(boxx);
+
+       test_box_inside(n, &PolytopeCSC_T, box);
+       test_box_intersect(n, &PolytopeCSC_T, box);
+       test_box_intersectCoord(n, &PolytopeCSC_T, box);
+
+       Polytope_free(boxx);
+       PolytopeCSC_free(box);
+   }
+   
+
    // Check ball volume:
    assert(std::abs(Ball_volume(3,1.0) - 4.189) <= 0.01);
    assert(std::abs(Ball_volume(4,1.0) - 4.935) <= 0.01);
@@ -484,6 +504,16 @@ int main(int argc, char** argv) {
       test_box_cutOracle(n, &PolytopeT_T, box);
       
       PolytopeT_free(box);
+   }
+   { // PolytopeCSC_T.shallowCutOracle
+      const int n = 20;
+      Polytope* bbox = Polytope_new_box(n,1.0);
+      PolytopeCSC *box = Polytope_to_PolytopeCSC(bbox);
+      
+      test_box_cutOracle(n, &PolytopeCSC_T, box);
+      
+      PolytopeT_free(box);
+      PolytopeCSC_free(bbox);
    }
    {// Ellipsoid_T.shallowCutOracle
       std::cout << "Ellipsoid oracle:\n";
