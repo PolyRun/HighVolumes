@@ -333,6 +333,33 @@ int main() {
       }
    }
 
+   // ------------------------------- get constant
+   {
+      double (*func2)();
+      func2 = (double (*)()) jit_head();
+      
+      {
+         const uint8_t i_instr[] = {0x48,0xbe,0x00,0xff,0x00,0xff,0x00,0xff,0x00,0xff}; // movabs $0xff00ff00ff00ff00,%rsi
+         jit_push(i_instr,10);
+      }
+      uint8_t* p = jit_head();
+      double dd = 1.01;
+      *(double*)(p-8) = dd;
+      {
+         const uint8_t i_instr[] = {0xc4,0xe1,0xf9,0x6e,0xc6}; // vmovq  %rsi,%xmm0
+         jit_push(i_instr,5);
+      }
+      jit_pushByte(0xc3);  // ret
+      
+      jit_print();
+       
+      double res = func2();
+      std::cout << "cal for const: " << res << "\n";
+      assert(res == dd);
+   }
+
+ 
+
    // -------------------------------- end tests
 
    #ifdef NDEBUG
