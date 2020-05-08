@@ -25,6 +25,7 @@ typedef void (*intersectCoord_f_t)(const void*,const FT*,const int,FT*,FT*,void*
 typedef int (*cacheAlloc_f_t)(const void*);
 
 // input: body, vector x, cache
+// for polytopes: computes all m dotproducts Ai x and stores each in cache[i]
 typedef void (*cacheReset_f_t)(const void*, const FT*, void*);
 
 // input: body, dim d, dx on that dim, cache

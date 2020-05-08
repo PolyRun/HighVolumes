@@ -263,5 +263,3 @@ void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, con
       }
    }
 }
-
-

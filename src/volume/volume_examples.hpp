@@ -45,6 +45,7 @@ public:
     Solved_Body* shear();// similar to rotate, but only L matrix
     Solved_Body* preprocess(); // make normalized via preprocessing
     void polytopeTranspose();// make all Polytope to PolytopeT
+    void polytopeCSC(); // make all Polytope to PolytopeCSC 
 
     void **body;
     Body_T **type;
