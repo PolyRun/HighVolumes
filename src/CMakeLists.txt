@@ -13,8 +13,14 @@ set(PRNG_HEADER_FILES
 add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
 
 
-
-
+# ----------------------- jit
+set(JIT_SOURCE_FILES
+   jit/jit.c
+)
+set(JIT_HEADER_FILES
+   jit/jit.h
+)
+add_library(jit ${JIT_SOURCE_FILES} ${JIT_HEADER_FILES})
 
 
 # ----------------------- volume
