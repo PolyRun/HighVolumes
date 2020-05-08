@@ -31,6 +31,9 @@ void jit_pushByte(const uint8_t c);
 // push array of n chars to mem
 void jit_push(const uint8_t* c, const size_t n);
 
+// add zero, until alligned
+void jit_allign(const size_t a);
+
 // print mem to stdout
 void jit_print();
 

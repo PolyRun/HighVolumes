@@ -42,6 +42,11 @@ void jit_push(const uint8_t* c, const size_t n) {
    }
 }
 
+void jit_allign(const size_t a) {
+   jit_MemoryPages* p = jit_memoryPages();
+   while(p->head % a != 0) {jit_pushByte(0);}
+}
+
 void jit_print() {
    jit_MemoryPages* p = jit_memoryPages();
    printf("Memory content: %x %d\n", p->mem, p->head);
