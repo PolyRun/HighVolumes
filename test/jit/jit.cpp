@@ -222,7 +222,7 @@ int main() {
          jit_push(instr,4);
       }
       {
-         const uint8_t instr[] = {0xf3,0xc3}; // mov    %edi,%edi
+         const uint8_t instr[] = {0xf3,0xc3}; // mov    repz retq
          jit_push(instr,2);
       }
       
@@ -251,7 +251,87 @@ int main() {
       }
    }
 
+   // ------------------------------- (int,double) -> execute depending on int, return double
+   {
+      double (*func2)(int,double);
+      func2 = (double (*)(int,double)) jit_head();
+      
+      {
+         const uint8_t i_cmp[] = {0x83,0xff,0x08}; // cmp    $0x8,%edi
+         jit_push(i_cmp,3);
+      }
+      {
+         const uint8_t instr[] = {0x77,0x0}; // ja +1  # goes to L_end
+         jit_push(instr,2);
+      }
+      uint8_t* jump_end = jit_head();// prepare to set L_end here
 
+      {
+         const uint8_t instr[] = {0x48,0x8d,0x15,0x00,0x00,0x00,0x00}; // lea   L_table(%rip),%rdx
+         jit_push(instr,7);
+      }
+      uint8_t* set_table = jit_head();// prepare to set L_table here
+
+      {
+         const uint8_t instr[] = {0x89,0xff}; // mov    %edi,%edi
+         jit_push(instr,2);
+      }
+      {
+         const uint8_t instr[] = {0x48,0x63,0x04,0xba}; // movslq (%rdx,%rdi,4),%rax
+         jit_push(instr,4);
+      }
+      {
+         const uint8_t instr[] = {0x48,0x01,0xd0}; // add    %rdx,%rax
+         jit_push(instr,3);
+      }
+      {
+         const uint8_t instr[] = {0xff,0xe0}; // jmpq   *%rax
+         jit_push(instr,2);
+      }
+ 
+      jit_allign(4);// allign for array of longs below
+
+      uint8_t* table = jit_head();
+      *(set_table-4) = (uint8_t)(jit_head() - set_table); // got set L_end for jump above
+      for(int i=0;i<9;i++) {
+         const uint8_t instr[] = {0,0,0,0}; // mov    %edi,%edi
+         jit_push(instr,4);
+      }
+
+      for(int i=0;i<9;i++) {// generate code for each, register location in table
+         uint8_t* location = jit_head();
+	 size_t entry = location - table;
+	 std::cout << "entry: " << i << " " << entry << "\n";
+	 table[4*i+0] = (entry & 0xff) >> 0;
+	 table[4*i+1] = (entry & 0xff00) >> 8;
+	 table[4*i+2] = (entry & 0xff0000) >> 16;
+	 table[4*i+3] = (entry & 0xff000000) >> 24;
+         
+	 if(i%3==0) {
+	    const uint8_t instr[] = {0x66,0x0f,0xef,0xc0}; // pxor   %xmm0,%xmm0
+	    jit_push(instr,4);
+	 }
+	 jit_pushByte(0xc3);  // ret
+      }
+      
+      size_t offset = jit_head() - jump_end;
+      std::cout << "jump offset: " << offset << "\n";
+      *(jump_end-1) = (uint8_t)(jit_head() - jump_end); // got set L_end for jump above
+      // label: L_end
+      {
+         const uint8_t instr[] = {0x66,0x0f,0xef,0xc0}; // pxor   %xmm0,%xmm0
+         jit_push(instr,4);
+      }      
+      jit_pushByte(0xc3);  // ret
+      
+      jit_print();
+       
+      for(int i=-10;i<20;i++) {
+	 double a = i*1.1+2.0;
+         double res = func2(i,a);
+	 std::cout << "i-call: " << i << " " << a << " " << res << "\n";
+      }
+   }
 
    // -------------------------------- end tests
 
