@@ -84,7 +84,7 @@ PolytopeCSC *Polytope_to_PolytopeCSC(const Polytope *O){
     for (int i = 0; i < P->n; i++){
         P->col_start[i+1] = P->col_start[i];
         for (int j = 0; j < P->m; j++){
-            if (Polytope_get_a(O, j, i) != 0){
+            if (Polytope_get_a(O, j, i) > FT_EPS || -Polytope_get_a(O, j, i) > FT_EPS){
                 P->col_start[i+1]++;
             }
         }
@@ -102,7 +102,8 @@ PolytopeCSC *Polytope_to_PolytopeCSC(const Polytope *O){
     int idx = 0;
     for (int i = 0; i < P->n; i++){
         for (int j = 0; j < P->m; j++){
-            if (Polytope_get_a(O, j, i) != 0){
+            // we already get rid of very small values, then we can omit the check |dai| > eps in intersectCoord
+            if (Polytope_get_a(O, j, i) > FT_EPS || -Polytope_get_a(O, j, i) > FT_EPS){
                 P->A[idx] = Polytope_get_a(O, j, i);
                 P->row_idx[idx] = j;
                 idx++;

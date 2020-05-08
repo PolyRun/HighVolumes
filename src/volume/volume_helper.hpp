@@ -110,9 +110,12 @@ public:
 						     {"cached_nc1", {PolytopeT_intersectCoord_cached_nc1, "with cache, nc1"}},
 						     {"cached_ref", {PolytopeT_intersectCoord_cached_ref,"with cache (ref)"}} }));
 
-      add(new CLIF_Option<intersectCoord_f_t>(&PolytopeCSC_T.intersectCoord, 'f', "PolytopeCSC_intersectCoord", "ref", {
-                                                                                                                        {"ref", {PolytopeCSC_intersectCoord_ref, "no cche (ref)"}}
-              }));
+      add(new CLIF_Option<intersectCoord_f_t>
+          (&PolytopeCSC_T.intersectCoord, 'f', "PolytopeCSC_intersectCoord", "ref",
+           {
+            {"ref", {PolytopeCSC_intersectCoord_ref, "no cche (ref)"}},
+            {"cached_ref", {PolytopeCSC_intersectCoord_cached_ref, "with cache (ref)"}}
+           }));
 
       add(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,'f',"Ellipsoid_intersectCoord","cached_ref", {
                                                      {"ref",        {Ellipsoid_intersectCoord_ref, "no cache (ref)"}},

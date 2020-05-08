@@ -269,7 +269,7 @@ int main(int argc, char** argv) {
    auto oCSC = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeCSC_intersectCoord"));
    for (auto it : oCSC->fmap){
        // test PolytopeCSC
-       std::cout << "Test PolytopeCSC for intersectCoord\n";
+       std::cout << "Test PolytopeCSC for intersectCoord " << it.first << " - " << it.second.second << std::endl;
 
        // Generate new polytope box, n dim, 2 radius
        const int n = 10;

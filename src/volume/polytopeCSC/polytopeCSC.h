@@ -4,6 +4,7 @@ typedef struct PolytopeCSC PolytopeCSC;
 #define POLYTOPECSC_H
 
 #include "../volume.h"
+#include "intersectCoord/intersectCoord.h"
 
 // CSC compressed sparse column format
 typedef struct PolytopeCSC {

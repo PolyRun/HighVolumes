@@ -182,6 +182,18 @@ void test_preprocess_generic() {
         PolytopeT_T.free(box);
         PolytopeT_T.free(box_out);
     }
+    {
+        const int n = 10;
+        Polytope *bbox = Polytope_new_box(n,0.5);
+        PolytopeCSC *box = Polytope_to_PolytopeCSC(bbox);
+        PolytopeCSC *box_out = (PolytopeCSC *) malloc(sizeof(PolytopeCSC));
+
+        test_preprocess_generic_box(n, &PolytopeCSC_T, box, box_out);
+
+        Polytope_T.free(bbox);
+        PolytopeCSC_T.free(box);
+        PolytopeCSC_T.free(box_out);
+    }
     
     {
         const int n = 10;
@@ -295,7 +307,7 @@ void test_preprocess_generic() {
 	Ellipsoid_T.free(e_out);
     }
 
-    for(int s=0;s<6;s++){
+    for(int s=0;s<8;s++){
 	const int n = 10;
         FT det;
 
@@ -354,6 +366,24 @@ void test_preprocess_generic() {
 	      type[5-s] = &Ellipsoid_T;
 	      break;
 	   }
+        case 6: case 7: {// PolytopeCSC
+            Polytope* bbox = Polytope_new_box(n,1.0);
+            Polytope_set_b(bbox,n,0);
+            PolytopeCSC *box = Polytope_to_PolytopeCSC(bbox);
+            other_out = malloc(sizeof(PolytopeCSC));
+            body_in[s%2] = box;
+            body_out[s%2] = other_out;
+            type[s%2] = &PolytopeCSC_T;
+            other_out_type = &PolytopeCSC_T;
+	      
+            Ellipsoid* e = Ellipsoid_new(n);
+            e_out = Ellipsoid_new(n);
+            body_in[(s+1)%2] = e;
+            body_out[(s+1)%2] = e_out;
+            type[(s+1)%2] = &Ellipsoid_T;
+            break;
+            
+        }
 	}
 	std::cout << "\nInput Bodies for setting " << s << "\n";
 	for(int b=0;b<2;b++) {
