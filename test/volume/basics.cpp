@@ -512,8 +512,8 @@ int main(int argc, char** argv) {
       
       test_box_cutOracle(n, &PolytopeCSC_T, box);
       
-      PolytopeT_free(box);
-      PolytopeCSC_free(bbox);
+      PolytopeT_free(bbox);
+      PolytopeCSC_free(box);
    }
    {// Ellipsoid_T.shallowCutOracle
       std::cout << "Ellipsoid oracle:\n";
