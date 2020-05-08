@@ -20,8 +20,6 @@ jit_MemoryPages* jit_memoryPages() {
       jit_memoryPages_->mem = jit_mmap(jit_memoryPages_->pages);;
    }
    
-   printf("mem: %x\n", jit_memoryPages_->mem);
-
    return jit_memoryPages_;
 }
 
@@ -30,10 +28,18 @@ int jit_estimate_npages(const size_t bytes_requested) {
    return (bytes_requested + psize - 1)/psize;
 }
 
-void jit_push(const uint8_t c) {
+void jit_pushByte(const uint8_t c) {
    jit_MemoryPages* p = jit_memoryPages();
    p->mem[p->head] = c;
    p->head++;
+}
+
+void jit_push(const uint8_t* c, const size_t n) {
+   jit_MemoryPages* p = jit_memoryPages();
+   for(int i=0;i<n;i++) {
+      p->mem[p->head] = c[i];
+      p->head++;
+   }
 }
 
 void jit_print() {

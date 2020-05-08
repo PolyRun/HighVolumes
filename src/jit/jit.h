@@ -11,6 +11,9 @@
 #include <sys/mman.h>
 #include <stdint.h>
 
+#define JIT_RDI 
+
+
 typedef struct jit_MemoryPages {
    uint8_t *mem;      // pointer to memory region
    size_t page_size;  // size of mem pages
@@ -24,7 +27,9 @@ jit_MemoryPages* jit_memoryPages();
 int jit_estimate_npages(const size_t bytes_requested);
 
 // push character to mem
-void jit_push(const uint8_t c);
+void jit_pushByte(const uint8_t c);
+// push array of n chars to mem
+void jit_push(const uint8_t* c, const size_t n);
 
 // print mem to stdout
 void jit_print();
