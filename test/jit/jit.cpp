@@ -79,25 +79,53 @@ int main() {
    func(); // call the function!
 
    // ------------------------------- simple function with arguments
-   int (*func2)(int,int);
-   func2 = (int (*)(int,int)) jit_head();
-   
    {
-      const uint8_t i_mov[] = {0x48,0x89,0xf8}; // mov    %rdi,%rax
-      jit_push(i_mov,3);
+      int (*func2)(int,int);
+      func2 = (int (*)(int,int)) jit_head();
+      
+      {
+         const uint8_t i_mov[] = {0x48,0x89,0xf8}; // mov    %rdi,%rax
+         jit_push(i_mov,3);
+      }
+      {
+         const uint8_t i_add[] = {0x48,0x01,0xf0}; // add    %rsi,%rax
+         jit_push(i_add,3);
+      }
+      jit_pushByte(0xc3);  // ret
+      
+      jit_print();
+      
+      for(int i=0;i<1000;i++) {
+         int a1 = i+5;
+         int a2 = i*i;
+         int res = func2(a1,a2);
+         assert(res==a1+a2);
+      }
    }
+
+   // ------------------------------- simple function with double arguments
    {
-      const uint8_t i_add[] = {0x48,0x01,0xf0}; // add    %rsi,%rax
-      jit_push(i_add,3);
+      double (*func2)(double,double);
+      func2 = (double (*)(double,double)) jit_head();
+      
+      {
+         const uint8_t i_add[] = {0xf2,0x0f,0x58,0xc1}; // addsd %xmm1,%xmm0
+         jit_push(i_add,4);
+      }
+      
+      jit_pushByte(0xc3);  // ret
+      
+      jit_print();
+      
+      for(int i=0;i<1000;i++) {
+         double a1 = i+5/2.0;
+         double a2 = i*i*1.1;
+         double res = func2(a1,a2);
+	 std::cout << "i: " << i << " " << a1 << " " << a2 << " " << res << "\n";
+         assert(res==a1+a2);
+      }
    }
-   jit_pushByte(0xc3);  // ret
-   
-   for(int i=0;i<1000;i++) {
-      int a1 = i+5;
-      int a2 = i*i;
-      int res = func2(a1,a2);
-      assert(res==a1+a2);
-   }
+
 
    // -------------------------------- end tests
 
