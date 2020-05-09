@@ -11,4 +11,30 @@ bool inside(const double* x) {
 }
 
 
+void intersect(const double* x, const double* d, double *t0, double *t1) {
+   *t0 = *x;
+   *t1 = *d;
+   return;	
+   double t00 = -100000.0;
+   double t11 = +100000.0;
+   
+   // for each:
+   
+   // 2x dot product: d*a, x*a
+   
+   const double da = 0.1 * d[0] + 9.7*d[1] + 4.4*d[2];
+   const double xa = 0.11 * x[0] + 9.71*x[1] + 4.41*x[2];
 
+   // check if d*a is parallel ==0: jump to next - or make sure t is zero?
+   
+   const double t = (8.5 - xa) / da;
+
+   t00 += t;
+   t11 += t;
+   // sub, div
+   // cond, min, max
+
+   // end
+   *t0 = t00;
+   *t1 = t11;
+}

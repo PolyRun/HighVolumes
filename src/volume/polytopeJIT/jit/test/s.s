@@ -42,3 +42,8 @@ L_end:
 rep ret
 
 
+intersect:
+movsd   (%rdi), %xmm0
+movsd   %xmm0, (%rdx)
+movsd   (%rsi), %xmm0
+movsd   %xmm0, (%rcx)

@@ -53,8 +53,8 @@ void PolytopeJIT_print(const void* o) {
    printf("PolytopeJIT: n=%d, m=%d\n",p->n,p->m);
 
    printf("inside: %p\n",p->inside);
+   printf("intersect: %p\n",p->intersect);
    printf("intersectCoord: %p\n",p->intersectCoord);
-   // TODO: display function contents?
 }
 
 bool PolytopeJIT_inside_ref(const void* o, const FT* v) {

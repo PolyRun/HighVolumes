@@ -270,6 +270,7 @@ int main(int argc, char** argv) {
    for (auto it : oCSC->fmap){
        // test PolytopeCSC
        std::cout << "Test PolytopeCSC for intersectCoord " << it.first << " - " << it.second.second << std::endl;
+       PolytopeCSC_T.intersectCoord = it.second.first;
 
        // Generate new polytope box, n dim, 2 radius
        const int n = 10;
@@ -287,12 +288,15 @@ int main(int argc, char** argv) {
    auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
    for (auto it : oJIT->fmap){
        // test PolytopeJIT
+       PolytopeJIT_T.intersectCoord = it.second.first;
        std::cout << "Test PolytopeJIT for intersectCoord " << it.first << " - " << it.second.second << std::endl;
 
        // Generate new polytope box, n dim, 2 radius
        const int n = 10;
        Polytope* boxx = Polytope_new_box(n,2);
        PolytopeJIT *box = Polytope_to_PolytopeJIT(boxx);
+       
+       PolytopeJIT_print(box);
 
        test_box_inside(n, &PolytopeJIT_T, box);
        test_box_intersect(n, &PolytopeJIT_T, box);
