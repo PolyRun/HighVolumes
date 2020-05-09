@@ -7,6 +7,8 @@ cmake_minimum_required(VERSION 3.6)
 target_sources(volume PRIVATE
 	volume/polytopeJIT/jit/inside.h
 	volume/polytopeJIT/jit/inside.c
+	volume/polytopeJIT/jit/intersect.c
+	volume/polytopeJIT/jit/intersect.c
 	volume/polytopeJIT/jit/intersectCoord.h
 	volume/polytopeJIT/jit/intersectCoord.c
 )

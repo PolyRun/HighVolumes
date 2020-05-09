@@ -123,6 +123,5 @@ void PolytopeJIT_generate_inside_ref(const Polytope *p, PolytopeJIT *o) {
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,1); }
    
    jit_print();
-   // TODO: implement correctly!
 }
 
