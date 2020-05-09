@@ -44,7 +44,7 @@ add_subdirectory(volume/polytopeT)
 add_subdirectory(volume/polytopeCSC)
 add_subdirectory(volume/polytopeJIT)
 
-target_link_libraries(volume PRIVATE glpk prng)
+target_link_libraries(volume PRIVATE glpk prng jit)
 
 set_target_properties(volume PROPERTIES
    CXX_STANDARD 11

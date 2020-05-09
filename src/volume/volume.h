@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "../random/prng.h"
+#include "../jit/jit.h"
 #include "ft.h"
 #include "linalg/linalg.h"
 

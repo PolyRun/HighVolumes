@@ -3,6 +3,6 @@
 
 #include "../polytopeJIT.h"
 
-void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, const PolytopeJIT *o);
+void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o);
 
 #endif // POLYTOPE_JIT_INTERSECTCOORD_H
