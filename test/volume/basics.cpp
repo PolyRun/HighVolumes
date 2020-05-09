@@ -283,7 +283,8 @@ int main(int argc, char** argv) {
        Polytope_free(boxx);
        PolytopeCSC_free(box);
    }
- 
+   
+   /*
    auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
    for (auto it : oJIT->fmap){
        // test PolytopeJIT
@@ -301,6 +302,7 @@ int main(int argc, char** argv) {
        Polytope_free(boxx);
        PolytopeJIT_free(box);
    }
+   */
    
 
    // Check ball volume:
