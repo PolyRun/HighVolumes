@@ -33,7 +33,7 @@ void PolytopeCSC_intersectCoord_cached_ref(const void* o, const FT* x, const int
 
 
 
-
+/*
 void PolytopeCSC_intersectCoord_cached_vec(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache){
 
     const PolytopeCSC *p = (PolytopeCSC *) o;
@@ -83,4 +83,4 @@ void PolytopeCSC_intersectCoord_cached_vec(const void* o, const FT* x, const int
     *t0 = t00;
     *t1 = t11;
 }
-
+*/
