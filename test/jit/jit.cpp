@@ -358,8 +358,6 @@ int main() {
       assert(res == dd);
    }
 
- 
-
    // -------------------------------- end tests
 
    #ifdef NDEBUG

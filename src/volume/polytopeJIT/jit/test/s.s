@@ -3,6 +3,42 @@
 .text
 _inside:
 xorl %eax, %eax
-ret
+vmovq  %rsi,%xmm0
+vmovq  %rsi,%xmm1
+vmovq  %rsi,%xmm2
+ja L_end
+mulsd   8(%rdi), %xmm0
+mulsd   16(%rdi), %xmm0
+mulsd   512(%rdi), %xmm0
+mulsd   24(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+mulsd   512(%rdi), %xmm1
+addsd   %xmm1, %xmm0
+ucomisd	%xmm1, %xmm0
+setbe	%al
+L_end:
+rep ret
 
 

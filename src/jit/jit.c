@@ -19,6 +19,8 @@ jit_MemoryPages* jit_memoryPages() {
       jit_memoryPages_->head = 0;
       jit_memoryPages_->mem = jit_mmap(jit_memoryPages_->pages);;
    }
+
+   assert(jit_memoryPages_->head < jit_memoryPages_->page_size * jit_memoryPages_->pages && "out of mmap memory!");
    
    return jit_memoryPages_;
 }
@@ -42,6 +44,12 @@ void jit_push(const uint8_t* c, const size_t n) {
    }
 }
 
+void jit_write(uint8_t* mem, const uint8_t* c, const size_t n) {
+   for(int i=0;i<n;i++) {
+      mem[i] = c[i];
+   }
+}
+
 void jit_allign(const size_t a) {
    jit_MemoryPages* p = jit_memoryPages();
    while(p->head % a != 0) {jit_pushByte(0);}
@@ -49,7 +57,7 @@ void jit_allign(const size_t a) {
 
 void jit_print() {
    jit_MemoryPages* p = jit_memoryPages();
-   printf("Memory content: %x %d\n", p->mem, p->head);
+   printf("Memory content: %p %ld\n", p->mem, p->head);
    for(int i=0;i<p->head;i++) {
       uint8_t c = p->mem[i];
       printf("%x ",c);
