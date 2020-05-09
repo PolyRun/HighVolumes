@@ -19,17 +19,25 @@ PolytopeJIT* PolytopeJIT_new(int n, int m) {
    PolytopeJIT* o = (PolytopeJIT*) malloc(sizeof(PolytopeJIT));
    o->n = n;
    o->m = m;
-   // TODO: fix in function pointers?
+   o->inside = NULL;
+   o->intersectCoord = NULL;
    return o;
 }
 
 PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p) {
-   assert(false && "Polytope to PolytopeJIT not implemented");
+   const int n = p->n;
+   const int m = p->m;
+   PolytopeJIT* o = PolytopeJIT_new(n,m);
+   PolytopeJIT_print(o);
+   
+   PolytopeJIT_generate_inside_ref(p,o);
+   PolytopeJIT_generate_intersectCoord_ref(p,o);
+
+   return o;
 }
 
 void PolytopeJIT_free(const void* o) {
    PolytopeJIT* p = (PolytopeJIT*)o;
-   // TODO: maybe free function pointers?
    free(p);
 }
 
@@ -42,13 +50,16 @@ void* PolytopeJIT_clone(const void* o) {
 void PolytopeJIT_print(const void* o) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
    printf("PolytopeJIT: n=%d, m=%d\n",p->n,p->m);
+
+   printf("inside: %p\n",p->inside);
+   printf("intersectCoord: %p\n",p->intersectCoord);
    // TODO: display function contents?
 }
 
 bool PolytopeJIT_inside_ref(const void* o, const FT* v) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
-   assert(false && "inside not implemented for PolytopeJIT");
-   return true; // passed all inequalities
+   assert(p->inside && "inside function must be generated PolytopeJIT");
+   return p->inside(v);
 }
 
 

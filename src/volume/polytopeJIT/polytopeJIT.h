@@ -5,9 +5,16 @@
 
 extern Body_T PolytopeJIT_T;
 
-typedef struct PolytopeJIT {
-   // TODO: add function pointers here.
+// position x
+typedef bool (*pjit_inside_f_t)(const FT*);
 
+// direction d, outputs t0,t1
+typedef void (*pjit_intersectCoord_f_t)(const int d, FT* t0, FT* t1);
+
+typedef struct PolytopeJIT {
+   pjit_inside_f_t inside;
+   pjit_intersectCoord_f_t intersectCoord;
+   
    int n; // dimensions
    int m; // constraints
 } PolytopeJIT;
@@ -16,6 +23,9 @@ typedef struct PolytopeJIT {
 
 PolytopeJIT* PolytopeJIT_new(int n, int m);
 PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p);
+#include "jit/inside.h"
+#include "jit/intersectCoord.h"
+
 
 void PolytopeJIT_free(const void* o);
 void* PolytopeJIT_clone(const void* o);
