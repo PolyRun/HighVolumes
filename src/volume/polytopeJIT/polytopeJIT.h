@@ -1,12 +1,7 @@
-#include "../volume.h"
-//#include "../ellipsoid/ellipsoid.h"
-//#include "../polytopeT/polytopeT.h"
-//#include "../polytopeCSC/polytopeCSC.h"
-#include "../ft.h"
-//#include "../linalg/linalg.h"
-
 #ifndef POLYTOPE_JIT_H
 #define POLYTOPE_JIT_H
+
+#include "../volume.h"
 
 extern Body_T PolytopeJIT_T;
 
@@ -20,6 +15,7 @@ typedef struct PolytopeJIT {
 
 
 PolytopeJIT* PolytopeJIT_new(int n, int m);
+PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p);
 
 void PolytopeJIT_free(const void* o);
 void* PolytopeJIT_clone(const void* o);

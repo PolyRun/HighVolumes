@@ -283,6 +283,24 @@ int main(int argc, char** argv) {
        Polytope_free(boxx);
        PolytopeCSC_free(box);
    }
+ 
+   auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
+   for (auto it : oJIT->fmap){
+       // test PolytopeJIT
+       std::cout << "Test PolytopeJIT for intersectCoord " << it.first << " - " << it.second.second << std::endl;
+
+       // Generate new polytope box, n dim, 2 radius
+       const int n = 10;
+       Polytope* boxx = Polytope_new_box(n,2);
+       PolytopeJIT *box = Polytope_to_PolytopeJIT(boxx);
+
+       test_box_inside(n, &PolytopeJIT_T, box);
+       test_box_intersect(n, &PolytopeJIT_T, box);
+       test_box_intersectCoord(n, &PolytopeJIT_T, box);
+
+       Polytope_free(boxx);
+       PolytopeJIT_free(box);
+   }
    
 
    // Check ball volume:

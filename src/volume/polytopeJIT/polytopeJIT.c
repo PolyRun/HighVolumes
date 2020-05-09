@@ -23,6 +23,9 @@ PolytopeJIT* PolytopeJIT_new(int n, int m) {
    return o;
 }
 
+PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p) {
+   assert(false && "Polytope to PolytopeJIT not implemented");
+}
 
 void PolytopeJIT_free(const void* o) {
    PolytopeJIT* p = (PolytopeJIT*)o;

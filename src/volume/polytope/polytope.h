@@ -1,6 +1,7 @@
 #include "../ellipsoid/ellipsoid.h"
 #include "../polytopeT/polytopeT.h"
 #include "../polytopeCSC/polytopeCSC.h"
+#include "../polytopeJIT/polytopeJIT.h"
 #include "../ft.h"
 #include "../linalg/linalg.h"
 

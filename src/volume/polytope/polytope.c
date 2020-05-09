@@ -117,9 +117,6 @@ PolytopeCSC *Polytope_to_PolytopeCSC(const Polytope *O){
     return P;
 }
 
-
-
-
 void Polytope_print(const void* o) {
    const Polytope* p = (Polytope*)o;
    printf("Polytope: n=%d, m=%d\n",p->n,p->m);

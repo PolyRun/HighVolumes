@@ -117,6 +117,9 @@ public:
             {"cached_ref", {PolytopeCSC_intersectCoord_cached_ref, "with cache (ref)"}}
            }));
 
+      add(new CLIF_Option<intersectCoord_f_t>(&PolytopeJIT_T.intersectCoord,'f',"PolytopeJIT_intersectCoord","ref", {
+						     {"ref", {Polytope_intersectCoord_ref, "simple jit (ref)"}} }));
+
       add(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,'f',"Ellipsoid_intersectCoord","cached_ref", {
                                                      {"ref",        {Ellipsoid_intersectCoord_ref, "no cache (ref)"}},
 						     {"cached_ref", {Ellipsoid_intersectCoord_cached_ref, "with cache (ref)"}} }));
