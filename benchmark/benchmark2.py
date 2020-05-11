@@ -95,13 +95,25 @@ BENCHMARKS = [
    {"id": 4,
     "name": "benchmark_intersect",
     "config": [
+       
        {
-          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord"],
-          "run_configs": ["r=100000,intersect=intersectCoord"],
-          "input_configs": [("generator", intersectEbodies)]
+          "fun_configs": ["Polytope_intersectCoord=cached_ref", "Polytope_intersectCoord=ref"],
+          "run_configs": ["intersect=intersectCoord,polytopeTranspose=false"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+       {
+          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref"],
+          "run_configs": ["intersect=intersectCoord,polytopeTranspose=true"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+       {
+          "fun_configs": [],
+          "run_configs": ["intersect=intersect,polytopeTranspose=false", "intersect=intersect,polytopeTranspose=true"],
+          "input_configs": [("generator", intersectbodies)]
        }
     ],
-    "xlabel": ("generator", intersectEdims)
+    "xlabel": ("generator", intersectdims)
+    #"xlabel": ("generator", intersectEdims)
    }
 ]
 
@@ -252,3 +264,11 @@ if do_plot and compare_results:
    plot(sys.path[0], plot_name, compare_results)
 
 
+'''
+       ,
+       {
+          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord"],
+          "run_configs": ["r=100000,intersect=intersectCoord"],
+          "input_configs": [("generator", intersectEbodies)]
+       }
+'''
