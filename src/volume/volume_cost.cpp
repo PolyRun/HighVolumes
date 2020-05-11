@@ -196,10 +196,11 @@ void Ellipsoid_intersectCoord_cost_ref(const void* o) {
    // read: n^2 + n + n (all of A, all of a, all of x)
    size_t add = n + n*n + n + 3; // z = x-a, Az,zt*Az, eq
    size_t mul =  n*n + n + 6; // Az, zt*Az, eq
+   size_t comp = n; // selection
    // sqrt 1
    // div 1
 
-   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "1 MVM, 1 VVM");
+   pc_stack().log(add + mul + comp + 1 + 1, (n*n + 2*n)*sizeof(FT), "1 MVM, 1 VVM");
 }
 
 void Ellipsoid_intersectCoord_cached_cost_ref(const void* o) {
