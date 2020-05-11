@@ -70,7 +70,8 @@ void PolytopeJIT_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, 
    const int m = p->m;
    
    assert(p->intersect && "intersect function must be generated PolytopeJIT");
-   return p->intersect(x,d,t0,t1);
+   p->intersect(x,d,t0,t1);
+   return;
 }
 
 void PolytopeJIT_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {

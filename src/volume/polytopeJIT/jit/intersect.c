@@ -109,7 +109,7 @@ void PolytopeJIT_generate_intersect_ref(const Polytope *p, PolytopeJIT *o) {
             {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
             jit_push((const uint8_t*)&aij,8);
             // c4 e1 f9 6e e0       	vmovq  %rax,%xmm4
-            {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xe8}; jit_push(instr,5);}
+            {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xe0}; jit_push(instr,5);}
             
             
             // c4 e2 d9 b9 57 08    	vfmadd231sd 0x8(%rdi),%xmm4,%xmm2
@@ -132,13 +132,27 @@ void PolytopeJIT_generate_intersect_ref(const Polytope *p, PolytopeJIT *o) {
 	    // c4 e2 d9 b9 9e xx xx xx xx  vfmadd231sd xx(%rsi),%xmm4,%xmm3
 	    {const uint8_t instr[] = {0xc4,0xe2,0xd9,0xb9,0x9e}; jit_push(instr,5); }
 	    jit_push((const uint8_t*)&offset,4);
+
+	    /// // ----- debug log out.
+	    /// // 0f 28 86 00 01 00 00 	movaps 0x100(%rsi),%xmm0
+            /// //{const uint8_t instr[] = {0x0f,0x28,0x86,0,0,0,0}; jit_push(instr,5); }
+	    /// // 0f 28 06             	movaps (%rsi),%xmm0
+	    /// {const uint8_t instr[] = {0x0f,0x28,0x06}; jit_push(instr,3); }
+	    /// // 0f 28 cc             	movaps %xmm4,%xmm1
+	    /// {const uint8_t instr[] = {0x0f,0x28,0xcc}; jit_push(instr,3); }
+	    /// break;
 	 }
       }
-      // debug log out.
-      //  // 0f 28 c2             	movaps %xmm2,%xmm0
-      //  {const uint8_t instr[] = {0x0f,0x28,0xc2}; jit_push(instr,3); }
-      //  // 0f 28 cb             	movaps %xmm3,%xmm1
-      //  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
+      /// break;
+      
+      // if(i==0) {
+      // // debug log out.
+      // // 0f 28 c2             	movaps %xmm2,%xmm0
+      // {const uint8_t instr[] = {0x0f,0x28,0xc2}; jit_push(instr,3); }
+      // // 0f 28 cb             	movaps %xmm3,%xmm1
+      // {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
+      // break;
+      // }
 
       // assume: xmm2, xmm3 hold x*a, d*a
       
@@ -148,13 +162,24 @@ void PolytopeJIT_generate_intersect_ref(const Polytope *p, PolytopeJIT *o) {
       double bi = Polytope_get_b(p,i);
       jit_push((const uint8_t*)&bi,8);
       // c4 e1 f9 6e e0       	vmovq  %rax,%xmm4
-      {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xe8}; jit_push(instr,5);}
+      {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xe0}; jit_push(instr,5);}
        
       // compute t into xmm2
       // c5 db 5c d2          	vsubsd %xmm2,%xmm4,%xmm2
       {const uint8_t instr[] = {0xc5,0xdb,0x5c,0xd2}; jit_push(instr,4);} 
       // c5 eb 5e d3          	vdivsd %xmm3,%xmm2,%xmm2
       {const uint8_t instr[] = {0xc5,0xeb,0x5e,0xd3}; jit_push(instr,4);} 
+      
+      /// if(i==2) {
+      /// // debug log out.
+      /// // 0f 28 c2             	movaps %xmm2,%xmm0
+      /// {const uint8_t instr[] = {0x0f,0x28,0xc2}; jit_push(instr,3); }
+      /// // 0f 28 cb             	movaps %xmm3,%xmm1
+      /// {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
+      /// /// // 0f 28 cc             	movaps %xmm4,%xmm1
+      /// /// {const uint8_t instr[] = {0x0f,0x28,0xcc}; jit_push(instr,3); }
+      /// break;
+      /// }
       
       // compute masks into xmm4, xmm5
       // vcmppd  $30, %ymm3, %ymm2, %ymm0
@@ -173,11 +198,29 @@ void PolytopeJIT_generate_intersect_ref(const Polytope *p, PolytopeJIT *o) {
       // c5 e3 c2 ee 1e       	vcmpgt_oqsd %xmm6,%xmm3,%xmm5
       {const uint8_t instr[] = {0xc5,0xe3,0xc2,0xee,0x1e}; jit_push(instr,5);}
       
-      // c4 e3 69 4b e0 40    	vblendvpd %xmm4,%xmm0,%xmm2,%xmm4
-      {const uint8_t instr[] = {0xc4,0xe3,0x69,0x4b,0xe0,0x40}; jit_push(instr,6);}
-      // c4 e3 69 4b e9 50    	vblendvpd %xmm5,%xmm1,%xmm2,%xmm5
-      {const uint8_t instr[] = {0xc4,0xe3,0x69,0x4b,0xe9,0x50}; jit_push(instr,6);}
-      
+      /// if(i==2) {
+      /// // debug log out.
+      /// // 0f 28 c4             	movaps %xmm4,%xmm0
+      /// {const uint8_t instr[] = {0x0f,0x28,0xc4}; jit_push(instr,3); }
+      /// // 0f 28 cd             	movaps %xmm5,%xmm1
+      /// {const uint8_t instr[] = {0x0f,0x28,0xcd}; jit_push(instr,3); }
+      /// break;
+      /// }
+  
+      // c4 e3 79 4b e2 40    	vblendvpd %xmm4,%xmm2,%xmm0,%xmm4
+      {const uint8_t instr[] = {0xc4,0xe3,0x79,0x4b,0xe2,0x40}; jit_push(instr,6);}
+      // c4 e3 71 4b ea 50    	vblendvpd %xmm5,%xmm2,%xmm1,%xmm5
+      {const uint8_t instr[] = {0xc4,0xe3,0x71,0x4b,0xea,0x50}; jit_push(instr,6);}
+
+      /// if(i==1) {
+      /// // debug log out.
+      /// // 0f 28 c4             	movaps %xmm4,%xmm0
+      /// {const uint8_t instr[] = {0x0f,0x28,0xc4}; jit_push(instr,3); }
+      /// // 0f 28 cd             	movaps %xmm5,%xmm1
+      /// {const uint8_t instr[] = {0x0f,0x28,0xcd}; jit_push(instr,3); }
+      /// break;
+      /// }
+
       // update via min/max t00 and t11
       // c5 d9 5f c0          	vmaxpd %xmm0,%xmm4,%xmm0
       {const uint8_t instr[] = {0xc5,0xd9,0x5f,0xc0}; jit_push(instr,4);}

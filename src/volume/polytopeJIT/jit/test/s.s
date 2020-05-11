@@ -90,3 +90,22 @@ vblendvpd %xmm5, %xmm1, %xmm2, %xmm5
 
 vmaxpd %xmm0, %xmm4, %xmm0
 vminpd %xmm1, %xmm5, %xmm1
+
+
+movaps 0x100(%rsi),%xmm0
+movaps (%rsi),%xmm0
+movaps %xmm4,%xmm1
+
+
+movaps %xmm4,%xmm0
+movaps %xmm5,%xmm1
+
+
+vblendvpd %xmm4, %xmm2, %xmm0, %xmm4
+vblendvpd %xmm5, %xmm2, %xmm1, %xmm5
+
+
+
+
+
+
