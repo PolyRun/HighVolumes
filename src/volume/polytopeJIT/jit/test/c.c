@@ -1,6 +1,6 @@
 #include <immintrin.h>
 #include <stdbool.h>
-
+#include <stdio.h>
 
 bool inside(const double* x) {
    //return x[1] == 1.0;
@@ -12,9 +12,11 @@ bool inside(const double* x) {
 
 
 void intersect(const double* x, const double* d, double *t0, double *t1) {
-   *t0 = *x;
-   *t1 = *d;
-   return;	
+   // ------------- test
+   //*t0 = *x;
+   //*t1 = *d;
+   //return;
+
    double t00 = -100000.0;
    double t11 = +100000.0;
    
@@ -26,8 +28,15 @@ void intersect(const double* x, const double* d, double *t0, double *t1) {
    const double xa = 0.11 * x[0] + 9.71*x[1] + 4.41*x[2];
 
    // check if d*a is parallel ==0: jump to next - or make sure t is zero?
+   double t = (8.5 - xa) / da;
    
-   const double t = (8.5 - xa) / da;
+   // test:
+   __m256d tt = _mm256_set1_pd(t);
+   __m256d bb = _mm256_set1_pd(d[2]);
+   __m256d cc = _mm256_set1_pd(d[3]);
+   __m256d dd = _mm256_max_pd(bb,cc);
+   __m256d ee = _mm256_min_pd(dd,tt);
+   t = ee[0];
 
    t00 += t;
    t11 += t;
@@ -37,4 +46,21 @@ void intersect(const double* x, const double* d, double *t0, double *t1) {
    // end
    *t0 = t00;
    *t1 = t11;
+}
+
+int main () {
+   __m256d a = _mm256_set_pd(4.0, 3.0, 2.0, 1.0);
+   __m256d b = _mm256_set_pd(4.0, 3.0, 2.0, 1.1);
+   
+   __m256d cg = _mm256_cmp_pd(a,b, _CMP_GT_OQ);
+   __m256d cl = _mm256_cmp_pd(a,b, _CMP_LT_OQ);
+   
+   __m256d aa = _mm256_blendv_pd(a,b,cg);
+   __m256d bb = _mm256_blendv_pd(a,b,cl);
+
+   printf("hello\n");
+   printf("hello %f\n",cg[0]);
+   printf("hello %f\n",cl[0]);
+   printf("hello %f\n",aa[0]);
+   printf("hello %f\n",bb[0]);
 }

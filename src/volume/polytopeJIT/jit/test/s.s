@@ -47,3 +47,30 @@ movsd   (%rdi), %xmm0
 movsd   %xmm0, (%rdx)
 movsd   (%rsi), %xmm0
 movsd   %xmm0, (%rcx)
+
+intersect2:
+
+# assume xmm0 has t00, xmm1 has t11
+movsd  %xmm0,(%rdx)
+movsd  %xmm1,(%rcx)
+movabs $0xff00ff00ff00ff00,%rax
+vmovq  %rax,%xmm0
+vmovq  %rax,%xmm1
+vmovq  %rax,%xmm0
+vmovq  %rax,%xmm1
+vmovq  %rax,%xmm2
+vmovq  %rax,%xmm3
+vmovq  %rax,%xmm4
+vmovq  %rax,%xmm5
+
+
+
+
+
+
+
+
+
+
+
+
