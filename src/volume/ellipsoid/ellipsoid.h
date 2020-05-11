@@ -1,6 +1,8 @@
 #include "../ft.h"
 #include "../linalg/linalg.h"
 
+#include "intersectCoord/intersectCoord.h"// see variants
+
 #ifndef ELLIPSOID_H
 #define ELLIPSOID_H
 
@@ -66,6 +68,11 @@ static inline void Ellipsoid_set_a(const Ellipsoid* e, int i, int x, FT value) {
 static inline FT Ellipsoid_get_a(const Ellipsoid* e, int i, int x) __attribute__((always_inline));
 static inline FT Ellipsoid_get_a(const Ellipsoid* e, int i, int x) {
    return e->A[i * (e->line) + x];
+}
+
+static inline FT* Ellipsoid_get_a_p(const Ellipsoid* e, int i, int x) __attribute__((always_inline));
+static inline FT* Ellipsoid_get_a_p(const Ellipsoid* e, int i, int x) {
+   return &(e->A[i * (e->line) + x]);
 }
 
 // get row i of T
