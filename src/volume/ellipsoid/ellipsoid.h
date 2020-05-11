@@ -70,6 +70,11 @@ static inline FT Ellipsoid_get_a(const Ellipsoid* e, int i, int x) {
    return e->A[i * (e->line) + x];
 }
 
+static inline FT* Ellipsoid_get_a_p(const Ellipsoid* e, int i, int x) __attribute__((always_inline));
+static inline FT* Ellipsoid_get_a_p(const Ellipsoid* e, int i, int x) {
+   return &(e->A[i * (e->line) + x]);
+}
+
 // get row i of T
 static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) __attribute__((always_inline));
 static inline FT* Ellipsoid_get_Ti(const Ellipsoid* e, int i) {
