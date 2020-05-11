@@ -85,8 +85,8 @@ vcmppd $30, %ymm6, %ymm3, %ymm5 # 30: OP := _CMP_GT_OQ
 vcmpsd $17, %xmm6, %xmm3, %xmm4 # 17: OP := _CMP_LT_OQ
 vcmpsd $30, %xmm6, %xmm3, %xmm5 # 30: OP := _CMP_GT_OQ
 
-vblendvpd %xmm4, %xmm2, %xmm0, %xmm4
-vblendvpd %xmm5, %xmm2, %xmm0, %xmm5
+vblendvpd %xmm4, %xmm0, %xmm2, %xmm4
+vblendvpd %xmm5, %xmm1, %xmm2, %xmm5
 
 vmaxpd %xmm0, %xmm4, %xmm0
 vminpd %xmm1, %xmm5, %xmm1

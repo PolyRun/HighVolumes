@@ -141,8 +141,6 @@ void PolytopeJIT_generate_intersect_ref(const Polytope *p, PolytopeJIT *o) {
       //  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
 
       // assume: xmm2, xmm3 hold x*a, d*a
- 
-     
       
       // load bi into xmm4
       //movabs $0xff00ff00ff00ff00,%rax
@@ -175,10 +173,10 @@ void PolytopeJIT_generate_intersect_ref(const Polytope *p, PolytopeJIT *o) {
       // c5 e3 c2 ee 1e       	vcmpgt_oqsd %xmm6,%xmm3,%xmm5
       {const uint8_t instr[] = {0xc5,0xe3,0xc2,0xee,0x1e}; jit_push(instr,5);}
       
-      // c4 e3 79 4b e2 40    	vblendvpd %xmm4,%xmm2,%xmm0,%xmm4
-      {const uint8_t instr[] = {0xc4,0xe3,0x79,0x4b,0xe2,0x40}; jit_push(instr,6);}
-      // c4 e3 79 4b ea 50    	vblendvpd %xmm5,%xmm2,%xmm0,%xmm5
-      {const uint8_t instr[] = {0xc4,0xe3,0x79,0x4b,0xea,0x50}; jit_push(instr,6);}
+      // c4 e3 69 4b e0 40    	vblendvpd %xmm4,%xmm0,%xmm2,%xmm4
+      {const uint8_t instr[] = {0xc4,0xe3,0x69,0x4b,0xe0,0x40}; jit_push(instr,6);}
+      // c4 e3 69 4b e9 50    	vblendvpd %xmm5,%xmm1,%xmm2,%xmm5
+      {const uint8_t instr[] = {0xc4,0xe3,0x69,0x4b,0xe9,0x50}; jit_push(instr,6);}
       
       // update via min/max t00 and t11
       // c5 d9 5f c0          	vmaxpd %xmm0,%xmm4,%xmm0
