@@ -66,6 +66,7 @@ public:
       pc_stack().add((void*)Ellipsoid_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(Ellipsoid_intersect_cost_ref,"Ellipsoid_intersect_ref"));
       pc_stack().add((void*)Ellipsoid_intersectCoord_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cost_ref,"Ellipsoid_intersectCoord_ref"));
       pc_stack().add((void*)Ellipsoid_intersectCoord_cached_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cached_cost_ref,"Ellipsoid_intersectCoord_cached_ref"));
+      pc_stack().add((void*)Ellipsoid_intersectCoord_cached_reord, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cached_cost_ref,"Ellipsoid_intersectCoord_cached_reord"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_ref"));
       pc_stack().add((void*)Ellipsoid_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(Ellipsoid_cacheReset_cost_ref,"Ellipsoid_cacheReset_ref"));
       
@@ -121,8 +122,9 @@ public:
 						     {"ref", {Polytope_intersectCoord_ref, "simple jit (ref)"}} }));
 
       add(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,'f',"Ellipsoid_intersectCoord","cached_ref", {
-                                                     {"ref",        {Ellipsoid_intersectCoord_ref, "no cache (ref)"}},
-						     {"cached_ref", {Ellipsoid_intersectCoord_cached_ref, "with cache (ref)"}} }));
+                       {"ref",        {Ellipsoid_intersectCoord_ref, "no cache (ref)"}},
+						     {"cached_ref", {Ellipsoid_intersectCoord_cached_ref, "with cache (ref)"}},
+						     {"cached_reord", {Ellipsoid_intersectCoord_cached_reord, "with cache (reord)"}} }));
 
 
       // number parameters:

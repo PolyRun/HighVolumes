@@ -28,6 +28,8 @@ for index, item in enumerate(dotProduct):
 intersectbodies = [ "cube_rot_r1.0_3", "cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40"]
 intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40'}
 
+intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20",  "ball_r1.0_40"]
+intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40'}
 
 # --- Benchmarks
 '''
@@ -94,23 +96,13 @@ BENCHMARKS = [
     "name": "benchmark_intersect",
     "config": [
        {
-          "fun_configs": ["Polytope_intersectCoord=cached_ref", "Polytope_intersectCoord=ref"],
-          "run_configs": ["intersect=intersectCoord,polytopeTranspose=false"],
-          "input_configs": [("generator", intersectbodies)]
-       },
-       {
-          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref"],
-          "run_configs": ["intersect=intersectCoord,polytopeTranspose=true"],
-          "input_configs": [("generator", intersectbodies)]
-       },
-       {
-          "fun_configs": [],
-          "run_configs": ["intersect=intersect,polytopeTranspose=false", "intersect=intersect,polytopeTranspose=true"],
-          "input_configs": [("generator", intersectbodies)]
+          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord"],
+          "run_configs": ["r=100000,intersect=intersectCoord"],
+          "input_configs": [("generator", intersectEbodies)]
        }
     ],
-    "xlabel": ("generator", intersectdims)
-   } 
+    "xlabel": ("generator", intersectEdims)
+   }
 ]
 
 # --- Functions that should be compared

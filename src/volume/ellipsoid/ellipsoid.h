@@ -1,6 +1,8 @@
 #include "../ft.h"
 #include "../linalg/linalg.h"
 
+#include "intersectCoord/intersectCoord.h"// see variants
+
 #ifndef ELLIPSOID_H
 #define ELLIPSOID_H
 
