@@ -84,13 +84,6 @@ void PolytopeJIT_generate_cacheReset_ref(const Polytope *p, PolytopeJIT *o) {
       uint32_t offset = 8*i;
       jit_push((const uint8_t*)&offset,4);
    }
- 
-
-   //  // -------------------------------------------- move t00, t11 back
-   //  //f2 0f 11 02   movsd  %xmm0,(%rdx)
-   //  { uint8_t instr[] = {0xf2,0x0f,0x11,0x02}; jit_push(instr,4); }
-   //  //f2 0f 11 09   movsd  %xmm1,(%rcx)
-   //  { uint8_t instr[] = {0xf2,0x0f,0x11,0x09}; jit_push(instr,4); }
 
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
