@@ -17,12 +17,12 @@ void Ellipsoid_intersectCoord_cached_reord(const void* o, const FT* x, const int
    FT c = Az_c[n];
    
    // find t:
-   const FT det = b*b - 4.0*a*c;
-   assert(det >= 0);
-   const FT sqrtDet = sqrt(det);
+   const FT discr = b*b - 4.0*a*c;
+   assert(discr >= 0);
+   const FT sqrtDiscr = sqrt(discr);
 
-   *t0 = (-b - sqrtDet) * aInv;
-   *t1 = (-b + sqrtDet) * aInv;
+   *t0 = (-b - sqrtDiscr) * aInv;
+   *t1 = (-b + sqrtDiscr) * aInv;
 }
 
 void Ellipsoid_intersectCoord_cached_reord2(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
@@ -40,12 +40,12 @@ void Ellipsoid_intersectCoord_cached_reord2(const void* o, const FT* x, const in
    FT bsquared = b*b;
    
    // find t:
-   const FT det = bsquared - a*c;
-   assert(det >= 0);
-   const FT sqrtDet = sqrt(det);
+   const FT discr = bsquared - a*c;
+   assert(discr >= 0);
+   const FT sqrtDiscr = sqrt(discr);
 
-   *t0 = (-b - sqrtDet) * aInv;
-   *t1 = (-b + sqrtDet) * aInv;
+   *t0 = (-b - sqrtDiscr) * aInv;
+   *t1 = (-b + sqrtDiscr) * aInv;
    
 }
 
@@ -64,14 +64,14 @@ void Ellipsoid_intersectCoord_cached_reord3(const void* o, const FT* x, const in
    FT bsquared = b*b;         // Issued at 4, available at 8
    
    // find t:
-   const FT det = bsquared - a*c; // Issued at 8(12), available at 16(12),    fNmadd here -4
-   assert(det >= 0);
-   const FT sqrtDet = sqrt(det); //Issued at 16, available at 34
+   const FT discr = bsquared - a*c; // Issued at 8(12), available at 16(12),    fNmadd here -4
+   assert(discr >= 0);
+   const FT sqrtDiscr = sqrt(discr); //Issued at 16, available at 34
 
    FT tmp = -b * aInv; // Issued at 14, available at 18
 
-   *t0 = tmp - sqrtDet * aInv; // Issued at 34(38), available at 42(38),     fNmadd here -4
-   *t1 = tmp + sqrtDet * aInv; // Issued at 34(38), available at 42(38),     fmadd here  -4
+   *t0 = tmp - sqrtDiscr * aInv; // Issued at 34(38), available at 42(38),     fNmadd here -4
+   *t1 = tmp + sqrtDiscr * aInv; // Issued at 34(38), available at 42(38),     fmadd here  -4
 }
 
 void Ellipsoid_intersectCoord_cached_reord_fma(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
@@ -97,14 +97,14 @@ void Ellipsoid_intersectCoord_cached_reord_fma(const void* o, const FT* x, const
    __m128d bsquared = _mm_mul_sd (b, b);
    
    // find t:
-   const __m128d det = _mm_fnmadd_sd (a, c, bsquared);
+   const __m128d discr = _mm_fnmadd_sd (a, c, bsquared);
    __m128d zero = _mm_set_sd (0.0);
-   const __m128d sqrtDet = _mm_sqrt_sd (zero, det);
+   const __m128d sqrtDiscr = _mm_sqrt_sd (zero, discr);
 
    __m128d tmp = _mm_fnmadd_sd (b, aInv, zero);
 
-   __m128d r0 = _mm_fnmadd_sd (sqrtDet, aInv, tmp);
-   __m128d r1 = _mm_fmadd_sd (sqrtDet, aInv, tmp);
+   __m128d r0 = _mm_fnmadd_sd (sqrtDiscr, aInv, tmp);
+   __m128d r1 = _mm_fmadd_sd (sqrtDiscr, aInv, tmp);
 
    _mm_store_sd (t0, r0);
    _mm_store_sd (t1, r1);
