@@ -57,7 +57,7 @@ int main () {
    
    __m256d aa = _mm256_blendv_pd(a,b,cg);
    __m256d bb = _mm256_blendv_pd(a,b,cl);
-
+   
    printf("hello\n");
    printf("hello %f\n",cg[0]);
    printf("hello %f\n",cl[0]);

@@ -62,15 +62,31 @@ vmovq  %rax,%xmm2
 vmovq  %rax,%xmm3
 vmovq  %rax,%xmm4
 vmovq  %rax,%xmm5
+vxorpd %xmm2,%xmm2,%xmm2
+vxorpd %xmm3,%xmm3,%xmm3
+vxorpd %xmm6,%xmm6,%xmm6
+
+vfmadd231sd     8(%rdi), %xmm4, %xmm2
+vfmadd231sd     16(%rdi), %xmm4, %xmm2
+vfmadd231sd     0x100(%rdi), %xmm4, %xmm2
+vfmadd231sd     0x8(%rsi), %xmm4, %xmm3
+vfmadd231sd     0x100(%rsi), %xmm4, %xmm3
 
 
+movaps %xmm2,%xmm0
+movaps %xmm3,%xmm1
 
+vsubsd %xmm2, %xmm4, %xmm2 
+vdivsd %xmm3, %xmm2, %xmm2 
 
+vcmppd $17, %ymm6, %ymm3, %ymm4 # 17: OP := _CMP_LT_OQ
+vcmppd $30, %ymm6, %ymm3, %ymm5 # 30: OP := _CMP_GT_OQ
 
+vcmpsd $17, %xmm6, %xmm3, %xmm4 # 17: OP := _CMP_LT_OQ
+vcmpsd $30, %xmm6, %xmm3, %xmm5 # 30: OP := _CMP_GT_OQ
 
+vblendvpd %xmm4, %xmm2, %xmm0, %xmm4
+vblendvpd %xmm5, %xmm2, %xmm0, %xmm5
 
-
-
-
-
-
+vmaxpd %xmm0, %xmm4, %xmm0
+vminpd %xmm1, %xmm5, %xmm1
