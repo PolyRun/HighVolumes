@@ -7,6 +7,7 @@ vmovq  %rsi,%xmm0
 vmovq  %rsi,%xmm1
 vmovq  %rsi,%xmm2
 ja L_end
+jmp L_end
 mulsd   8(%rdi), %xmm0
 mulsd   16(%rdi), %xmm0
 mulsd   512(%rdi), %xmm0
@@ -114,10 +115,17 @@ vmovq  %rax,%xmm1
 movsd  %xmm0,(%rsi)
 movsd  %xmm1,(%rdx)
 
+nop
+
+lea 0x10(%rip),%rax
+mov %edi,%edi
+movslq (%rax,%rdi,4),%rcx
+add %rax,%rcx
+jmpq *%rcx
 
 
-
-
+vxorpd %xmm0,%xmm0,%xmm0
+vxorpd %xmm1,%xmm1,%xmm1
 
 
 

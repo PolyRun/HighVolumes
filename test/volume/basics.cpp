@@ -80,7 +80,7 @@ void test_box_intersectCoord(const int n, Body_T* type, void* box) {
       type->cacheReset(box,x,cache);
       for(int d=0;d<4;d++) {
          FT t0,t1;
-         type->intersectCoord(box, x, 0, &t0, &t1, cache);
+         type->intersectCoord(box, x, d, &t0, &t1, cache);
          assert(t0==-2.0 && t1==2.0);
       }
    }
