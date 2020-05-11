@@ -33,6 +33,7 @@ PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p) {
    
    PolytopeJIT_generate_inside_ref(p,o);
    PolytopeJIT_generate_intersect_ref(p,o);
+   PolytopeJIT_generate_cacheReset_ref(p,o);
    PolytopeJIT_generate_intersectCoord_ref(p,o);
    return o;
 }
@@ -89,7 +90,8 @@ int  PolytopeJIT_cacheAlloc_ref(const void* o) {
 }
 void PolytopeJIT_cacheReset_ref(const void* o, const FT* x, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
-   assert(false && "cacheReset not implemented for PolytopeJIT");
+   assert(p->cacheReset && "cacheReset function must be generated PolytopeJIT");
+   p->cacheReset(x,cache);
 }
 
 void PolytopeJIT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {

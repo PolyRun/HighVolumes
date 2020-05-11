@@ -105,6 +105,16 @@ vblendvpd %xmm4, %xmm2, %xmm0, %xmm4
 vblendvpd %xmm5, %xmm2, %xmm1, %xmm5
 
 
+vmovq %xmm0,0x100(%rsi)
+
+
+
+
+vmovq  %rax,%xmm0
+vmovq  %rax,%xmm1
+
+
+
 
 
 
