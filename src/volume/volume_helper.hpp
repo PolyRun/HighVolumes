@@ -59,6 +59,7 @@ public:
       pc_stack().add((void*)PolytopeT_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(PolytopeT_intersect_cost_ref,"PolytopeT_intersect_ref"));
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_cached_ref"));
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_nc1, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_cached_nc1"));
+      pc_stack().add((void*)PolytopeT_intersectCoord_vectorized, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_vectorized"));
       pc_stack().add((void*)PolytopeT_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_cost_ref,"PolytopeT_cacheUpdateCoord_ref"));
       pc_stack().add((void*)PolytopeT_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset_cost_ref,"PolytopeT_cacheReset_ref"));
  
@@ -107,7 +108,8 @@ public:
 
       add(new CLIF_Option<intersectCoord_f_t>(&PolytopeT_T.intersectCoord,'f',"PolytopeT_intersectCoord","cached_ref", {
                                                      {"ref",        {PolytopeT_intersectCoord_ref, "no cache (ref)"}},
-						     {"cached_nc1", {PolytopeT_intersectCoord_cached_nc1, "with cache, nc1"}},
+						     {"cached_nc1", {PolytopeT_intersectCoord_cached_nc1, "with cache, nc1."}},
+                       {"cached_vectorized", {PolytopeT_intersectCoord_vectorized, "with cache and vectorized"}},
 						     {"cached_ref", {PolytopeT_intersectCoord_cached_ref,"with cache (ref)"}} }));
 
       add(new CLIF_Option<intersectCoord_f_t>
