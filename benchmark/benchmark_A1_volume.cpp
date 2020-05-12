@@ -4,14 +4,25 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, bool polytopeTranspose)
-		: Benchmark_base(name, reps, convergence, warmup_reps), generator(generator), polytopeTranspose(polytopeTranspose) {}
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, int polytopeType)
+		: Benchmark_base(name, reps, convergence, warmup_reps), generator(generator), polytopeType(polytopeType) {}
 
     protected:
         void initialize () {
             std::cout << "initializing A1 data..." << std::endl;
-            
-            solved_body = solved_body_generator()->get(generator,polytopeTranspose);
+
+            switch(polytopeType) {
+            case 0: // column major
+                solved_body = solved_body_generator()->get(generator,true);
+                break;
+            case 1: // row major
+                solved_body = solved_body_generator()->get(generator,false);
+                break;
+            case 2: // CSC format
+                solved_body = solved_body_generator()->get(generator,false);
+                solved_body->polytopeCSC();
+                break;
+            }
 	    solved_body->print();
 	    assert(solved_body->is_normalized);
 	    r0 = 1.0;
@@ -39,7 +50,7 @@ class Benchmark_A1 : public Benchmark_base {
 	const std::string generator;
 	Solved_Body* solved_body;
 	FT r0,r1;
-	bool polytopeTranspose = false;
+	int polytopeType = 0;
 };
 
 int main(int argc, char *argv[]){
@@ -57,15 +68,18 @@ int main(int argc, char *argv[]){
     auto &gen_map = solved_body_generator()->gen_map();
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_r1.0_10", gen_map));
     
-    bool polytopeTranspose = false;
-    cliFun.add(new CLIF_Option<bool>(&polytopeTranspose,'b',"polytopeTranspose","false", {
-                                                     {"false",{false, "Polytope format / rows"}},
-						     {"true",{true, "PolytopeT format / columns"}} }));
+    int polytopeType = 0;
+    cliFun.add(new CLIF_Option<int>(&polytopeType,'b',"polytopeType","0",
+                                    {
+                                     {"0",{0, "Polytope format / rows"}},
+                                     {"1",{1, "PolytopeT format / columns"}},
+                                     {"2",{2, "PolytopeCSC format"}}
+                                    }));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeTranspose);
+    Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType);
     b.run_benchmark();
 }

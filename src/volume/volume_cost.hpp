@@ -45,6 +45,20 @@ void Ellipsoid_intersectCoord_cached_cost_ref(const void* o);
 void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o);
 void Ellipsoid_cacheReset_cost_ref(const void* o);
 
+// ----------------------------------------------- PolytopeCSC
+
+
+typedef void (*mvm_cost_f)(const PolytopeCSC *p);
+
+// NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
+// we average #non-zeros over all columns to get estimate on cost of these functions
+void PolytopeCSC_intersect_cost_ref(const void *o);
+void PolytopeCSC_mvm_cost(const PolytopeCSC *p);
+void PolytopeCSC_intersectCoord_cost_ref(const void *o);
+void PolytopeCSC_intersectCoord_cached_cost_ref(const void *o);
+void PolytopeCSC_cacheReset_cost_ref(const void *o);
+void PolytopeCSC_cacheUpdateCoord_cost_ref(const void *o);
+
 // ----------------------------------------------- volume
 
 typedef void (*volume_cost_f)(const int, const int, const void**,const Body_T**);
