@@ -12,6 +12,11 @@ void PolytopeT_intersectCoord_cached_ref(const void* o, const FT* x, const int d
 // nc1: forked from cached_ref
 void PolytopeT_intersectCoord_cached_nc1(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
 
+void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
+void PolytopeT_cacheReset_b_ref(const void* o, const FT* x, void* cache);
+void PolytopeT_cacheUpdateCoord_b_ref(const void* o, const int d, const FT dx, void* cache);
+
+
 #endif // HEADER_POLYTOPET_INTERSECTCOORD_H
 
 

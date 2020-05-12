@@ -251,9 +251,11 @@ int main(int argc, char** argv) {
       }
    }
 
-   auto oT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeT_intersectCoord"));
+   auto oT = dynamic_cast<CLIF_TrippleOption<intersectCoord_f_t,cacheReset_f_t,cacheUpdateCoord_f_t>*>(cliFun.getOption("PolytopeT_intersectCoord"));
    for(auto it : oT->fmap) {
-      PolytopeT_T.intersectCoord = it.second.first;
+      PolytopeT_T.intersectCoord   = it.second.first.first;
+      PolytopeT_T.cacheReset       = it.second.first.second.first;
+      PolytopeT_T.cacheUpdateCoord = it.second.first.second.second;
       std::cout << "Test PolytopeT for intersectCoord " << it.first << " - " << it.second.second << std::endl;
 
       // Generate new polytope box, n dim, 2 radius

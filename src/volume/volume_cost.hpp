@@ -35,8 +35,11 @@ void Polytope_cacheReset_cost_ref(const void* o);
 void PolytopeT_intersect_cost_ref(const void* o);
 void PolytopeT_intersectCoord_cost_ref(const void* o);
 void PolytopeT_intersectCoord_cached_cost_ref(const void* o);
+void PolytopeT_intersectCoord_cached_b_cost_ref(const void* o);
 void PolytopeT_cacheUpdateCoord_cost_ref(const void* o);
+void PolytopeT_cacheUpdateCoord_b_cost_ref(const void* o);
 void PolytopeT_cacheReset_cost_ref(const void* o);
+void PolytopeT_cacheReset_b_cost_ref(const void* o);
 
 // ----------------------------------------------- Ellipsoid
 void Ellipsoid_intersect_cost_ref(const void* o);

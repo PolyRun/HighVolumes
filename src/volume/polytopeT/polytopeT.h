@@ -34,11 +34,12 @@ bool PolytopeT_inside_ref(const void* o, const FT* v);
 
 void PolytopeT_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT* t1);
 void PolytopeT_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
-#include "intersectCoord/intersectCoord.h"// see variants
+#include "intersectCoord/intersectCoord.h"// see variants - also for cacheReset and cacheUpdateCoord
 
 int  PolytopeT_cacheAlloc_ref(const void* o);
 void PolytopeT_cacheReset_ref(const void* o, const FT* x, void* cache);
 void PolytopeT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache);
+
 bool PolytopeT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 void PolytopeT_transform_ref(const void* o_in, void* o_out, const Matrix* L, const FT* a, const FT beta);
 void PolytopeT_bounding_ref(const void *B, FT *R2, FT *ori);

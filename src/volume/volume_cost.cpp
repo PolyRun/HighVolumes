@@ -195,6 +195,42 @@ void PolytopeT_cacheReset_cost_ref(const void* o) {
    // add n*m
    pc_stack().log(2*m*n,n*m + n + m, "recompute dotproduct");
 }
+void PolytopeT_intersectCoord_cached_b_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+
+   // read 3*m (A, b, cache)
+   // 2*m compares with +-FT_EPS and m ifs
+   // add 1 * m
+   // div 1 * m
+   // m compares with 0.0 and m ifs
+   // m compares, either t00>t or t11<t
+   pc_stack().log(8*m, 3*m*sizeof(FT), "read cache, calculate");
+   pc_stack().log(0,0, "TODO - update after impl!");
+}
+void PolytopeT_cacheUpdateCoord_b_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   // read 2*m
+   // write m
+   // mul m
+   // add m
+   pc_stack().log(2*m,3*m*sizeof(FT), "update cached dotProduct");
+   pc_stack().log(0,0, "TODO - update after impl!");
+}
+void PolytopeT_cacheReset_b_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   // read n*m + n   (A, x)
+   // write m  (c)
+   // mul n*m
+   // add n*m
+   pc_stack().log(2*m*n,n*m + n + m, "recompute dotproduct");
+   pc_stack().log(0,0, "TODO - update after impl!");
+}
 
 void Ellipsoid_intersect_cost_ref(const void* o) {
    const Ellipsoid* e = (Ellipsoid*)o;
