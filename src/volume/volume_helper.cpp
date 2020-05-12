@@ -119,3 +119,152 @@ int read_polyvest_p(string filename, Polytope **P){
 
     return 0;
 }
+
+
+// copied from vinci
+FT sread_rational_value (char *s);
+FT sread_rational_value (char *s) {
+    
+   char *numerator_s, *denominator_s = NULL, *position, token;
+   int sign = 1, i;
+   FT numerator, denominator;
+
+   /* determine the sign of the number */
+   numerator_s = s;
+   if (s [0] == '-')
+   {  sign = -1;
+      numerator_s++;
+   }
+   else if (s [0] == '+')
+      numerator_s++;
+
+   /* look for a sign '/' and in this case split the number in numerator and denominator */
+   position = strchr (numerator_s, '/');
+   if (position != NULL)
+   {  *position = '\0'; /* terminates the numerator */
+      denominator_s = position + 1;
+   };
+
+   /* determine the floating point values of numerator and denominator */
+   numerator = 0;
+   for (i = 0; i < strlen (numerator_s); i++)
+   {  token = numerator_s [i];
+      if (strchr ("0123456789", token)) /* token is a cypher */
+         numerator = 10 * numerator + (int) token - 48;
+   }
+
+   if (position != NULL)
+   {  denominator = 0;
+      for (i = 0; i < strlen (denominator_s); i++)
+      {  token = denominator_s [i];
+         if (strchr ("0123456789", token)) /* token is a cypher */
+            denominator = 10 * denominator + (int) token - 48;
+      }
+   }
+   else denominator = 1;
+
+   return sign * numerator / denominator;
+}
+
+
+FT read_vinci_nr(string in, string type){
+
+    istringstream instr(in);
+    if (!type.compare("integer")){
+        FT d;
+        instr >> d;
+        return d;
+    }
+    else if (!type.compare("real")){
+        FT f;
+        instr >> f;
+        return f;
+    }
+    else if (!type.compare("rational")){
+        
+        std::regex rgx("(.*)/(.*)");
+        std::smatch matches;
+
+        if(std::regex_search(in, matches, rgx)) {
+
+            FT num, den;
+            istringstream ns(matches[1]);
+            istringstream ds(matches[2]);
+            ns >> num;
+            ds >> den;
+            //cout << "print " << num/den << " for " << in << "\n";
+            return num/den;
+        }
+        else {
+            FT d;
+            istringstream s(in);
+            s >> d;
+            return d;
+        }
+    }
+
+    assert(0 && "not a valid number");
+    return 0.0;
+
+    
+
+}
+
+
+FT read_vinci(string filename, Polytope **P, FT *vol){
+    ifstream file;
+    file.open(filename);
+
+    if (!file.is_open()){
+        printf("failed to read polytope");
+        return 1;
+    }
+
+    std::string line, type, in;
+    std::string b = "begin";
+    bool found = false;
+    while (std::getline(file, line)){
+        if (!b.compare(line)) {
+            found = true;
+            break;
+        }
+    }
+
+    if (!found){
+        printf("no begin found in vinci file\n");
+        return 1;
+    }
+
+
+    int m, n;
+    file >> m >> n >> type;
+    n--;
+
+    *P = Polytope_new(n,m);
+                      
+    for (int i = 0; i < m; i++){
+        file >> in;
+        Polytope_set_b(*P, i, read_vinci_nr(in, type));
+        for (int j = 0; j < n; j++){
+            file >> in;
+            Polytope_set_a(*P, i, j, read_vinci_nr(in, type));            
+        }
+    }
+
+    // extract solved value
+    while (std::getline(file, line)){
+        std::regex rgx("Volume:(.*)");
+        std::smatch matches;
+
+        if(std::regex_search(line, matches, rgx)) {
+
+            istringstream os(matches[0].str());
+            string s;
+            os >> s >> *vol;
+            return 0;
+        }
+    }
+    
+    return 1;
+    
+}

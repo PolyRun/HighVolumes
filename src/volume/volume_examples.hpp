@@ -121,5 +121,7 @@ Solved_Body* generate_centered_ball(int dims, FT r);
 
 Solved_Body* generate_read_polyvest_polytope(const std::string &fileName);
 
+Solved_Body *generate_read_vinci_polytope(const std::string &filename);
+
 
 #endif

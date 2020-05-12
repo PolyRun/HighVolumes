@@ -315,6 +315,54 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	});
     }
 
+    // vinci polytopes
+    std::vector<std::string> vinci_list = {
+                                           "cc_8_10.ine",
+                                           "cc_8_11.ine",
+                                           "cc_8_5.ine",
+                                           "cc_8_6.ine",
+                                           "cc_8_7.ine",
+                                           "cc_8_8.ine",
+                                           "cc_8_9.ine",
+                                           "ccp_5.ine",
+                                           "ccp_6.ine",
+                                           "ccp_7.ine",
+                                           "Fm_4.ine",
+                                           "Fm_5.ine",
+                                           "Fm_6.ine",
+                                           "rh_10_20.ine",
+                                           "rh_10_25.ine",
+                                           "rh_10_30.ine",
+                                           "rh_8_20.ine",
+                                           "rh_8_25.ine",
+                                           "rh_8_30.ine",
+                                           "rv_10_12.ine",
+                                           "rv_10_13.ine",
+                                           "rv_10_14.ine",
+                                           "rv_8_10.ine",
+                                           "rv_8_11.ine",
+                                           "rv_8_12.ine",
+                                           "rv_8_13.ine",
+                                           "rv_8_14.ine",
+                                           "rv_8_20.ine",
+                                           "rv_8_30.ine"
+    };
+    for(auto f : vinci_list) {
+        std::string pname = "vinci_"+f;
+	add(pname, "One of vinci polytopes, read from file.",[f]() {
+	    if(const char* env_p = std::getenv("POLYVEST_PATH")) {
+	        std::string path = env_p;
+	        std::string fpath = path+f;
+                //
+                return generate_read_vinci_polytope(fpath);
+            } else {
+	        std::cout << "ERROR: POLYVEST_PATH not set!\n" << std::endl;
+		std::cout << "try: export POLYVEST_PATH='../polyvest/examples/'\n";
+		std::exit(0);
+	    }
+	});
+    }
+
     // kvariable
     std::vector<int> kvar_n = {2,3,4,5,10,20,40,60,100};
     for(int n : kvar_n) {
@@ -758,6 +806,20 @@ Solved_Body* generate_read_polyvest_polytope(const std::string &fileName) {
     
     return result;
 }
+
+Solved_Body *generate_read_vinci_polytope(const std::string &filename){
+    Polytope *P;
+    FT vol;
+    int err = read_vinci(filename, &P, &vol);
+    assert(!err && "couldn't read vinci polytope");
+    Solved_Body *res = new Solved_Body(1, P->n);
+    res->body[0] = P;
+    res->type[0] = &Polytope_T;
+    res->volume = vol;
+
+    return res;
+}
+
 
 //
 //// This function is out of order, because read_polyvest_p() doesn't exist anymore
