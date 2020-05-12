@@ -27,6 +27,12 @@ typedef struct PolytopeCSC {
 extern Body_T PolytopeCSC_T;
 
 
+
+
+extern FT *dotproduct_store_d;
+extern FT *dotproduct_store_x;
+
+
 // WARNING: costly, O(nm) worst case cost
 FT *PolytopeCSC_get_Ai(const PolytopeCSC *p, int row, FT *res);
 

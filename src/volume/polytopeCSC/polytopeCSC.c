@@ -129,8 +129,8 @@ void PolytopeCSC_intersect_ref(const void *o, const FT *x, const FT *dir, FT *t0
     PolytopeCSC *p = (PolytopeCSC *) o;
 
     // make vector aligned in case we want to vectorize this at some point
-    FT *dotd = (FT *) aligned_alloc(32, p->m * sizeof(FT));
-    FT *dotx = (FT *) aligned_alloc(32, p->m * sizeof(FT));
+    FT *dotd = dotproduct_store_d;
+    FT *dotx = dotproduct_store_x;
     memset(dotd, 0, p->m*sizeof(FT));
     memset(dotx, 0, p->m*sizeof(FT));
 
@@ -162,8 +162,6 @@ void PolytopeCSC_intersect_ref(const void *o, const FT *x, const FT *dir, FT *t0
         }
     }
 
-    free(dotd);
-    free(dotx);
 }
 
 
@@ -195,7 +193,7 @@ void PolytopeCSC_intersectCoord_ref(const void *o, const FT *x, const int d, FT 
 
     // compute full MVM Ax here
     // note that this is as cheap as computing only one dot product Ai x!!
-    FT *dotx = (FT *) aligned_alloc(32, p->m * sizeof(FT));
+    FT *dotx = dotproduct_store_x;
     PolytopeCSC_mvm(p, x, dotx);
     
     for (int i = p->col_start[d]; i < p->col_start[d+1], p->row_idx[i] > -1; i++){
@@ -214,7 +212,6 @@ void PolytopeCSC_intersectCoord_ref(const void *o, const FT *x, const int d, FT 
         }
     }
 
-    free(dotx);
 }
 
 

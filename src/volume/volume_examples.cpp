@@ -326,7 +326,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
                                            "cc_8_9.ine",
                                            "ccp_5.ine",
                                            "ccp_6.ine",
-                                           "ccp_7.ine",
+                                           /*"ccp_7.ine", doesn't have volume, took too long to compute...*/
                                            "Fm_4.ine",
                                            "Fm_5.ine",
                                            "Fm_6.ine",
