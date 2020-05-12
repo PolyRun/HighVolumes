@@ -34,16 +34,26 @@ class Benchmark_intersect : public Benchmark_base {
 	    dd = prng_get_random_int_in_range(0,n-1);
 	}
         double run () {
+	    int n = solved_body->n;
 	    FT t0, t1;
 	    solved_body->type[0]->intersect(solved_body->body[0], x, d, &t0, &t1);
-            return t0-t1;
+            
+	    // step now
+	    FT t = prng_get_random_double_in_range(t0,t1);
+            for(int j=0;j<n;j++) {x[j] += d[j]*t;}
+            return 0;
 	}
 	void finalize() {
+	    int n = solved_body->n;
 	    pc_stack().reset();
             {
-                PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersect);
-                frame.costf()(solved_body->body[0]);
-            }
+		{
+		   PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersect);
+                   frame.costf()(solved_body->body[0]);
+                }
+                pc_stack().log(0,0, "random double - TODO");
+                pc_stack().log(2*n, 3*n*sizeof(FT)," x += d*t");
+	    }
             pc_stack().print();
 	    pc_flops = pc_stack().flops();
 	    pc_bytes = pc_stack().bytes();
@@ -66,9 +76,21 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
     	void finalize() {
 	    pc_stack().reset();
             {
-                PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord);
-                frame.costf()(solved_body->body[0]);
-            }
+		{
+		    PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord);
+                    frame.costf()(solved_body->body[0]);
+		}
+
+                pc_stack().log(0, 0, "random double - TODO");
+	        // Reading and writing x[dd] with one add in between
+                pc_stack().log(1, 2, "x[dd] += t;");
+                
+                // body intersectCoord
+		{
+	            PC_Frame<cacheUpdateCoord_cost_f> frame((void*) solved_body->type[0]->cacheUpdateCoord);
+                    frame.costf()(solved_body->body[0]);
+		}
+	    }
             pc_stack().print();
 	    pc_flops = pc_stack().flops();
 	    pc_bytes = pc_stack().bytes();
@@ -77,6 +99,11 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
         double run () {
 	    FT t0, t1;
 	    solved_body->type[0]->intersectCoord(solved_body->body[0], x, dd, &t0, &t1, cache);
+            
+	    // step now
+	    FT t = prng_get_random_double_in_range(t0,t1);
+            x[dd] += t;
+            solved_body->type[0]->cacheUpdateCoord(solved_body->body[0], dd, t, cache);
             return 0;
 	}
 };
