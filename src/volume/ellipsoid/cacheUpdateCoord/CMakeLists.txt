@@ -5,9 +5,7 @@ cmake_minimum_required(VERSION 3.6)
 # --- add files to volume target in parent directory
 
 target_sources(volume PRIVATE
-volume/ellipsoid/ellipsoid.c
-volume/ellipsoid/ellipsoid.h
+volume/ellipsoid/cacheUpdateCoord/cacheUpdateCoord.h
+volume/ellipsoid/cacheUpdateCoord/cacheUpdateCoord.c
 )
 
-add_subdirectory(intersectCoord)
-add_subdirectory(cacheUpdateCoord)

@@ -60,11 +60,14 @@ void Polytope_intersect_cost_ref(const void* o) {
    }
 
    // read m (all of b)
-   // compares ??? do we count these?
+   // 2*m compares with +-FT_EPS and m ifs
    // add m
    // div m
-   pc_stack().log(2*m,m*sizeof(FT), "intersect");
+   // m compares with 0.0 and m ifs
+   // m compares, either t00>t or t11<t
+   pc_stack().log(8*m, m*sizeof(FT), "intersect");
 }
+
 void Polytope_intersectCoord_cost_ref(const void* o) {
    const Polytope* p = (Polytope*)o;
    const int n = p->n;
@@ -75,22 +78,29 @@ void Polytope_intersectCoord_cost_ref(const void* o) {
       frame.costf()(n);
    }
 
-   // read m + m (all of b, ai[d])
-   // compares ??? do we count these?
+   // read 3*m (all of b, ai[d] and Aix[i])
+   // 2*m compares with +-FT_EPS and m ifs
    // add m
    // div m
-   pc_stack().log(2*m,2*m*sizeof(FT), "intersect");
+   // m compares with 0.0 and m ifs
+   // m compares, either t00>t or t11<t
+   ///////////////////////////////////////////////////////////////////////////
+   // assert reads ???
+   pc_stack().log(8*m, 3*m*sizeof(FT), "intersect");
 }
+
 void Polytope_intersectCoord_cached_cost_ref(const void* o) {
    const Polytope* p = (Polytope*)o;
    const int n = p->n;
    const int m = p->m;
+
    // read 3*m (ai[d], b, cache)
-   // compares ??? do we count these?
+   // 2*m compares with +-FT_EPS and m ifs
    // add 1 * m
    // div 1 * m
-   pc_stack().log(0,0, "discuss compares");
-   pc_stack().log(2*m,3*m*sizeof(FT), "read cache, calculate");
+   // m compares with 0.0 and m ifs
+   // m compares, either t00>t or t11<t
+   pc_stack().log(8*m, 3*m*sizeof(FT), "read cache, calculate");
 }
 void Polytope_cacheUpdateCoord_cost_ref(const void* o) {
    const Polytope* p = (Polytope*)o;
@@ -112,8 +122,10 @@ void Polytope_cacheReset_cost_ref(const void* o) {
       frame.costf()(n);
    }
 
+   ////////////////////////////////////////////////////////////////////
+   // read m doubles from Ai ???
    // write m  (c)
-   pc_stack().log(0,m, "write results");
+   pc_stack().log(0, 2*m, "write results");
 }
 
 void PolytopeT_intersect_cost_ref(const void* o) {
@@ -127,10 +139,12 @@ void PolytopeT_intersect_cost_ref(const void* o) {
    }
 
    // read m (all of b)
-   // compares ??? do we count these?
+   // 2*m compares with +-FT_EPS and m ifs
    // add m
    // div m
-   pc_stack().log(2*m,m*sizeof(FT), "intersect");
+   // m compares with 0.0 and m ifs
+   // m compares, either t00>t or t11<t
+   pc_stack().log(8*m, m*sizeof(FT), "intersect");
 }
 void PolytopeT_intersectCoord_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
@@ -141,21 +155,25 @@ void PolytopeT_intersectCoord_cost_ref(const void* o) {
    pc_stack().log(m*n*2,m*n*2*sizeof(FT), "dotProduct implemented locally because column-format");
 
    // read m + m (all of b, ai[d])
-   // compares ??? do we count these?
+   // 2*m compares with +-FT_EPS and m ifs
    // add m
    // div m
-   pc_stack().log(2*m,2*m*sizeof(FT), "intersect");
+   // m compares with 0.0 and m ifs
+   // m compares, either t00>t or t11<t
+   pc_stack().log(8*m, 2*m*sizeof(FT), "intersect");
 }
 void PolytopeT_intersectCoord_cached_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
    const int n = p->n;
    const int m = p->m;
+
    // read 3*m (A, b, cache)
-   // compares ??? do we count these?
+   // 2*m compares with +-FT_EPS and m ifs
    // add 1 * m
    // div 1 * m
-   pc_stack().log(0,0, "discuss compares");
-   pc_stack().log(2*m,3*m*sizeof(FT), "read cache, calculate");
+   // m compares with 0.0 and m ifs
+   // m compares, either t00>t or t11<t
+   pc_stack().log(8*m, 3*m*sizeof(FT), "read cache, calculate");
 }
 void PolytopeT_cacheUpdateCoord_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
