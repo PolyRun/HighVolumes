@@ -17,7 +17,7 @@ public:
                             int warmup_reps,
                             const std::string &polytope_path,
                             Timer_generic *timer) :
-        Benchmark_base(name, reps, convergence, warmup_reps, timer),
+        Benchmark_base(name, reps, convergence, warmup_reps, 0.95,0.95, timer),
         polytope_path(polytope_path)
     {}
 

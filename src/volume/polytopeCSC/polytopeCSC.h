@@ -30,6 +30,7 @@ extern Body_T PolytopeCSC_T;
 // WARNING: costly, O(nm) worst case cost
 FT *PolytopeCSC_get_Ai(const PolytopeCSC *p, int row, FT *res);
 
+void PolytopeCSC_mvm(const PolytopeCSC *p, const FT *x, FT *res);
 
 void PolytopeCSC_print(const void *o);
 void PolytopeCSC_free(const void *o);

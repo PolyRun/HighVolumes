@@ -167,7 +167,6 @@ void PolytopeCSC_intersect_ref(const void *o, const FT *x, const FT *dir, FT *t0
 }
 
 
-void PolytopeCSC_mvm(const PolytopeCSC *p, const FT *x, FT *res);
 void PolytopeCSC_mvm(const PolytopeCSC *p, const FT *x, FT *res){
 
     int m = p->m;

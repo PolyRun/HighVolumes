@@ -4,7 +4,7 @@
 
 class Benchmark_dotProduct : public Benchmark_base {
     public:
-        Benchmark_dotProduct(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &uv) : Benchmark_base(name, reps, convergence, warmup_reps), n(n), uv(uv) {}
+        Benchmark_dotProduct(std::string name, int reps, bool convergence, int warmup_reps, int n, const std::string &uv) : Benchmark_base(name, reps, convergence, warmup_reps, 0.95, 0.95), n(n), uv(uv) {}
 
     protected:
         void initialize () {
