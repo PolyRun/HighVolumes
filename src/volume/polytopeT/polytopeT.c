@@ -138,7 +138,7 @@ void PolytopeT_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t
       assert(aix == Aix[i] && "Cache must be accurate!");
       FT t = (b - aix) / dai;
       
-      if(t > 0.0) {
+      if(dai < 0.0) {
          t00 = (t00>t)?t00:t; // max
       } else {
          t11 = (t11<t)?t11:t; // min
