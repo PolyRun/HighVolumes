@@ -30,7 +30,7 @@ PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p) {
    const int n = p->n;
    const int m = p->m;
    PolytopeJIT* o = PolytopeJIT_new(n,m);
-   PolytopeJIT_print(o);
+   //PolytopeJIT_print(o);
    
    PolytopeJIT_generate_inside_ref(p,o);
    PolytopeJIT_generate_intersect_ref(p,o);
@@ -82,8 +82,7 @@ void PolytopeJIT_intersectCoord_ref(const void* o, const FT* x, const int d, FT*
    const int n = p->n;
    const int m = p->m;
    assert(p->intersectCoord && "intersectCoord function must be generated PolytopeJIT");
-   p->intersectCoord(d,t0,t1);
-   printf("intersectCoord %f %f\n",*t0,*t1);
+   p->intersectCoord(d,t0,t1,cache);
 }
 
 int  PolytopeJIT_cacheAlloc_ref(const void* o) {

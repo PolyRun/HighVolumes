@@ -15,7 +15,7 @@ typedef void (*pjit_intersect_f_t)(const FT* x, const FT* d, FT* t0, FT* t1);
 typedef void (*pjit_cacheReset_f_t)(const FT* x, const FT* cache);
 
 // direction d, outputs t0,t1
-typedef void (*pjit_intersectCoord_f_t)(const int d, FT* t0, FT* t1);
+typedef void (*pjit_intersectCoord_f_t)(const int d, FT* t0, FT* t1, void* cache);
 
 typedef struct PolytopeJIT {
    pjit_inside_f_t inside;

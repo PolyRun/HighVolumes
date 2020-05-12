@@ -37,7 +37,7 @@ void PolytopeJIT_generate_cacheReset_ref(const Polytope *p, PolytopeJIT *o) {
       for(int j=0;j<n;j++) {
          FT aij = Ai[j];
 	 if(aij != 0.0) {// TODO: check if is 1 or -1???
-            printf("Ai %d %d %f\n",i,j,aij);
+            //printf("Ai %d %d %f\n",i,j,aij);
 	    // load immediate to xmm register
             
 	    // movabs $0xff00ff00ff00ff00,%rax

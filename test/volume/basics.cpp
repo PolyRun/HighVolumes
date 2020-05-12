@@ -303,8 +303,6 @@ int main(int argc, char** argv) {
           Polytope* boxx = Polytope_new_box(n,2);
           PolytopeJIT *box = Polytope_to_PolytopeJIT(boxx);
           
-	  PolytopeJIT_print(box);
-
           test_box_inside(n, &PolytopeJIT_T, box);
           test_box_intersect(n, &PolytopeJIT_T, box);
           test_box_intersectCoord(n, &PolytopeJIT_T, box);

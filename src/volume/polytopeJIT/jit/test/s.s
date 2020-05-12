@@ -100,6 +100,8 @@ movaps %xmm4,%xmm1
 
 movaps %xmm4,%xmm0
 movaps %xmm5,%xmm1
+movaps %xmm3,%xmm1
+movaps %xmm2,%xmm0
 
 
 vblendvpd %xmm4, %xmm2, %xmm0, %xmm4
@@ -110,6 +112,9 @@ vmovq %xmm0,0x100(%rsi)
 
 vmovq  %rax,%xmm0
 vmovq  %rax,%xmm1
+vmovq  %rax,%xmm2
+vmovq  %rax,%xmm3
+vmovq  %rax,%xmm4
 
 
 movsd  %xmm0,(%rsi)
@@ -126,6 +131,29 @@ jmpq *%rcx
 
 vxorpd %xmm0,%xmm0,%xmm0
 vxorpd %xmm1,%xmm1,%xmm1
+
+vsubsd 0x100(%rcx), %xmm3, %xmm2
+vmulpd %xmm2, %xmm4, %xmm2
+
+vmaxpd %xmm0,%xmm2,%xmm0
+vminpd %xmm1,%xmm2,%xmm1
+
+
+movsd  0x100(%rcx), %xmm4
+
+movsd (%rcx),%xmm0
+movsd %xmm0,(%rdx)
+movsd 8(%rcx),%xmm0
+movsd %xmm0,(%rsi)
+
+movsd  %xmm4,(%rsi)
+movsd  %xmm3,(%rdx)
+
+
+movslq (%rax,%rdi,4),%r11
+add    %rax,%r11
+jmpq   *%r11
+
 
 
 

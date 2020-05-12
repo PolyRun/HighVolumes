@@ -103,7 +103,7 @@ void PolytopeJIT_generate_intersect_ref(const Polytope *p, PolytopeJIT *o) {
       for(int j=0;j<p->n;j++) {
          FT aij = Ai[j];
 	 if(aij != 0.0) {// TODO: check if is 1 or -1???
-            printf("Ai %d %d %f\n",i,j,aij);
+            //printf("Ai %d %d %f\n",i,j,aij);
             
 	    //movabs $0xff00ff00ff00ff00,%rax
             {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
