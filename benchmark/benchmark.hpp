@@ -21,12 +21,16 @@
  **/
 class Benchmark_base {
     public:
-    Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_) : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_) {
+    Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_, double time_ci_alpha_, double results_ci_alpha_)
+	    : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_), time_ci_alpha(time_ci_alpha_), results_ci_alpha(results_ci_alpha_) {
         timer = new Tsc();
     }
 
     // overloaded constructer taking timer argument
-    Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_, Timer_generic *t) : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_), timer(t) {}
+    Benchmark_base(std::string name_, int reps_, bool convergence_, int warmup_reps_, double time_ci_alpha_, double results_ci_alpha_, Timer_generic *t)
+	    : name(name_), reps(reps_), convergence(convergence_), warmup_reps(warmup_reps_), time_ci_alpha(time_ci_alpha_), results_ci_alpha(results_ci_alpha_), timer(t) {
+        // empty
+    }
 
         /**
          * \brief Actuall performs the benchmark
@@ -85,11 +89,29 @@ class Benchmark_base {
 	       std::cout << "Avg flops/cycle: " << pc_flops/min_time << "\n";
 	       std::cout << "Avg bytes/cycle: " << pc_bytes/min_time << "\n";
 	    }
+            
+            
 
             // Dictionary output
             std::cout << "{'time': {";
             std::cout << "'name_t': '"<< name << "', 'mean': '" << mean_time << "', 'min': '" << min_time << "', 'max': '" << max_time << "', 'std_dev': '" << std_dev << "'";
-            
+	    
+	    // Calculate confidence intervals:
+	    double time_ci_low, time_ci_high, time_ci_median;
+	    {
+	       std::sort(measured_times.begin(), measured_times.end());
+	       size_t s = measured_times.size();
+               double time_ci_a1 = (1.0-0.95)/2.0;
+	       double time_ci_a2 = time_ci_a1 + time_ci_alpha;
+	       time_ci_low    = measured_times[s*time_ci_a1];
+	       time_ci_high   = measured_times[s*time_ci_a2];
+	       time_ci_median = measured_times[s*0.5];
+	    }
+	    std::cout << ", 'ci_low': '"<< time_ci_low <<"'";
+	    std::cout << ", 'ci_high': '"<< time_ci_high <<"'";
+	    std::cout << ", 'ci_median': '"<< time_ci_median <<"'";
+	    std::cout << ", 'ci_alpha': '"<< time_ci_alpha <<"'";
+
             std::cout << "}, 'convergence': {";
 	        // process results:
             if(convergence) {
@@ -107,6 +129,22 @@ class Benchmark_base {
                     
                 std::cout << "'name_c': '"<< name << "', 'mean': '" << results_mean << "', 'min': '" << results_min << "', 'max': '" << results_max << "', 'std_dev': '" << results_std_dev << "'";
             }
+
+	    // Calculate confidence intervals:
+	    double results_ci_low, results_ci_high, results_ci_median;
+	    {
+	       std::sort(results.begin(), results.end());
+	       size_t s = results.size();
+               double results_ci_a1 = (1.0-0.95)/2.0;
+	       double results_ci_a2 = results_ci_a1 + results_ci_alpha;
+	       results_ci_low    = results[s*results_ci_a1];
+	       results_ci_high   = results[s*results_ci_a2];
+	       results_ci_median = results[s*0.5];
+	    }
+	    std::cout << ", 'ci_low': '"<< results_ci_low <<"'";
+	    std::cout << ", 'ci_high': '"<< results_ci_high <<"'";
+	    std::cout << ", 'ci_median': '"<< results_ci_median <<"'";
+	    std::cout << ", 'ci_alpha': '"<< results_ci_alpha <<"'";
 
 	    std::cout << "}, 'performance_counter': {";
 	    std::cout << "'flops': " << pc_flops << ", 'bytes': " << pc_bytes;
@@ -150,6 +188,10 @@ class Benchmark_base {
 	// performance_counter results:
 	size_t pc_flops = 0;
 	size_t pc_bytes = 0;
+
+        // alphas for confidence intervals
+	double time_ci_alpha = 0.95;
+	double results_ci_alpha = 0.95;
 };
 
 

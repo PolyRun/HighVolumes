@@ -4,8 +4,8 @@
 
 class Benchmark_intersect : public Benchmark_base {
     public:
-        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose)
-		: Benchmark_base(name, reps, convergence, warmup_reps), generator(generator), polytopeTranspose(polytopeTranspose){}
+        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeTranspose(polytopeTranspose){}
 
     protected:
         void initialize () {
@@ -60,8 +60,8 @@ class Benchmark_intersect : public Benchmark_base {
 
 class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
-        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose)
-		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeTranspose) {}
+        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeTranspose, time_ci_alpha_, results_ci_alpha_) {}
     
     	void finalize() {
 	    pc_stack().reset();
@@ -87,9 +87,13 @@ int main(int argc, char *argv[]){
     
     int r = 100;
     int warmup = 0;
+    double time_ci_alpha;
+    double results_ci_alpha;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 10000000));
     cliFun.add(new CLIF_OptionNumber<int>(&warmup,'b',"warmup","0", 0, 10000000));
+    cliFun.add(new CLIF_OptionNumber<double>(&time_ci_alpha,'b',"time_ci_alpha","0.95", 0, 1));
+    cliFun.add(new CLIF_OptionNumber<double>(&results_ci_alpha,'b',"results_ci_alpha","0.95", 0, 1));
     
     std::string generator = "cube";
     auto &gen_map = solved_body_generator()->gen_map();
@@ -110,10 +114,10 @@ int main(int argc, char *argv[]){
     cliFun.postParse();
     
     if(intersect.compare("intersect")==0) {
-        Benchmark_intersect b("intersect", r, true, warmup, generator, polytopeTranspose);
+        Benchmark_intersect b("intersect", r, true, warmup, generator, polytopeTranspose, time_ci_alpha, results_ci_alpha);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeTranspose);
+        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeTranspose, time_ci_alpha, results_ci_alpha);
         b.run_benchmark();
     }
 }

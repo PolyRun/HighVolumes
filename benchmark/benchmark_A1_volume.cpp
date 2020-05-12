@@ -4,8 +4,8 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, bool polytopeTranspose)
-		: Benchmark_base(name, reps, convergence, warmup_reps), generator(generator), polytopeTranspose(polytopeTranspose) {}
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, bool polytopeTranspose, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeTranspose(polytopeTranspose) {}
 
     protected:
         void initialize () {
@@ -48,10 +48,13 @@ int main(int argc, char *argv[]){
     
     int r = 100;
     int warmup = 0;
+    double time_ci_alpha;
+    double results_ci_alpha;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
     cliFun.add(new CLIF_OptionNumber<int>(&warmup,'b',"warmup","0", 0, 100000));
- 
+    cliFun.add(new CLIF_OptionNumber<double>(&time_ci_alpha,'b',"time_ci_alpha","0.95", 0, 1));
+    cliFun.add(new CLIF_OptionNumber<double>(&results_ci_alpha,'b',"results_ci_alpha","0.95", 0, 1));
 
     std::string generator = "cube";
     auto &gen_map = solved_body_generator()->gen_map();
@@ -66,6 +69,6 @@ int main(int argc, char *argv[]){
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
-    Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeTranspose);
+    Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeTranspose, time_ci_alpha, results_ci_alpha);
     b.run_benchmark();
 }
