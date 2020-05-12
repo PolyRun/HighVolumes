@@ -296,7 +296,8 @@ Solved_Body_Generator::Solved_Body_Generator() {
         "simplex_10",
         "simplex_14",
         "simplex_15",
-        "simplex_20"
+        "simplex_20",
+        "gagandeep"
     };
     for(auto f : polyvest_list) {
         std::string pname = "polyvest_"+f;
