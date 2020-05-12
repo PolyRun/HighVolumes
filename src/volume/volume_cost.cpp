@@ -235,6 +235,119 @@ void Ellipsoid_cacheReset_cost_ref(const void* o) {
    pc_stack().log(2*n*n+2*n,(n*n + 2*n + n + 1)*sizeof(FT), "recompute MVM, c");
 }
 
+
+// NOTE: the actual #flops & #bytes depends on direction d
+// here we return the values corresponding to the average of non-zeros per column as we expect the average to hold on average ^^
+int nonzerosCSC(const PolytopeCSC *p);
+int nonzerosCSC(const PolytopeCSC *p){
+
+    // compute average non-zeros
+    int nz = 0;
+    for (int i = 0; i < p->col_start[p->n]; i++){
+        if (p->row_idx[i] > -1){
+            nz++;
+        }
+    }
+    return nz;
+}
+
+
+// NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
+void PolytopeCSC_intersect_cost_ref(const void *o){
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+
+    // read 4m (read and write dotd, dotx) + nz read a + m read b doubles
+    // read nz ints (row_idx)
+    // add 2*#non-zeros + m
+    // mult 2*#non-zeros + m
+    // compare 3m (upper bound)
+    pc_stack().log(4*nz + 5*m, (4*m + nz + m) * sizeof(FT) + nz * sizeof(int), "intersect CSC");
+}
+
+
+void PolytopeCSC_mvm_cost(const PolytopeCSC *p){
+
+    int nz = nonzerosCSC(p);
+
+    // reads 2m (read and write result) + n (read x) + #non-zeros (read A)
+    // read #non-zeros ints (for row_idx)
+    // adds #non-zeros
+    // mults #non-zeros
+    pc_stack().log(2*nz, (2*p->m + p->n + nz) * sizeof(FT) + nz * sizeof(int), "mvm for CSC");
+}
+
+// NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
+void PolytopeCSC_intersectCoord_cost_ref(const void *o){
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+
+
+    {// frame for mvm
+        PC_Frame<mvm_cost_f> frame((void*) PolytopeCSC_mvm);
+        frame.costf()(p);
+    }
+
+    // read 3*#non-zeros in col (for b, A and dotx (don't count cache here as its only for validation))
+    // adds #non-zeros in col (1 flop each)
+    // division #non-zeros in col (1 flop each)
+    // comparison #non-zeros in col (1 flop each)
+    pc_stack().log(3* nz/n, 3*nz/n*sizeof(FT) + nz/n *sizeof(int), "intersect Coord CSC");
+    
+}
+
+// NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
+void PolytopeCSC_intersectCoord_cached_cost_ref(const void *o){
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+
+
+    // read #non-zeros in col * (3 doubles (for Aix, b, A) + 1 int (row_idx))
+    // adds non-zeros in col
+    // divs non-zeros in col
+    // comparisons non-zeros in col
+
+    pc_stack().log(3*nz/n, (3 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_ref CSC");
+}
+
+
+    
+// NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
+void PolytopeCSC_cacheReset_cost_ref(const void *o){
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+
+    // reads 2m (read-in and write cache (assume it stays in cache between zeroing and writing)) + n (read x) + nz (read A) doubles
+    // read nz ints (row_idx)
+    // adds #non-zeros total
+    // mults #non-zeros total
+    pc_stack().log(2*nz, (2*m + n + nz) * sizeof(FT) + nz * sizeof(int), "cacheReset CSC");
+}
+
+// NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
+void PolytopeCSC_cacheUpdateCoord_cost_ref(const void *o){
+
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int nz = nonzerosCSC(p);
+    
+    // read 3 * #non-zeros in col * sizeof(FT) bytes
+    // read #non-zeros int col ints (for row_idx)
+    // mults #non-zeros in col
+    // adds #non-zeros in col
+    pc_stack().log(2 * nz/n, (3 * nz/n) * sizeof(FT) + nz/n * sizeof(int), "cache Update coord CSC");
+    
+}
+
+
 void volume_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
 
    pc_stack().log(0, n*sizeof(FT), "init_x");
