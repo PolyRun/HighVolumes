@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <stdint.h>
+#include <assert.h>
 
 #define JIT_RDI 
 
@@ -30,6 +31,8 @@ int jit_estimate_npages(const size_t bytes_requested);
 void jit_pushByte(const uint8_t c);
 // push array of n chars to mem
 void jit_push(const uint8_t* c, const size_t n);
+// write n bytes from c to mem
+void jit_write(uint8_t* mem, const uint8_t* c, const size_t n);
 
 // add zero, until alligned
 void jit_allign(const size_t a);
