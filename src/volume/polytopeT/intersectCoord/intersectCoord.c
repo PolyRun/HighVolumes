@@ -66,7 +66,7 @@ void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int
    const PolytopeT* p = (PolytopeT*)o;
    const int n = p->n;
    const int m = p->m;
-   FT* Aix = (FT*)cache;
+   FT* cc = (FT*)cache;
    
    FT t00 = -FT_MAX;// tmp variables for t0, t1
    FT t11 = FT_MAX;
@@ -78,8 +78,7 @@ void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int
       
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
       
-      const FT aix = Aix[i];
-      FT t = (b - aix) / dai; // TODO - change!
+      FT t = cc[i] / dai; // cc[i] = (bi - aix)
       
       if(dai < 0.0) {
          t00 = (t00>t)?t00:t; // max
@@ -95,13 +94,13 @@ void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int
 
 void PolytopeT_cacheReset_b_ref(const void* o, const FT* x, void* cache) {
    const PolytopeT* p = (PolytopeT*)o;
-   FT* c = (FT*)cache;
+   FT* c = (FT*)cache; // set c[i] = bi - Ai*x
    const int n = p->n;
    const int m = p->m;
    for(int i=0; i<m; i++) {
-      FT dot = 0;
+      FT dot = PolytopeT_get_b(p,i); // watch the b!
       for(int j=0;j<n;j++) {
-         dot += x[j] * PolytopeT_get_a(p,i,j); // TODO - change
+         dot -= x[j] * PolytopeT_get_a(p,i,j);  // watch the minus!
       }
       c[i] = dot;
    }
@@ -113,7 +112,7 @@ void PolytopeT_cacheUpdateCoord_b_ref(const void* o, const int d, const FT dx, v
    const int m = p->m;
    FT* c = (FT*)cache;
    for(int i=0; i<m; i++) {
-      c[i] += dx * PolytopeT_get_a(p,i,d); // TODO: maybe change, probably not
+      c[i] -= dx * PolytopeT_get_a(p,i,d); // watch the minus !
    } 
 }
 
