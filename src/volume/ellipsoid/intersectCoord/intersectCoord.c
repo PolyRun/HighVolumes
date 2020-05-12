@@ -95,9 +95,7 @@ void Ellipsoid_intersectCoord_cached_reord_fma(const void* o, const FT* x, const
    c = _mm_mul_sd (four, c);
 
    __m128d bsquared = _mm_mul_sd (b, b);
-   FT tv;
-   _mm_store_sd(&tv, aInv);
-   printf("TOVERIFY: %.10f\n", tv);
+
    // find t:
    const __m128d discr = _mm_fnmadd_sd (a, c, bsquared);
    __m128d zero = _mm_set_sd (0.0);
