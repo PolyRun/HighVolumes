@@ -21,6 +21,7 @@ PolytopeJIT* PolytopeJIT_new(int n, int m) {
    o->m = m;
    o->inside = NULL;
    o->intersect = NULL;
+   o->cacheReset = NULL;
    o->intersectCoord = NULL;
    return o;
 }
@@ -55,6 +56,7 @@ void PolytopeJIT_print(const void* o) {
 
    printf("inside: %p\n",p->inside);
    printf("intersect: %p\n",p->intersect);
+   printf("cacheReset: %p\n",p->cacheReset);
    printf("intersectCoord: %p\n",p->intersectCoord);
 }
 

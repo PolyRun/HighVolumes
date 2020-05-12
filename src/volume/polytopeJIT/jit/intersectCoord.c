@@ -1,7 +1,7 @@
 #include "intersectCoord.h"
 
 void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) {
-   jit_print();
+   //jit_print();
    
    o->intersectCoord = (pjit_intersectCoord_f_t)jit_head();
    
@@ -72,8 +72,28 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
       uint32_t entry = location - table;
       jit_write(table+4*i, (uint8_t*)&entry, 4);
       
-      // put in meat of the case:
+      // find relevant entries in column:
+      for(int j=0;j<p->m;j++) {
+         FT aij = Polytope_get_a(p,j,i);
+	 if(aij != 0.0) {
+	    printf("A %d %d %f\n",j,i,aij);
+	 
+	    // d*a = aij
+	    // read b
+            FT bj = Polytope_get_b(p,j);
 
+	    // aix = cache[j]
+
+	    // we already know if min or max!
+            if(aij < 0.0) {
+	       printf("do max\n");
+	    } else {
+	       printf("do min\n");
+	    }
+	 }
+      }
+      
+      // put in meat of the case:
       if(i%2 == 0) {
           // c5 f9 57 c0          	vxorpd %xmm0,%xmm0,%xmm0
 	  {const uint8_t instr[] = {0xc5,0xf9,0x57,0xc0}; jit_push(instr,4);}
@@ -110,7 +130,7 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    
-   jit_print();
+   //jit_print();
 }
 
 

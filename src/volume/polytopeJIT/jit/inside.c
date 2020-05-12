@@ -15,7 +15,7 @@ find test scripts in test/
 */
 
 void PolytopeJIT_generate_inside_ref(const Polytope *p, PolytopeJIT *o) {
-   jit_print();
+   //jit_print();
    
    // info about calling convention:
    // input pointer -> %rdi
@@ -122,6 +122,6 @@ void PolytopeJIT_generate_inside_ref(const Polytope *p, PolytopeJIT *o) {
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    
-   jit_print();
+   //jit_print();
 }
 
