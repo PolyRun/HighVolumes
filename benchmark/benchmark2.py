@@ -94,8 +94,7 @@ BENCHMARKS = [
    },
    {"id": 4,
     "name": "benchmark_intersect",
-    "config": [
-       
+    "config": [       
        {
           "fun_configs": ["Polytope_intersectCoord=cached_ref", "Polytope_intersectCoord=ref"],
           "run_configs": ["intersect=intersectCoord,polytopeTranspose=false"],
@@ -116,6 +115,9 @@ BENCHMARKS = [
     #"xlabel": ("generator", intersectEdims)
    }
 ]
+
+
+assert(len(set(map(lambda t: t["name"], BENCHMARKS))) == len(BENCHMARKS) and "benchmarks don't have unique names!")
 
 # --- Functions that should be compared
 

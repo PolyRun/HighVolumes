@@ -349,12 +349,18 @@ void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, cons
 FT* volume_x_ptr = NULL;
 FT* volume_d_ptr = NULL;
 void* volume_cache_ptr = NULL;
+FT *dotproduct_store_d = NULL;
+FT *dotproduct_store_x = NULL;
 
-void volume_lib_init(const int max_n, const int max_b) {
+void volume_lib_init(const int max_n, const int max_m, const int max_b) {
    printf("volume_lib_init...\n");
 
    volume_x_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
    volume_d_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
+
+   
+   dotproduct_store_d = (FT *) aligned_alloc(32, max_m * sizeof(FT));
+   dotproduct_store_x = (FT *) aligned_alloc(32, max_m * sizeof(FT));
    
    int cache_size = 1000*max_n*max_b*sizeof(FT);
    volume_cache_ptr = (aligned_alloc(32, cache_size*sizeof(FT))); // align this to 32

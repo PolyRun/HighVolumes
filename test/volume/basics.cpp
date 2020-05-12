@@ -661,15 +661,12 @@ int main(int argc, char** argv) {
    }
 
 
-   //Polytope *P, *Q;
-   //FT vol1, vol2;
-   //read_vinci("../polyvest/examples/rh_10_20.ine", &P, &vol1);
-   //Polytope_print((void *) P);
-   //cout << vol1 << "\n";
-
-   //read_vinci("../polyvest/examples/cc_8_10.ine", &Q, &vol2);
-   //Polytope_print((void *) Q);
-   //cout << vol2 << "\n";
+   Polytope *Q;
+   FT vol2;
+   
+   read_vinci("../polyvest/examples/ccp_7.ine", &Q, &vol2);
+   Polytope_print((void *) Q);
+   cout << vol2 << "\n";
 
 
    

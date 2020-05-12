@@ -35,7 +35,8 @@ class CLIFunctionsVolume : public CLIFunctions {
 public:
    CLIFunctionsVolume(CLI &cli) : CLIFunctions(cli) {
       // initialize memory arrays of volume library
-      volume_lib_init(200,20);// max_n=200, max_b=20
+       // note, cross_13 has 8000 constraints so let's set max_m to that
+       volume_lib_init(200,20000, 20);// max_n=200, max_m=20000, max_b=20
       
       // add performance counter cost functions
       pc_stack().add((void*)dotProduct_ref, new PC_Cost_Wrapper<dotProduct_cost_f>(dotProduct_cost_ref,"dotProduct_ref"));

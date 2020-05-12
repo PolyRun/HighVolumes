@@ -33,6 +33,8 @@ typedef struct Body_T Body_T;
 
 
 
+
+
 // --------------------------------------------- Preprocessing
 
 typedef void (*preprocess_f_t)(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
@@ -45,8 +47,9 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 // call this function at before any other function.
 // initializes memory arrays
 // set max_n to be at least as large as maximum dimension to ever be used
+// set max_m to be at least as large as maximum nr. of constraints to ever by used
 // set max_b to be at least the number of sub-bodies ever used at one time
-void volume_lib_init(const int max_n, const int max_b);
+void volume_lib_init(const int max_n, const int max_m, const int max_b);
 
 // number of points sampled per ball
 extern int step_size;
