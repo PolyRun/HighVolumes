@@ -5,8 +5,9 @@ cmake_minimum_required(VERSION 3.6)
 # --- add files to volume target in parent directory
 
 target_sources(volume PRIVATE
-volume/ellipsoid/ellipsoid.c
-volume/ellipsoid/ellipsoid.h
+	volume/polytopeJIT/jit/inside.h
+	volume/polytopeJIT/jit/inside.c
+	volume/polytopeJIT/jit/intersectCoord.h
+	volume/polytopeJIT/jit/intersectCoord.c
 )
 
-add_subdirectory(intersectCoord)

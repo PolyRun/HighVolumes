@@ -239,14 +239,16 @@ int main(int argc, char** argv) {
       std::cout << "Test Polytope for intersectCoord " << it.first << " - " << it.second.second << std::endl;
 
       // Generate new polytope box, n dim, 2 radius
-      const int n = 10;
-      Polytope* box = Polytope_new_box(n,2);
+      for(int n=4;n<20;n++) {
+	 std::cout << "test for n="<<n<<"\n";
+         Polytope* box = Polytope_new_box(n,2);
 
-      test_box_inside(n, &Polytope_T, box);
-      test_box_intersect(n, &Polytope_T, box);
-      test_box_intersectCoord(n, &Polytope_T, box);
-      
-      Polytope_free(box);
+         test_box_inside(n, &Polytope_T, box);
+         test_box_intersect(n, &Polytope_T, box);
+         test_box_intersectCoord(n, &Polytope_T, box);
+         
+         Polytope_free(box);
+      }
    }
 
    auto oT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeT_intersectCoord"));
@@ -255,14 +257,16 @@ int main(int argc, char** argv) {
       std::cout << "Test PolytopeT for intersectCoord " << it.first << " - " << it.second.second << std::endl;
 
       // Generate new polytope box, n dim, 2 radius
-      const int n = 10;
-      PolytopeT* box = PolytopeT_new_box(n,2);
+      for(int n=4;n<20;n++) {
+	 std::cout << "test for n="<<n<<"\n";
+         PolytopeT* box = PolytopeT_new_box(n,2);
 
-      test_box_inside(n, &PolytopeT_T, box);
-      test_box_intersect(n, &PolytopeT_T, box);
-      test_box_intersectCoord(n, &PolytopeT_T, box);
-      
-      PolytopeT_free(box);
+         test_box_inside(n, &PolytopeT_T, box);
+         test_box_intersect(n, &PolytopeT_T, box);
+         test_box_intersectCoord(n, &PolytopeT_T, box);
+         
+         PolytopeT_free(box);
+      }
    }
 
 
@@ -272,17 +276,41 @@ int main(int argc, char** argv) {
        std::cout << "Test PolytopeCSC for intersectCoord " << it.first << " - " << it.second.second << std::endl;
 
        // Generate new polytope box, n dim, 2 radius
-       const int n = 10;
-       Polytope* boxx = Polytope_new_box(n,2);
-       PolytopeCSC *box = Polytope_to_PolytopeCSC(boxx);
+       for(int n=4;n<20;n++) {
+	  std::cout << "test for n="<<n<<"\n";
+          Polytope* boxx = Polytope_new_box(n,2);
+          PolytopeCSC *box = Polytope_to_PolytopeCSC(boxx);
 
-       test_box_inside(n, &PolytopeCSC_T, box);
-       test_box_intersect(n, &PolytopeCSC_T, box);
-       test_box_intersectCoord(n, &PolytopeCSC_T, box);
+          test_box_inside(n, &PolytopeCSC_T, box);
+          test_box_intersect(n, &PolytopeCSC_T, box);
+          test_box_intersectCoord(n, &PolytopeCSC_T, box);
 
-       Polytope_free(boxx);
-       PolytopeCSC_free(box);
+          Polytope_free(boxx);
+          PolytopeCSC_free(box);
+       }
    }
+   
+   /*
+   auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
+   for (auto it : oJIT->fmap){
+       // test PolytopeJIT
+       std::cout << "Test PolytopeJIT for intersectCoord " << it.first << " - " << it.second.second << std::endl;
+
+       // Generate new polytope box, n dim, 2 radius
+       for(int n=4;n<20;n++) {
+	  std::cout << "test for n="<<n<<"\n";
+          Polytope* boxx = Polytope_new_box(n,2);
+          PolytopeJIT *box = Polytope_to_PolytopeJIT(boxx);
+
+          test_box_inside(n, &PolytopeJIT_T, box);
+          test_box_intersect(n, &PolytopeJIT_T, box);
+          test_box_intersectCoord(n, &PolytopeJIT_T, box);
+
+          Polytope_free(boxx);
+          PolytopeJIT_free(box);
+      }
+   }
+   */
    
 
    // Check ball volume:

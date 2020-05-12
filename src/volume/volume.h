@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "../random/prng.h"
+#include "../jit/jit.h"
 #include "ft.h"
 #include "linalg/linalg.h"
 
@@ -17,6 +18,7 @@ typedef struct Body_T Body_T;
 #include "polytope/polytope.h"
 #include "polytopeT/polytopeT.h"
 #include "polytopeCSC/polytopeCSC.h"
+#include "polytopeJIT/polytopeJIT.h"
 #include "ellipsoid/ellipsoid.h"
 #include "preprocess/preprocess.h"
 #include "body/body.h"

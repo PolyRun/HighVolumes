@@ -140,13 +140,13 @@ void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT
    b *= 2.0;
 
    // find t:
-   const FT det = b*b - 4.0*a*c;
-   assert(det >= 0);
-   const FT sqrtDet = sqrt(det);
+   const FT discr = b*b - 4.0*a*c;
+   assert(discr >= 0);
+   const FT sqrtDiscr = sqrt(discr);
    const FT aInv = 0.5/a;
 
-   *t0 = (-b - sqrtDet) * aInv;
-   *t1 = (-b + sqrtDet) * aInv;
+   *t0 = (-b - sqrtDiscr) * aInv;
+   *t1 = (-b + sqrtDiscr) * aInv;
 }
 
 void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
@@ -172,13 +172,13 @@ void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t
    b *= 2.0;
 
    // find t:
-   const FT det = b*b - 4.0*a*c;
-   assert(det >= 0);
-   const FT sqrtDet = sqrt(det);
+   const FT discr = b*b - 4.0*a*c;
+   assert(discr >= 0);
+   const FT sqrtDiscr = sqrt(discr);
    const FT aInv = 0.5/a;
 
-   *t0 = (-b - sqrtDet) * aInv;
-   *t1 = (-b + sqrtDet) * aInv;
+   *t0 = (-b - sqrtDiscr) * aInv;
+   *t1 = (-b + sqrtDiscr) * aInv;
 }
 
 void Ellipsoid_intersectCoord_cached_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
@@ -191,13 +191,13 @@ void Ellipsoid_intersectCoord_cached_ref(const void* o, const FT* x, const int d
    FT c = Az_c[n];
    
    // find t:
-   const FT det = b*b - 4.0*a*c;
-   assert(det >= 0);
-   const FT sqrtDet = sqrt(det);
+   const FT discr = b*b - 4.0*a*c;
+   assert(discr >= 0);
+   const FT sqrtDiscr = sqrt(discr);
    const FT aInv = 0.5/a;
 
-   *t0 = (-b - sqrtDet) * aInv;
-   *t1 = (-b + sqrtDet) * aInv;
+   *t0 = (-b - sqrtDiscr) * aInv;
+   *t1 = (-b + sqrtDiscr) * aInv;
 }
 
 int  Ellipsoid_cacheAlloc_ref(const void* o) {
