@@ -63,6 +63,69 @@ private:
    F_t* var_; // global variable that will hold final choice
 };
 
+
+template <class F_t, class G_t>
+class CLIF_DoubleOption : public CLIF_OptionBase {
+public:
+   CLIF_DoubleOption(F_t* varF,G_t* varG, const signed char opt, const std::string &name, const std::string &val,
+	       const std::map<std::string, std::pair<std::pair<F_t,G_t>,std::string>> &m)
+   : varF_(varF), varG_(varG), CLIF_OptionBase(opt,name,val), fmap(m) {}
+   
+   void virtual postParse(CLI &cli) {
+      std::string key = cli.parameters(opt_).get(name_,"");
+      const auto it = fmap.find(key);
+      if(it==fmap.end()) {
+          std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
+	 std::cout << "       viable options:\n";
+	 for(const auto it : fmap) {
+	    std::cout << "           " << it.first << " - " << it.second.second << "\n";
+	 }
+	 std::exit(0);
+      }
+      *varF_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.first;
+      *varG_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.second;
+   }
+   std::map<std::string, std::pair<std::pair<F_t,G_t>,std::string>> fmap; // map holding all the options
+   // maps name to {value, description}
+private:
+   F_t* varF_; // global variable that will hold final choice
+   G_t* varG_; // global variable that will hold final choice
+};
+
+
+template <class F_t, class G_t, class H_t>
+class CLIF_TrippleOption : public CLIF_OptionBase {
+public:
+   CLIF_TrippleOption(F_t* varF,G_t* varG,H_t* varH, const signed char opt, const std::string &name, const std::string &val,
+	       const std::map<std::string, std::pair<std::pair<F_t,std::pair<G_t,H_t>>,std::string>> &m)
+   : varF_(varF), varG_(varG), varH_(varH), CLIF_OptionBase(opt,name,val), fmap(m) {}
+   
+   void virtual postParse(CLI &cli) {
+      std::string key = cli.parameters(opt_).get(name_,"");
+      const auto it = fmap.find(key);
+      if(it==fmap.end()) {
+          std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
+	 std::cout << "       viable options:\n";
+	 for(const auto it : fmap) {
+	    std::cout << "           " << it.first << " - " << it.second.second << "\n";
+	 }
+	 std::exit(0);
+      }
+      *varF_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.first;
+      *varG_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.second.first;
+      *varH_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.second.second;
+   }
+   std::map<std::string, std::pair<std::pair<F_t,std::pair<G_t,H_t>>,std::string>> fmap; // map holding all the options
+   // maps name to {value, description}
+private:
+   F_t* varF_; // global variable that will hold final choice
+   G_t* varG_; // global variable that will hold final choice
+   H_t* varH_; // global variable that will hold final choice
+};
+
+
+
+
 template <class T>
 class CLIF_OptionNumber : public CLIF_OptionBase {
 public:

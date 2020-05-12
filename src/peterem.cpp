@@ -18,11 +18,31 @@ int main(int argc, char** argv) {
                                                     {"false",{false, "Polytope format / rows"}},
        					     {"true",{true, "PolytopeT format / columns"}} }));
 
+   
+   int v1;
+   double v2;
+   cliFun.add(new CLIF_DoubleOption<int,double>(&v1,&v2,'e',"choice","c1", {
+			   {"c1", {{1,1.1}, "desc c1"}},
+			   {"c2", {{2,2.1}, "desc c2"}},
+			   }));
+
+   int v3;
+   double v4;
+   size_t v5;
+   cliFun.add(new CLIF_TrippleOption<int,double,size_t>(&v3,&v4,&v5,'e',"choice2","c1", {
+			   {"c1", {{1,{1.1, (size_t)0x1 << 35}}, "desc c1"}},
+			   {"c2", {{1,{2.1, (size_t)0x2 << 35}}, "desc c2"}},
+			   }));
+
+
+
 
    cliFun.preParse();
    if (!cli.parse()) {return -1;}
    cliFun.postParse();
    
+   std::cout << "choice "<< v1 << " " << v2 << "\n";
+   std::cout << "choice "<< v3 << " " << v4 << " " << v5 << "\n";
 
    Solved_Body* solved_body = solved_body_generator()->get(generator,polytopeTranspose);
    solved_body->print();
