@@ -4,8 +4,8 @@
 
 class Benchmark_intersect : public Benchmark_base {
     public:
-        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose)
-		: Benchmark_base(name, reps, convergence, warmup_reps), generator(generator), polytopeTranspose(polytopeTranspose){}
+        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeTranspose(polytopeTranspose){}
 
     protected:
         void initialize () {
@@ -34,16 +34,26 @@ class Benchmark_intersect : public Benchmark_base {
 	    dd = prng_get_random_int_in_range(0,n-1);
 	}
         double run () {
+	    int n = solved_body->n;
 	    FT t0, t1;
 	    solved_body->type[0]->intersect(solved_body->body[0], x, d, &t0, &t1);
-            return t0-t1;
+            
+	    // step now
+	    FT t = prng_get_random_double_in_range(t0,t1);
+            for(int j=0;j<n;j++) {x[j] += d[j]*t;}
+            return 0;
 	}
 	void finalize() {
+	    int n = solved_body->n;
 	    pc_stack().reset();
             {
-                PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersect);
-                frame.costf()(solved_body->body[0]);
-            }
+		{
+		   PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersect);
+                   frame.costf()(solved_body->body[0]);
+                }
+                pc_stack().log(0,0, "random double - TODO");
+                pc_stack().log(2*n, 3*n*sizeof(FT)," x += d*t");
+	    }
             pc_stack().print();
 	    pc_flops = pc_stack().flops();
 	    pc_bytes = pc_stack().bytes();
@@ -60,15 +70,27 @@ class Benchmark_intersect : public Benchmark_base {
 
 class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
-        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose)
-		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeTranspose) {}
+        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeTranspose, time_ci_alpha_, results_ci_alpha_) {}
     
     	void finalize() {
 	    pc_stack().reset();
             {
-                PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord);
-                frame.costf()(solved_body->body[0]);
-            }
+		{
+		    PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord);
+                    frame.costf()(solved_body->body[0]);
+		}
+
+                pc_stack().log(0, 0, "random double - TODO");
+	        // Reading and writing x[dd] with one add in between
+                pc_stack().log(1, 2, "x[dd] += t;");
+                
+                // body intersectCoord
+		{
+	            PC_Frame<cacheUpdateCoord_cost_f> frame((void*) solved_body->type[0]->cacheUpdateCoord);
+                    frame.costf()(solved_body->body[0]);
+		}
+	    }
             pc_stack().print();
 	    pc_flops = pc_stack().flops();
 	    pc_bytes = pc_stack().bytes();
@@ -77,6 +99,11 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
         double run () {
 	    FT t0, t1;
 	    solved_body->type[0]->intersectCoord(solved_body->body[0], x, dd, &t0, &t1, cache);
+            
+	    // step now
+	    FT t = prng_get_random_double_in_range(t0,t1);
+            x[dd] += t;
+            solved_body->type[0]->cacheUpdateCoord(solved_body->body[0], dd, t, cache);
             return 0;
 	}
 };
@@ -87,9 +114,13 @@ int main(int argc, char *argv[]){
     
     int r = 100;
     int warmup = 0;
+    double time_ci_alpha;
+    double results_ci_alpha;
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 10000000));
     cliFun.add(new CLIF_OptionNumber<int>(&warmup,'b',"warmup","0", 0, 10000000));
+    cliFun.add(new CLIF_OptionNumber<double>(&time_ci_alpha,'b',"time_ci_alpha","0.95", 0, 1));
+    cliFun.add(new CLIF_OptionNumber<double>(&results_ci_alpha,'b',"results_ci_alpha","0.95", 0, 1));
     
     std::string generator = "cube";
     auto &gen_map = solved_body_generator()->gen_map();
@@ -110,10 +141,10 @@ int main(int argc, char *argv[]){
     cliFun.postParse();
     
     if(intersect.compare("intersect")==0) {
-        Benchmark_intersect b("intersect", r, true, warmup, generator, polytopeTranspose);
+        Benchmark_intersect b("intersect", r, true, warmup, generator, polytopeTranspose, time_ci_alpha, results_ci_alpha);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeTranspose);
+        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeTranspose, time_ci_alpha, results_ci_alpha);
         b.run_benchmark();
     }
 }

@@ -12,7 +12,7 @@ extern "C" {
 class Benchmark_A1 : public Benchmark_base {
 public:
     Benchmark_A1(int reps, const std::string &polytope_path, Timer_generic *timer) :
-        Benchmark_base("A1", reps, false, 0, timer),
+        Benchmark_base("A1", reps, false, 0, 0.95,0.95, timer),
         polytope_path(polytope_path)
     {}
 
