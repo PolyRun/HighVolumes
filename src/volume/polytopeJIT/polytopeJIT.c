@@ -20,6 +20,8 @@ PolytopeJIT* PolytopeJIT_new(int n, int m) {
    o->n = n;
    o->m = m;
    o->inside = NULL;
+   o->intersect = NULL;
+   o->cacheReset = NULL;
    o->intersectCoord = NULL;
    return o;
 }
@@ -28,11 +30,12 @@ PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p) {
    const int n = p->n;
    const int m = p->m;
    PolytopeJIT* o = PolytopeJIT_new(n,m);
-   PolytopeJIT_print(o);
+   //PolytopeJIT_print(o);
    
    PolytopeJIT_generate_inside_ref(p,o);
+   PolytopeJIT_generate_intersect_ref(p,o);
+   PolytopeJIT_generate_cacheReset_ref(p,o);
    PolytopeJIT_generate_intersectCoord_ref(p,o);
-
    return o;
 }
 
@@ -52,8 +55,9 @@ void PolytopeJIT_print(const void* o) {
    printf("PolytopeJIT: n=%d, m=%d\n",p->n,p->m);
 
    printf("inside: %p\n",p->inside);
+   printf("intersect: %p\n",p->intersect);
+   printf("cacheReset: %p\n",p->cacheReset);
    printf("intersectCoord: %p\n",p->intersectCoord);
-   // TODO: display function contents?
 }
 
 bool PolytopeJIT_inside_ref(const void* o, const FT* v) {
@@ -68,15 +72,17 @@ void PolytopeJIT_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, 
    const int n = p->n;
    const int m = p->m;
    
-   assert(false && "intersect not implemented for PolytopeJIT");
+   assert(p->intersect && "intersect function must be generated PolytopeJIT");
+   p->intersect(x,d,t0,t1);
+   return;
 }
 
 void PolytopeJIT_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
    const int n = p->n;
    const int m = p->m;
-   
-   assert(false && "intersectCoord not implemented for PolytopeJIT");
+   assert(p->intersectCoord && "intersectCoord function must be generated PolytopeJIT");
+   p->intersectCoord(d,t0,t1,cache);
 }
 
 int  PolytopeJIT_cacheAlloc_ref(const void* o) {
@@ -86,7 +92,8 @@ int  PolytopeJIT_cacheAlloc_ref(const void* o) {
 }
 void PolytopeJIT_cacheReset_ref(const void* o, const FT* x, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
-   assert(false && "cacheReset not implemented for PolytopeJIT");
+   assert(p->cacheReset && "cacheReset function must be generated PolytopeJIT");
+   p->cacheReset(x,cache);
 }
 
 void PolytopeJIT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
