@@ -2,6 +2,7 @@
 #include "../linalg/linalg.h"
 
 #include "intersectCoord/intersectCoord.h"// see variants
+#include "cacheUpdateCoord/cacheUpdateCoord.h"
 
 #ifndef ELLIPSOID_H
 #define ELLIPSOID_H
