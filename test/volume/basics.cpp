@@ -355,7 +355,7 @@ int main(int argc, char** argv) {
           PolytopeCSC_free(box);
        }
 
-      // TODO: fix test or polytopeCSC !
+      // //TODO: fix test or polytopeCSC !
       // for(int n=2;n<20;n++) {
       //    std::cout << "test rot cube for n="<<n<<"\n";
       //    Solved_Body* s = generate_centered_hypercube(n,1.0);
@@ -363,6 +363,7 @@ int main(int argc, char** argv) {
       //    sb->polytopeCSC();
       //    
       //    assert(sb->type[0] == &PolytopeCSC_T);
+      //    sb->type[0]->print(sb->body[0]);
       //    test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
 
       //    delete s;
