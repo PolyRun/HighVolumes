@@ -70,12 +70,17 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
 	 
 	    //movabs $0xff00ff00ff00ff00,%rax
             {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
-	    jit_push((const uint8_t*)&aij,8);
+	    FT minus_aij = - aij;
+	    jit_push((const uint8_t*)&minus_aij,8);
             // c4 e1 f9 6e e0       	vmovq  %rax,%xmm4
             {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xe0}; jit_push(instr,5);}
             
 	    // goal:
 	    // fmadd: cachej += xmm4 * xmm0
+	    //
+	    // now we changed to:
+	    // cachej -= dx * aid.
+	    // this we can just make into an addition by taking minus of aid
 	    // 
 	    // asm:  xmm4 = cachej + xmm0*xmm4
 	    // c4 e2 f9 a9 a6 xx xx xx xx  vfmadd213sd 0x100(%rsi),%xmm0,%xmm4

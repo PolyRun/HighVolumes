@@ -99,14 +99,6 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
             // c4 e1 f9 6e e0       	vmovq  %rax,%xmm4
             {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xe0}; jit_push(instr,5);}
 	    
-            // load bj into xmm3
-            //movabs $0xff00ff00ff00ff00,%rax
-            {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
-            double bj = Polytope_get_b(p,j);
-            jit_push((const uint8_t*)&bj,8);
-            // c4 e1 f9 6e d8       	vmovq  %rax,%xmm3
-            {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xd8}; jit_push(instr,5);}
-	    
 	    //printf("A j:%d i:%d a:%f aInv:%f bj:%f\n",j,i,aij, aijInv,bj);
 
             ///  if(j==4) {
@@ -117,7 +109,6 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
             ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
             ///  break;
             ///  }
-
 
 
             ///  // f2 0f 10 a1 00 01 00 	movsd  0x100(%rcx),%xmm4
@@ -137,11 +128,9 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
 	    ///  return;
             ///  }
 
-    
-	    
 	    // aix = cache[j]   -- %rcx
-	    // c5 e3 5c 91 xx xx xx xx 	vsubsd xxxx(%rcx),%xmm3,%xmm2
-            {const uint8_t instr[] = {0xc5,0xe3,0x5c,0x91}; jit_push(instr,4);}
+	    // c5 db 59 91 xx xx xx xx  vmulsd xxxx(%rcx),%xmm4,%xmm2
+	    {const uint8_t instr[] = {0xc5,0xdb,0x59,0x91}; jit_push(instr,4);}
 	    uint32_t cachej = 8*j;
 	    jit_push((const uint8_t*)&cachej,4);
 
@@ -153,22 +142,6 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
             ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
             ///  break;
             ///  }
-
-
-	    // div by d*a -> we can precompute, only need to mul now!
-	    // c5 d9 59 d2          	vmulpd %xmm2,%xmm4,%xmm2 
-            {const uint8_t instr[] = {0xc5,0xd9,0x59,0xd2}; jit_push(instr,4);}
-
-            ///  if(j==4) {
-            ///  // debug log out.
-            ///  // 0f 28 c2             	movaps %xmm2,%xmm0
-            ///  {const uint8_t instr[] = {0x0f,0x28,0xc2}; jit_push(instr,3); }
-            ///  // 0f 28 cb             	movaps %xmm3,%xmm1
-            ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
-            ///  break;
-            ///  }
-
-
 
 	    // we already know if min or max!
             if(aij < 0.0) {

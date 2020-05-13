@@ -164,3 +164,10 @@ vfmadd213sd     0x100(%rsi), %xmm0, %xmm4
 movsd  %xmm4,0x100(%rsi)
 
 
+vmovq  %rax,%xmm0
+subsd  %xmm1,%xmm0
+vmulsd 0x100(%rcx),%xmm4,%xmm2
+vfmsub213sd 0x100(%rsi),%xmm0,%xmm4
+
+
+
