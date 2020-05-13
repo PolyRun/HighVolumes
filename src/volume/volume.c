@@ -444,7 +444,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
       //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
       //   printf("m: %f\n",m);
       //}
-      for(int i=count; i<step_size; i++) { // sample required amount of points
+      for(int i=count; i<step_size*l; i++) { // sample required amount of points
          pc_volume_steps++; // performance_counter
          walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
         
@@ -464,7 +464,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
       for(int i=0;i<k;i++){count+=t[i];}
       // all that fell into lower balls
 
-      FT ak = (FT)step_size / (FT)count;
+      FT ak = (FT)(step_size*l) / (FT)count;
       volume *= ak;
 
       //printf("count: %d, volume: %f\n",count,volume);

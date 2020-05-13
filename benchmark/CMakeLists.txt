@@ -23,7 +23,7 @@ project(benchmark_A1_volume)
 
 add_executable(benchmark_A1_volume benchmark_A1_volume.cpp)
 
-target_link_libraries(benchmark_A1_volume PUBLIC volume_helper)
+target_link_libraries(benchmark_A1_volume PUBLIC volume_helper polyvest_lib)
 
 set_target_properties(benchmark_A1_volume PROPERTIES
    CXX_STANDARD 11

@@ -1,5 +1,6 @@
 #include "benchmark.hpp"
 #include "../src/volume/volume_helper.hpp"
+#include "../polyvest/vol.h"
 
 
 class Benchmark_A1 : public Benchmark_base {
@@ -57,6 +58,56 @@ class Benchmark_A1 : public Benchmark_base {
 	int polytopeType = 0;
 };
 
+
+class Benchmark_Polyvest_Vol : public Benchmark_base {
+    public:
+        Benchmark_Polyvest_Vol(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator) {}
+
+    protected:
+        void initialize () {
+            std::cout << "initializing Polyvest data..." << std::endl;
+
+            solved_body = solved_body_generator()->get(generator,false);
+            assert(solved_body->bcount == 1 && "Can maximally have one body for Polyvest.");
+            assert(solved_body->type[0] == &Polytope_T && "Can only have polytopes for Polyvest.");
+
+	    P = (Polytope*)solved_body->body[0];
+	     
+            int n = P->n;
+            int m = P->m;
+    
+            Q = new vol::Polyvest_p(m, n);
+            polyvest_convert(P, Q);
+            Q->Preprocess();
+	}
+        void reset () {
+            //polyvest_convert(P, Q);
+	}
+        double run () {
+            FT res = Q->EstimateVol(step_size); // rout in the step_size also we use
+	    FT exact = solved_body->volume;
+	    return (res - exact)/exact;
+	}
+	void finalize() {
+	    pc_stack().reset();
+            {
+               pc_stack().log(0,0,"TODO");
+	       //PC_Frame<volume_cost_f> frame((void*)volume);
+               //frame.costf()(solved_body->n, solved_body->bcount, (const void**)solved_body->body, (const Body_T**)solved_body->type);
+            }
+            pc_stack().print();
+	    pc_flops = pc_stack().flops();
+	    pc_bytes = pc_stack().bytes();
+	}
+    private:
+	const std::string generator;
+	Solved_Body* solved_body;
+        Polytope* P;
+	vol::Polyvest_p *Q;
+};
+
+
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
@@ -82,12 +133,18 @@ int main(int argc, char *argv[]){
                                      {"1",{1, "PolytopeT format / columns"}},
                                      {"2",{2, "PolytopeCSC format"}},
                                      {"3",{3, "PolytopeJIT format"}},
+                                     {"4",{4, "Polyvest: alternative lib, only for single body polytopes - will preprocess first!"}},
                                     }));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
-
-    Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType, time_ci_alpha, results_ci_alpha);
-    b.run_benchmark();
+    
+    if(polytopeType==4) {
+        Benchmark_Polyvest_Vol b("A1_volume", r, true, warmup, generator, time_ci_alpha, results_ci_alpha);
+        b.run_benchmark();
+    } else {
+        Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType, time_ci_alpha, results_ci_alpha);
+        b.run_benchmark();
+    }
 }
