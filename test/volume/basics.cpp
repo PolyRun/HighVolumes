@@ -109,7 +109,7 @@ void test_body_intersectCoord_cached(const int n, Body_T* type, void* body) {
    void* cache = aligned_alloc(32, type->cacheAlloc(body));
    
    // test cacheReset -> intersectCoord - (use inside to validate)
-   for(int t=0;t<1000;t++){
+   for(int t=0;t<200;t++){
       for(int i=0;i<n;i++) {x[i]=prng_get_random_double_in_range(-0.5/n,0.5/n);}
       assert(type->inside(body, x));
       type->cacheReset(body,x,cache);
@@ -134,12 +134,12 @@ void test_body_intersectCoord_cached(const int n, Body_T* type, void* body) {
    // test intersectCoord and cacheUpdateCoord
    // run sequence of intersect and stepping
    // see if cache stays coherent to produce good results
-   for(int t=0;t<10;t++){
+   for(int t=0;t<2;t++){
       for(int i=0;i<n;i++) {x[i]=prng_get_random_double_in_range(-0.5/n,0.5/n);}
       assert(type->inside(body, x));
       type->cacheReset(body,x,cache);
       
-      for(int tt=0;tt<1000;tt++) {
+      for(int tt=0;tt<200;tt++) {
          int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
          FT t0,t1;
          type->intersectCoord(body, x, dd, &t0, &t1, cache);
@@ -397,6 +397,18 @@ int main(int argc, char** argv) {
            delete s;
            delete sb;
        }
+
+      for(int n=2;n<256;n+=29) {
+         std::cout << "test 2variable for n="<<n<<"\n";
+         Solved_Body* sb = generate_kvariable_polytope(n,2,1.0,6*n);
+         sb->polytopeCSC();
+         
+         assert(sb->type[0] == &PolytopeCSC_T);
+         test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+
+         delete sb;
+      }
+ 
    }
    
    auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
