@@ -102,6 +102,43 @@ void test_box_intersectCoord(const int n, Body_T* type, void* box) {
    free(x);
 }
 
+void test_body_intersectCoord_cached(const int n, Body_T* type, void* body) {
+   FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   void* cache = aligned_alloc(32, type->cacheAlloc(body));
+   
+   // test cacheReset -> intersectCoord - (use inside to validate)
+   for(int t=0;t<100;t++){
+      for(int i=0;i<n;i++) {x[i]=prng_get_random_double_in_range(-1.0/n,1.0/n);}
+      type->cacheReset(body,x,cache);
+      for(int d=0;d<n;d++) {
+         FT t0,t1;
+         type->intersectCoord(body, x, d, &t0, &t1, cache);
+	 assert(t0<=0 && t1 >=0 && t0 <= t1);
+         
+	 // check out those boundaries:
+	 for(int i=0;i<n;i++) {x0[i] = x[i]; x1[i]=x[i];}
+	 x0[d] += t0 -0.0001;
+	 x1[d] += t1 +0.0001;
+	 assert(!type->inside(body, x0));
+	 assert(!type->inside(body, x1));
+	 x0[d] += 0.0002;
+	 x1[d] -= 0.0002;
+	 assert(type->inside(body, x0));
+	 assert(type->inside(body, x1));
+      }
+   }
+
+   // test intersectCoord and cacheUpdateCoord
+   // run sequence of intersect and stepping
+   // see if cache stays coherent to produce good results
+   // TODO!
+
+   free(x);
+   free(cache);
+}
+
 void test_ellipsoid_intersectCoord(const int n, Body_T* type, Ellipsoid* e) {
    FT* x = (FT*)(aligned_alloc(32, n*sizeof(FT)));
    int d = prng_get_random_int_in_range(0,n-1);
@@ -240,7 +277,7 @@ int main(int argc, char** argv) {
 
       // Generate new polytope box, n dim, 2 radius
       for(int n=4;n<20;n++) {
-	 std::cout << "test for n="<<n<<"\n";
+	 std::cout << "test box for n="<<n<<"\n";
          Polytope* box = Polytope_new_box(n,2);
 
          test_box_inside(n, &Polytope_T, box);
@@ -248,6 +285,18 @@ int main(int argc, char** argv) {
          test_box_intersectCoord(n, &Polytope_T, box);
          
          Polytope_free(box);
+      }
+     
+      for(int n=2;n<20;n++) {
+	 std::cout << "test rot cube for n="<<n<<"\n";
+         Solved_Body* s = generate_centered_hypercube(n,1.0);
+	 Solved_Body* sb = s->rotate();
+         
+	 assert(sb->type[0] == &Polytope_T);
+	 test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+
+	 delete s;
+	 delete sb;
       }
    }
 
@@ -268,6 +317,20 @@ int main(int argc, char** argv) {
          test_box_intersectCoord(n, &PolytopeT_T, box);
          
          PolytopeT_free(box);
+      }
+
+
+      for(int n=2;n<20;n++) {
+	 std::cout << "test rot cube for n="<<n<<"\n";
+         Solved_Body* s = generate_centered_hypercube(n,1.0);
+	 Solved_Body* sb = s->rotate();
+         sb->polytopeTranspose();
+         
+	 assert(sb->type[0] == &PolytopeT_T);
+	 test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+
+	 delete s;
+	 delete sb;
       }
    }
 
@@ -291,6 +354,20 @@ int main(int argc, char** argv) {
           Polytope_free(boxx);
           PolytopeCSC_free(box);
        }
+
+      // TODO: fix test or polytopeCSC !
+      // for(int n=2;n<20;n++) {
+      //    std::cout << "test rot cube for n="<<n<<"\n";
+      //    Solved_Body* s = generate_centered_hypercube(n,1.0);
+      //    Solved_Body* sb = s->rotate();
+      //    sb->polytopeCSC();
+      //    
+      //    assert(sb->type[0] == &PolytopeCSC_T);
+      //    test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+
+      //    delete s;
+      //    delete sb;
+      // }
    }
    
    auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
