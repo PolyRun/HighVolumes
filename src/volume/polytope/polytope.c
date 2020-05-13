@@ -199,7 +199,7 @@ void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
       
       const FT aix = dotProduct(ai,x,n);
-      assert(aix == Aix[i] && "Cache must be accurate!");
+      assert(abs(aix-Aix[i]) < 0.0000001 && "Cache must be accurate!");
       FT t = (b - aix) / dai;
       
       if(dai < 0.0) {

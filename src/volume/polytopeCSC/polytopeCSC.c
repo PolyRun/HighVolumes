@@ -200,7 +200,7 @@ void PolytopeCSC_intersectCoord_ref(const void *o, const FT *x, const int d, FT 
         FT bi = b[p->row_idx[i]];
         FT dai = p->A[i];
 
-        assert(dotx[p->row_idx[i]] == Aix[p->row_idx[i]] && "Cache must be accurate!");
+        assert(abs(dotx[p->row_idx[i]] - Aix[p->row_idx[i]]) < 0.0000001 && "Cache must be accurate!");
 
         FT t = (bi - dotx[p->row_idx[i]]) / dai;
 

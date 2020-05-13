@@ -135,7 +135,7 @@ void PolytopeT_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t
       for(int j=0;j<n;j++) {
          aix += x[j] * PolytopeT_get_a(p,i,j);
       }
-      assert(aix == Aix[i] && "Cache must be accurate!");
+      assert(abs(aix - Aix[i]) - 0.0000001 && "Cache must be accurate!");
       FT t = (b - aix) / dai;
       
       if(dai < 0.0) {
