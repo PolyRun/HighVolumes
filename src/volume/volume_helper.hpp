@@ -123,7 +123,7 @@ public:
       add(new CLIF_Option<squaredNorm_f_t>(&squaredNorm,'f',"squaredNorm","ref", {
 						     {"ref", {squaredNorm_ref, "ref"}} }));
 
-      add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walk_ref", {
+      add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walkCoord_ref", {
                                                      {"walk_ref",{walk_ref, "random direction walk (ref)"}},
 						     {"walkCoord_ref",{walkCoord_ref, "coordinate walk (ref)"}} }));
 
@@ -133,7 +133,7 @@ public:
 
       add(new CLIF_TrippleOption<intersectCoord_f_t,cacheReset_f_t,cacheUpdateCoord_f_t>(
 		 &PolytopeT_T.intersectCoord,&PolytopeT_T.cacheReset,&PolytopeT_T.cacheUpdateCoord,
-		 'f',"PolytopeT_intersectCoord","cached_ref", {
+		 'f',"PolytopeT_intersectCoord","cached_b_ref", {
                         {"ref",        {{PolytopeT_intersectCoord_ref, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "no cache (ref)"}},
                         {"cached_ref",        {{PolytopeT_intersectCoord_cached_ref, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "no cache (ref)"}},
                         {"cached_nc1",        {{PolytopeT_intersectCoord_cached_nc1, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache, no condition - failed though"}},
