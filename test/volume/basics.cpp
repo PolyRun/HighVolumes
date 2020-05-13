@@ -403,7 +403,17 @@ int main(int argc, char** argv) {
           delete s;
           delete sb;
        }
- 
+       for(int n=2;n<256;n+=29) {
+	  jit_clear(); // make sure we are not flooding the jit memory
+          std::cout << "test 2variable for n="<<n<<"\n";
+          Solved_Body* sb = generate_kvariable_polytope(n,2,1.0,6*n);
+          sb->polytopeJIT();
+          
+          assert(sb->type[0] == &PolytopeJIT_T);
+          test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+
+          delete sb;
+       }
    }
    
 
