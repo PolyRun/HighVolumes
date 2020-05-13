@@ -13,7 +13,7 @@ void PolytopeCSC_intersectCoord_cached_ref(const void* o, const FT* x, const int
     FT t00 = -FT_MAX;
     FT t11 = FT_MAX;
     
-    for (int i = p->col_start[d]; i < p->col_start[d+1], p->row_idx[i] > -1; i++){
+    for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
         FT bi = b[p->row_idx[i]];
         FT dai = p->A[i];
 

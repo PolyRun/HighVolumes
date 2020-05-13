@@ -355,20 +355,21 @@ int main(int argc, char** argv) {
           PolytopeCSC_free(box);
        }
 
-      // //TODO: fix test or polytopeCSC !
-      // for(int n=2;n<20;n++) {
-      //    std::cout << "test rot cube for n="<<n<<"\n";
-      //    Solved_Body* s = generate_centered_hypercube(n,1.0);
-      //    Solved_Body* sb = s->rotate();
-      //    sb->polytopeCSC();
-      //    
-      //    assert(sb->type[0] == &PolytopeCSC_T);
-      //    sb->type[0]->print(sb->body[0]);
-      //    test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+       // //TODO: fix test or polytopeCSC !
+       for(int n=2;n<20;n++) {
+           std::cout << "test rot cube for n="<<n<<"\n";
+           Solved_Body* s = generate_centered_hypercube(n,1.0);
+           Solved_Body* sb = s->rotate();
+           sb->type[0]->print(sb->body[0]);
+           sb->polytopeCSC();
+          
+           assert(sb->type[0] == &PolytopeCSC_T);
+           sb->type[0]->print(sb->body[0]);
+           test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
 
-      //    delete s;
-      //    delete sb;
-      // }
+           delete s;
+           delete sb;
+       }
    }
    
    auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
@@ -740,14 +741,14 @@ int main(int argc, char** argv) {
       free(b);
    }
 
-
+   /*
    Polytope *Q;
    FT vol2;
    
    read_vinci("../polyvest/examples/ccp_7.ine", &Q, &vol2);
    Polytope_print((void *) Q);
    cout << vol2 << "\n";
-
+   */
 
    
    // -------------------------------- end tests

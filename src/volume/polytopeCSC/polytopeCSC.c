@@ -38,7 +38,7 @@ void PolytopeCSC_print(const void* o) {
    
    for(int j = 0; j < p->n; j++) {
        int idx = 0;
-       for (int jj = p->col_start[j]; jj < p->col_start[j+1], p->row_idx[jj] > -1; jj++){
+       for (int jj = p->col_start[j]; (jj < p->col_start[j+1]) && (p->row_idx[jj] > -1); jj++){
            while (idx < p->row_idx[jj]){
                printf(" %.3f", 0.);
                idx++;
@@ -105,7 +105,7 @@ bool PolytopeCSC_inside_ref(const void *o, const FT *x){
     // walk through p and update at each valid entry the corresponding acc
     for (int i = 0; i < n; i++){
         FT xi = x[i];
-        for (int j = p->col_start[i]; j < p->col_start[i+1], p->row_idx[j] > -1; j++){
+        for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
             acc[p->row_idx[j]] += xi * p->A[j];
         }
     }
@@ -137,7 +137,7 @@ void PolytopeCSC_intersect_ref(const void *o, const FT *x, const FT *dir, FT *t0
     for (int i = 0; i < p->n; i++){
         FT xi = x[i];
         FT di = dir[i];
-        for (int j = p->col_start[i]; j < p->col_start[i+1], p->row_idx[j] > -1; j++){
+        for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
             dotx[p->row_idx[j]] += p->A[j] * xi;
             dotd[p->row_idx[j]] += p->A[j] * di;
         }
@@ -173,7 +173,7 @@ void PolytopeCSC_mvm(const PolytopeCSC *p, const FT *x, FT *res){
 
     for (int i = 0; i < n; i++){
         FT xi = x[i];
-        for (int j = p->col_start[i]; j < p->col_start[i+1], p->row_idx[j] > -1; j++){
+        for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
             res[p->row_idx[j]] += p->A[j] * xi;
         }
     }    
@@ -196,7 +196,7 @@ void PolytopeCSC_intersectCoord_ref(const void *o, const FT *x, const int d, FT 
     FT *dotx = dotproduct_store_x;
     PolytopeCSC_mvm(p, x, dotx);
     
-    for (int i = p->col_start[d]; i < p->col_start[d+1], p->row_idx[i] > -1; i++){
+    for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
         FT bi = b[p->row_idx[i]];
         FT dai = p->A[i];
 
@@ -231,7 +231,7 @@ void PolytopeCSC_cacheReset_ref(const void *o, const FT *x, void *cache){
 
     for (int i = 0; i < p->n; i++){
         FT xi = x[i];
-        for (int j = p->col_start[i]; j < p->col_start[i+1], p->row_idx[j] > -1; j++){
+        for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
             c[p->row_idx[j]] += p->A[j] * xi;
         }
     }
@@ -243,7 +243,7 @@ void PolytopeCSC_cacheUpdateCoord_ref(const void *o, const int d, const FT dx, v
     FT *c = (FT *) cache;
 
     // only update with column d of A
-    for (int i = p->col_start[d]; i < p->col_start[d+1], p->row_idx[i] > -1; i++){
+    for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
         c[p->row_idx[i]] += dx * p->A[i];
     }
 }
@@ -348,7 +348,7 @@ void PolytopeCSC_transform_ref(const void *o_in, void *o_out, const Matrix *L, c
     // compute A*L
     // go throught A in col major order
     for (int i = 0; i < n; i++){
-        for (int j = p->col_start[i]; j < p->col_start[i+1], p->row_idx[j] > -1; j++){
+        for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
             for (int k = 0; k <= i; k++){
                 FT val = Matrix_get(M, k, p->row_idx[j]) + p->A[j] * Matrix_get(L, i, k);
                 Matrix_set(M, k, p->row_idx[j], val);

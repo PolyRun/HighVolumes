@@ -78,7 +78,7 @@ PolytopeCSC *Polytope_to_PolytopeCSC(const Polytope *O){
     
     // maybe not necessary to align this?
     P->col_start = (int *) aligned_alloc(32, (P->n+1)*sizeof(int));
-    memset(P->col_start, 0, P->n+1);
+    memset(P->col_start, 0, (P->n+1) * sizeof(int));
     
     // first count nr of elements per column
     for (int i = 0; i < P->n; i++){
