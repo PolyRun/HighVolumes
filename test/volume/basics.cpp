@@ -244,6 +244,17 @@ void test_box_cutOracle(const int n, Body_T* type, void* box) {
 int main(int argc, char** argv) {
    CLI cli(argc,argv,"test_volume_basics");
    CLIFunctionsVolume cliFun(cli);
+   
+   bool runLongTests = true;
+   cliFun.claimOpt('t',"Test flags: turn off tests you don't want to run!");
+
+   cliFun.add(new CLIF_Option<bool>(&runLongTests,'t',"runLongTests","true",
+                                    {
+                                     {"true",{true, "run Long tests"}},
+                                     {"false",{false, "quickly run only the fast tests"}},
+                                    }));
+
+
   
    cliFun.preParse();
    if (!cli.parse()) {return -1;}
@@ -397,18 +408,18 @@ int main(int argc, char** argv) {
            delete s;
            delete sb;
        }
+       if(runLongTests) {
+          for(int n=2;n<256;n+=29) {
+             std::cout << "test 2variable for n="<<n<<"\n";
+             Solved_Body* sb = generate_kvariable_polytope(n,2,1.0,6*n);
+             sb->polytopeCSC();
+             
+             assert(sb->type[0] == &PolytopeCSC_T);
+             test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
 
-      for(int n=2;n<256;n+=29) {
-         std::cout << "test 2variable for n="<<n<<"\n";
-         Solved_Body* sb = generate_kvariable_polytope(n,2,1.0,6*n);
-         sb->polytopeCSC();
-         
-         assert(sb->type[0] == &PolytopeCSC_T);
-         test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
-
-         delete sb;
-      }
- 
+             delete sb;
+          }
+       }
    }
    
    auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
@@ -431,30 +442,32 @@ int main(int argc, char** argv) {
           PolytopeJIT_free(box);
       }
 
-      //for(int n=2;n<20;n++) {
-      //   jit_clear(); // make sure we are not flooding the jit memory
-      //   std::cout << "test rot cube for n="<<n<<"\n";
-      //   Solved_Body* s = generate_centered_hypercube(n,1.0);
-      //   Solved_Body* sb = s->rotate();
-      //   sb->polytopeJIT();
-      //   
-      //   assert(sb->type[0] == &PolytopeJIT_T);
-      //   test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+      for(int n=2;n<20;n++) {
+         jit_clear(); // make sure we are not flooding the jit memory
+         std::cout << "test rot cube for n="<<n<<"\n";
+         Solved_Body* s = generate_centered_hypercube(n,1.0);
+         Solved_Body* sb = s->rotate();
+         sb->polytopeJIT();
+         
+         assert(sb->type[0] == &PolytopeJIT_T);
+         test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
 
-      //   delete s;
-      //   delete sb;
-      //}
-      //for(int n=2;n<256;n+=29) {
-      //   jit_clear(); // make sure we are not flooding the jit memory
-      //   std::cout << "test 2variable for n="<<n<<"\n";
-      //   Solved_Body* sb = generate_kvariable_polytope(n,2,1.0,6*n);
-      //   sb->polytopeJIT();
-      //   
-      //   assert(sb->type[0] == &PolytopeJIT_T);
-      //   test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+         delete s;
+         delete sb;
+      }
+      if(runLongTests) {
+         for(int n=2;n<256;n+=17) {
+            jit_clear(); // make sure we are not flooding the jit memory
+            std::cout << "test 2variable for n="<<n<<"\n";
+            Solved_Body* sb = generate_kvariable_polytope(n,2,1.0,6*n);
+            sb->polytopeJIT();
+            
+            assert(sb->type[0] == &PolytopeJIT_T);
+            test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
 
-      //   delete sb;
-      //}
+            delete sb;
+         }
+      }
    }
    
 

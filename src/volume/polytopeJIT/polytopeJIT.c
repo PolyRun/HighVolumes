@@ -23,6 +23,7 @@ PolytopeJIT* PolytopeJIT_new(int n, int m) {
    o->intersect = NULL;
    o->cacheReset = NULL;
    o->intersectCoord = NULL;
+   o->cacheUpdateCoord = NULL;
    return o;
 }
 
@@ -36,6 +37,7 @@ PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p) {
    PolytopeJIT_generate_intersect_ref(p,o);
    PolytopeJIT_generate_cacheReset_ref(p,o);
    PolytopeJIT_generate_intersectCoord_ref(p,o);
+   PolytopeJIT_generate_cacheUpdateCoord_ref(p,o);
    return o;
 }
 
@@ -58,6 +60,7 @@ void PolytopeJIT_print(const void* o) {
    printf("intersect: %p\n",p->intersect);
    printf("cacheReset: %p\n",p->cacheReset);
    printf("intersectCoord: %p\n",p->intersectCoord);
+   printf("cacheUpdateCoord: %p\n",p->cacheUpdateCoord);
 }
 
 bool PolytopeJIT_inside_ref(const void* o, const FT* v) {
@@ -98,7 +101,13 @@ void PolytopeJIT_cacheReset_ref(const void* o, const FT* x, void* cache) {
 
 void PolytopeJIT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
-   assert(false && "cacheUpdateCoord not implemented for PolytopeJIT");
+   assert(p->cacheUpdateCoord && "cacheReset function must be generated PolytopeJIT");
+   
+   //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}
+   //printf(" before\n");
+   p->cacheUpdateCoord(d,dx,cache);
+   //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}
+   //printf(" after\n");
 }
 
 bool PolytopeJIT_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c) {

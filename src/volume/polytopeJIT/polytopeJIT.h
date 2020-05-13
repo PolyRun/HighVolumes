@@ -17,12 +17,16 @@ typedef void (*pjit_cacheReset_f_t)(const FT* x, const FT* cache);
 // direction d, outputs t0,t1
 typedef void (*pjit_intersectCoord_f_t)(const int d, FT* t0, FT* t1, void* cache);
 
+// direction d, distance travelled dx, cache
+typedef void (*pjit_cacheUpdateCoord_f_t)(const int d, const FT dx, void* cache);
+
 typedef struct PolytopeJIT {
    pjit_inside_f_t inside;
    pjit_intersect_f_t intersect;
    pjit_cacheReset_f_t cacheReset;
    pjit_intersectCoord_f_t intersectCoord;
-   
+   pjit_cacheUpdateCoord_f_t cacheUpdateCoord;
+
    int n; // dimensions
    int m; // constraints
 } PolytopeJIT;
@@ -35,6 +39,7 @@ PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p);
 #include "jit/intersect.h"
 #include "jit/cacheReset.h"
 #include "jit/intersectCoord.h"
+#include "jit/cacheUpdateCoord.h"
 
 void PolytopeJIT_free(const void* o);
 void* PolytopeJIT_clone(const void* o);

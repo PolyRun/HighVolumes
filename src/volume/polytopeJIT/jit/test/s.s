@@ -154,6 +154,13 @@ movslq (%rax,%rdi,4),%r11
 add    %rax,%r11
 jmpq   *%r11
 
+movsd %xmm0, (%rsi)
 
+# ------------- three    two    one
+# one += three*two
+vfmadd231sd     8(%rdi), %xmm4, %xmm2
+# one = one*two + three
+vfmadd213sd     0x100(%rsi), %xmm0, %xmm4
+movsd  %xmm4,0x100(%rsi)
 
 

@@ -11,6 +11,8 @@ target_sources(volume PRIVATE
 	volume/polytopeJIT/jit/intersect.c
 	volume/polytopeJIT/jit/cacheReset.h
 	volume/polytopeJIT/jit/cacheReset.c
+	volume/polytopeJIT/jit/cacheUpdateCoord.h
+	volume/polytopeJIT/jit/cacheUpdateCoord.c
 	volume/polytopeJIT/jit/intersectCoord.h
 	volume/polytopeJIT/jit/intersectCoord.c
 )
