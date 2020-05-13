@@ -8,7 +8,7 @@ import operator
 import itertools
 import re
 
-from plot import plot, plot_input
+from plot import plot
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
@@ -47,7 +47,7 @@ intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20'
                                 ("option-char", ["i", operator, increment, lower_bound, upper_bound].
                                 In this case, there is a loop that iterates over the desired range
 						     Only one option-char is available
-         xlabel:        Labels the x-axis for benchmarks that have an input config
+         xoption:        Labels the x-axis for benchmarks that have an input config
                         format: same as one element of the input config, i.e.
                                 ("option-char", ["option-val0-printable, ..., option-valn-printable"])
                         note that length of list must match the one of the corresponding input config
@@ -55,33 +55,6 @@ intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20'
 '''
 BENCHMARKS = [
    {"id": 0,
-    "name": "benchmark_test_macro",
-    "config": [
-       {
-          "fun_configs": [],
-          "run_configs": ["r="+STD_REPS],
-          "input_configs": []
-       },
-    ]},
-   {"id": 1,
-    "name": "benchmark_test_xyz_f",
-    "config": [
-       {
-          "fun_configs": xyz_f,
-          "run_configs": ["r="+STD_REPS],
-          "input_configs": []
-       }
-    ]},
-   {"id": 2,
-    "name": "benchmark_polyvest",
-    "config": [
-       {
-          "fun_configs": [],
-          "run_configs": ["r="+STD_REPS],
-          "input_configs": []
-       }
-    ]},
-   {"id": 3,
     "name": "benchmark_dotProduct",
     "config": [
        {
@@ -90,9 +63,12 @@ BENCHMARKS = [
           "input_configs": [("n", [2**i for i in range(0,7)])],
        }
     ],
-    "xlabel": ("n", {str(2**i): str(2**i) for i in range(0,7)})
+    "xoption": ("n", {str(2**i): str(2**i) for i in range(0,7)}),
+    "title": ["Runtime Comparison", "Performance comparison"],
+    "xlabel": ["n", "n"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
-   {"id": 4,
+   {"id": 1,
     "name": "benchmark_intersect",
     "config": [       
        {
@@ -111,17 +87,16 @@ BENCHMARKS = [
           "input_configs": [("generator", intersectbodies)]
        }
     ],
-    "xlabel": ("generator", intersectdims)
-    #"xlabel": ("generator", intersectEdims)
+    "xoption": ("generator", intersectdims),
+    "title": ["Runtime Comparison", "Performance comparison"],
+    "xlabel": ["dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+    #"xoption": ("generator", intersectEdims)
    }
 ]
 
 
 assert(len(set(map(lambda t: t["name"], BENCHMARKS))) == len(BENCHMARKS) and "benchmarks don't have unique names!")
-
-# --- Functions that should be compared
-
-COMPARE = [2]
 
 
 # ---------------------------- Parse python args
@@ -186,14 +161,14 @@ def get_configs(benchmark):
 get x-label from benchmark_string by:
 - matching on the option tag
 - getting the value
-- looking up the label of the value in the xlabel
+- looking up the label of the value in the xoption
 
 this is ugly, but should work if we only choose labels on input_config...  
 """
-def get_label(xlabel, benchmark_string):
-   pattern = '\-b\s*".*{}=([^,"]*)'.format(xlabel[0])
+def get_label(xoption, benchmark_string):
+   pattern = '\-b\s*".*{}=([^,"]*)'.format(xoption[0])
    strval = re.search(pattern, benchmark_string).group(1)
-   return xlabel[1][strval]
+   return xoption[1][strval]
    
 
 
@@ -239,31 +214,15 @@ def run_benchmark(bid, bname, config_strings):
    return results
 
 
-# create results dictionary containing merged benchmarks
-compare_results = []
-
 for benchmark in DO_BENCHMARKS:
    bname = benchmark["name"]
    result = run_benchmark(benchmark["id"],
                           bname,
                           get_configs(benchmark)
    )
-   # get x-axis labels and add them to data
-   if "xlabel" in benchmark: 
-      result = list(map(lambda res: (*res, get_label(benchmark["xlabel"], res[0])), result))
-      plot_input(sys.path[0], bname, result, benchmark["xlabel"][0], "dim")
-   else:
-      plot(sys.path[0], bname, result)
-
-   if benchmark["id"] in COMPARE:
-      compare_results.extend(result)
-      
-
-do_plot = True
-plot_name = "benchmark_comparison"
-
-if do_plot and compare_results:
-   plot(sys.path[0], plot_name, compare_results)
+   # get x-axis labels and add them to data 
+   result = list(map(lambda res: (*res, get_label(benchmark["xoption"], res[0])), result))
+   plot(sys.path[0], bname, result, benchmark["xoption"][0], benchmark["title"], benchmark["xlabel"], benchmark["ylabel"])
 
 
 '''

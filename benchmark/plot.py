@@ -2,41 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 
-def plot(path, plot_name, dict_list):
-    if plot_name == None:
-        plot_name = "plot"
-    plot_name = plot_name + "_"
-   
-    time_labels = []
-    time_heights = []
-    time_std_devs = []
-    for dict in dict_list:
-        name = dict[0]
-        time_dict = (dict[1])['time']
-        time_labels.append(time_dict['name_t']+name)
-        time_heights.append(float(time_dict['mean']))
-        time_std_devs.append(float(time_dict['std_dev']))
-    
-    
-    time_y_pos = np.arange(len(time_labels))
 
-    plt.title('Runtime comparison (mean)')
-    plt.xlabel('Functions')
-    plt.ylabel('Mean time')
-    
-    plt.xticks(time_y_pos, time_labels, rotation=90)
-    bar_width = 0.1
-	
-    plt.bar(time_y_pos, time_heights, yerr=time_std_devs, ecolor='red', width=bar_width)
-	
-    plt.ylim(bottom=0)
-
-    plt.savefig(path+"/plots/"+plot_name+"runtime_mean.png", bbox_inches = "tight")
-
-    plt.clf()
-
-
-def plot_input(path, plot_name, dict_list, x_option, x_label):
+def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     if plot_name == None:
         plot_name = "plot"
     plot_name = plot_name + "_"
@@ -72,32 +39,19 @@ def plot_input(path, plot_name, dict_list, x_option, x_label):
             x_flops[time_fun_name].append(flops)    
 
     # Runtime Plot
-    plt.title('Runtime comparison (mean)')
-    plt.xlabel(x_label)
-    plt.ylabel('Mean time (cycles)')
-	
-    bar_width = 0.1
-    
-    y_pos = [ [] for j in range(len(time_function_names)) ]
-    y_pos[0] = list(range(len(x_values)))
-
-    for i in range(1, len(time_function_names)):
-        for j in range(len(y_pos[i-1])):            
-            y_pos[i].append(y_pos[0][j]+i*bar_width)
-        i += 1
-        
-    x_ticks = [r + bar_width for r in range(len(x_values))]
-    for index, item in enumerate(x_ticks):
-        if len(time_function_names) % 2 == 1:
-            x_ticks[index] += bar_width
-        else:
-            x_ticks[index] += 0.5*bar_width
-    plt.xticks(x_ticks, x_values)
-	
+    plt.title(title[0])
+    plt.xlabel(x_label[0])
+    plt.ylabel(y_label[0])
+	        
+    x_ticks = []
+    for val in x_values:
+        x_ticks.append(int(val))
+    plt.xticks(x_ticks)	
 
     i = 0
     for name in time_function_names:
-        plt.bar(y_pos[i], time_function_heights[name], yerr=time_function_std_devs[name], ecolor='red', width=bar_width, label=name)
+        #plt.bar(y_pos[i], time_function_heights[name], yerr=time_function_std_devs[name], ecolor='red', width=bar_width, label=name)
+        plt.plot(x_ticks, time_function_heights[name], label=name)
         i += 1
 	
     plt.ylim(bottom=0)
@@ -109,15 +63,9 @@ def plot_input(path, plot_name, dict_list, x_option, x_label):
     plt.clf()
 
     # Performance plot
-    plt.title('Performance comparison (mean)')
-    plt.xlabel(x_label)
-    plt.ylabel('flops/cycles(mean)')
-	
-    x_ticks = []
-    for val in x_values:
-        x_ticks.append(int(val))
-	
-    plt.xticks(x_ticks)	
+    plt.title(title[1])
+    plt.xlabel(x_label[1])
+    plt.ylabel(y_label[1])
 
     i = 0
     for name in time_function_names:
