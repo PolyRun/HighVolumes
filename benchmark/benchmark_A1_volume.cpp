@@ -4,7 +4,7 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, bool polytopeType, const double time_ci_alpha_, const double results_ci_alpha_)
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, int polytopeType, const double time_ci_alpha_, const double results_ci_alpha_)
 		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeType(polytopeType) {}
 
     protected:
