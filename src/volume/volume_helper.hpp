@@ -88,6 +88,12 @@ public:
       pc_stack().add((void *) PolytopeCSC_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeCSC_cacheReset_cost_ref, "PolytopeCSC_cacheReset_cost_ref"));
       pc_stack().add((void *) PolytopeCSC_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeCSC_cacheUpdateCoord_cost_ref, "PolytopeCSC_cacheUpdateCoord_ref"));
 
+       
+      // PolytopeJIT
+      pc_stack().add((void*)PolytopeJIT_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(PolytopeJIT_intersect_cost_ref,"PolytopeJIT_intersect_ref"));
+      pc_stack().add((void*)PolytopeJIT_intersectCoord_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeJIT_intersectCoord_cost_ref,"PolytopeJIT_intersectCoord_ref"));
+      pc_stack().add((void*)PolytopeJIT_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeJIT_cacheUpdateCoord_cost_ref,"PolytopeJIT_cacheUpdateCoord_ref"));
+      pc_stack().add((void*)PolytopeJIT_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeJIT_cacheReset_cost_ref,"PolytopeJIT_cacheReset_ref"));
       
       // volume
       pc_stack().add((void*)volume_ref, new PC_Cost_Wrapper<volume_cost_f>(volume_cost_ref,"volume_ref"));

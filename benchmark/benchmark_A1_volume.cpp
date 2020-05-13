@@ -22,7 +22,11 @@ class Benchmark_A1 : public Benchmark_base {
                 solved_body = solved_body_generator()->get(generator,false);
                 solved_body->polytopeCSC();
                 break;
-            }
+            case 3: // JIT format
+                solved_body = solved_body_generator()->get(generator,false);
+                solved_body->polytopeJIT();
+                break;
+	    }
 	    solved_body->print();
 	    assert(solved_body->is_normalized);
 	    r0 = 1.0;
@@ -76,7 +80,8 @@ int main(int argc, char *argv[]){
                                     {
                                      {"0",{0, "Polytope format / rows"}},
                                      {"1",{1, "PolytopeT format / columns"}},
-                                     {"2",{2, "PolytopeCSC format"}}
+                                     {"2",{2, "PolytopeCSC format"}},
+                                     {"3",{3, "PolytopeJIT format"}},
                                     }));
 
     cliFun.preParse();

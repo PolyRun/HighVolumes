@@ -4,14 +4,29 @@
 
 class Benchmark_intersect : public Benchmark_base {
     public:
-        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose, const double time_ci_alpha_, const double results_ci_alpha_)
-		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeTranspose(polytopeTranspose){}
+        Benchmark_intersect(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const int polytopeType, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeType(polytopeType){}
 
     protected:
         void initialize () {
             std::cout << "initializing intersect data..." << std::endl;
-	    
-	    solved_body = solved_body_generator()->get(generator, polytopeTranspose);
+	   
+            switch(polytopeType) {
+            case 0: // column major
+                solved_body = solved_body_generator()->get(generator,true);
+                break;
+            case 1: // row major
+                solved_body = solved_body_generator()->get(generator,false);
+                break;
+            case 2: // CSC format
+                solved_body = solved_body_generator()->get(generator,false);
+                solved_body->polytopeCSC();
+                break;
+            case 3: // JIT format
+                solved_body = solved_body_generator()->get(generator,false);
+                solved_body->polytopeJIT();
+                break;
+	    }
 	    assert(solved_body->is_normalized);
 	    assert(solved_body->bcount == 1);
 	    
@@ -65,13 +80,13 @@ class Benchmark_intersect : public Benchmark_base {
 	FT* d;
 	int dd;
 	void* cache;
-	bool polytopeTranspose = false;
+	int polytopeType = 0;
 };
 
 class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
-        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeTranspose, const double time_ci_alpha_, const double results_ci_alpha_)
-		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeTranspose, time_ci_alpha_, results_ci_alpha_) {}
+        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const int polytopeType, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeType, time_ci_alpha_, results_ci_alpha_) {}
     
     	void finalize() {
 	    pc_stack().reset();
@@ -131,20 +146,24 @@ int main(int argc, char *argv[]){
                                                      {"intersect",      {"intersect",     "random direction intersection"}},
 						     {"intersectCoord", {"intersectCoord","coordinate direction intersection"}} }));
     
-    bool polytopeTranspose = false;
-    cliFun.add(new CLIF_Option<bool>(&polytopeTranspose,'b',"polytopeTranspose","false", {
-                                                     {"false",{false, "Polytope format / rows"}},
-						     {"true",{true, "PolytopeT format / columns"}} }));
+    int polytopeType = 0;
+    cliFun.add(new CLIF_Option<int>(&polytopeType,'b',"polytopeType","0",
+                                    {
+                                     {"0",{0, "Polytope format / rows"}},
+                                     {"1",{1, "PolytopeT format / columns"}},
+                                     {"2",{2, "PolytopeCSC format"}},
+                                     {"3",{3, "PolytopeJIT format"}},
+                                    }));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
     
     if(intersect.compare("intersect")==0) {
-        Benchmark_intersect b("intersect", r, true, warmup, generator, polytopeTranspose, time_ci_alpha, results_ci_alpha);
+        Benchmark_intersect b("intersect", r, true, warmup, generator, polytopeType, time_ci_alpha, results_ci_alpha);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeTranspose, time_ci_alpha, results_ci_alpha);
+        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeType, time_ci_alpha, results_ci_alpha);
         b.run_benchmark();
     }
 }

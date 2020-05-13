@@ -402,6 +402,24 @@ void PolytopeCSC_cacheUpdateCoord_cost_ref(const void *o){
 }
 
 
+void PolytopeJIT_intersect_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   pc_stack().log(0,0,"TODO");
+}
+void PolytopeJIT_intersectCoord_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   pc_stack().log(0,0,"TODO");
+}
+void PolytopeJIT_cacheUpdateCoord_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   pc_stack().log(0,0,"TODO");
+}
+void PolytopeJIT_cacheReset_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   pc_stack().log(0,0,"TODO");
+}
+
+
 void volume_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
 
    pc_stack().log(0, n*sizeof(FT), "init_x");
