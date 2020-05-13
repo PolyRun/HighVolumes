@@ -46,6 +46,7 @@ public:
     Solved_Body* preprocess(); // make normalized via preprocessing
     void polytopeTranspose();// make all Polytope to PolytopeT
     void polytopeCSC(); // make all Polytope to PolytopeCSC 
+    void polytopeJIT(); // make all Polytope to PolytopeJIT 
 
     void **body;
     Body_T **type;

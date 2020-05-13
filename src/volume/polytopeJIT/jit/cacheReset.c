@@ -50,27 +50,27 @@ void PolytopeJIT_generate_cacheReset_ref(const Polytope *p, PolytopeJIT *o) {
 	    if(nonzero==1) {
 	       // c4 e1 f9 6e c0       	vmovq  %rax,%xmm0
 	       {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xc0}; jit_push(instr,5); }
-	       if(offset < 0x100) {
-                  //  f2 0f 59 47 xx  mulsd  xx(%rdi),%xmm0
-	          {const uint8_t instr[] = {0xf2,0x0f,0x59,0x47}; jit_push(instr,4); }
-	          jit_push((const uint8_t*)&offset,1);
-	       } else {
+	       //if(offset < 0x100) {
+               //   //  f2 0f 59 47 xx  mulsd  xx(%rdi),%xmm0
+	       //   {const uint8_t instr[] = {0xf2,0x0f,0x59,0x47}; jit_push(instr,4); }
+	       //   jit_push((const uint8_t*)&offset,1);
+	       //} else {
                   //  f2 0f 59 87 xx xx xx xx  mulsd  xx(%rdi),%xmm0
 	          {const uint8_t instr[] = {0xf2,0x0f,0x59,0x87}; jit_push(instr,4); }
 	          jit_push((const uint8_t*)&offset,4);
-	       }
+	       //}
 	    } else {
 	       // c4 e1 f9 6e c8       	vmovq  %rax,%xmm1
 	       {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xc8}; jit_push(instr,5); }
-	       if(offset < 0x100) {
-                  //  f2 0f 59 4f xx   mulsd  xx(%rdi),%xmm1
-	          {const uint8_t instr[] = {0xf2,0x0f,0x59,0x4f}; jit_push(instr,4); }
-	          jit_push((const uint8_t*)&offset,1);
-	       } else {
+	       //if(offset < 0x100) {
+               //   //  f2 0f 59 4f xx   mulsd  xx(%rdi),%xmm1
+	       //   {const uint8_t instr[] = {0xf2,0x0f,0x59,0x4f}; jit_push(instr,4); }
+	       //   jit_push((const uint8_t*)&offset,1);
+	       //} else {
                   //  f2 0f 59 8f xx xx xx xx   mulsd  xx(%rdi),%xmm1
 	          {const uint8_t instr[] = {0xf2,0x0f,0x59,0x8f}; jit_push(instr,4); }
 	          jit_push((const uint8_t*)&offset,4);
-	       }
+	       //}
 
                // f2 0f 58 c1   addsd  %xmm1,%xmm0
 	       {const uint8_t instr[] = {0xf2,0x0f,0x58,0xc1}; jit_push(instr,4); }

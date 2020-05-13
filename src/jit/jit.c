@@ -15,7 +15,7 @@ jit_MemoryPages* jit_memoryPages() {
       
       size_t psize = sysconf(_SC_PAGE_SIZE);
       jit_memoryPages_->page_size = psize;
-      jit_memoryPages_->pages = 100;
+      jit_memoryPages_->pages = 500;
       jit_memoryPages_->head = 0;
       jit_memoryPages_->mem = jit_mmap(jit_memoryPages_->pages);;
    }
@@ -76,3 +76,7 @@ uint8_t* jit_head() {
 }
 
 
+void jit_clear() {
+   jit_MemoryPages* p = jit_memoryPages();
+   p->head = 0;
+}

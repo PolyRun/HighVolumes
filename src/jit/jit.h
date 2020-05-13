@@ -42,4 +42,8 @@ void jit_print();
 
 uint8_t* jit_head();
 
+// resets the head to mem.
+// invalidates all functions
+void jit_clear();
+
 #endif // HEADER_JIT_H

@@ -554,10 +554,23 @@ Solved_Body::polytopeCSC(){
         if (type[b] == &Polytope_T){
             Polytope *p = (Polytope *) body[b];
             PolytopeCSC *pcsc = Polytope_to_PolytopeCSC(p);
-            //Polytope_free(p);
+            Polytope_free(p);
             body[b] = pcsc;
             type[b] = &PolytopeCSC_T;
         }
+    }
+}
+
+void
+Solved_Body::polytopeJIT() {
+    for(int b=0; b<bcount; b++) {
+       if(type[b]==&Polytope_T) {
+          Polytope* p = (Polytope*)body[b];
+	  PolytopeJIT* pjit = Polytope_to_PolytopeJIT(p);
+	  Polytope_free(p);
+	  body[b] = pjit;
+	  type[b] = &PolytopeJIT_T;
+       }
     }
 }
 

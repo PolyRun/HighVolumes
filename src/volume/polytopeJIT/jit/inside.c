@@ -59,32 +59,32 @@ void PolytopeJIT_generate_inside_ref(const Polytope *p, PolytopeJIT *o) {
 	    {const uint8_t instr[] = {0x48,0xbe}; jit_push(instr,2); }
 	    jit_push((const uint8_t*)&aij,8);
             
-            size_t offset = 8*j;
-            nonzero++;
+            uint32_t offset = 8*j;
+	    nonzero++;
 	    if(nonzero==1) {
 	       //c4 e1 f9 6e c6  vmovq  %rsi,%xmm0
 	       {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xc6}; jit_push(instr,5); }
-	       if(offset < 0x100) {
-                  //  f2 0f 59 47 xx  mulsd  xx(%rdi),%xmm0
-	          {const uint8_t instr[] = {0xf2,0x0f,0x59,0x47}; jit_push(instr,4); }
-	          jit_push((const uint8_t*)&offset,1);
-	       } else {
+	       //if(offset < 0x100) {
+               //   //  f2 0f 59 47 xx  mulsd  xx(%rdi),%xmm0
+	       //   {const uint8_t instr[] = {0xf2,0x0f,0x59,0x47}; jit_push(instr,4); }
+	       //   jit_push((const uint8_t*)&offset,1);
+	       //} else {
                   //  f2 0f 59 87 xx xx xx xx  mulsd  xx(%rdi),%xmm0
 	          {const uint8_t instr[] = {0xf2,0x0f,0x59,0x87}; jit_push(instr,4); }
 	          jit_push((const uint8_t*)&offset,4);
-	       }
+	       //}
 	    } else {
 	       //c4 e1 f9 6e ce  vmovq  %rsi,%xmm1
 	       {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xce}; jit_push(instr,5); }
-	       if(offset < 0x100) {
-                  //  f2 0f 59 4f xx   mulsd  xx(%rdi),%xmm1
-	          {const uint8_t instr[] = {0xf2,0x0f,0x59,0x4f}; jit_push(instr,4); }
-	          jit_push((const uint8_t*)&offset,1);
-	       } else {
+	       //if(offset < 0x100) {
+               //   //  f2 0f 59 4f xx   mulsd  xx(%rdi),%xmm1
+	       //   {const uint8_t instr[] = {0xf2,0x0f,0x59,0x4f}; jit_push(instr,4); }
+	       //   jit_push((const uint8_t*)&offset,1);
+	       //} else {
                   //  f2 0f 59 8f xx xx xx xx   mulsd  xx(%rdi),%xmm1
 	          {const uint8_t instr[] = {0xf2,0x0f,0x59,0x8f}; jit_push(instr,4); }
 	          jit_push((const uint8_t*)&offset,4);
-	       }
+	       //}
 
                // f2 0f 58 c1   addsd  %xmm1,%xmm0
 	       {const uint8_t instr[] = {0xf2,0x0f,0x58,0xc1}; jit_push(instr,4); }
@@ -115,7 +115,7 @@ void PolytopeJIT_generate_inside_ref(const Polytope *p, PolytopeJIT *o) {
    // go set all the jump addresses:
    uint8_t* L_end = jit_head();
    for(int i=0;i<m;i++) {
-      size_t offset = L_end - jump[i];
+      uint32_t offset = L_end - jump[i];
       jit_write(jump[i]-4,(uint8_t*)&offset,4);
    }
 

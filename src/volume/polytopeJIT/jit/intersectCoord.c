@@ -76,7 +76,7 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    uint32_t L_table = jit_head() - set_table;
    jit_write(set_table-4, (uint8_t*)&L_table,4);
    for(int i=0;i<p->n;i++) {
-      {const uint8_t instr[] = {0,0,0,0}; jit_push(instr,4);}
+      {const uint8_t instr[] = {1,1,1,1}; jit_push(instr,4);}
    }
    
    // ------------------------------ dump code for each i
@@ -192,13 +192,17 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    
    // ---------------------------------------- set L_end:
    uint32_t offset = jit_head() - jump_end;
-   //printf("jump offset: %d\n",offset);
+   uint64_t offset64 = jit_head() - jump_end;
+   //printf("jump offset: %d %ld\n",offset, offset64);
    jit_write(jump_end-4, (uint8_t*)&offset, 4);
    
    // make all ends go here
    for(int i=0;i<p->n;i++) {
       uint32_t jump_offset = jit_head()-jump[i];
+      uint64_t jump_offset64 = (uint64_t)jit_head()-(uint64_t)jump[i];
       jit_write(jump[i]-4, (uint8_t*)&jump_offset, 4);
+      //printf("jump offset: %d %x %lx \n",i,jump_offset,jump_offset64);
+      assert(((uint64_t)jump_offset) == jump_offset64);
    }
 
    // -------------------------------------------- move t00, t11 back

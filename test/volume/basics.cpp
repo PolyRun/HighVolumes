@@ -109,8 +109,9 @@ void test_body_intersectCoord_cached(const int n, Body_T* type, void* body) {
    void* cache = aligned_alloc(32, type->cacheAlloc(body));
    
    // test cacheReset -> intersectCoord - (use inside to validate)
-   for(int t=0;t<100;t++){
-      for(int i=0;i<n;i++) {x[i]=prng_get_random_double_in_range(-1.0/n,1.0/n);}
+   for(int t=0;t<1000;t++){
+      for(int i=0;i<n;i++) {x[i]=prng_get_random_double_in_range(-0.5/n,0.5/n);}
+      assert(type->inside(body, x));
       type->cacheReset(body,x,cache);
       for(int d=0;d<n;d++) {
          FT t0,t1;
@@ -119,12 +120,12 @@ void test_body_intersectCoord_cached(const int n, Body_T* type, void* body) {
          
 	 // check out those boundaries:
 	 for(int i=0;i<n;i++) {x0[i] = x[i]; x1[i]=x[i];}
-	 x0[d] += t0 -0.0001;
-	 x1[d] += t1 +0.0001;
+	 x0[d] += t0 -0.000001;
+	 x1[d] += t1 +0.000001;
 	 assert(!type->inside(body, x0));
 	 assert(!type->inside(body, x1));
-	 x0[d] += 0.0002;
-	 x1[d] -= 0.0002;
+	 x0[d] += 0.000002;
+	 x1[d] -= 0.000002;
 	 assert(type->inside(body, x0));
 	 assert(type->inside(body, x1));
       }
@@ -355,16 +356,13 @@ int main(int argc, char** argv) {
           PolytopeCSC_free(box);
        }
 
-       // //TODO: fix test or polytopeCSC !
        for(int n=2;n<20;n++) {
            std::cout << "test rot cube for n="<<n<<"\n";
            Solved_Body* s = generate_centered_hypercube(n,1.0);
            Solved_Body* sb = s->rotate();
-           sb->type[0]->print(sb->body[0]);
            sb->polytopeCSC();
           
            assert(sb->type[0] == &PolytopeCSC_T);
-           sb->type[0]->print(sb->body[0]);
            test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
 
            delete s;
@@ -391,6 +389,21 @@ int main(int argc, char** argv) {
           Polytope_free(boxx);
           PolytopeJIT_free(box);
       }
+
+      for(int n=2;n<20;n++) {
+	  jit_clear(); // make sure we are not flooding the jit memory
+          std::cout << "test rot cube for n="<<n<<"\n";
+          Solved_Body* s = generate_centered_hypercube(n,1.0);
+          Solved_Body* sb = s->rotate();
+          sb->polytopeJIT();
+          
+          assert(sb->type[0] == &PolytopeJIT_T);
+          test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
+
+          delete s;
+          delete sb;
+       }
+ 
    }
    
 
