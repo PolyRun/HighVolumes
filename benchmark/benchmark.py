@@ -5,48 +5,116 @@ import os
 import subprocess
 import pprint
 import operator
+import itertools
+import re
 
-from plot import plot, plot_input
+from plot import plot
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
-STD_REPS = "10"
-
 # --- Available functions for CLI
 # List all function version choices for a benchmark that you want to execute here.
-xyz_f = ["xyz_f1", "xyz_f2"]
-for index, item in enumerate(xyz_f):
-   xyz_f[index] = "xyz_f="+item
 
 dotProduct = ["ref","auto1","auto2","vec1","2acc"]
 for index, item in enumerate(dotProduct):
    dotProduct[index] = "dotProduct="+item
 
 
+intersectbodies = [ "cube_rot_r1.0_3", "cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40"]
+intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40'}
+
+intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20",  "ball_r1.0_40"]
+intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40'}
+
 # --- Benchmarks
 '''
-    id:            unique benchmark id, used for COMPARE
-    name:          name of the file to benchmark
-    fun_configs:   CLI options that determine the function to be selected
-                   format: funListName -> Definded above
-    run_configs:   CLI options that determine different benchmark configurations to be executed
-                   format: ["opt-char0=opt-value0", "opt-char1=opt-value1", ...]
-    input_configs: CLI options that determine different inputs for functions
-                   format: ("option-char", ["option-val0", "option-val1", ...])
-				           or the following format:
-                           ("option-char", ["i", operator, increment, lower_bound, upper_bound].
-                           In this case, there is a loop that iterates over the desired range
-						Only one option-char is available
+    name:          name of the benchmark, has to be unique
+    executable:    name of the file (executable) that is used for this benchmark
+    config:        list of benchmark configs containing:
+
+         const_configs: CLI options that determine the algorithm constants to be selected
+                        format: ["opt-char0=opt-value0", "opt-char1=opt-value1", ...]
+         fun_configs:   CLI options that determine the function to be selected
+                        format: funListName -> Definded above
+         run_configs:   CLI options that determine different benchmark configurations to be executed
+                        format: ["opt-char0=opt-value0", "opt-char1=opt-value1", ...]
+         input_configs: CLI options that determine different inputs for functions
+                        format: ("option-char", ["option-val0", "option-val1", ...])
+	     			                or the following format:
+                                ("option-char", ["i", operator, increment, lower_bound, upper_bound].
+                                In this case, there is a loop that iterates over the desired range
+						     Only one option-char is available
+         xoption:       Labels the ticks of the x-axis for benchmarks that have an input config
+                        format: same as one element of the input config, i.e.
+                                ("option-char", ["option-val0-printable, ..., option-valn-printable"])
+                        note that length of list must match the one of the corresponding input config
+                        we match by index!
+         title:         Titles of the plots
+         xlabel:        Labels the x-axis of the plot
+         ylabel:        Labels the y-axis of the plot
 '''
-BENCHMARKS = [{"id": 0, "name": "benchmark_test_macro", "fun_configs":[], "run_configs":["r="+STD_REPS], "input_configs":[]},
-         {"id": 1, "name": "benchmark_test_xyz_f", "fun_configs": xyz_f, "run_configs":["r="+STD_REPS], "input_configs":[]},
-         {"id": 2, "name": "benchmark_polyvest", "fun_configs":[], "run_configs":["r="+STD_REPS], "input_configs":[]},
-         {"id": 3, "name": "benchmark_dotProduct", "fun_configs":dotProduct, "run_configs":["r=100000"], "input_configs":[("n",["i", operator.mul, 2, 1, 64])]}
-        ];
+BENCHMARKS = [
+   {"name": "benchmark_dotProduct",
+    "executable": "benchmark_dotProduct",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": dotProduct,
+          "run_configs": ["r=100000"],
+          "input_configs": [("n", [2**i for i in range(0,7)])],
+       }
+    ],
+    "xoption": ("n", {str(2**i): str(2**i) for i in range(0,7)}),
+    "title": ["Runtime Comparison", "Performance comparison"],
+    "xlabel": ["n", "n"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+   },
+   {"name": "intersect_polytope",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["Polytope_intersectCoord=cached_ref", "Polytope_intersectCoord=ref"],
+          "run_configs": ["intersect=intersectCoord,polytopeTranspose=false"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref"],
+          "run_configs": ["intersect=intersectCoord,polytopeTranspose=true"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["intersect=intersect,polytopeTranspose=false", "intersect=intersect,polytopeTranspose=true"],
+          "input_configs": [("generator", intersectbodies)]
+       }
+    ],
+    "xoption": ("generator", intersectdims),
+    "title": ["Runtime Comparison", "Performance comparison"],
+    "xlabel": ["dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+   },
+   {"name": "intersect_ellipsoid",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord", "Ellipsoid_intersectCoord=cached_reord2", "Ellipsoid_intersectCoord=cached_reord3", "Ellipsoid_intersectCoord=cached_reord_fma"],
+          "run_configs": ["r=100000,intersect=intersectCoord"],
+          "input_configs": [("generator", intersectEbodies)]
+       }
+    ],
+    "xoption": ("generator", intersectEdims),
+    "title": ["Runtime Comparison", "Performance comparison"],
+    "xlabel": ["dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+   }
+]
 
-# --- Functions that should be compared
 
-COMPARE = [2]
+assert(len(set(map(lambda t: t["name"], BENCHMARKS))) == len(BENCHMARKS) and "benchmarks don't have unique names!")
 
 
 # ---------------------------- Parse python args
@@ -62,133 +130,120 @@ if(len(sys.argv)>1):
          print("ERROR: benchmark '{}' is not available!".format(benchmark));
          print("  list of available benchmarks:");
          for b in BENCHMARKS:
-            print("     ",b);
+            print("     ",b["name"]);
          sys.exit(1);
 
-# ------ iterate over benchmarks chosen in DO_BENCHMARKS, subset of BENCHMARKS
 
-def run_benchmark(benchmark):
+         
+"""
+config contains the following:
+const_config :: [string]
+fun_config :: [string]
+run_config :: [string]
+input_conifg :: [(char, [(readable, char)])]
+
+from this we create the following list of config strings
+'-c "const" -f "<fun>" -n "<run,c=str(cconf)>"' 
+for 
+   const : const_config, 
+   fun : fun_config, 
+   run : run_config,
+   (c, conf) : input_config
+   cconf : conf
+"""
+def get_config(config):
+   consts = [('-c', const) for const in config["const_configs"]] or [('','')]
+   funs = [('-f', fun) for fun in config["fun_configs"]] or [('','')]
+   inputs = [('-b', ','.join(c_prod)) for c_prod in
+             itertools.product(
+                *(list(map(
+                      lambda c: ['{}={}'.format(c[0], conf) for conf in c[1]],
+                      config["input_configs"]
+                )) + [config["run_configs"]])
+             )
+   ] or [('','')]
+   return itertools.product(consts, funs, inputs)
+
+
+"""
+benchmark contains 
+config :: [dict]
+
+we extract all config strings from the elements of this list and concat them
+"""
+def get_configs(benchmark):
+   return [conf_string
+           for conf in benchmark["config"]
+           for conf_string in get_config(conf)
+   ]
+
+
+"""
+get x-label from benchmark_string by:
+- matching on the option tag
+- getting the value
+- looking up the label of the value in the xoption
+
+this is ugly, but should work if we only choose labels on input_config...  
+"""
+def get_label(xoption, benchmark_string):
+   pattern = '\-b\s*".*{}=([^,"]*)'.format(xoption[0])
+   strval = re.search(pattern, benchmark_string).group(1)
+   return xoption[1][strval]
+   
+
+
+"""
+expects a list of strings as created by get_configs
+this allows concatenating benchmarks -> get_configs creates product of config options, concatenating benchmark strings creates sum of config options
+"""
+def run_benchmark(bname, bexe, config_strings):
    results = []
-   no_biconfig = False
-   bid = benchmark["id"]
-   bname = benchmark["name"]
-   bfconfigs = benchmark["fun_configs"]
-   brconfigs = benchmark["run_configs"]
-   biconfigs = benchmark["input_configs"]
-   if not bfconfigs:
-      bfconfigs.append("")
-   if not brconfigs:
-      brconfigs.append("")
-   if not biconfigs:
-      no_biconfig = True
-      biconfigs.append(("",[""]))
-   for fconfig in bfconfigs:
-      for rconfig in brconfigs:
-         if no_biconfig:
-            fconfig_string = ""
-            bconfig_string = ""
-            config_string = ""
-            if fconfig != "":
-               fconfig_string = fconfig
-               config_string = config_string + "-f \"" + fconfig_string + "\""
-            if rconfig != "":
-               bconfig_string = rconfig
-               config_string = config_string + "-b \"" + bconfig_string + "\""
-            print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
-            myenv = os.environ;
-            if fconfig_string == "":
-               proc = subprocess.Popen([sys.path[0]+"/"+bname,'-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-            elif bconfig_string == "":
-               proc = subprocess.Popen([sys.path[0]+"/"+bname,'-f',fconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-            elif bconfig_string == "" and bconfig_string == "":
-               proc = subprocess.Popen([sys.path[0]+"/"+bname], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-            else:
-               proc = subprocess.Popen([sys.path[0]+"/"+bname,'-f',fconfig_string,'-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-            f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_").replace(",", "")).replace("__","")+".out", "w")
-            for line in proc.stdout:
-               try:
-                  dict = eval(line)
-                  results.append(((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict))
-                  f.write(str(dict)+'\n')
-               except:
-                  f.write(line.decode('utf-8'))
-            f.close()
-		 
-         else:
-            for iconfigs in biconfigs:
-               icname = iconfigs[0]
-               ioptions = iconfigs[1]
-               if ioptions[0] == "i":
-                  i = ioptions[3]
-                  while i <= ioptions[4]:
-                     ival = str(i)
-                     fconfig_string = ""
-                     bconfig_string = ""
-                     config_string = ""
-                     if fconfig != "":
-                        fconfig_string = fconfig
-                        config_string = config_string + "-f \"" + fconfig_string + "\""
-                     if rconfig != "":
-                        bconfig_string = "{},{}={}".format(rconfig, icname, ival)
-                        config_string = config_string + " -b \"" + bconfig_string + "\""
-                     print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
-                     myenv = os.environ;
-                     if fconfig_string == "":
-                        proc = subprocess.Popen([sys.path[0]+"/"+bname, '-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-                     else:
-                        proc = subprocess.Popen([sys.path[0]+"/"+bname, '-f', fconfig_string, '-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-                     f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_")).replace("__","")+".out", "w")
-                     for line in proc.stdout:
-                        try:
-                           dict = eval(line)
-                           results.append((fconfig, dict, ival))
-                           f.write(str(dict)+'\n')
-                        except:
-                           f.write(line.decode('utf-8'))
-                     f.close()
-                     i = ioptions[1](i, ioptions[2])
-               else:
-                  for ival in ioptions:
-                     fconfig_string = ""
-                     bconfig_string = ""
-                     config_string = ""
-                     if fconfig != "":
-                        fconfig_string = fconfig
-                        config_string = config_string + "-f " + fconfig_string
-                     if rconfig != "":
-                        bconfig_string = "{},{}={}".format(rconfig, icname, ival)
-                        config_string = config_string + " -b " + bconfig_string
-                     print("# Running Benchmark '{}' with config '{}'...".format(bname, config_string));
-                     myenv = os.environ;
-                     if fconfig_string == "":
-                        proc = subprocess.Popen([sys.path[0]+"/"+bname, '-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-                     else:
-                        proc = subprocess.Popen([sys.path[0]+"/"+bname, '-f', fconfig_string, '-b', bconfig_string], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env = myenv);
-                     f = open((sys.path[0]+"/out/"+bname+config_string.replace(" ", "_").replace(",", "")).replace("__","")+".out", "w")
-                     for line in proc.stdout:
-                        try:
-                           dict = eval(line)
-                           results.append(((config_string.replace(" ", "_").replace(",", "")).replace("__",""),dict, ival))
-                           f.write(str(dict)+'\n')
-                        except:
-                           f.write(line.decode('utf-8'))
-                     f.close()
-   if no_biconfig:
-      plot(sys.path[0], bname, results)
-   else:
-      plot_input(sys.path[0], bname, results, icname)
-   if bid in COMPARE:
-      return results
-   else:
-      return []
 
-do_plot = True
-plot_name = "benchmark_comparison"
-compare_results = []
+   for constconf,runconf,inputconf in config_strings:
+      config_string = '{} "{}" {} "{}" {} "{}"'.format(constconf[0], constconf[1], runconf[0], runconf[1], inputconf[0], inputconf[1])
+      config_string_printable = (
+         config_string
+         .replace(" ", "_")
+         .replace(",", "")
+      ).replace("__","")
+
+      print('# Running Benchmark \n{} {}\n'.format(sys.path[0]+"/"+bexe, config_string));
+      myenv = os.environ;
+      proc = subprocess.Popen(
+         [sys.path[0]+"/"+bexe,
+          constconf[0],
+          constconf[1],
+          runconf[0],
+          runconf[1],
+          inputconf[0],
+          inputconf[1]],
+         stdout=subprocess.PIPE,
+         #stderr=subprocess.PIPE,
+         env = myenv
+      );
+      f = open(sys.path[0]+ "/out/" + bname + config_string_printable + ".out", "w")
+      f.write(config_string + "\n")
+      for line in proc.stdout:
+         print(line)
+         try:
+            dict = eval(line)
+            results.append((config_string, dict))
+            f.write(str(dict)+'\n')
+         except:
+            f.write(line.decode('utf-8'))
+      f.close()
+
+   return results
+
 
 for benchmark in DO_BENCHMARKS:
-   result = run_benchmark(benchmark)
-   compare_results.extend(result)
-
-if do_plot and compare_results:
-   plot(sys.path[0], plot_name, compare_results)
+   bname = benchmark["name"]
+   bexe = benchmark["executable"]
+   result = run_benchmark(bname,
+                          bexe,
+                          get_configs(benchmark)
+   )
+   # get x-axis labels and add them to data 
+   result = list(map(lambda res: (*res, get_label(benchmark["xoption"], res[0])), result))
+   plot(sys.path[0], bname, result, benchmark["xoption"][0], benchmark["title"], benchmark["xlabel"], benchmark["ylabel"])

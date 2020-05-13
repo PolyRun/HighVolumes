@@ -46,7 +46,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     x_ticks = []
     for val in x_values:
         x_ticks.append(int(val))
-    plt.xticks(x_ticks)	
+    plt.xticks(x_ticks)
 
     i = 0
     for name in time_function_names:
@@ -66,6 +66,8 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     plt.title(title[1])
     plt.xlabel(x_label[1])
     plt.ylabel(y_label[1])
+
+    plt.xticks(x_ticks)
 
     i = 0
     for name in time_function_names:
