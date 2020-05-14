@@ -75,7 +75,7 @@ public:
       pc_stack().add((void*)Ellipsoid_intersectCoord_cached_reord, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cached_cost_ref,"Ellipsoid_intersectCoord_cached_reord"));
       pc_stack().add((void*)Ellipsoid_intersectCoord_cached_reord2, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cached_cost_ref,"Ellipsoid_intersectCoord_cached_reord2"));
       pc_stack().add((void*)Ellipsoid_intersectCoord_cached_reord3, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cached_cost_ref,"Ellipsoid_intersectCoord_cached_reord3"));
-      pc_stack().add((void*)Ellipsoid_intersectCoord_cached_reord_fma, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cached_cost_ref,"Ellipsoid_intersectCoord_cached_reord_fma"));
+      pc_stack().add((void*)Ellipsoid_intersectCoord_cached_reord_fma, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cached_cost_reord_fma,"Ellipsoid_intersectCoord_cached_reord_fma"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_ref"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_c, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_c"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_fma, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_fma"));

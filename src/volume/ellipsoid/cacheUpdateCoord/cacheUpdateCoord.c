@@ -32,6 +32,21 @@ void Ellipsoid_cacheUpdateCoord_c(const void* o, const int d, const FT dx, void*
    }
 }
 
+/**
+ * Reasoning:
+ *                                   Skylake               Haswell
+ * resVar   | Op             | IssuedAt | Finished | IssuedAt | Finished
+ * ---------------------------------------------------------------------
+ * c2_      | 2.0*c[d]       |     0    |     4    |     0    |      5
+ * adx_     | dx*A[d][d]     |     0    |     4    |     0    |      5
+ * c2adx_   | c2_+adx_       |     4    |     8    |     5    |      8
+ * c[n]     | c[n]+dx*c2adx  |     8    |    12    |     8    |     13
+ * 
+ * n times
+ * c[i]    | c[i]+dx*A[i][d] |     x    |   x+4    |     x    |    x+5
+ * 
+ **/
+
 void Ellipsoid_cacheUpdateCoord_fma(const void* o, const int d, const FT dx, void* cache){
    Ellipsoid* e = (Ellipsoid*)o;
    const int n = e->n;
