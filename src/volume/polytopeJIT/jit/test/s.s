@@ -169,5 +169,8 @@ subsd  %xmm1,%xmm0
 vmulsd 0x100(%rcx),%xmm4,%xmm2
 vfmsub213sd 0x100(%rsi),%xmm0,%xmm4
 
+vperm2f128 $8,%ymm0,%ymm1,%ymm2
+
+
 
 

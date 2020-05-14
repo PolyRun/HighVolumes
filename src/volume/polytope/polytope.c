@@ -122,7 +122,14 @@ void Polytope_print(const void* o) {
    printf("Polytope: n=%d, m=%d\n",p->n,p->m);
    for(int i=0; i<p->m; i++) {
       for(int j=0; j<p->n; j++) {
-         printf(" %.3f",Polytope_get_a(p,i,j));
+         FT aij = Polytope_get_a(p,i,j);
+	 if(aij==0) {
+	    printf("  0    ",aij);
+	 } else if(aij<0) {
+	    printf(" %.3f",aij);
+	 } else {
+	    printf("  %.3f",aij);
+	 }
       }
       printf(" | %.3f\n",Polytope_get_b(p,i));
    }

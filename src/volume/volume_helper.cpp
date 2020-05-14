@@ -268,3 +268,126 @@ FT read_vinci(string filename, Polytope **P, FT *vol){
     return 1;
     
 }
+
+int polytope_count_pairs(Polytope* p) {
+    const int n= p->n;
+    const int m= p->m;
+
+    int count = 0;
+    int nz = 0;
+    for(int i=0;i<n;i++) {
+       double last = 0;
+       for(int j=0;j<m;j++) {
+          double aij = Polytope_get_a(p,j,i);
+	  if(aij!=0) {
+             nz++;
+	     if(last!=0 && aij*last > 0) {count++;}
+	  }
+	  if(last!=0) {last =0;} else {last = aij;}
+       }
+    }
+    std::cout << "NZ: " << nz << ", pairs: "<< count << "\n";
+    return count;
+}
+
+struct OElement {
+   int u,v;
+   int overlap;
+};
+
+Polytope* optimize_polytope(Polytope *p) {
+   polytope_count_pairs(p);
+   Polytope* q = (Polytope*)Polytope_T.clone(p);
+   
+   // generator element for each pair of constraints:
+   const int n= p->n;
+   const int m= p->m;
+   std::vector<OElement> oel;
+   for(int u=0;u<m;u++) {
+      for(int v=0;v<u;v++) {
+         int overlap = 0;
+	 for(int i=0;i<n;i++) {
+	    FT ui = Polytope_get_a(p,u,i);
+	    FT vi = Polytope_get_a(p,v,i);
+	    if(ui*vi>0) {overlap++;}
+	 }
+	 if(overlap > 0) {oel.push_back({u,v,overlap});}
+      }
+   }
+   std::sort(oel.begin(),oel.end(), [](const OElement &a,const OElement &b){return a.overlap > b.overlap;});
+   std::cout << "oel " << oel.size() << " " << oel[0].overlap << "\n";
+   
+   std::vector<int> neighbor_1(m,-1);
+   std::vector<int> neighbor_2(m,-1);
+   evp::Union_find uf(m);
+   for(const OElement &el : oel) {
+      // check if even possible:
+      if(neighbor_2[el.u]!=-1 || neighbor_2[el.v]!=-1) {continue;}
+      // check for cycles:
+      if(uf.find(el.u) == uf.find(el.v)) {continue;}
+      uf.Union(el.u,el.v);
+
+      // allocate u:
+      if(neighbor_1[el.u]==-1) {
+         neighbor_1[el.u] = el.v;
+      } else {
+         neighbor_2[el.u] = el.v;
+      }
+      // allocate v:
+      if(neighbor_1[el.v]==-1) {
+         neighbor_1[el.v] = el.u;
+      } else {
+         neighbor_2[el.v] = el.u;
+      }
+   }
+   
+   ///  // print check:
+   ///  for(int i=0;i<m;i++) {
+   ///     std::cout << "n: " << i << " " << neighbor_1[i] << " " << neighbor_2[i] << "\n";
+   ///  }
+
+   // go traverse:
+   std::vector<bool> marked(m,false);
+   std::vector<int> permutation;
+   for(int i=0;i<m;i++) {
+      //std::cout << "n: " << i << " " << neighbor_1[i] << " " << neighbor_2[i] << "\n";
+      if(!marked[i] && neighbor_2[i]==-1) {
+         // start here!
+         int current = i;
+	 int last = -1;
+	 while(true) {
+            permutation.push_back(current);
+	    assert(!marked[current]);
+	    marked[current] = true;
+	    int next = (neighbor_2[current]==last)?neighbor_1[current]:neighbor_2[current];
+	    //std::cout << "push " << current << ", next: "<< next<< "\n";
+	    if(next==-1) {break;}
+	    last = current;
+	    current = next;
+	 }
+      }
+   }
+
+   ///  // print check:
+   ///  for(int i=0;i<m;i++) {
+   ///     std::cout << "fin: " << i << " " << marked[i] << " " << neighbor_1[i] << " " << neighbor_2[i] << "\n";
+   ///  }
+   //std::cout << "perm " << permutation.size() << " " << m << "\n";
+   assert(permutation.size()==m);
+   
+   // copy rows according to permutation:
+   for(int i=0;i<n;i++) {
+      double last = 0;
+      for(int j=0;j<m;j++) { 
+	 double aij = Polytope_get_a(p,permutation[j],i);
+         Polytope_set_a(q,j,i,aij);
+      }
+   }
+
+   polytope_count_pairs(q);
+   return q;
+}
+
+
+
+

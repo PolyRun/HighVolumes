@@ -19,6 +19,7 @@ extern "C" { // must be included C stlye
 
 #include "../util/cli_functions.hpp"
 #include "../util/performance_counter.hpp"
+#include "../util/union_find.hpp"
 #include "../../polyvest/vol.h"
 #include "volume_cost.hpp"
 #include "volume_examples.hpp"
@@ -205,6 +206,12 @@ FT read_vinci(string filename, Polytope **P, FT *vol);
  * \param Q is filled with content equivalend to P
  **/
 void polyvest_convert(Polytope *P, vol::Polyvest_p *Q);
+
+
+// tries to shuffle rows such, that there are the most pairs of non-zeros
+// pair: two non-zero entries in the same column, that lie one row apart
+// this should lead to better access and vectorization
+Polytope* optimize_polytope(Polytope *p);
 
 
 #endif // HEADER_VOLUME_HELPER_HPP

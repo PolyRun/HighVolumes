@@ -2,6 +2,20 @@
 
 #include "peterem.hpp"
 
+void optimize_test(const std::string& generator) {
+   Solved_Body* solved_body = solved_body_generator()->get(generator,false);
+   solved_body->print();
+   const int n = solved_body->n;
+
+   assert(solved_body->bcount ==1);
+   assert(solved_body->type[0] == &Polytope_T);
+   Polytope* p = (Polytope*)solved_body->body[0];
+   
+   Polytope* q = optimize_polytope(p);
+   std::cout << "\n## Optimized: \n\n";
+   Polytope_T.print(q);
+}
+
 
 int main(int argc, char** argv) {
    CLI cli(argc,argv,"peterem");
@@ -43,6 +57,9 @@ int main(int argc, char** argv) {
    
    std::cout << "choice "<< v1 << " " << v2 << "\n";
    std::cout << "choice "<< v3 << " " << v4 << " " << v5 << "\n";
+   
+   optimize_test(generator);
+   return 1;
 
    Solved_Body* solved_body = solved_body_generator()->get(generator,polytopeTranspose);
    solved_body->print();
