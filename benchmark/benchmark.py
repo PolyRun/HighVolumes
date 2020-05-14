@@ -27,7 +27,7 @@ intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20",  "ball_r1.0_
 intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40'}
 
 
-intersectSparseDims = [2,3,4,5]#,10,20,40,60,100]
+intersectSparseDims = [2,3,4,5,10,20,40,60,100]
 intersectSparseDims = {"2var_"+str(i):i for i in intersectSparseDims}
 intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
 
@@ -116,17 +116,17 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
-   {"name": "sparse_polytope",
+   {"name": "sparse_polytope_volume",
     "executable": "benchmark_A1_volume",
-    "config": [       
+    "config": [ 
        {
-          "const_configs": ["step_size=10000"],
+          "const_configs": ["step_size=1000"],
           "fun_configs": [],
           "run_configs": ["r=1,polytopeType=3"],
           "input_configs": [("generator", intersectSparseBodies)]
        },
        {
-          "const_configs": ["step_size=10000"],
+          "const_configs": ["step_size=1000"],
           "fun_configs": ["PolytopeCSC_intersectCoord=cached_ref"],
           "run_configs": ["r=1,polytopeType=2"],
           "input_configs": [("generator", intersectSparseBodies)]
@@ -137,6 +137,28 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
+   {"name": "sparse_polytope_intersect",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["r=100000,polytopeType=3,intersect=intersectCoord"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_ref"],#,"PolytopeCSC_intersectCoord=ref"],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison"],
+    "xlabel": ["dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+   },
+
 
 ]
 
