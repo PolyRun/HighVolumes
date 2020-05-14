@@ -26,6 +26,11 @@ intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.
 intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20",  "ball_r1.0_40"]
 intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40'}
 
+
+intersectSparseDims = [2,3,4,5]#,10,20,40,60,100]
+intersectSparseDims = {"2var_"+str(i):i for i in intersectSparseDims}
+intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
+
 # --- Benchmarks
 '''
     name:          name of the benchmark, has to be unique
@@ -110,7 +115,29 @@ BENCHMARKS = [
     "title": ["Runtime Comparison", "Performance comparison"],
     "xlabel": ["dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
-   }
+   },
+   {"name": "sparse_polytope",
+    "executable": "benchmark_A1_volume",
+    "config": [       
+       {
+          "const_configs": ["step_size=10000"],
+          "fun_configs": [],
+          "run_configs": ["r=1,polytopeType=3"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+       {
+          "const_configs": ["step_size=10000"],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_ref"],
+          "run_configs": ["r=1,polytopeType=2"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison"],
+    "xlabel": ["dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+   },
+
 ]
 
 
@@ -227,9 +254,10 @@ def run_benchmark(bname, bexe, config_strings):
       for line in proc.stdout:
          print(line)
          try:
-            dict = eval(line)
-            results.append((config_string, dict))
-            f.write(str(dict)+'\n')
+            ddd = eval(line)
+            assert(line[0]==123)
+            results.append((config_string, ddd))
+            f.write(str(ddd)+'\n')
          except:
             f.write(line.decode('utf-8'))
       f.close()
