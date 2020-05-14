@@ -5,30 +5,31 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, int polytopeType, const double time_ci_alpha_, const double results_ci_alpha_)
-		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeType(polytopeType) {}
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeType(polytopeType), polytopeOptimize(polytopeOptimize) {}
 
     protected:
         void initialize () {
             std::cout << "initializing A1 data..." << std::endl;
+       
+       	    solved_body = solved_body_generator()->get(generator,false);
+	    if(polytopeOptimize) {
+	       solved_body->optimize();
+	    }
 
-            switch(polytopeType) {
+	    switch(polytopeType) {
             case 0: // column major
-                solved_body = solved_body_generator()->get(generator,true);
+                solved_body->polytopeTranspose();
                 break;
             case 1: // row major
-                solved_body = solved_body_generator()->get(generator,false);
                 break;
             case 2: // CSC format
-                solved_body = solved_body_generator()->get(generator,false);
                 solved_body->polytopeCSC();
                 break;
             case 3: // JIT format
-                solved_body = solved_body_generator()->get(generator,false);
                 solved_body->polytopeJIT();
                 break;
 	    }
-	    solved_body->print();
 	    assert(solved_body->is_normalized);
 	    r0 = 1.0;
 	    r1 = 2*solved_body->n;
@@ -56,13 +57,14 @@ class Benchmark_A1 : public Benchmark_base {
 	Solved_Body* solved_body;
 	FT r0,r1;
 	int polytopeType = 0;
+	bool polytopeOptimize;
 };
 
 
 class Benchmark_Polyvest_Vol : public Benchmark_base {
     public:
-        Benchmark_Polyvest_Vol(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const double time_ci_alpha_, const double results_ci_alpha_)
-		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator) {}
+        Benchmark_Polyvest_Vol(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeOptimize(polytopeOptimize) {}
 
     protected:
         void initialize () {
@@ -71,6 +73,10 @@ class Benchmark_Polyvest_Vol : public Benchmark_base {
             solved_body = solved_body_generator()->get(generator,false);
             assert(solved_body->bcount == 1 && "Can maximally have one body for Polyvest.");
             assert(solved_body->type[0] == &Polytope_T && "Can only have polytopes for Polyvest.");
+
+	    if(polytopeOptimize) {
+	       solved_body->optimize();
+	    }
 
 	    P = (Polytope*)solved_body->body[0];
 	     
@@ -105,6 +111,7 @@ class Benchmark_Polyvest_Vol : public Benchmark_base {
 	Solved_Body* solved_body;
         Polytope* P;
 	vol::Polyvest_p *Q;
+	bool polytopeOptimize;
 };
 
 
@@ -125,7 +132,12 @@ int main(int argc, char *argv[]){
     std::string generator = "cube";
     auto &gen_map = solved_body_generator()->gen_map();
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_r1.0_10", gen_map));
-    
+   
+    bool polytopeOptimize = false;
+    cliFun.add(new CLIF_Option<bool>(&polytopeOptimize,'b',"polytopeOptimize","false", {
+                                                     {"false",{false,"-"}},
+						     {"true", {true, "Sort constraints to optimize access pattern"}} }));
+
     int polytopeType = 0;
     cliFun.add(new CLIF_Option<int>(&polytopeType,'b',"polytopeType","0",
                                     {
@@ -141,10 +153,10 @@ int main(int argc, char *argv[]){
     cliFun.postParse();
     
     if(polytopeType==4) {
-        Benchmark_Polyvest_Vol b("A1_volume", r, true, warmup, generator, time_ci_alpha, results_ci_alpha);
+        Benchmark_Polyvest_Vol b("A1_volume", r, true, warmup, generator, polytopeOptimize, time_ci_alpha, results_ci_alpha);
         b.run_benchmark();
     } else {
-        Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType, time_ci_alpha, results_ci_alpha);
+        Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha);
         b.run_benchmark();
     }
 }

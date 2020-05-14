@@ -315,7 +315,7 @@ Polytope* optimize_polytope(Polytope *p) {
       }
    }
    std::sort(oel.begin(),oel.end(), [](const OElement &a,const OElement &b){return a.overlap > b.overlap;});
-   std::cout << "oel " << oel.size() << " " << oel[0].overlap << "\n";
+   //std::cout << "oel " << oel.size() <<  "\n";
    
    std::vector<int> neighbor_1(m,-1);
    std::vector<int> neighbor_2(m,-1);

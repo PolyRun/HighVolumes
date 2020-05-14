@@ -47,7 +47,8 @@ public:
     void polytopeTranspose();// make all Polytope to PolytopeT
     void polytopeCSC(); // make all Polytope to PolytopeCSC 
     void polytopeJIT(); // make all Polytope to PolytopeJIT 
-
+    void optimize(); // resort dimensions for better access patterns (only single polytope)
+    
     void **body;
     Body_T **type;
     int bcount;

@@ -364,7 +364,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     }
 
     // kvariable
-    std::vector<int> kvar_n = {2,3,4,5,10,20,40,60,100};
+    std::vector<int> kvar_n = {4,5,10,20,30,40,50,60,100};
     for(int n : kvar_n) {
        std::string nstr = std::to_string(n);
        add("2var_TSP_"+nstr, "2-variable-polytope, translated, axisScaled, preprocessed, 10n constraints, "+nstr+"-dim [normalized]", [n]() {
@@ -400,7 +400,16 @@ Solved_Body_Generator::Solved_Body_Generator() {
            sb->is_normalized = true;
            return sb;
        });
-
+       add("3var_"+nstr, "3-variable polytope, 10n constraints,"+nstr+"-dim [normalized]", [n]() {
+           Solved_Body* sb = generate_kvariable_polytope(n,3,1.0,10*n);//k=3, r=1.0
+           sb->is_normalized = true;
+           return sb;
+       });
+       add("4var_"+nstr, "4-variable polytope, 10n constraints,"+nstr+"-dim [normalized]", [n]() {
+           Solved_Body* sb = generate_kvariable_polytope(n,4,1.0,10*n);//k=4, r=1.0
+           sb->is_normalized = true;
+           return sb;
+       });
     }
 }
 
@@ -579,6 +588,19 @@ Solved_Body::polytopeJIT() {
        }
     }
 }
+
+void
+Solved_Body::optimize() {
+    assert(bcount == 1 && "only one body allowed for Polytope optimize");
+    assert(type[0] == &Polytope_T && "body must be Polytope");
+    Polytope* p = (Polytope*)body[0];
+    Polytope* q = optimize_polytope(p);
+    Polytope_free(p);
+    body[0] = q;
+}
+
+
+
 
 Solved_Body_Generator* solved_body_generator_ = NULL;
 Solved_Body_Generator* solved_body_generator() {
