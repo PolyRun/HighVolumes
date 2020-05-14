@@ -367,7 +367,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     std::vector<int> kvar_n = {2,3,4,5,10,20,40,60,100};
     for(int n : kvar_n) {
        std::string nstr = std::to_string(n);
-       add("kvar_"+nstr, "polytope with constraints of at most k-variables,"+nstr+"-dim [normalized]", [n]() {
+       add("2var_TSP_"+nstr, "2-variable-polytope, translated, axisScaled, preprocessed, 10n constraints, "+nstr+"-dim [normalized]", [n]() {
            Solved_Body* b1 = generate_kvariable_polytope(n,2,1.0,10*n);//k=2, r=1.0
            
 	   std::cout << "\n# Generator: b1:\n";
@@ -395,6 +395,12 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   free(a);
            return sb;
        });
+       add("2var_"+nstr, "2-variable polytope, 10n constraints,"+nstr+"-dim [normalized]", [n]() {
+           Solved_Body* sb = generate_kvariable_polytope(n,2,1.0,10*n);//k=2, r=1.0
+           sb->is_normalized = true;
+           return sb;
+       });
+
     }
 }
 

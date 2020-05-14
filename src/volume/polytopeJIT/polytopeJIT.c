@@ -24,13 +24,28 @@ PolytopeJIT* PolytopeJIT_new(int n, int m) {
    o->cacheReset = NULL;
    o->intersectCoord = NULL;
    o->cacheUpdateCoord = NULL;
+   o->intersectCoord_bytes = 0;
+   o->cacheUpdateCoord_bytes = 0;
    return o;
 }
 
 PolytopeJIT *Polytope_to_PolytopeJIT(const Polytope *p) {
    const int n = p->n;
    const int m = p->m;
+   
    PolytopeJIT* o = PolytopeJIT_new(n,m);
+
+   // count nzA
+   o->nzA = 0;
+   for(int i=0;i<p->n;i++) {
+      for(int j=0;j<p->m;j++) {
+         FT aij = Polytope_get_a(p,j,i);
+	 if(aij != 0.0) {
+	    o->nzA++;
+	 }
+      }
+   }
+
    //PolytopeJIT_print(o);
    
    PolytopeJIT_generate_inside_ref(p,o);
@@ -59,8 +74,9 @@ void PolytopeJIT_print(const void* o) {
    printf("inside: %p\n",p->inside);
    printf("intersect: %p\n",p->intersect);
    printf("cacheReset: %p\n",p->cacheReset);
-   printf("intersectCoord: %p\n",p->intersectCoord);
-   printf("cacheUpdateCoord: %p\n",p->cacheUpdateCoord);
+   printf("intersectCoord: %p   (%ld bytes)\n",p->intersectCoord, p->intersectCoord_bytes);
+   printf("cacheUpdateCoord: %p   (%ld bytes)\n",p->cacheUpdateCoord, p->cacheUpdateCoord_bytes);
+   printf("nonZero entries in A: %d (%f)\n",p->nzA,(double)p->nzA/(p->n*p->m));
 }
 
 bool PolytopeJIT_inside_ref(const void* o, const FT* v) {

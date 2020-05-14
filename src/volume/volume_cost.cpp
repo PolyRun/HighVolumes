@@ -408,11 +408,24 @@ void PolytopeJIT_intersect_cost_ref(const void* o) {
 }
 void PolytopeJIT_intersectCoord_cost_ref(const void* o) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
-   pc_stack().log(0,0,"TODO");
+   const int n = p->n;
+   pc_stack().log(0,0,"init, switch case jmpq");
+   
+   double nzAavg = p->nzA / (double)n;
+   double flops = nzAavg*2; // mul, min/max
+   double data = nzAavg*1; // read cache
+   pc_stack().log(flops,data*sizeof(FT),"rd cache, mul, min/max");
+   pc_stack().log(0,0,"write back t0,t1");
 }
 void PolytopeJIT_cacheUpdateCoord_cost_ref(const void* o) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
-   pc_stack().log(0,0,"TODO");
+   const int n = p->n;
+   pc_stack().log(0,0,"switch case jmpq");
+
+   double nzAavg = p->nzA / (double)n;
+   double flops = nzAavg*2; // fmadd
+   double data = nzAavg*2; // rd/wr cache
+   pc_stack().log(flops,data*sizeof(FT),"rd/wr cache, fmadd");
 }
 void PolytopeJIT_cacheReset_cost_ref(const void* o) {
    const PolytopeJIT* p = (PolytopeJIT*)o;

@@ -106,6 +106,8 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    
+   o->cacheUpdateCoord_bytes = (void*)jit_head() - (void*)o->cacheUpdateCoord;
+
    //jit_print();
 }
 

@@ -188,6 +188,8 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    
+   o->intersectCoord_bytes = (void*)jit_head() - (void*)o->intersectCoord;
+   
    //jit_print();
 }
 

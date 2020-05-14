@@ -29,6 +29,11 @@ typedef struct PolytopeJIT {
 
    int n; // dimensions
    int m; // constraints
+
+   // pc-count data:
+   int nzA;
+   size_t intersectCoord_bytes;
+   size_t cacheUpdateCoord_bytes;
 } PolytopeJIT;
 
 
