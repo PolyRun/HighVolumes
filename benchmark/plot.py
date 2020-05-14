@@ -14,6 +14,8 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     time_function_names = []
     time_function_heights = {}
     time_function_std_devs = {}
+    time_function_ci_high = {}
+    time_function_ci_low = {}
     for dict in dict_list:
         # cut out x_label option
         pattern = '{}=[^,]*'.format(x_option)
@@ -22,7 +24,9 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
         ival = dict[2]
         time_fun_name = time_dict['name_t']+name
         time_fun_height = float(time_dict['mean'])
-        time_fun_std_dev = float(time_dict['std_dev'])        
+        time_fun_std_dev = float(time_dict['std_dev'])
+        time_fun_ci_high = float(time_dict['ci_high'])  
+        time_fun_ci_low = float(time_dict['ci_low'])   
         performance_counters = (dict[1])['performance_counter']
         flops = performance_counters['flops']
         bytes = performance_counters['bytes']
@@ -32,10 +36,14 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
             time_function_names.append(time_fun_name)
             time_function_heights[time_fun_name] = [time_fun_height]
             time_function_std_devs[time_fun_name] = [time_fun_std_dev]
+            time_function_ci_high[time_fun_name] = [time_fun_ci_high-time_fun_height]
+            time_function_ci_low[time_fun_name] = [time_fun_height-time_fun_ci_low]
             x_flops[time_fun_name] = [flops]
         else:
             time_function_heights[time_fun_name].append(time_fun_height)
             time_function_std_devs[time_fun_name].append(time_fun_std_dev)
+            time_function_ci_high[time_fun_name].append(time_fun_ci_high-time_fun_height)
+            time_function_ci_low[time_fun_name].append(time_fun_height-time_fun_ci_low)
             x_flops[time_fun_name].append(flops)    
 
     # Runtime Plot
@@ -47,11 +55,12 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     for val in x_values:
         x_ticks.append(int(val))
     plt.xticks(x_ticks)
+	
 
     i = 0
     for name in time_function_names:
-        #plt.bar(y_pos[i], time_function_heights[name], yerr=time_function_std_devs[name], ecolor='red', width=bar_width, label=name)
-        plt.plot(x_ticks, time_function_heights[name], label=name)
+        #plt.plot(x_ticks, time_function_heights[name], label=name)
+        plt.errorbar(x_ticks, time_function_heights[name], label=name, yerr=[time_function_ci_low[name], time_function_ci_high[name]])
         i += 1
 	
     plt.ylim(bottom=0)
