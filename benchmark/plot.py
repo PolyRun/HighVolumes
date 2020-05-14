@@ -81,9 +81,14 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     i = 0
     for name in time_function_names:
         time_function_performance = []
+        time_function_performance_ci_low = []
+        time_function_performance_ci_high = []
         for index, item in enumerate(time_function_heights[name]):
             time_function_performance.append(x_flops[name][index]/item)
+            time_function_performance_ci_low.append(time_function_ci_low[name][index]/item)
+            time_function_performance_ci_high.append(time_function_ci_high[name][index]/item)
         plt.plot(x_ticks, time_function_performance, label=name)
+        #plt.errorbar(x_ticks, time_function_performance, label=name, yerr=[time_function_performance_ci_low, time_function_performance_ci_high])
         i += 1
 	
     plt.ylim(bottom=0)
