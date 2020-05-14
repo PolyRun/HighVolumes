@@ -56,23 +56,39 @@ void Ellipsoid_intersectCoord_cached_reord3(const void* o, const FT* x, const in
 
    FT a = Ellipsoid_get_a(e,d,d);
 
-   const FT aInv = 0.5/a;     // Issued at 0, available at 14
+   const FT aInv = 0.5/a;
 
-   FT b = 2.0*Az_c[d];        // Issued at 0, available at 4
-   FT c = 4.0*Az_c[n];        // Issued at 0, available at 4
+   FT b = 2.0*Az_c[d];
+   FT c = 4.0*Az_c[n];
 
-   FT bsquared = b*b;         // Issued at 4, available at 8
+   FT bsquared = b*b;
    
    // find t:
-   const FT discr = bsquared - a*c; // Issued at 8(12), available at 16(12),    fNmadd here -4
+   const FT discr = bsquared - a*c;
    assert(discr >= 0);
-   const FT sqrtDiscr = sqrt(discr); //Issued at 16, available at 34
+   const FT sqrtDiscr = sqrt(discr);
 
-   FT tmp = -b * aInv; // Issued at 14, available at 18
+   FT tmp = -b * aInv;
 
-   *t0 = tmp - sqrtDiscr * aInv; // Issued at 34(38), available at 42(38),     fNmadd here -4
-   *t1 = tmp + sqrtDiscr * aInv; // Issued at 34(38), available at 42(38),     fmadd here  -4
+   *t0 = tmp - sqrtDiscr * aInv;
+   *t1 = tmp + sqrtDiscr * aInv;
 }
+
+/**
+ * Reasoning:
+ *                                   Skylake               Haswell
+ * resVar   | Op             | IssuedAt | Finished | IssuedAt | Finished
+ * ---------------------------------------------------------------------
+ * aInv     | 0.5/a          |     0    |    14    |     0    |  14-20
+ * b        | 2.0*Az_c[d]    |     0    |     4    |     0    |      5
+ * c        | 4.0*Az_c[n]    |     0    |     4    |     0    |      5
+ * bsquared | b*b            |     4    |     8    |     5    |     10
+ * discr    | bsq - a*c      |     8    |    12    |    10    |     15
+ * sqrtD    | sqrt(discr)    |    12    |    30    |    15    |     35
+ * tmp      | -b*aInv        |    14    |    18    |  14-20   |  19-25
+ * *t0      | tmp-sqrtD*aInv |    30    |    34    |    35    |     40
+ * *t1      | tmp+sqrtD*aInv |    30    |    34    |    35    |     40
+ **/
 
 void Ellipsoid_intersectCoord_cached_reord_fma(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
