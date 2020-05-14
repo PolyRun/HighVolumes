@@ -764,7 +764,7 @@ Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r
 
 Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds) {
 
-    Ellipsoid *ellipsoid = Ellipsoid_new(dims);
+    Ellipsoid *ellipsoid = Ellipsoid_new_with_T(dims);
 
     FT volume = Ball_volume(dims,1.0);// unit ball volume
 
@@ -778,6 +778,7 @@ Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds) {
         // we want that (x_1/r_1)^2 + ... + (x_n/r_n)^2 <= 1
         FT lambda_i = 1 / (radius_i * radius_i);
         Ellipsoid_set_a(ellipsoid, i, i, lambda_i);
+        Ellipsoid_set_Ta(ellipsoid, i, i, lambda_i);
 
         // Over all i's we calculate det(T) here, where T = A^{-1}
         volume *= radius_i * radius_i;

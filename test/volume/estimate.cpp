@@ -17,10 +17,11 @@ void test() {
    PolytopeT* box3 = PolytopeT_new_box(n,2);
    Polytope_T.print(box);
    
-   Ellipsoid* e = Ellipsoid_new(n);
+   Ellipsoid* e = Ellipsoid_new_with_T(n);
    for(int i=0;i<n;i++) {
       FT* Ai = Ellipsoid_get_Ai(e,i);
       Ai[i] = 1.0/9.0;
+      Ellipsoid_set_Ta(e,i,i,1.0/9.0);
    }
    Ellipsoid_T.print(e);
 

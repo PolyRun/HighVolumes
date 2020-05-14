@@ -78,6 +78,7 @@ public:
       pc_stack().add((void*)Ellipsoid_intersectCoord_cached_reord_fma, new PC_Cost_Wrapper<intersectCoord_cost_f>(Ellipsoid_intersectCoord_cached_cost_ref,"Ellipsoid_intersectCoord_cached_reord_fma"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_ref"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_c, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_c"));
+      pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec"));
       pc_stack().add((void*)Ellipsoid_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(Ellipsoid_cacheReset_cost_ref,"Ellipsoid_cacheReset_ref"));
 
       // PolytopeCSC
@@ -160,7 +161,8 @@ public:
 
       add(new CLIF_Option<cacheUpdateCoord_f_t>(&Ellipsoid_T.cacheUpdateCoord,'f',"Ellipsoid_cacheUpdateCoord","ref", {
                        {"ref",         {Ellipsoid_cacheUpdateCoord_ref, "cacheUpdateCoord (ref)"}},
-						     {"c",           {Ellipsoid_cacheUpdateCoord_c, "cacheUpdateCoord (c)"}} }));
+						     {"c",           {Ellipsoid_cacheUpdateCoord_c, "cacheUpdateCoord (c)"}},
+						     {"vec",           {Ellipsoid_cacheUpdateCoord_vec, "cacheUpdateCoord (vec)"}} }));
 
 
       // number parameters:

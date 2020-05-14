@@ -25,6 +25,7 @@ Ellipsoid* Ellipsoid_new(int n);
 Ellipsoid* Ellipsoid_new_with_T(int n);
 void Ellipsoid_free(const void* o);
 void* Ellipsoid_clone(const void* o);
+void* Ellipsoid_clone_with_T(const void* o);
 void Ellipsoid_print(const void* o);
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x);
 void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* normal);
@@ -74,6 +75,12 @@ static inline FT Ellipsoid_get_a(const Ellipsoid* e, int i, int x) {
 static inline FT* Ellipsoid_get_a_p(const Ellipsoid* e, int i, int x) __attribute__((always_inline));
 static inline FT* Ellipsoid_get_a_p(const Ellipsoid* e, int i, int x) {
    return &(e->A[i * (e->line) + x]);
+}
+
+static inline void Ellipsoid_set_Ta(const Ellipsoid* e, int i, int x, FT value) __attribute__((always_inline));
+static inline void Ellipsoid_set_Ta(const Ellipsoid* e, int i, int x, FT value) {
+   assert(e->T && "T must be allocated");
+   e->T[x * (e->line) + i] = value;
 }
 
 // get row i of T

@@ -588,11 +588,12 @@ int main(int argc, char** argv) {
       for (int t = 0; t < 100; t++) {
          // Generate new ellipsoid box, n dim
          const int n = 20;
-         Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+         Ellipsoid* e = Ellipsoid_new_with_T(n); // simple sphere
          for(int i=0; i<n; i++) {
             e->a[i] = prng_get_random_double_in_range(-10,10);
             FT* Ai = Ellipsoid_get_Ai(e,i);
             Ai[i] = prng_get_random_double_in_range(1.1,2.0);
+            Ellipsoid_set_Ta(e, i, i, Ai[i]);
          }
 
          test_ellipsoid_intersectCoord(n, &Ellipsoid_T, e);
@@ -610,11 +611,12 @@ int main(int argc, char** argv) {
       for (int t = 0; t < 100; t++) {
          // Generate new ellipsoid box, n dim
          const int n = 20;
-         Ellipsoid* e = Ellipsoid_new(n); // simple sphere
+         Ellipsoid* e = Ellipsoid_new_with_T(n); // simple sphere
          for(int i=0; i<n; i++) {
             e->a[i] = prng_get_random_double_in_range(-10,10);
             FT* Ai = Ellipsoid_get_Ai(e,i);
             Ai[i] = prng_get_random_double_in_range(1.1,2.0);
+            Ellipsoid_set_Ta(e, i, i, Ai[i]);
          }
 
          test_ellipsoid_intersectCoord(n, &Ellipsoid_T, e);

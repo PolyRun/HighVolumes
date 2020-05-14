@@ -70,6 +70,23 @@ void* Ellipsoid_clone(const void* o) {
    return e;
 }
 
+void* Ellipsoid_clone_with_T(const void* o) {
+   Ellipsoid* old = (Ellipsoid*)o;
+   assert(old->T && "T must be allocated");
+   const int n = old->n;
+   Ellipsoid* e = Ellipsoid_new_with_T(n);
+ 
+   for(int i=0; i<n; i++) {
+      for(int j=0; j<n; j++) {
+	      e->A[i*e->line + j] = old->A[i*e->line + j];
+	      e->T[i*e->line + j] = old->T[i*e->line + j];
+      }
+      e->a[i] = old->a[i];
+   }
+   
+   return e;
+}
+
 
 
 void Ellipsoid_print(const void* o) {
