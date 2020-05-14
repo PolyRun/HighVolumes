@@ -324,11 +324,13 @@ void PolytopeCSC_intersect_cost_ref(const void *o){
     int nz = nonzerosCSC(p);
 
     // read 4m (read and write dotd, dotx) + nz read a + m read b doubles
+    // read 2n (dir, x) doubles
     // read nz ints (row_idx)
     // add 2*#non-zeros + m
-    // mult 2*#non-zeros + m
+    // mult 2*#non-zeros
+    // div m
     // compare 3m (upper bound)
-    pc_stack().log(4*nz + 5*m, (4*m + nz + m) * sizeof(FT) + nz * sizeof(int), "intersect CSC");
+    pc_stack().log(4*nz + 5*m, (4*m + nz + m + 2*n) * sizeof(FT) + nz * sizeof(int), "intersect CSC");
 }
 
 
@@ -357,6 +359,7 @@ void PolytopeCSC_intersectCoord_cost_ref(const void *o){
     }
 
     // read 3*#non-zeros in col (for b, A and dotx (don't count cache here as its only for validation))
+    // read #non-zeros ints (row_idx)
     // adds #non-zeros in col (1 flop each)
     // division #non-zeros in col (1 flop each)
     // comparison #non-zeros in col (1 flop each)
@@ -403,7 +406,7 @@ void PolytopeCSC_cacheUpdateCoord_cost_ref(const void *o){
     int n = p->n;
     int nz = nonzerosCSC(p);
     
-    // read 3 * #non-zeros in col * sizeof(FT) bytes
+    // read 3(read-in and write cache, read A) * #non-zeros in col * sizeof(FT) bytes
     // read #non-zeros int col ints (for row_idx)
     // mults #non-zeros in col
     // adds #non-zeros in col
