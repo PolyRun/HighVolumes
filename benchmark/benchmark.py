@@ -31,6 +31,10 @@ intersectSparseDims = [2,3,4,5,10,20,40,60,100]
 intersectSparseDims = {"2var_"+str(i):i for i in intersectSparseDims}
 intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
 
+cubeRotDims = [3,10,20,40]
+cubeRotDims = {"cube_rot_r1.0_"+str(i):i for i in cubeRotDims}
+cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
+
 # --- Benchmarks
 '''
     name:          name of the benchmark, has to be unique
@@ -158,8 +162,45 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
-
-
+   {"name": "cube_rot_volume",
+    "executable": "benchmark_A1_volume",
+    "config": [ 
+       {
+          "const_configs": ["step_size=1000"],
+          "fun_configs": [],
+          "run_configs": ["r=1,polytopeType=3"],
+          "input_configs": [("generator", cubeRotBodies)]
+       },
+       {
+          "const_configs": ["step_size=1000"],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_ref"],
+          "run_configs": ["r=1,polytopeType=2"],
+          "input_configs": [("generator", cubeRotBodies)]
+       },
+       {
+          "const_configs": ["step_size=1000"],
+          "fun_configs": [],
+          "run_configs": ["r=1,polytopeType=4"],
+          "input_configs": [("generator", cubeRotBodies)]
+       },
+       {
+          "const_configs": ["step_size=1000"],
+          "fun_configs": ["Polytope_intersectCoord=cached_ref"],
+          "run_configs": ["r=1,polytopeType=0"],
+          "input_configs": [("generator", cubeRotBodies)]
+       },
+       {
+          "const_configs": ["step_size=1000"],
+          "fun_configs": ["PolytopeT_intersectCoord=cached_b_ref"],
+          "run_configs": ["r=1,polytopeType=1"],
+          "input_configs": [("generator", cubeRotBodies)]
+       },
+    ],
+    "xoption": ("generator", cubeRotDims),
+    "title": ["Runtime Comparison", "Performance comparison"],
+    "xlabel": ["dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+   },
 ]
 
 
