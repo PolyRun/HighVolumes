@@ -17,6 +17,35 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    // calculate intersections
    // jump to end, return values
    
+   // ------------------ Performance Analysis:
+   // -- mul
+   // Port: 1,2
+   // lat: 5 (4 on skylake)
+   // 2 issued per cycle
+   //
+   // -- min / max
+   // Haswell: 3 lat, 1 issued per cycle
+   // Skylake: 4 lat, 3 issued per cycle (or only 2?)
+   //  -> add instruction!
+   //
+   // -- the difficulty:
+   // - we have nc = nzA/n entries to look at.
+   // - some are negative, some positive -> dependencies on t00,t11 for min,max 
+   // - latency: 5+3 for a single entry. +table jump overheads.
+   // - best case: execute 2 min/max per 3 cycles.
+   // - worst case: 1 per 3 cycles.
+   // - single entry per column only: 8 latency + overheads, 2 flops -> less than 0.25 fpc.
+   // - filled column: 2 min/max + 2 mul per 3 cycles -> maximum 4/3 fpc.
+   // - data: 2 doubles per 3 cycles -> 2*8/3 ~ 5 bytes per cycle
+   //
+   // Could be improved:
+   // - vectorize: but only works if only min/max one vector - require the sorting or rows
+   // - 2-packing: fairly easy to get almost 2x speedup
+   // - 4-packing: extra overhead to permute over 128 boundary at end. but more flexibility! Depends much more on data.
+   //
+   // - this does require loading the constants from memory/table at end.
+   // - unclear to me is if loading immediate from memory or instruction is faster?
+
    /// // --------------------- test
    /// //  f2 0f 10 01          	movsd  (%rcx),%xmm0
    /// //  f2 0f 11 02          	movsd  %xmm0,(%rdx)

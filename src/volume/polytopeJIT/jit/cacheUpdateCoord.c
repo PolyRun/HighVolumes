@@ -15,6 +15,25 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
    // update relevant cache entries
    // return
    
+   // ---------------------- Performance Analysis:
+   // -- fmadd:
+   // 5 latency (4 on skylake)
+   // 2 ports -> 2 issued per cycle
+   // 
+   // -- movq:
+   // Haswell: simd log (3)
+   // Skylake: vec alu (3)
+   // 
+   // -- movsd:
+   // Haswell/Skylake: fp mov (1) - bottleneck?
+   // - possible dependence if not all 128 bits are written?
+   // - probably ok, because writing to mem
+   //
+   // -- so:
+   // - no dependencies
+   // - could expect 2 flops per cycle.
+   // - this would be 4*8 = 32 bytes/cycle - memory bound!
+
    ///  // ---------------- test 
    ///  // f2 0f 11 06          	movsd  %xmm0,(%rsi)
    ///  { uint8_t instr[] = {0xf2,0x0f,0x11,0x06}; jit_push(instr,4); }
