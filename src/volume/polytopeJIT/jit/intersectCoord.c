@@ -42,6 +42,7 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    // - vectorize: but only works if only min/max one vector - require the sorting or rows
    // - 2-packing: fairly easy to get almost 2x speedup
    // - 4-packing: extra overhead to permute over 128 boundary at end. but more flexibility! Depends much more on data.
+   // - have two "accs" for t00,t11
    //
    // - this does require loading the constants from memory/table at end.
    // - unclear to me is if loading immediate from memory or instruction is faster?
@@ -79,7 +80,8 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    uint8_t nn = p->n;
    // 0x83,0xff,xx   cmp    xx,%edi
    {const uint8_t instr[] = {0x83,0xff,nn}; jit_push(instr,3);}
-   
+   // TODO: can we drop this???
+
    // -------------- if bad, jump to end
    // 0f 87 xx xx xx xx    	ja  xxxx   -- relative jump
    {const uint8_t instr[] = {0x0f,0x87,0,0,0,0}; jit_push(instr,6);}
@@ -118,7 +120,7 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
       // find relevant entries in column:
       for(int j=0;j<p->m;j++) {
          FT aij = Polytope_get_a(p,j,i);
-	 if(aij != 0.0) {
+	 if(aij != 0.0) { // TODO: make epsilon
 	 
 	    // d*a = aij
 	    //movabs $0xff00ff00ff00ff00,%rax
