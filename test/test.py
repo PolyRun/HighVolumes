@@ -11,7 +11,7 @@ TESTS = [
          {"name": "jit/test_jit",
           "timeout": 10},
          {"name": "volume/test_volume_basics",
-          "timeout": 10},
+          "timeout": 50},
          {"name": "volume/test_volume_estimate",
           "timeout": 20},
          {"name": "volume/test_volume_examples",
