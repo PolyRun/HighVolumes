@@ -89,8 +89,8 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
             time_function_performance.append(x_flops[name][index]/item)
             time_function_performance_ci_low.append(time_function_ci_low[name][index]/item)
             time_function_performance_ci_high.append(time_function_ci_high[name][index]/item)
-        plt.plot(x_ticks, time_function_performance, label=name)
-        #plt.errorbar(x_ticks, time_function_performance, label=name, yerr=[time_function_performance_ci_low, time_function_performance_ci_high])
+        #plt.plot(x_ticks, time_function_performance, label=name)
+        plt.errorbar(x_ticks, time_function_performance, label=name, yerr=[time_function_performance_ci_low, time_function_performance_ci_high], capsize=4)
         i += 1
 	
     plt.ylim(bottom=0)
@@ -117,8 +117,8 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
             time_function_bytes.append(x_bytes[name][index]/item)
             time_function_bytes_ci_low.append(time_function_ci_low[name][index]/item)
             time_function_bytes_ci_high.append(time_function_ci_high[name][index]/item)
-        plt.plot(x_ticks, time_function_bytes, label=name)
-        #plt.errorbar(x_ticks, time_function_bytes, label=name, yerr=[time_function_bytes_ci_low, time_function_bytes_ci_high])
+        #plt.plot(x_ticks, time_function_bytes, label=name)
+        plt.errorbar(x_ticks, time_function_bytes, label=name, yerr=[time_function_bytes_ci_low, time_function_bytes_ci_high], capsize=4)
         i += 1
 	
     plt.ylim(bottom=0)
