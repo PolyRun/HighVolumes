@@ -237,6 +237,26 @@ void PolytopeCSC_cacheReset_ref(const void *o, const FT *x, void *cache){
     }
 }
 
+
+void PolytopeCSC_cacheReset_withb(const void *o, const FT *x, void *cache){
+
+    // set cache[i] = b[i] - Ai*x
+    PolytopeCSC *p = (PolytopeCSC *) o;
+    FT *c = (FT *) cache;
+
+    for (int i = 0; i < p->m; i++){
+        c[i] = p->b[i];
+    }
+
+    for (int i = 0; i < p->n; i++){
+        FT xi = x[i];
+        for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
+            c[p->row_idx[j]] -= p->A[j] * xi;
+        }
+    }
+}
+
+
 void PolytopeCSC_cacheUpdateCoord_ref(const void *o, const int d, const FT dx, void *cache) {
 
     const PolytopeCSC *p = (PolytopeCSC *) o;
@@ -245,6 +265,17 @@ void PolytopeCSC_cacheUpdateCoord_ref(const void *o, const int d, const FT dx, v
     // only update with column d of A
     for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
         c[p->row_idx[i]] += dx * p->A[i];
+    }
+}
+
+void PolytopeCSC_cacheUpdateCoord_withb(const void *o, const int d, const FT dx, void *cache) {
+
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    FT *c = (FT *) cache;
+
+    // only update with column d of A
+    for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
+        c[p->row_idx[i]] -= dx * p->A[i];
     }
 }
 

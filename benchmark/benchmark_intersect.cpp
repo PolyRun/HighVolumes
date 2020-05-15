@@ -90,25 +90,27 @@ class Benchmark_intersect : public Benchmark_base {
 
 class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
-        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody)
-		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeType, polytopeOptimize, time_ci_alpha_, results_ci_alpha_, printBody) {}
+        Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody, const bool intersectCoord_intersect, const bool intersectCoord_update)
+		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeType, polytopeOptimize, time_ci_alpha_, results_ci_alpha_, printBody), intersectCoord_intersect(intersectCoord_intersect), intersectCoord_update(intersectCoord_update) {}
     
     	void finalize() {
 	    pc_stack().reset();
             {
-		{
+		if(intersectCoord_intersect){
 		    PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord);
                     frame.costf()(solved_body->body[0]);
 		}
 
-                pc_stack().log(0, 0, "random double - TODO");
-	        // Reading and writing x[dd] with one add in between
-                pc_stack().log(1, 2, "x[dd] += t;");
-                
-                // body intersectCoord
-		{
-	            PC_Frame<cacheUpdateCoord_cost_f> frame((void*) solved_body->type[0]->cacheUpdateCoord);
-                    frame.costf()(solved_body->body[0]);
+                if(intersectCoord_update) {
+		   pc_stack().log(0, 0, "random double - TODO");
+	           // Reading and writing x[dd] with one add in between
+                   pc_stack().log(1, 2, "x[dd] += t;");
+                   
+                   // body intersectCoord
+		   {
+	               PC_Frame<cacheUpdateCoord_cost_f> frame((void*) solved_body->type[0]->cacheUpdateCoord);
+                       frame.costf()(solved_body->body[0]);
+		   }
 		}
 	    }
             pc_stack().print();
@@ -117,15 +119,20 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
 	}
     protected:
         double run () {
-	    FT t0, t1;
-	    solved_body->type[0]->intersectCoord(solved_body->body[0], x, dd, &t0, &t1, cache);
-            
-	    // step now
-	    FT t = prng_get_random_double_in_range(t0,t1);
-            x[dd] += t;
-            solved_body->type[0]->cacheUpdateCoord(solved_body->body[0], dd, t, cache);
-            return 0;
+	    FT t0=-1, t1=1;
+	    if(intersectCoord_intersect) {
+	       solved_body->type[0]->intersectCoord(solved_body->body[0], x, dd, &t0, &t1, cache);
+	    }
+	    if(intersectCoord_update) {
+	       // step now
+	       FT t = prng_get_random_double_in_range(t0,t1);
+               x[dd] += t;
+               solved_body->type[0]->cacheUpdateCoord(solved_body->body[0], dd, t, cache);
+	    }
+	    return 0;
 	}
+	const bool intersectCoord_intersect;
+	const bool intersectCoord_update;
 };
 
 int main(int argc, char *argv[]){
@@ -146,11 +153,20 @@ int main(int argc, char *argv[]){
     auto &gen_map = solved_body_generator()->gen_map();
     cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","cube_r1.0_10", gen_map));
     
-    std::string intersect = "intersect";
-    cliFun.add(new CLIF_Option<std::string>(&intersect,'b',"intersect","intersect", {
-                                                     {"intersect",      {"intersect",     "random direction intersection"}},
-						     {"intersectCoord", {"intersectCoord","coordinate direction intersection"}} }));
-   
+    
+    bool intersectCoord = false;
+    bool intersectCoord_intersect = true;
+    bool intersectCoord_update = true;
+    cliFun.add(new CLIF_TrippleOption<bool,bool,bool>(
+			    &intersectCoord, &intersectCoord_intersect, &intersectCoord_update,
+			    'b',"intersect","intersect", {
+                                                     {"intersect",      {{false,{false,false}},  "random direction intersection"}},
+                                                     {"intersectCoord", {{true ,{true ,true }},  "coordinate direction intersect + update"}},
+                                                     {"intersectCoord_only", {{true ,{true ,false }},  "coordinate direction intersect only, no update"}},
+                                                     {"cacheUpdateCoord", {{true ,{false ,true }},  "coordinate direction cache update, no intersect"}},
+    }));
+ 
+
     bool polytopeOptimize = false;
     cliFun.add(new CLIF_Option<bool>(&polytopeOptimize,'b',"polytopeOptimize","false", {
                                                      {"false",{false,"-"}},
@@ -176,11 +192,11 @@ int main(int argc, char *argv[]){
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
     
-    if(intersect.compare("intersect")==0) {
+    if(!intersectCoord) {
         Benchmark_intersect b("intersect", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody);
+        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody, intersectCoord_intersect, intersectCoord_update);
         b.run_benchmark();
     }
 }
