@@ -39,12 +39,14 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
             time_function_ci_high[time_fun_name] = [time_fun_ci_high-time_fun_height]
             time_function_ci_low[time_fun_name] = [time_fun_height-time_fun_ci_low]
             x_flops[time_fun_name] = [flops]
+            x_bytes[time_fun_name] = [bytes]
         else:
             time_function_heights[time_fun_name].append(time_fun_height)
             time_function_std_devs[time_fun_name].append(time_fun_std_dev)
             time_function_ci_high[time_fun_name].append(time_fun_ci_high-time_fun_height)
             time_function_ci_low[time_fun_name].append(time_fun_height-time_fun_ci_low)
-            x_flops[time_fun_name].append(flops)    
+            x_flops[time_fun_name].append(flops)
+            x_bytes[time_fun_name].append(bytes)
 
     # Runtime Plot
     plt.title(title[0])
@@ -60,7 +62,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     i = 0
     for name in time_function_names:
         #plt.plot(x_ticks, time_function_heights[name], label=name)
-        plt.errorbar(x_ticks, time_function_heights[name], label=name, yerr=[time_function_ci_low[name], time_function_ci_high[name]])
+        plt.errorbar(x_ticks, time_function_heights[name], label=name, yerr=[time_function_ci_low[name], time_function_ci_high[name]], capsize=4)
         i += 1
 	
     plt.ylim(bottom=0)
@@ -98,3 +100,32 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     plt.savefig(path+"/plots/"+plot_name+"performance_mean.png", bbox_inches = "tight")
 
     plt.clf()
+
+    # I/O plot
+    plt.title(title[2])
+    plt.xlabel(x_label[2])
+    plt.ylabel(y_label[2])
+
+    plt.xticks(x_ticks)
+
+    i = 0
+    for name in time_function_names:
+        time_function_bytes = []
+        time_function_bytes_ci_low = []
+        time_function_bytes_ci_high = []
+        for index, item in enumerate(time_function_heights[name]):
+            time_function_bytes.append(x_bytes[name][index]/item)
+            time_function_bytes_ci_low.append(time_function_ci_low[name][index]/item)
+            time_function_bytes_ci_high.append(time_function_ci_high[name][index]/item)
+        plt.plot(x_ticks, time_function_bytes, label=name)
+        #plt.errorbar(x_ticks, time_function_bytes, label=name, yerr=[time_function_bytes_ci_low, time_function_bytes_ci_high])
+        i += 1
+	
+    plt.ylim(bottom=0)
+	
+    plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
+
+    plt.savefig(path+"/plots/"+plot_name+"io_mean.png", bbox_inches = "tight")
+
+    plt.clf()
+

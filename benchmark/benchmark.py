@@ -59,8 +59,8 @@ cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
                         note that length of list must match the one of the corresponding input config
                         we match by index!
          title:         Titles of the plots
-         xlabel:        Labels the x-axis of the plot
-         ylabel:        Labels the y-axis of the plot
+         xlabel:        Labels the x-axis of the plots
+         ylabel:        Labels the y-axis of the plots
 '''
 BENCHMARKS = [
    {"name": "benchmark_dotProduct",
@@ -74,9 +74,9 @@ BENCHMARKS = [
        }
     ],
     "xoption": ("n", {str(2**i): str(2**i) for i in range(0,7)}),
-    "title": ["Runtime Comparison", "Performance comparison"],
-    "xlabel": ["n", "n"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["n", "n", "n"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
    {"name": "intersect_polytope",
@@ -102,9 +102,9 @@ BENCHMARKS = [
        }
     ],
     "xoption": ("generator", intersectdims),
-    "title": ["Runtime Comparison", "Performance comparison"],
-    "xlabel": ["dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
    {"name": "intersect_ellipsoid",
@@ -118,9 +118,9 @@ BENCHMARKS = [
        }
     ],
     "xoption": ("generator", intersectEdims),
-    "title": ["Runtime Comparison", "Performance comparison"],
-    "xlabel": ["dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
    {"name": "sparse_polytope_volume",
@@ -140,9 +140,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison"],
-    "xlabel": ["dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
    {"name": "sparse_polytope_intersect",
@@ -162,9 +162,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison"],
-    "xlabel": ["dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
    {"name": "cube_rot_volume",
@@ -202,9 +202,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", cubeRotDims),
-    "title": ["Runtime Comparison", "Performance comparison"],
-    "xlabel": ["dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 ]
 
