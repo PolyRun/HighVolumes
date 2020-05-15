@@ -5,8 +5,8 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_)
-		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeType(polytopeType), polytopeOptimize(polytopeOptimize) {}
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeType(polytopeType), polytopeOptimize(polytopeOptimize), printBody(printBody) {}
 
     protected:
         void initialize () {
@@ -30,6 +30,7 @@ class Benchmark_A1 : public Benchmark_base {
                 solved_body->polytopeJIT();
                 break;
 	    }
+	    if(printBody) {solved_body->print();}
 	    assert(solved_body->is_normalized);
 	    r0 = 1.0;
 	    r1 = 2*solved_body->n;
@@ -58,13 +59,14 @@ class Benchmark_A1 : public Benchmark_base {
 	FT r0,r1;
 	int polytopeType = 0;
 	bool polytopeOptimize;
+	const bool printBody;
 };
 
 
 class Benchmark_Polyvest_Vol : public Benchmark_base {
     public:
-        Benchmark_Polyvest_Vol(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_)
-		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeOptimize(polytopeOptimize) {}
+        Benchmark_Polyvest_Vol(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeOptimize(polytopeOptimize), printBody(printBody) {}
 
     protected:
         void initialize () {
@@ -77,6 +79,7 @@ class Benchmark_Polyvest_Vol : public Benchmark_base {
 	    if(polytopeOptimize) {
 	       solved_body->optimize();
 	    }
+	    if(printBody) {solved_body->print();}
 
 	    P = (Polytope*)solved_body->body[0];
 	     
@@ -112,6 +115,7 @@ class Benchmark_Polyvest_Vol : public Benchmark_base {
         Polytope* P;
 	vol::Polyvest_p *Q;
 	bool polytopeOptimize;
+	const bool printBody;
 };
 
 
@@ -138,6 +142,11 @@ int main(int argc, char *argv[]){
                                                      {"false",{false,"-"}},
 						     {"true", {true, "Sort constraints to optimize access pattern"}} }));
 
+    bool printBody = false;
+    cliFun.add(new CLIF_Option<bool>(&printBody,'b',"printBody","false", {
+                                                     {"false",{false,"-"}},
+						     {"true", {true, "Print body before benchmark is run."}} }));
+
     int polytopeType = 0;
     cliFun.add(new CLIF_Option<int>(&polytopeType,'b',"polytopeType","0",
                                     {
@@ -153,10 +162,10 @@ int main(int argc, char *argv[]){
     cliFun.postParse();
     
     if(polytopeType==4) {
-        Benchmark_Polyvest_Vol b("A1_volume", r, true, warmup, generator, polytopeOptimize, time_ci_alpha, results_ci_alpha);
+        Benchmark_Polyvest_Vol b("A1_volume", r, true, warmup, generator, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody);
         b.run_benchmark();
     } else {
-        Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha);
+        Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody);
         b.run_benchmark();
     }
 }

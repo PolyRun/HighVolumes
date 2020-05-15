@@ -85,17 +85,7 @@ class Benchmark_base {
 
 	    // Run performance_counter and free memory
 	    finalize();
-	    if(pc_flops > 0 || pc_bytes > 0 ) {
-	       std::cout << "Avg flops/cycle: " << pc_flops/min_time << "\n";
-	       std::cout << "Avg bytes/cycle: " << pc_bytes/min_time << "\n";
-	    }
-            
-            
 
-            // Dictionary output
-            std::cout << "{'time': {";
-            std::cout << "'name_t': '"<< name << "', 'mean': '" << mean_time << "', 'min': '" << min_time << "', 'max': '" << max_time << "', 'std_dev': '" << std_dev << "'";
-	    
 	    // Calculate confidence intervals:
 	    double time_ci_low, time_ci_high, time_ci_median;
 	    {
@@ -107,7 +97,19 @@ class Benchmark_base {
 	       time_ci_high   = measured_times[s*time_ci_a2];
 	       time_ci_median = measured_times[s*0.5];
 	    }
-	    std::cout << ", 'ci_low': '"<< time_ci_low <<"'";
+	
+	    if(pc_flops > 0 || pc_bytes > 0 ) {
+	       std::cout << "Avg flops/cycle: " << pc_flops/mean_time << " (CI: " << pc_flops/time_ci_low << " - " << pc_flops/time_ci_high << ")\n";
+	       std::cout << "Avg bytes/cycle: " << pc_bytes/mean_time << " (CI: " << pc_bytes/time_ci_low << " - " << pc_bytes/time_ci_high << ")\n";
+	    }
+            
+            
+
+            // Dictionary output
+            std::cout << "{'time': {";
+            std::cout << "'name_t': '"<< name << "', 'mean': '" << mean_time << "', 'min': '" << min_time << "', 'max': '" << max_time << "', 'std_dev': '" << std_dev << "'";
+	    
+            std::cout << ", 'ci_low': '"<< time_ci_low <<"'";
 	    std::cout << ", 'ci_high': '"<< time_ci_high <<"'";
 	    std::cout << ", 'ci_median': '"<< time_ci_median <<"'";
 	    std::cout << ", 'ci_alpha': '"<< time_ci_alpha <<"'";
