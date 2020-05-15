@@ -366,6 +366,32 @@ int main() {
          jit_immediate_via_rax(0.1,i);
 	 jit_print();
       }
+      std::cout << "immediate_via_rax:\n";
+      {
+         jit_clear();
+         double (*func2)();
+         func2 = (double (*)()) jit_head();
+         jit_immediate_via_rax(0.1,0);
+	 jit_emit_return();
+         double res = func2();
+         assert(res==0.1);
+      }
+      std::cout << "immediate_via_data:\n";
+      {
+         jit_clear();
+         double (*func2)();
+         func2 = (double (*)()) jit_head();
+
+	 jit_Table_8* t = NULL;// empty list
+	 for(int i=0;i<16;i++) {
+	    t = jit_immediate_via_data(1.0 + i*0.1, i, t);
+	 }
+	 jit_emit_return();
+         jit_table_consume(t);
+	 double res = func2();
+	 assert(res == 1.0);
+	 std::cout << "res: " << res << std::endl;
+      }
    }
    // -------------------------------- end tests
 

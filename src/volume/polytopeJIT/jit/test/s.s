@@ -189,5 +189,23 @@ vmovq %rax,%xmm13
 vmovq %rax,%xmm14
 vmovq %rax,%xmm15
 
+vmovsd 0x100(%rip), %xmm0
+vmovsd 0x100(%rip), %xmm1
+vmovsd 0x100(%rip), %xmm2
+vmovsd 0x100(%rip), %xmm3
+vmovsd 0x100(%rip), %xmm4
+vmovsd 0x100(%rip), %xmm5
+vmovsd 0x100(%rip), %xmm6
+vmovsd 0x100(%rip), %xmm7
+vmovsd 0x100(%rip), %xmm8
+vmovsd 0x100(%rip), %xmm9
+vmovsd 0x100(%rip), %xmm10
+vmovsd 0x100(%rip), %xmm11
+vmovsd 0x100(%rip), %xmm12
+vmovsd 0x100(%rip), %xmm13
+vmovsd 0x100(%rip), %xmm14
+vmovsd 0x100(%rip), %xmm15
+
+
 
 

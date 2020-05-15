@@ -109,4 +109,76 @@ void jit_immediate_via_rax(const double val, const int xmm) {
    {const uint8_t instr[] = {0xc4,b2,0xf9,0x6e,b5}; jit_push(instr,5);}
 }
 
+jit_Table_8* jit_Table_8_prepend(jit_Table_8* old, uint8_t* bytes, uint8_t* src) {
+   jit_Table_8* t = (jit_Table_8*)malloc(sizeof(jit_Table_8));
+   if(old) {
+      t->children = old->children+1;
+   } else {
+      t->children = 0;
+   }
+   t->next = old;
+   t->src = src;
+   for(int i=0;i<8;i++) {t->data[i] = bytes[i];}
+   return t;
+}
+
+jit_Table_8* jit_immediate_via_data(const double val, const int xmm, jit_Table_8* t) {
+   // c5 fb 10 05 xxxx  vmovsd 0x100(%rip),%xmm0
+   // c5 fb 10 0d xxxx  vmovsd 0x100(%rip),%xmm1
+   // c5 fb 10 15 xxxx  vmovsd 0x100(%rip),%xmm2
+   // c5 fb 10 1d xxxx  vmovsd 0x100(%rip),%xmm3
+   // c5 fb 10 25 xxxx  vmovsd 0x100(%rip),%xmm4
+   // c5 fb 10 2d xxxx  vmovsd 0x100(%rip),%xmm5
+   // c5 fb 10 35 xxxx  vmovsd 0x100(%rip),%xmm6
+   // c5 fb 10 3d xxxx  vmovsd 0x100(%rip),%xmm7
+   // c5 7b 10 05 xxxx  vmovsd 0x100(%rip),%xmm8
+   // c5 7b 10 0d xxxx  vmovsd 0x100(%rip),%xmm9
+   // c5 7b 10 15 xxxx  vmovsd 0x100(%rip),%xmm10
+   // c5 7b 10 1d xxxx  vmovsd 0x100(%rip),%xmm11
+   // c5 7b 10 25 xxxx  vmovsd 0x100(%rip),%xmm12
+   // c5 7b 10 2d xxxx  vmovsd 0x100(%rip),%xmm13
+   // c5 7b 10 35 xxxx  vmovsd 0x100(%rip),%xmm14
+   // c5 7b 10 3d xxxx  vmovsd 0x100(%rip),%xmm15
+   
+   uint8_t b2 = 0xfb;
+   if(xmm>7) {b2 = 0x7b;}
+   uint8_t b4 = 0x05 + (xmm % 8)*8;
+   {const uint8_t instr[] = {0xc5,b2,0x10,b4}; jit_push(instr,4);}
+   // 32 bytes for the offset address
+   {const uint8_t instr[] = {0xff,0xff,0xff,0xff}; jit_push(instr,4);}
+   //{const uint8_t instr[] = {0,0,0,0}; jit_push(instr,4);}
+
+   return jit_Table_8_prepend(t, (uint8_t*)&val, jit_head());
+}
+
+void jit_table_consume(jit_Table_8* t) {
+   if(t==NULL) {return;}
+
+   jit_allign(8);
+   int n = t->children+1;
+   
+   uint8_t* top = jit_head();
+   double test = 1.0101010101;
+   for(uint64_t i=0;i<n;i++) {// make space
+      jit_push((const uint8_t*)&test,8);
+   }
+   
+   int i = n; // write them in in reverse order, as list is prepend only
+   while(t!=NULL) {
+      i--;
+      uint8_t* index = top+8*i;
+      uint32_t offset = index - t->src;
+      jit_write(t->src-4, (uint8_t*)&offset,4);
+      jit_write(index, t->data, 8);
+
+      jit_Table_8* next = t->next;
+      free(t);
+      t = next;
+   }
+   assert(i==0);
+}
+
+void jit_emit_return() {
+   { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
+}
 

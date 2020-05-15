@@ -47,5 +47,25 @@ void jit_clear();
 // ---------------------------------- op generators
 void jit_immediate_via_rax(const double val, const int reg);
 
+// table: 1 double
+typedef struct jit_Table_8 {
+   struct jit_Table_8* next; // linked list
+   size_t children; // number of children in list
+   uint8_t data[8]; // payload
+   uint8_t* src; // end of instruction
+   // will write relative offset at src-4;
+} jit_Table_8;
+
+jit_Table_8* jit_Table_8_prepend(jit_Table_8* old, uint8_t* bytes, uint8_t* src);
+
+// sets op down
+// prepends entry to table
+jit_Table_8* jit_immediate_via_data(const double val, const int xmm, jit_Table_8* t);
+
+// consume and free table
+// write table in memory, go set up references to it
+void jit_table_consume(jit_Table_8* t);
+
+void jit_emit_return();
 
 #endif // HEADER_JIT_H
