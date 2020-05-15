@@ -16,6 +16,8 @@ void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int
 void PolytopeT_cacheReset_b_ref(const void* o, const FT* x, void* cache);
 void PolytopeT_cacheUpdateCoord_b_ref(const void* o, const int d, const FT dx, void* cache);
 
+void PolytopeT_intersectCoord_vectorized(const void *p, const FT* x,
+                                         const int d, FT *t0_out, FT *t1_out, void *cache);
 
 #endif // HEADER_POLYTOPET_INTERSECTCOORD_H
 

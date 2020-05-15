@@ -384,7 +384,21 @@ void PolytopeCSC_intersectCoord_cached_cost_ref(const void *o){
 }
 
 
-    
+void PolytopeCSC_intersectCoord_cached_cost_withb(const void *o){
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+
+    // read #non-zeros in col * (2 doubles (for A and b_Aix) + 1 int (row_idx))
+    // divs #non-zeros in col
+    // comparisons #non-zeros in col
+    pc_stack().log(2*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
+
+}
+
+
+
 // NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
 void PolytopeCSC_cacheReset_cost_ref(const void *o){
     const PolytopeCSC *p = (PolytopeCSC *) o;
@@ -397,6 +411,18 @@ void PolytopeCSC_cacheReset_cost_ref(const void *o){
     // adds #non-zeros total
     // mults #non-zeros total
     pc_stack().log(2*nz, (2*m + n + nz) * sizeof(FT) + nz * sizeof(int), "cacheReset CSC");
+}
+
+void PolytopeCSC_cacheReset_cost_withb(const void *o){
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+    // reads 3m (read and write cache and read b) + n (read x) + nz (read A) doubles
+    // read nz ints (row_idx)
+    // adds #non-zeros total
+    // mults #non-zeros total
+    pc_stack().log(2*nz, (3*m + n + nz) * sizeof(FT) + nz * sizeof(int), "cacheReset_withb CSC");
 }
 
 // NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
@@ -412,6 +438,11 @@ void PolytopeCSC_cacheUpdateCoord_cost_ref(const void *o){
     // adds #non-zeros in col
     pc_stack().log(2 * nz/n, (3 * nz/n) * sizeof(FT) + nz/n * sizeof(int), "cache Update coord CSC");
     
+}
+
+// NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
+void PolytopeCSC_cacheUpdateCoord_cost_withb(const void *o){
+    PolytopeCSC_cacheUpdateCoord_cost_ref(o);    
 }
 
 

@@ -4,6 +4,7 @@ typedef struct PolytopeT PolytopeT;
 #define POLYTOPET_H
 
 #include "../volume.h"
+#include "intersectCoord/intersectCoord.h"
 
 extern Body_T PolytopeT_T;
 

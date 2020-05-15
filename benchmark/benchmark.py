@@ -78,6 +78,7 @@ BENCHMARKS = [
     "xlabel": ["n", "n"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
+
    {"name": "intersect_polytope",
     "executable": "benchmark_intersect",
     "config": [       
@@ -105,6 +106,7 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
+
    {"name": "intersect_ellipsoid",
     "executable": "benchmark_intersect",
     "config": [       
@@ -120,6 +122,7 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
+
    {"name": "sparse_polytope_volume",
     "executable": "benchmark_A1_volume",
     "config": [ 
@@ -141,6 +144,7 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
+
    {"name": "sparse_polytope_intersect",
     "executable": "benchmark_intersect",
     "config": [       
@@ -162,6 +166,7 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)"]
    },
+
    {"name": "cube_rot_volume",
     "executable": "benchmark_A1_volume",
     "config": [ 
@@ -173,7 +178,7 @@ BENCHMARKS = [
        },
        {
           "const_configs": ["step_size=1000"],
-          "fun_configs": ["PolytopeCSC_intersectCoord=cached_ref"],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_ref", "PolytopeCSC_intersectCoord=cached_b_ref"],
           "run_configs": ["r=1,polytopeType=2"],
           "input_configs": [("generator", cubeRotBodies)]
        },

@@ -62,6 +62,10 @@ void PolytopeCSC_intersectCoord_cost_ref(const void *o);
 void PolytopeCSC_intersectCoord_cached_cost_ref(const void *o);
 void PolytopeCSC_cacheReset_cost_ref(const void *o);
 void PolytopeCSC_cacheUpdateCoord_cost_ref(const void *o);
+void PolytopeCSC_intersectCoord_cached_cost_withb(const void *o);
+void PolytopeCSC_cacheReset_cost_withb(const void *o);
+void PolytopeCSC_cacheUpdateCoord_cost_withb(const void *o);
+
 
 // ----------------------------------------------- PolytopeJIT
 void PolytopeJIT_intersect_cost_ref(const void* o);

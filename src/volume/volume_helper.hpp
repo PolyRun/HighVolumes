@@ -64,6 +64,7 @@ public:
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_cached_ref"));
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_nc1, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_cached_nc1"));
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_b_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_b_cost_ref,"PolytopeT_intersectCoord_cached_b_ref"));
+      pc_stack().add((void*)PolytopeT_intersectCoord_vectorized, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_vectorized"));
       pc_stack().add((void*)PolytopeT_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_cost_ref,"PolytopeT_cacheUpdateCoord_ref"));
       pc_stack().add((void*)PolytopeT_cacheUpdateCoord_b_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_b_cost_ref,"PolytopeT_cacheUpdateCoord_b_ref"));
       pc_stack().add((void*)PolytopeT_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset_cost_ref,"PolytopeT_cacheReset_ref"));
@@ -90,8 +91,11 @@ public:
       pc_stack().add((void *) PolytopeCSC_mvm, new PC_Cost_Wrapper<mvm_cost_f>(PolytopeCSC_mvm_cost, "PolytopeCSC_mvm_cost"));
       pc_stack().add((void *) PolytopeCSC_intersectCoord_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeCSC_intersectCoord_cost_ref, "PolytopeCSC_intersectCoord_cost_ref"));
       pc_stack().add((void *) PolytopeCSC_intersectCoord_cached_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeCSC_intersectCoord_cached_cost_ref, "PolytopeCSC_intersectCoord_cached_cost_ref"));
+      pc_stack().add((void *) PolytopeCSC_intersectCoord_cached_withb, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeCSC_intersectCoord_cached_cost_withb, "PolytopeCSC_intersectCoord_cached_cost_withb"));
       pc_stack().add((void *) PolytopeCSC_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeCSC_cacheReset_cost_ref, "PolytopeCSC_cacheReset_cost_ref"));
+      pc_stack().add((void *) PolytopeCSC_cacheReset_withb, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeCSC_cacheReset_cost_withb, "PolytopeCSC_cacheReset_cost_withb"));
       pc_stack().add((void *) PolytopeCSC_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeCSC_cacheUpdateCoord_cost_ref, "PolytopeCSC_cacheUpdateCoord_ref"));
+      pc_stack().add((void *) PolytopeCSC_cacheUpdateCoord_withb, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeCSC_cacheUpdateCoord_cost_withb, "PolytopeCSC_cacheUpdateCoord_withb"));
 
        
       // PolytopeJIT
@@ -144,12 +148,20 @@ public:
                         {"cached_nc1",        {{PolytopeT_intersectCoord_cached_nc1, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache, no condition - failed though"}},
                         {"cached_b_ref",        {{PolytopeT_intersectCoord_cached_b_ref, {PolytopeT_cacheReset_b_ref,PolytopeT_cacheUpdateCoord_b_ref}}, "with cache, b in cache (ref)"}},
 		       	}));
+      add(new CLIF_Option<intersectCoord_f_t>(&PolytopeT_T.intersectCoord,'f',"PolytopeT_intersectCoord","cached_ref", {
+                                                     {"ref",        {PolytopeT_intersectCoord_ref, "no cache (ref)"}},
+						     {"cached_nc1", {PolytopeT_intersectCoord_cached_nc1, "with cache, nc1."}},
+                       {"cached_vectorized", {PolytopeT_intersectCoord_vectorized, "with cache and vectorized"}},
+						     {"cached_ref", {PolytopeT_intersectCoord_cached_ref,"with cache (ref)"}} }));
 
-      add(new CLIF_Option<intersectCoord_f_t>
-          (&PolytopeCSC_T.intersectCoord, 'f', "PolytopeCSC_intersectCoord", "ref",
+      add(new CLIF_TrippleOption<intersectCoord_f_t, cacheReset_f_t, cacheUpdateCoord_f_t>
+          (&PolytopeCSC_T.intersectCoord, &PolytopeCSC_T.cacheReset, &PolytopeCSC_T.cacheUpdateCoord,
+           'f', "PolytopeCSC_intersectCoord", "cached_b_ref",
            {
-            {"ref", {PolytopeCSC_intersectCoord_ref, "no cche (ref)"}},
-            {"cached_ref", {PolytopeCSC_intersectCoord_cached_ref, "with cache (ref)"}}
+            {"ref", {{PolytopeCSC_intersectCoord_ref, {PolytopeCSC_cacheReset_ref, PolytopeCSC_cacheUpdateCoord_ref}}, "no cche (ref)"}},
+            {"cached_ref", {{PolytopeCSC_intersectCoord_cached_ref, {PolytopeCSC_cacheReset_ref, PolytopeCSC_cacheUpdateCoord_ref}}, "with cache (ref)"}},
+            {"cached_b_ref", {{PolytopeCSC_intersectCoord_cached_withb, {PolytopeCSC_cacheReset_withb, PolytopeCSC_cacheUpdateCoord_withb}}, "with cache, b in cache"}},
+            {"cached_b_vec", {{PolytopeCSC_intersectCoord_cached_vec, {PolytopeCSC_cacheReset_withb, PolytopeCSC_cacheUpdateCoord_withb}}, "vectorized, with cache, b in cache"}},
            }));
 
       add(new CLIF_Option<intersectCoord_f_t>(&PolytopeJIT_T.intersectCoord,'f',"PolytopeJIT_intersectCoord","ref", {

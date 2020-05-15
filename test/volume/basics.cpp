@@ -376,11 +376,15 @@ int main(int argc, char** argv) {
    }
 
 
-   auto oCSC = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeCSC_intersectCoord"));
+   auto oCSC = dynamic_cast<CLIF_TrippleOption<intersectCoord_f_t, cacheReset_f_t, cacheUpdateCoord_f_t>*>(cliFun.getOption("PolytopeCSC_intersectCoord"));
    for (auto it : oCSC->fmap){
+       
        // test PolytopeCSC
+       PolytopeCSC_T.intersectCoord = it.second.first.first;
+       PolytopeCSC_T.cacheReset = it.second.first.second.first;
+       PolytopeCSC_T.cacheUpdateCoord = it.second.first.second.second;
+       
        std::cout << "Test PolytopeCSC for intersectCoord " << it.first << " - " << it.second.second << std::endl;
-       PolytopeCSC_T.intersectCoord = it.second.first;
 
        // Generate new polytope box, n dim, 2 radius
        for(int n=4;n<20;n++) {

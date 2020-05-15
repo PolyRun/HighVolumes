@@ -47,7 +47,9 @@ void PolytopeCSC_intersectCoord_ref(const void *o, const FT *x, const int d, FT 
 
 int PolytopeCSC_cacheAlloc_ref(const void *o);
 void PolytopeCSC_cacheReset_ref(const void *o, const FT *x, void *cache);
+void PolytopeCSC_cacheReset_withb(const void *o, const FT *x, void *cache);
 void PolytopeCSC_cacheUpdateCoord_ref(const void *o, const int d, const FT dx, void *cache);
+void PolytopeCSC_cacheUpdateCoord_withb(const void *o, const int d, const FT dx, void *cache);
 
 bool PolytopeCSC_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT* c);
 
