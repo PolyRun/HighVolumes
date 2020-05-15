@@ -34,7 +34,7 @@ double prng_get_random_double_normal() {
     const double lnu = log(u);
     const double twopiv = 2.0*M_PI*v;
     const double x = sqrt(-2.0*lnu) * cos(twopiv);
-    const double y = sqrt(-2.0*lnu) * sin(twopiv); // wasted
+    // const double y = sqrt(-2.0*lnu) * sin(twopiv); // wasted
     return x;
 }
 
