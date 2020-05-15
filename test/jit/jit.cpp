@@ -358,6 +358,15 @@ int main() {
       assert(res == dd);
    }
 
+   {
+      std::cout << "CODE GEN EXPERIMENT:\n";
+      
+      for(int i=0;i<16;i++) {
+         jit_clear();
+         jit_immediate_via_rax(0.1,i);
+	 jit_print();
+      }
+   }
    // -------------------------------- end tests
 
    #ifdef NDEBUG

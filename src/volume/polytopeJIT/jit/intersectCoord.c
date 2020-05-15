@@ -62,18 +62,8 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    // ------------------------------------------- initialize t00,t11
    double t00 = -FT_MAX;
    double t11 = FT_MAX;
-   //movabs $0xff00ff00ff00ff00,%rax
-   {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
-   jit_push((const uint8_t*)&t00,8);
-   // c4 e1 f9 6e c0       	vmovq  %rax,%xmm0
-   {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xc0}; jit_push(instr,5);}
-
-   //movabs $0xff00ff00ff00ff00,%rax
-   {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
-   jit_push((const uint8_t*)&t11,8);
-   // c4 e1 f9 6e c8       	vmovq  %rax,%xmm1
-   {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xc8}; jit_push(instr,5);}
-
+   jit_immediate_via_rax(t00,0);
+   jit_immediate_via_rax(t11,1);
 
    // ------------------------------------------ switch case head
    assert(p->n < 256 && "if this asserts, then extend for n larger!");
@@ -123,13 +113,9 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
 	 if(aij != 0.0) { // TODO: make epsilon
 	 
 	    // d*a = aij
-	    //movabs $0xff00ff00ff00ff00,%rax
-            {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
             double aijInv = 1.0/aij;
-	    jit_push((const uint8_t*)&aijInv,8);
-            // c4 e1 f9 6e e0       	vmovq  %rax,%xmm4
-            {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xe0}; jit_push(instr,5);}
-	    
+            jit_immediate_via_rax(aijInv,4);
+
 	    //printf("A j:%d i:%d a:%f aInv:%f bj:%f\n",j,i,aij, aijInv,bj);
 
             ///  if(j==4) {

@@ -172,5 +172,22 @@ vfmsub213sd 0x100(%rsi),%xmm0,%xmm4
 vperm2f128 $8,%ymm0,%ymm1,%ymm2
 
 
+vmovq %rax,%xmm0
+vmovq %rax,%xmm1
+vmovq %rax,%xmm2
+vmovq %rax,%xmm3
+vmovq %rax,%xmm4
+vmovq %rax,%xmm5
+vmovq %rax,%xmm6
+vmovq %rax,%xmm7
+vmovq %rax,%xmm8
+vmovq %rax,%xmm9
+vmovq %rax,%xmm10
+vmovq %rax,%xmm11
+vmovq %rax,%xmm12
+vmovq %rax,%xmm13
+vmovq %rax,%xmm14
+vmovq %rax,%xmm15
+
 
 

@@ -80,3 +80,33 @@ void jit_clear() {
    jit_MemoryPages* p = jit_memoryPages();
    p->head = 0;
 }
+
+void jit_immediate_via_rax(const double val, const int xmm) {
+   //movabs $0xff00ff00ff00ff00,%rax
+   {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
+   jit_push((const uint8_t*)&val,8);
+   // c4 e1 f9 6e c0       	vmovq  %rax,%xmm0
+   // c4 e1 f9 6e c8       	vmovq  %rax,%xmm1
+   // c4 e1 f9 6e d0       	vmovq  %rax,%xmm2
+   // c4 e1 f9 6e d8       	vmovq  %rax,%xmm3
+   // c4 e1 f9 6e e0       	vmovq  %rax,%xmm4
+   // c4 e1 f9 6e e8       	vmovq  %rax,%xmm5
+   // c4 e1 f9 6e f0       	vmovq  %rax,%xmm6
+   // c4 e1 f9 6e f8       	vmovq  %rax,%xmm7
+   // c4 61 f9 6e c0       	vmovq  %rax,%xmm8
+   // c4 61 f9 6e c8       	vmovq  %rax,%xmm9
+   // c4 61 f9 6e d0       	vmovq  %rax,%xmm10
+   // c4 61 f9 6e d8       	vmovq  %rax,%xmm11
+   // c4 61 f9 6e e0       	vmovq  %rax,%xmm12
+   // c4 61 f9 6e e8       	vmovq  %rax,%xmm13
+   // c4 61 f9 6e f0       	vmovq  %rax,%xmm14
+   // c4 61 f9 6e f8       	vmovq  %rax,%xmm15
+
+   assert(xmm < 16 && xmm >= 0);
+   uint8_t b2 = 0xe1;
+   if(xmm > 7) {b2 = 0x61;}
+   uint8_t b5 = 0xc0 + (xmm % 8)*8;
+   {const uint8_t instr[] = {0xc4,b2,0xf9,0x6e,b5}; jit_push(instr,5);}
+}
+
+

@@ -86,14 +86,8 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
       for(int j=0;j<p->m;j++) {
          FT aij = Polytope_get_a(p,j,i);
 	 if(aij != 0.0) {
-	 
-	    //movabs $0xff00ff00ff00ff00,%rax
-            {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
-	    FT minus_aij = - aij;
-	    jit_push((const uint8_t*)&minus_aij,8);
-            // c4 e1 f9 6e e0       	vmovq  %rax,%xmm4
-            {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xe0}; jit_push(instr,5);}
-            
+            jit_immediate_via_rax(-aij,4);
+
 	    // goal:
 	    // fmadd: cachej += xmm4 * xmm0
 	    //
