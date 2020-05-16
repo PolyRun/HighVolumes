@@ -266,6 +266,55 @@ void jit_permilpd(uint8_t imm, int src, int dst) {
    { uint8_t instr[] = {0xc4,b2,0x7d,0x05,b5,imm}; jit_push(instr,6); }
 }
 
+void jit_loadu_16(jit_Register reg, uint32_t idx, int dst) {
+   // c5 f9 28 80 00 01 00 	vmovapd 0x100(%rax),%xmm0
+   // c5 f9 28 88 00 01 00 	vmovapd 0x100(%rax),%xmm1
+   // c5 f9 28 90 00 01 00 	vmovapd 0x100(%rax),%xmm2
+   // c5 f9 28 98 00 01 00 	vmovapd 0x100(%rax),%xmm3
+   // c5 f9 28 a0 00 01 00 	vmovapd 0x100(%rax),%xmm4
+   // c5 f9 28 a8 00 01 00 	vmovapd 0x100(%rax),%xmm5
+   // c5 f9 28 b0 00 01 00 	vmovapd 0x100(%rax),%xmm6
+   // c5 f9 28 b8 00 01 00 	vmovapd 0x100(%rax),%xmm7
+   // c5 79 28 80 00 01 00 	vmovapd 0x100(%rax),%xmm8
+   // c5 79 28 88 00 01 00 	vmovapd 0x100(%rax),%xmm9
+   // c5 79 28 90 00 01 00 	vmovapd 0x100(%rax),%xmm10
+   // c5 79 28 98 00 01 00 	vmovapd 0x100(%rax),%xmm11
+   // c5 79 28 a0 00 01 00 	vmovapd 0x100(%rax),%xmm12
+   // c5 79 28 a8 00 01 00 	vmovapd 0x100(%rax),%xmm13
+   // c5 79 28 b0 00 01 00 	vmovapd 0x100(%rax),%xmm14
+   // c5 79 28 b8 00 01 00 	vmovapd 0x100(%rax),%xmm15
+   uint8_t b2 = 0xf9;
+   if(dst >= 8) {b2-=0x80;}
+   uint8_t b4 = (dst%8)*8;
+   switch(reg) {
+      case jit_rax: {b4+=0x80;break;}
+      case jit_rcx: {b4+=0x81;break;}
+      case jit_rdx: {b4+=0x82;break;}
+      case jit_rbx: {b4+=0x83;break;}
+      case jit_rsi: {b4+=0x86;break;}
+      case jit_rdi: {b4+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   // replace b3 with 0x28 to get aligned read
+   // c5 f9 10 80 00 01 00 	vmovupd 0x100(%rax),%xmm0
+   { uint8_t instr[] = {0xc5,b2,0x10,b4}; jit_push(instr,4); }
+   jit_push((const uint8_t*)&idx,4);
+}
+
+void jit_vmulpd_xmm(int src1, int src2, int dst) {
+   // c5 f9 59 c0          	vmulpd %xmm0,%xmm0,%xmm0
+   uint8_t b2 = 0xf9 - src2*8;
+   uint8_t b4 = 0xc0 + (src1%8)*1 + (dst%8)*8;
+   if(dst >= 8) {b2-=0x80;}
+   uint8_t bx = 0xc1;
+   if(dst >= 8 && src1 >= 8) {bx-=0x80;}
+   if(src1 < 8) {
+      { uint8_t instr[] = {0xc5,b2,0x59,b4}; jit_push(instr,4); }
+   } else {
+      b2-=0x80;
+      { uint8_t instr[] = {0xc4,bx,b2,0x59,b4}; jit_push(instr,5); }
+   }
+}
 
 void jit_emit_return() {
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }

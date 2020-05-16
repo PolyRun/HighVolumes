@@ -47,6 +47,16 @@ void jit_clear();
 // ---------------------------------- op generators
 void jit_immediate_via_rax(const double val, const int reg);
 
+// ------------------- registers
+typedef enum jit_Register {
+   jit_rdi,// arg 1
+   jit_rsi,// arg 2
+   jit_rdx,// arg 3
+   jit_rcx,// arg 4
+   jit_rax,
+   jit_rbx,
+} jit_Register;
+
 // -------------------------------------- table 8
 // table: 1 double
 typedef struct jit_Table_8 {
@@ -88,6 +98,9 @@ jit_Table_16* jit_immediate_16_via_data(const double val0, const double val1, co
 void jit_table_16_consume(jit_Table_16* t);
 
 void jit_permilpd(uint8_t imm, int src, int dst);
+
+void jit_loadu_16(jit_Register reg, uint32_t idx, int dst);
+void jit_vmulpd_xmm(int src1, int src2, int dst);
 
 void jit_emit_return();
 

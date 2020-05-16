@@ -429,6 +429,82 @@ int main() {
 	 assert(res == 5.0);
 	 std::cout << "res: " << res << std::endl;
       }
+      std::cout << "loadu_16 - rdi:\n";
+      for(int i=0;i<16;i++){
+         jit_clear();
+         double (*func2)(double*);
+         func2 = (double (*)(double*)) jit_head();
+         jit_loadu_16(jit_rdi,8,i);
+         jit_permilpd(0b0101, i,0);
+	 jit_emit_return();
+	 jit_print();
+         double xyz[] = {1.0,2.0,3.0,4.0,5.0};
+	 double res = func2((double*)&xyz);
+	 assert(res == 3.0);
+	 std::cout << "res: " << res << std::endl;
+      }
+      std::cout << "loadu_16 - rsi:\n";
+      for(int i=0;i<16;i++){
+         jit_clear();
+         double (*func2)(double*,double*);
+         func2 = (double (*)(double*,double*)) jit_head();
+         jit_loadu_16(jit_rsi,8,i);
+         jit_permilpd(0b0101, i,0);
+	 jit_emit_return();
+	 jit_print();
+         double xyz[] = {1.0,2.0,3.0,4.0,5.0};
+	 double res = func2(NULL,(double*)&xyz);
+	 assert(res == 3.0);
+	 std::cout << "res: " << res << std::endl;
+      }
+      std::cout << "loadu_16 - rdx:\n";
+      for(int i=0;i<16;i++){
+         jit_clear();
+         double (*func2)(int,int,double*);
+         func2 = (double (*)(int,int,double*)) jit_head();
+         jit_loadu_16(jit_rdx,8,i);
+         jit_permilpd(0b0101, i,0);
+	 jit_emit_return();
+	 jit_print();
+         double xyz[] = {1.0,2.0,3.0,4.0,5.0};
+	 double res = func2(0,0,(double*)&xyz);
+	 assert(res == 3.0);
+	 std::cout << "res: " << res << std::endl;
+      }
+      std::cout << "loadu_16 - rcx:\n";
+      for(int i=0;i<16;i++){
+         jit_clear();
+         double (*func2)(int,int,int,double*);
+         func2 = (double (*)(int,int,int,double*)) jit_head();
+         jit_loadu_16(jit_rcx,8,i);
+         jit_permilpd(0b0101, i,0);
+	 jit_emit_return();
+	 jit_print();
+         double xyz[] = {1.0,2.0,3.0,4.0,5.0};
+	 double res = func2(0,0,0,(double*)&xyz);
+	 assert(res == 3.0);
+	 std::cout << "res: " << res << std::endl;
+      }
+      
+      for(int i=2;i<16;i++) {
+         for(int j=2;j<16;j++) {
+            for(int k=2;k<16;k++) {
+               if(i==j) {continue;}
+	       jit_clear();
+	       std::cout << i << " " << j << " " << k <<"\n";
+               double (*func2)(double,double);
+               func2 = (double (*)(double,double)) jit_head();
+               jit_permilpd(0b1010, 0,i);
+               jit_permilpd(0b1010, 1,j);
+	       jit_vmulpd_xmm(i,j,k);
+               jit_permilpd(0b1010, k,0);
+	       jit_emit_return();
+	       jit_print();
+	       double res = func2(3.0,7.0);
+	       assert(res == 21.0);
+	    }
+	 }
+      }
    }
    // -------------------------------- end tests
 

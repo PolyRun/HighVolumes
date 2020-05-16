@@ -87,6 +87,70 @@ void Pjit_intersectCoord_init_double(jit_Table_16** t16) {
    *t16 = jit_immediate_16_via_data(t11,t11,1,*t16);
 }
 
+void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_16** t16) {
+   // find all pairs in column i:
+   int pairs_max[p->m]; int pairs_max_i = 0;
+   int pairs_min[p->m]; int pairs_min_i = 0;
+
+   int state = 0;
+   // 0: free
+   // 1: last was max pair - want to join?
+   // 2: last was min pair - want to join?
+
+   for(int j=0;j<p->m;j++) {
+      FT aij = Polytope_get_a(p,j,i);
+      if(aij != 0.0) { // TODO: make epsilon
+         if(aij < 0.0) {
+	    // max
+	    if(state==0) {
+	       pairs_max[pairs_max_i++] = j;
+	       state = 1;
+	    } else if(state==1) {
+	       state = 0;// join
+	    } else {
+	       pairs_max[pairs_max_i++] = j;
+	       state = 1;
+	    }
+	 } else {
+            // min
+	    if(state==0) {
+	       pairs_min[pairs_min_i++] = j;
+	       state = 2;
+	    } else if(state==1) {
+	       pairs_min[pairs_min_i++] = j;
+	       state = 2;
+	    } else {
+	       state = 0;// join
+	    }
+	 }
+      } else {
+         state = 0;// no pair left in next
+      }
+   }
+   printf("column %d has %d and %d\n",i,pairs_max_i,pairs_min_i);
+
+   // for now: just a single acc strategy:
+   int j = 0;
+   while(j < pairs_max_i || j < pairs_min_i) {
+      if(j < pairs_max_i) {
+         int jj = pairs_max[j];
+	 double a0 = Polytope_get_a(p,jj+0,i);
+	 double a1 = Polytope_get_a(p,jj+1,i);
+	 if(a1 >= 0) {a1 = -1.0/FT_MAX;}// make impotent
+         
+	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,4,*t16);
+         
+	 uint32_t cachej = 8*j;
+	 jit_loadu_16(jit_rcx,cachej,3);
+         jit_vmulpd_xmm(4,3,2);
+	 // TODO ops
+      }
+      // TODO min case
+
+      j++;
+   }
+}
+
 void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) {
    //jit_print();
    
@@ -218,7 +282,7 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
             break;
          }
          case pjit_double_data: {
-            Pjit_intersectCoord_body_single(p,i,false,&t8);// TODO implement!
+            Pjit_intersectCoord_body_double(p,i,&t16);// TODO implement!
             break;
          }
 	 default: {
