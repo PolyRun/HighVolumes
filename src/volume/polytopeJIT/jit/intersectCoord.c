@@ -127,7 +127,7 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
          state = 0;// no pair left in next
       }
    }
-   printf("column %d has %d and %d\n",i,pairs_max_i,pairs_min_i);
+   //printf("column %d has %d and %d\n",i,pairs_max_i,pairs_min_i);
 
    // for now: just a single acc strategy:
    int j = 0;
@@ -136,19 +136,40 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
          int jj = pairs_max[j];
 	 double a0 = Polytope_get_a(p,jj+0,i);
 	 double a1 = Polytope_get_a(p,jj+1,i);
-	 if(a1 >= 0) {a1 = -1.0/FT_MAX;}// make impotent
+	 if(a1 >= 0 || jj+1 >= p->m) {a1 = -1.0/FT_MAX;}// make impotent
+	 
+	 //printf("max block at: %d %d %f %f\n",i,jj,a0,a1);
          
 	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,4,*t16);
          
-	 uint32_t cachej = 8*j;
+	 uint32_t cachej = 8*jj;
 	 jit_loadu_16(jit_rcx,cachej,3);
          jit_vmulpd_xmm(4,3,2);
-	 // TODO ops
+	 jit_vmaxpd_xmm(0,2,0);
       }
-      // TODO min case
+      if(j < pairs_min_i) {
+         int jj = pairs_min[j];
+	 double a0 = Polytope_get_a(p,jj+0,i);
+	 double a1 = Polytope_get_a(p,jj+1,i);
+	 if(a1 <= 0 || jj+1 >= p->m) {a1 = 1.0/FT_MAX;}// make impotent
+	 
+	 //printf("min block at: %d %d %f %f\n",i,jj,a0,a1);
+         
+	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,4,*t16);
+         
+	 uint32_t cachej = 8*jj;
+	 jit_loadu_16(jit_rcx,cachej,3);
+         jit_vmulpd_xmm(4,3,2);
+	 jit_vminpd_xmm(1,2,1);
+      }
 
       j++;
    }
+   
+   jit_permilpd(0b0101,0,2);
+   jit_permilpd(0b0101,1,3);
+   jit_vmaxpd_xmm(2,0,0);
+   jit_vminpd_xmm(3,1,1);
 }
 
 void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) {

@@ -436,8 +436,9 @@ int main(int argc, char** argv) {
        for(int n=4;n<20;n++) {
 	  std::cout << "test for n="<<n<<"\n";
           Polytope* boxx = Polytope_new_box(n,2);
+	  //Polytope_T.print(boxx);
           PolytopeJIT *box = Polytope_to_PolytopeJIT(boxx);
-          
+
           test_box_inside(n, &PolytopeJIT_T, box);
           test_box_intersect(n, &PolytopeJIT_T, box);
           test_box_intersectCoord(n, &PolytopeJIT_T, box);
@@ -451,7 +452,8 @@ int main(int argc, char** argv) {
          std::cout << "test rot cube for n="<<n<<"\n";
          Solved_Body* s = generate_centered_hypercube(n,1.0);
          Solved_Body* sb = s->rotate();
-         sb->polytopeJIT();
+         //sb->print();
+	 sb->polytopeJIT();
          
          assert(sb->type[0] == &PolytopeJIT_T);
          test_body_intersectCoord_cached(n,sb->type[0],sb->body[0]);
