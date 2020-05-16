@@ -333,6 +333,34 @@ void jit_vminpd_xmm(int src1, int src2, int dst) {
    jit_vOPpd_xmm(0x5d,src1,src2,dst);
 }
 
+void jit_vOPpd_mem_xmm(uint8_t op, jit_Register reg, uint32_t idx, int src2, int dst) {
+   // c5 f9 59 c0          	vmulpd %xmm0,%xmm0,%xmm0
+   // c5 f9 59 80 00 01 00 	vmulpd 0x100(%rax),%xmm0,%xmm0
+   uint8_t b2 = 0xf9 - src2*8;
+   uint8_t b4 = (dst%8)*8;
+   if(dst >= 8) {b2-=0x80;}
+   
+   switch(reg) {
+      case jit_rax: {b4+=0x80;break;}
+      case jit_rcx: {b4+=0x81;break;}
+      case jit_rdx: {b4+=0x82;break;}
+      case jit_rbx: {b4+=0x83;break;}
+      case jit_rsi: {b4+=0x86;break;}
+      case jit_rdi: {b4+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   
+   { uint8_t instr[] = {0xc5,b2,op,b4}; jit_push(instr,4); }
+   jit_push((const uint8_t*)&idx,4);
+}
+
+
+
+void jit_vmulpd_mem_xmm(jit_Register reg, uint32_t idx, int src2, int dst) {
+   // c5 f9 59 80 00 01 00 	vmulpd 0x100(%rax),%xmm0,%xmm0
+   jit_vOPpd_mem_xmm(0x59,reg,idx,src2,dst);
+}
+
 void jit_vOPpd_ymm(uint8_t op, int src1, int src2, int dst) {
    // c5 f9 59 c0          	vmulpd %xmm0,%xmm0,%xmm0
    uint8_t b2 = 0xfd - src2*8;

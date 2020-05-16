@@ -143,8 +143,9 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
 	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,4,*t16);
          
 	 uint32_t cachej = 8*jj;
-	 jit_loadu_xmm(jit_rcx,cachej,3);
-         jit_vmulpd_xmm(4,3,2);
+	 //jit_loadu_xmm(jit_rcx,cachej,3);
+         //jit_vmulpd_xmm(4,3,2);
+	 jit_vmulpd_mem_xmm(jit_rcx,cachej,4,2);
 	 jit_vmaxpd_xmm(0,2,0);
       }
       if(j < pairs_min_i) {
@@ -158,8 +159,9 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
 	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,6,*t16);
          
 	 uint32_t cachej = 8*jj;
-	 jit_loadu_xmm(jit_rcx,cachej,5);
-         jit_vmulpd_xmm(6,5,7);
+	 //jit_loadu_xmm(jit_rcx,cachej,5);
+         //jit_vmulpd_xmm(6,5,7);
+	 jit_vmulpd_mem_xmm(jit_rcx,cachej,6,7);
 	 jit_vminpd_xmm(1,7,1);
       }
 
@@ -171,6 +173,7 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
    jit_vmaxpd_xmm(2,0,0);
    jit_vminpd_xmm(3,1,1);
 }
+
 
 void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) {
    //jit_print();

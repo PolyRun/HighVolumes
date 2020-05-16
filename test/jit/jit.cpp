@@ -544,7 +544,50 @@ int main() {
 	 }
       }
 
+      std::cout << "mul_mem_xmm - rdi:\n";
+      for(int i=0;i<16;i++){
+         for(int j=0;j<16;j++){
+            jit_clear();
+            double (*func2)(double*);
+            func2 = (double (*)(double*)) jit_head();
 
+	    jit_Table_16* t16 = NULL;// empty list
+	    t16 = jit_immediate_16_via_data(4.0,5.0, i, t16);
+
+	    jit_vmulpd_mem_xmm(jit_rdi,8,i,j);
+            jit_permilpd(0b0101, j,0);
+	    jit_emit_return();
+            jit_table_16_consume(t16);
+	    jit_print();
+            double xyz[] = {1.0,2.0,3.0,4.0,5.0};
+	    double res = func2((double*)&xyz);
+	    assert(res == 15.0);
+	    std::cout << "res: " << res << std::endl;
+         }
+      }
+
+      std::cout << "mul_mem_xmm - rcx:\n";
+      for(int i=0;i<16;i++){
+         for(int j=0;j<16;j++){
+            jit_clear();
+            double (*func2)(int,int,int,double*);
+            func2 = (double (*)(int,int,int,double*)) jit_head();
+
+	    jit_Table_16* t16 = NULL;// empty list
+	    t16 = jit_immediate_16_via_data(4.0,5.0, i, t16);
+
+	    jit_vmulpd_mem_xmm(jit_rcx,8,i,j);
+            jit_permilpd(0b0101, j,0);
+	    jit_emit_return();
+            jit_table_16_consume(t16);
+	    jit_print();
+            double xyz[] = {1.0,2.0,3.0,4.0,5.0};
+	    double res = func2(0,0,0,(double*)&xyz);
+	    assert(res == 15.0);
+	    std::cout << "res: " << res << std::endl;
+         }
+      }
+ 
    }
    // -------------------------------- end tests
 

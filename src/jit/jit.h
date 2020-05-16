@@ -101,6 +101,7 @@ void jit_permilpd(uint8_t imm, int src, int dst);
 
 void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst);
 void jit_vmulpd_xmm(int src1, int src2, int dst);
+void jit_vmulpd_mem_xmm(jit_Register reg, uint32_t idx, int src2, int dst);
 void jit_vmaxpd_xmm(int src1, int src2, int dst);
 void jit_vminpd_xmm(int src1, int src2, int dst);
 

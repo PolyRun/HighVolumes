@@ -48,6 +48,33 @@ void intersect(const double* x, const double* d, double *t0, double *t1) {
    *t1 = t11;
 }
 
+void intersectCoord_2pack(const double*x,const double*y, double *t0, double*t1) {
+   __m128d t00 = _mm_set_pd(-1e10,-1e10);
+   
+   {
+      __m128d xx = _mm_loadu_pd(x+8);
+      __m128d yy = _mm_set_pd(0.1,2.0);
+      __m128d t = _mm_mul_pd(xx,yy);
+      t00 = _mm_max_pd(t00,t);
+   }
+   {
+      __m128d xx = _mm_loadu_pd(x+24);
+      __m128d yy = _mm_set_pd(3.3,2.8);
+      __m128d t = _mm_mul_pd(xx,yy);
+      t00 = _mm_max_pd(t00,t);
+   }
+   {
+      __m128d xx = _mm_loadu_pd(x+40);
+      __m128d yy = _mm_set_pd(2.1,7.9);
+      __m128d t = _mm_mul_pd(xx,yy);
+      t00 = _mm_max_pd(t00,t);
+   }
+   
+   __m128d t00tmp = _mm_permute_pd(t00,0b0101);
+   t00 = _mm_max_pd(t00,t00tmp);
+   *t0 = t00[0];
+}
+
 int main () {
    __m256d a = _mm256_set_pd(4.0, 3.0, 2.0, 1.0);
    __m256d b = _mm256_set_pd(4.0, 3.0, 2.0, 1.1);
