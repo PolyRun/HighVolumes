@@ -19,7 +19,7 @@ void Pjit_intersectCoord_body_single(const Polytope* p, const int i, const bool 
 	 if(useRax) {
             jit_immediate_via_rax(aijInv,4);
 	 } else {
-	    *t8 = jit_immediate_via_data(aijInv,4,*t8);
+	    *t8 = jit_immediate_8_via_data(aijInv,4,*t8);
 	 }
 
          //printf("A j:%d i:%d a:%f aInv:%f bj:%f\n",j,i,aij, aijInv,bj);
@@ -78,6 +78,13 @@ void Pjit_intersectCoord_body_single(const Polytope* p, const int i, const bool 
          }
       }
    }
+}
+
+void Pjit_intersectCoord_init_double(jit_Table_16** t16) {
+   double t00 = -FT_MAX;
+   double t11 = FT_MAX;
+   *t16 = jit_immediate_16_via_data(t00,t00,0,*t16);
+   *t16 = jit_immediate_16_via_data(t11,t11,1,*t16);
 }
 
 void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) {
@@ -141,11 +148,16 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    
    // --------------------- set up code facilities:
    jit_Table_8* t8 = NULL;
+   jit_Table_16* t16 = NULL;
 
    // ------------------------------------------- initialize t00,t11
    switch(PolytopeJIT_generator) {
       case pjit_single_rax: case pjit_single_data: {
          Pjit_intersectCoord_init_single();
+	 break;
+      }
+      case pjit_double_data: {
+         Pjit_intersectCoord_init_double(&t16);
 	 break;
       }
       default: {
@@ -205,6 +217,10 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
             Pjit_intersectCoord_body_single(p,i,false,&t8);
             break;
          }
+         case pjit_double_data: {
+            Pjit_intersectCoord_body_single(p,i,false,&t8);// TODO implement!
+            break;
+         }
 	 default: {
             assert(false && "missing gen code");
             break;
@@ -245,7 +261,8 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    o->intersectCoord_bytes = (void*)jit_head() - (void*)o->intersectCoord;
    
    // -------------------------------- finish up code facilities:
-   jit_table_consume(t8);
+   jit_table_8_consume(t8);
+   jit_table_16_consume(t16);
 
    //jit_print();
 }

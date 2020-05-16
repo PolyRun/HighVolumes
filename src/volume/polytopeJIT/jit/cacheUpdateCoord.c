@@ -9,7 +9,7 @@ void Pjit_cacheUpdateCoord_body_single(const Polytope* p, const int i, const boo
 	 if(useRax) {
             jit_immediate_via_rax(-aij,4);
 	 } else {
-	    *t8 = jit_immediate_via_data(-aij,4,*t8);
+	    *t8 = jit_immediate_8_via_data(-aij,4,*t8);
 	 }
 
          // goal:
@@ -125,6 +125,10 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
             Pjit_cacheUpdateCoord_body_single(p,i,false,&t8);
             break;
          }
+         case pjit_double_data: {
+            Pjit_cacheUpdateCoord_body_single(p,i,false,&t8);
+            break;
+         }
 	 default: {
             assert(false && "missing gen code");
             break;
@@ -147,7 +151,7 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
    o->cacheUpdateCoord_bytes = (void*)jit_head() - (void*)o->cacheUpdateCoord;
 
    // -------------------------------- finish up code facilities:
-   jit_table_consume(t8);
+   jit_table_8_consume(t8);
 
    //jit_print();
 }

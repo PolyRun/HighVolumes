@@ -163,6 +163,7 @@ public:
       add(new CLIF_Option<PolytopeJIT_Generator>(&PolytopeJIT_generator,'f',"PolytopeJIT_generator","single_rax", {
 						     {"single_rax",        {pjit_single_rax,      "single aij at time, load via rax"}},
 						     {"single_data",       {pjit_single_data,     "single aij at time, load via data table"}},
+						     {"double_data",       {pjit_double_data,     "two aij at time (if possible), load via data table"}},
 						  }));
 
       add(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,'f',"Ellipsoid_intersectCoord","cached_ref", {

@@ -47,6 +47,7 @@ void jit_clear();
 // ---------------------------------- op generators
 void jit_immediate_via_rax(const double val, const int reg);
 
+// -------------------------------------- table 8
 // table: 1 double
 typedef struct jit_Table_8 {
    struct jit_Table_8* next; // linked list
@@ -60,11 +61,33 @@ jit_Table_8* jit_Table_8_prepend(jit_Table_8* old, uint8_t* bytes, uint8_t* src)
 
 // sets op down
 // prepends entry to table
-jit_Table_8* jit_immediate_via_data(const double val, const int xmm, jit_Table_8* t);
+jit_Table_8* jit_immediate_8_via_data(const double val, const int xmm, jit_Table_8* t);
 
 // consume and free table
 // write table in memory, go set up references to it
-void jit_table_consume(jit_Table_8* t);
+void jit_table_8_consume(jit_Table_8* t);
+
+// -------------------------------------- table 16
+// table: 1 double
+typedef struct jit_Table_16 {
+   struct jit_Table_16* next; // linked list
+   size_t children;  // number of children in list
+   uint8_t data[16]; // payload
+   uint8_t* src;     // end of instruction
+   // will write relative offset at src-4;
+} jit_Table_16;
+
+jit_Table_16* jit_Table_16_prepend(jit_Table_16* old, uint8_t* bytes, uint8_t* src);
+
+// sets op down
+// prepends entry to table
+jit_Table_16* jit_immediate_16_via_data(const double val0, const double val1, const int xmm, jit_Table_16* t);
+
+// consume and free table
+// write table in memory, go set up references to it
+void jit_table_16_consume(jit_Table_16* t);
+
+void jit_permilpd(uint8_t imm, int src, int dst);
 
 void jit_emit_return();
 

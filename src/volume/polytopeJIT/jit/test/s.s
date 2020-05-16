@@ -224,4 +224,15 @@ vxorpd %ymm14,%ymm14,%ymm14
 vxorpd %ymm15,%ymm15,%ymm15
 
 
+# 1 lat, 1 ipc
+# imm, b,a, dst -- 64bit within 128 boundaries
+vshufpd $0b10101010,%ymm3,%ymm2,%ymm1
+
+# 1,1
+# imm src dst
+vpermilpd $0b10101010,%ymm0,%ymm0
+
+
+
+
 

@@ -122,7 +122,7 @@ jit_Table_8* jit_Table_8_prepend(jit_Table_8* old, uint8_t* bytes, uint8_t* src)
    return t;
 }
 
-jit_Table_8* jit_immediate_via_data(const double val, const int xmm, jit_Table_8* t) {
+jit_Table_8* jit_immediate_8_via_data(const double val, const int xmm, jit_Table_8* t) {
    // c5 fb 10 05 xxxx  vmovsd 0x100(%rip),%xmm0
    // c5 fb 10 0d xxxx  vmovsd 0x100(%rip),%xmm1
    // c5 fb 10 15 xxxx  vmovsd 0x100(%rip),%xmm2
@@ -151,7 +151,7 @@ jit_Table_8* jit_immediate_via_data(const double val, const int xmm, jit_Table_8
    return jit_Table_8_prepend(t, (uint8_t*)&val, jit_head());
 }
 
-void jit_table_consume(jit_Table_8* t) {
+void jit_table_8_consume(jit_Table_8* t) {
    if(t==NULL) {return;}
 
    jit_allign(8);
@@ -177,6 +177,95 @@ void jit_table_consume(jit_Table_8* t) {
    }
    assert(i==0);
 }
+
+jit_Table_16* jit_Table_16_prepend(jit_Table_16* old, uint8_t* bytes, uint8_t* src) {
+   jit_Table_16* t = (jit_Table_16*)malloc(sizeof(jit_Table_16));
+   if(old) {
+      t->children = old->children+1;
+   } else {
+      t->children = 0;
+   }
+   t->next = old;
+   t->src = src;
+   for(int i=0;i<16;i++) {t->data[i] = bytes[i];}
+   return t;
+}
+
+jit_Table_16* jit_immediate_16_via_data(const double val0, const double val1, const int xmm, jit_Table_16* t) {
+   // for 64 bytes:
+   // c5 fd 28 05 00 01 00 	vmovapd 0x100(%rip),%ymm0        # 0x788
+   // c5 fd 28 0d 00 01 00 	vmovapd 0x100(%rip),%ymm1        # 0x790
+   // c5 fd 28 15 00 01 00 	vmovapd 0x100(%rip),%ymm2        # 0x798
+   // c5 fd 28 1d 00 01 00 	vmovapd 0x100(%rip),%ymm3        # 0x7a0
+   // c5 fd 28 25 00 01 00 	vmovapd 0x100(%rip),%ymm4        # 0x7a8
+   // c5 fd 28 2d 00 01 00 	vmovapd 0x100(%rip),%ymm5        # 0x7b0
+   // c5 fd 28 35 00 01 00 	vmovapd 0x100(%rip),%ymm6        # 0x7b8
+   // c5 fd 28 3d 00 01 00 	vmovapd 0x100(%rip),%ymm7        # 0x7c0
+   // c5 7d 28 05 00 01 00 	vmovapd 0x100(%rip),%ymm8        # 0x7c8
+   // c5 7d 28 0d 00 01 00 	vmovapd 0x100(%rip),%ymm9        # 0x7d0
+   // c5 7d 28 15 00 01 00 	vmovapd 0x100(%rip),%ymm10        # 0x7d8
+   // c5 7d 28 1d 00 01 00 	vmovapd 0x100(%rip),%ymm11        # 0x7e0
+   // c5 7d 28 25 00 01 00 	vmovapd 0x100(%rip),%ymm12        # 0x7e8
+   // c5 7d 28 2d 00 01 00 	vmovapd 0x100(%rip),%ymm13        # 0x7f0
+   // c5 7d 28 35 00 01 00 	vmovapd 0x100(%rip),%ymm14        # 0x7f8
+   // c5 7d 28 3d 00 01 00 	vmovapd 0x100(%rip),%ymm15        # 0x800
+
+   uint8_t b2 = 0xf9;
+   if(xmm>7) {b2 = 0x79;}
+   uint8_t b4 = 0x05 + (xmm % 8)*8;
+   {const uint8_t instr[] = {0xc5,b2,0x28,b4}; jit_push(instr,4);}
+   // 32 bytes for the offset address
+   {const uint8_t instr[] = {0xff,0xff,0xff,0xff}; jit_push(instr,4);}
+   //{const uint8_t instr[] = {0,0,0,0}; jit_push(instr,4);}
+   double val[2] = {val0,val1};
+   return jit_Table_16_prepend(t, (uint8_t*)&val, jit_head());
+}
+
+void jit_table_16_consume(jit_Table_16* t) {
+   if(t==NULL) {return;}
+
+   jit_allign(16);
+   int n = t->children+1;
+   
+   uint8_t* top = jit_head();
+   double test1 = 1.0101010101;
+   double test2 = 2.0202020202;
+   for(uint64_t i=0;i<n;i++) {// make space
+      jit_push((const uint8_t*)&test1,8);
+      jit_push((const uint8_t*)&test2,8);
+   }
+   
+   int i = n; // write them in in reverse order, as list is prepend only
+   while(t!=NULL) {
+      i--;
+      uint8_t* index = top+16*i;
+      uint32_t offset = index - t->src;
+      jit_write(t->src-4, (uint8_t*)&offset,4);
+      jit_write(index, t->data, 16);
+
+      jit_Table_16* next = t->next;
+      free(t);
+      t = next;
+   }
+   assert(i==0);
+}
+
+void jit_permilpd(uint8_t imm, int src, int dst) {
+   assert(imm<16);
+   uint8_t b2 = 0xe3;
+   if(src < 8 && dst < 8) {
+      b2 = 0xe3;
+   } else if(src < 8 && dst >= 8) {
+      b2 = 0x63;
+   } else if(src >= 8 && dst < 8) {
+      b2 = 0xc3;
+   } else if(src >= 8 && dst >= 8) {
+      b2 = 0x43;
+   }
+   uint8_t b5 = 0xc0 + (dst%8)*8 + (src%8)*1;
+   { uint8_t instr[] = {0xc4,b2,0x7d,0x05,b5,imm}; jit_push(instr,6); }
+}
+
 
 void jit_emit_return() {
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }

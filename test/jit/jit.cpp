@@ -384,13 +384,49 @@ int main() {
 
 	 jit_Table_8* t = NULL;// empty list
 	 for(int i=0;i<16;i++) {
-	    t = jit_immediate_via_data(1.0 + i*0.1, i, t);
+	    t = jit_immediate_8_via_data(1.0 + i*0.1, i, t);
 	 }
-	 t = jit_immediate_via_data(5.123, 0, t);
+	 t = jit_immediate_8_via_data(5.123, 0, t);
 	 jit_emit_return();
-         jit_table_consume(t);
+         jit_table_8_consume(t);
 	 double res = func2();
 	 assert(res == 5.123);
+	 std::cout << "res: " << res << std::endl;
+      }
+      std::cout << "immediate_16_via_data:\n";
+      {
+         jit_clear();
+         double (*func2)();
+         func2 = (double (*)()) jit_head();
+
+	 jit_Table_16* t16 = NULL;// empty list
+	 for(int i=0;i<16;i++) {
+	    t16 = jit_immediate_16_via_data(4.0,5.0, i, t16);
+            jit_permilpd(0b1111, i,i);
+	 }
+	 jit_emit_return();
+         jit_table_16_consume(t16);
+	 jit_print();
+	 double res = func2();
+	 assert(res == 5.0);
+	 std::cout << "res: " << res << std::endl;
+      }
+      std::cout << "permilpd:\n";
+      {
+         jit_clear();
+         double (*func2)();
+         func2 = (double (*)()) jit_head();
+
+	 jit_Table_16* t16 = NULL;// empty list
+	 t16 = jit_immediate_16_via_data(4.0,5.0, 13, t16);
+	 for(int i=12;i>=0;i--) {
+            jit_permilpd((i%2)?0b10:0b01, i+1,i);
+	 }
+	 jit_emit_return();
+         jit_table_16_consume(t16);
+	 jit_print();
+	 double res = func2();
+	 assert(res == 5.0);
 	 std::cout << "res: " << res << std::endl;
       }
    }
