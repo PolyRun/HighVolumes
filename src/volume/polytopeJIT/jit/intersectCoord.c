@@ -143,7 +143,7 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
 	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,4,*t16);
          
 	 uint32_t cachej = 8*jj;
-	 jit_loadu_16(jit_rcx,cachej,3);
+	 jit_loadu_xmm(jit_rcx,cachej,3);
          jit_vmulpd_xmm(4,3,2);
 	 jit_vmaxpd_xmm(0,2,0);
       }
@@ -155,12 +155,12 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
 	 
 	 //printf("min block at: %d %d %f %f\n",i,jj,a0,a1);
          
-	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,4,*t16);
+	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,6,*t16);
          
 	 uint32_t cachej = 8*jj;
-	 jit_loadu_16(jit_rcx,cachej,3);
-         jit_vmulpd_xmm(4,3,2);
-	 jit_vminpd_xmm(1,2,1);
+	 jit_loadu_xmm(jit_rcx,cachej,5);
+         jit_vmulpd_xmm(6,5,7);
+	 jit_vminpd_xmm(1,7,1);
       }
 
       j++;

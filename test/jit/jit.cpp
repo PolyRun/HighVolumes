@@ -429,12 +429,12 @@ int main() {
 	 assert(res == 5.0);
 	 std::cout << "res: " << res << std::endl;
       }
-      std::cout << "loadu_16 - rdi:\n";
+      std::cout << "loadu_xmm - rdi:\n";
       for(int i=0;i<16;i++){
          jit_clear();
          double (*func2)(double*);
          func2 = (double (*)(double*)) jit_head();
-         jit_loadu_16(jit_rdi,8,i);
+         jit_loadu_xmm(jit_rdi,8,i);
          jit_permilpd(0b0101, i,0);
 	 jit_emit_return();
 	 jit_print();
@@ -443,12 +443,12 @@ int main() {
 	 assert(res == 3.0);
 	 std::cout << "res: " << res << std::endl;
       }
-      std::cout << "loadu_16 - rsi:\n";
+      std::cout << "loadu_xmm - rsi:\n";
       for(int i=0;i<16;i++){
          jit_clear();
          double (*func2)(double*,double*);
          func2 = (double (*)(double*,double*)) jit_head();
-         jit_loadu_16(jit_rsi,8,i);
+         jit_loadu_xmm(jit_rsi,8,i);
          jit_permilpd(0b0101, i,0);
 	 jit_emit_return();
 	 jit_print();
@@ -457,12 +457,12 @@ int main() {
 	 assert(res == 3.0);
 	 std::cout << "res: " << res << std::endl;
       }
-      std::cout << "loadu_16 - rdx:\n";
+      std::cout << "loadu_xmm - rdx:\n";
       for(int i=0;i<16;i++){
          jit_clear();
          double (*func2)(int,int,double*);
          func2 = (double (*)(int,int,double*)) jit_head();
-         jit_loadu_16(jit_rdx,8,i);
+         jit_loadu_xmm(jit_rdx,8,i);
          jit_permilpd(0b0101, i,0);
 	 jit_emit_return();
 	 jit_print();
@@ -471,12 +471,12 @@ int main() {
 	 assert(res == 3.0);
 	 std::cout << "res: " << res << std::endl;
       }
-      std::cout << "loadu_16 - rcx:\n";
+      std::cout << "loadu_xmm - rcx:\n";
       for(int i=0;i<16;i++){
          jit_clear();
          double (*func2)(int,int,int,double*);
          func2 = (double (*)(int,int,int,double*)) jit_head();
-         jit_loadu_16(jit_rcx,8,i);
+         jit_loadu_xmm(jit_rcx,8,i);
          jit_permilpd(0b0101, i,0);
 	 jit_emit_return();
 	 jit_print();

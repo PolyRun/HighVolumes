@@ -99,10 +99,15 @@ void jit_table_16_consume(jit_Table_16* t);
 
 void jit_permilpd(uint8_t imm, int src, int dst);
 
-void jit_loadu_16(jit_Register reg, uint32_t idx, int dst);
+void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst);
 void jit_vmulpd_xmm(int src1, int src2, int dst);
 void jit_vmaxpd_xmm(int src1, int src2, int dst);
 void jit_vminpd_xmm(int src1, int src2, int dst);
+
+void jit_loadu_ymm(jit_Register reg, uint32_t idx, int dst);
+void jit_vmulpd_ymm(int src1, int src2, int dst);
+void jit_vmaxpd_ymm(int src1, int src2, int dst);
+void jit_vminpd_ymm(int src1, int src2, int dst);
 
 void jit_emit_return();
 

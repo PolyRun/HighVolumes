@@ -40,6 +40,18 @@ print("vmulpd %xmm0,%xmm0,%xmm0".format(i,j))
 print("vmaxpd %xmm0,%xmm0,%xmm0".format(i,j))
 print("vminpd %xmm0,%xmm0,%xmm0".format(i,j))
  
+for i in range(16):
+    print("vmovupd 0x100(%rax),%ymm{}".format(i));
+
+print("vmulpd %xmm0,%xmm0,%xmm0".format(i,j))
+print("vmaxpd %xmm0,%xmm0,%xmm0".format(i,j))
+print("vminpd %xmm0,%xmm0,%xmm0".format(i,j))
+ 
+print("vmulpd %ymm0,%ymm0,%ymm0".format(i,j))
+print("vmaxpd %ymm0,%ymm0,%ymm0".format(i,j))
+print("vminpd %ymm0,%ymm0,%ymm0".format(i,j))
+ 
+
 
 
 
