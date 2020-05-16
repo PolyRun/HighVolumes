@@ -42,15 +42,15 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
    ///  return;
 
    // ------------------------------------------ switch case head
-   assert(p->n < 256 && "if this asserts, then extend for n larger!");
-   uint8_t nn = p->n;
-   // 0x83,0xff,xx   cmp    xx,%edi
-   {const uint8_t instr[] = {0x83,0xff,nn}; jit_push(instr,3);}
-   
-   // -------------- if bad, jump to end
-   // 0f 87 xx xx xx xx    	ja  xxxx   -- relative jump
-   {const uint8_t instr[] = {0x0f,0x87,0,0,0,0}; jit_push(instr,6);}
-   uint8_t* jump_end = jit_head();// prepare to set L_end here
+   //  assert(p->n < 256 && "if this asserts, then extend for n larger!");
+   //  uint8_t nn = p->n;
+   //  // 0x83,0xff,xx   cmp    xx,%edi
+   //  {const uint8_t instr[] = {0x83,0xff,nn}; jit_push(instr,3);}
+   //  
+   //  // -------------- if bad, jump to end
+   //  // 0f 87 xx xx xx xx    	ja  xxxx   -- relative jump
+   //  {const uint8_t instr[] = {0x0f,0x87,0,0,0,0}; jit_push(instr,6);}
+   //  uint8_t* jump_end = jit_head();// prepare to set L_end here
    
    // ------ get ref to jump table
    // 48 8d 05 xx xx xx xx 	lea    xxxx(%rip),%rax
@@ -110,14 +110,14 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
       { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    }
    
-   // ---------------------------------------- set L_end:
-   uint32_t offset = jit_head() - jump_end;
-   uint64_t offset64 = jit_head() - jump_end;
-   //printf("jump offset: %d %ld\n",offset, offset64);
-   jit_write(jump_end-4, (uint8_t*)&offset, 4);
-   
-   // ---- rep ret
-   { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
+   //  // ---------------------------------------- set L_end:
+   //  uint32_t offset = jit_head() - jump_end;
+   //  uint64_t offset64 = jit_head() - jump_end;
+   //  //printf("jump offset: %d %ld\n",offset, offset64);
+   //  jit_write(jump_end-4, (uint8_t*)&offset, 4);
+   //  
+   //  // ---- rep ret
+   //  { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    
    o->cacheUpdateCoord_bytes = (void*)jit_head() - (void*)o->cacheUpdateCoord;
 

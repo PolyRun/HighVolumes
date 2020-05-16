@@ -386,10 +386,11 @@ int main() {
 	 for(int i=0;i<16;i++) {
 	    t = jit_immediate_via_data(1.0 + i*0.1, i, t);
 	 }
+	 t = jit_immediate_via_data(5.123, 0, t);
 	 jit_emit_return();
          jit_table_consume(t);
 	 double res = func2();
-	 assert(res == 1.0);
+	 assert(res == 5.123);
 	 std::cout << "res: " << res << std::endl;
       }
    }

@@ -160,8 +160,10 @@ public:
             {"cached_b_vec", {{PolytopeCSC_intersectCoord_cached_vec, {PolytopeCSC_cacheReset_withb, PolytopeCSC_cacheUpdateCoord_withb}}, "vectorized, with cache, b in cache"}},
            }));
 
-      add(new CLIF_Option<intersectCoord_f_t>(&PolytopeJIT_T.intersectCoord,'f',"PolytopeJIT_intersectCoord","ref", {
-						     {"ref", {PolytopeJIT_intersectCoord_ref, "simple jit (ref)"}} }));
+      add(new CLIF_Option<PolytopeJIT_Generator>(&PolytopeJIT_generator,'f',"PolytopeJIT_generator","single_rax", {
+						     {"single_rax",        {pjit_single_rax,      "single aij at time, load via rax"}},
+						     {"single_data",       {pjit_single_data,     "single aij at time, load via data table"}},
+						  }));
 
       add(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,'f',"Ellipsoid_intersectCoord","cached_ref", {
                        {"ref",        {Ellipsoid_intersectCoord_ref, "no cache (ref)"}},

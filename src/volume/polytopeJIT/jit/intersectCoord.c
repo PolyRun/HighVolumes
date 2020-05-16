@@ -1,5 +1,85 @@
 #include "intersectCoord.h"
 
+void Pjit_init_single() {
+   double t00 = -FT_MAX;
+   double t11 = FT_MAX;
+   jit_immediate_via_rax(t00,0);
+   jit_immediate_via_rax(t11,1);
+}
+
+void Pjit_body_single(const Polytope* p, const int i, const bool useRax, jit_Table_8** t8) {
+   // find relevant entries in column i:
+   for(int j=0;j<p->m;j++) {
+      FT aij = Polytope_get_a(p,j,i);
+      if(aij != 0.0) { // TODO: make epsilon
+      
+         // d*a = aij
+         double aijInv = 1.0/aij;
+
+	 if(useRax) {
+            jit_immediate_via_rax(aijInv,4);
+	 } else {
+	    *t8 = jit_immediate_via_data(aijInv,4,*t8);
+	 }
+
+         //printf("A j:%d i:%d a:%f aInv:%f bj:%f\n",j,i,aij, aijInv,bj);
+
+         ///  if(j==4) {
+         ///  // debug log out.
+         ///  // 0f 28 c4             	movaps %xmm4,%xmm0
+         ///  {const uint8_t instr[] = {0x0f,0x28,0xc4}; jit_push(instr,3); }
+         ///  // 0f 28 cb             	movaps %xmm3,%xmm1
+         ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
+         ///  break;
+         ///  }
+
+
+         ///  // f2 0f 10 a1 00 01 00 	movsd  0x100(%rcx),%xmm4
+         ///  {const uint8_t instr[] = {0xf2,0x0f,0x10,0xa1}; jit_push(instr,4);}
+         ///  uint32_t cachej = 0;//8*j;
+         ///  printf("cachej: %d\n",cachej);
+         ///  jit_push((const uint8_t*)&cachej,4);
+         ///  
+         ///  if(j==0) {
+         ///  // debug log out.
+         ///  // f2 0f 11 26          	movsd  %xmm4,(%rsi)
+         ///  { uint8_t instr[] = {0xf2,0x0f,0x11,0x26}; jit_push(instr,4); }
+         ///  // f2 0f 11 1a          	movsd  %xmm3,(%rdx)
+         ///  { uint8_t instr[] = {0xf2,0x0f,0x11,0x1a}; jit_push(instr,4); }
+         ///  
+         ///  { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
+         ///  return;
+         ///  }
+
+         // aix = cache[j]   -- %rcx
+         // c5 db 59 91 xx xx xx xx  vmulsd xxxx(%rcx),%xmm4,%xmm2
+         {const uint8_t instr[] = {0xc5,0xdb,0x59,0x91}; jit_push(instr,4);}
+         uint32_t cachej = 8*j;
+         jit_push((const uint8_t*)&cachej,4);
+
+         ///  if(j==4) {
+         ///  // debug log out.
+         ///  // 0f 28 c2             	movaps %xmm2,%xmm0
+         ///  {const uint8_t instr[] = {0x0f,0x28,0xc2}; jit_push(instr,3); }
+         ///  // 0f 28 cb             	movaps %xmm3,%xmm1
+         ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
+         ///  break;
+         ///  }
+
+         // we already know if min or max!
+         if(aij < 0.0) {
+            //printf("do max\n");
+            //c5 e9 5f c0          	vmaxpd %xmm0,%xmm2,%xmm0
+            {const uint8_t instr[] = {0xc5,0xe9,0x5f,0xc0}; jit_push(instr,4);}
+         } else {
+            //printf("do min\n");
+            //c5 e9 5d c9          	vminpd %xmm1,%xmm2,%xmm1
+            {const uint8_t instr[] = {0xc5,0xe9,0x5d,0xc9}; jit_push(instr,4);}
+         }
+      }
+   }
+}
+
 void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) {
    //jit_print();
    
@@ -59,23 +139,32 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    /// { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    /// return;
    
+   // --------------------- set up code facilities:
+   jit_Table_8* t8 = NULL;
+
    // ------------------------------------------- initialize t00,t11
-   double t00 = -FT_MAX;
-   double t11 = FT_MAX;
-   jit_immediate_via_rax(t00,0);
-   jit_immediate_via_rax(t11,1);
+   switch(PolytopeJIT_generator) {
+      case pjit_single_rax: case pjit_single_data: {
+         Pjit_init_single();
+	 break;
+      }
+      default: {
+	 assert(false && "missing gen code");
+	 break;
+      }
+   }
 
    // ------------------------------------------ switch case head
-   assert(p->n < 256 && "if this asserts, then extend for n larger!");
-   uint8_t nn = p->n;
-   // 0x83,0xff,xx   cmp    xx,%edi
-   {const uint8_t instr[] = {0x83,0xff,nn}; jit_push(instr,3);}
-   // TODO: can we drop this???
+   //  assert(p->n < 256 && "if this asserts, then extend for n larger!");
+   //  uint8_t nn = p->n;
+   //  // 0x83,0xff,xx   cmp    xx,%edi
+   //  {const uint8_t instr[] = {0x83,0xff,nn}; jit_push(instr,3);}
+   //  // TODO: can we drop this???
 
-   // -------------- if bad, jump to end
-   // 0f 87 xx xx xx xx    	ja  xxxx   -- relative jump
-   {const uint8_t instr[] = {0x0f,0x87,0,0,0,0}; jit_push(instr,6);}
-   uint8_t* jump_end = jit_head();// prepare to set L_end here
+   //  // -------------- if bad, jump to end
+   //  // 0f 87 xx xx xx xx    	ja  xxxx   -- relative jump
+   //  {const uint8_t instr[] = {0x0f,0x87,0,0,0,0}; jit_push(instr,6);}
+   //  uint8_t* jump_end = jit_head();// prepare to set L_end here
    
    // ------ get ref to jump table
    // 48 8d 05 xx xx xx xx 	lea    xxxx(%rip),%rax
@@ -107,72 +196,21 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
       uint32_t entry = location - table;
       jit_write(table+4*i, (uint8_t*)&entry, 4);
       
-      // find relevant entries in column:
-      for(int j=0;j<p->m;j++) {
-         FT aij = Polytope_get_a(p,j,i);
-	 if(aij != 0.0) { // TODO: make epsilon
-	 
-	    // d*a = aij
-            double aijInv = 1.0/aij;
-            jit_immediate_via_rax(aijInv,4);
-
-	    //printf("A j:%d i:%d a:%f aInv:%f bj:%f\n",j,i,aij, aijInv,bj);
-
-            ///  if(j==4) {
-            ///  // debug log out.
-            ///  // 0f 28 c4             	movaps %xmm4,%xmm0
-            ///  {const uint8_t instr[] = {0x0f,0x28,0xc4}; jit_push(instr,3); }
-            ///  // 0f 28 cb             	movaps %xmm3,%xmm1
-            ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
-            ///  break;
-            ///  }
-
-
-            ///  // f2 0f 10 a1 00 01 00 	movsd  0x100(%rcx),%xmm4
-	    ///  {const uint8_t instr[] = {0xf2,0x0f,0x10,0xa1}; jit_push(instr,4);}
-	    ///  uint32_t cachej = 0;//8*j;
-	    ///  printf("cachej: %d\n",cachej);
-	    ///  jit_push((const uint8_t*)&cachej,4);
-            ///  
-	    ///  if(j==0) {
-            ///  // debug log out.
-	    ///  // f2 0f 11 26          	movsd  %xmm4,(%rsi)
-            ///  { uint8_t instr[] = {0xf2,0x0f,0x11,0x26}; jit_push(instr,4); }
-	    ///  // f2 0f 11 1a          	movsd  %xmm3,(%rdx)
-            ///  { uint8_t instr[] = {0xf2,0x0f,0x11,0x1a}; jit_push(instr,4); }
-	    ///  
-	    ///  { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
-	    ///  return;
-            ///  }
-
-	    // aix = cache[j]   -- %rcx
-	    // c5 db 59 91 xx xx xx xx  vmulsd xxxx(%rcx),%xmm4,%xmm2
-	    {const uint8_t instr[] = {0xc5,0xdb,0x59,0x91}; jit_push(instr,4);}
-	    uint32_t cachej = 8*j;
-	    jit_push((const uint8_t*)&cachej,4);
-
-            ///  if(j==4) {
-            ///  // debug log out.
-            ///  // 0f 28 c2             	movaps %xmm2,%xmm0
-            ///  {const uint8_t instr[] = {0x0f,0x28,0xc2}; jit_push(instr,3); }
-            ///  // 0f 28 cb             	movaps %xmm3,%xmm1
-            ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
-            ///  break;
-            ///  }
-
-	    // we already know if min or max!
-            if(aij < 0.0) {
-	       //printf("do max\n");
-               //c5 e9 5f c0          	vmaxpd %xmm0,%xmm2,%xmm0
-               {const uint8_t instr[] = {0xc5,0xe9,0x5f,0xc0}; jit_push(instr,4);}
-	    } else {
-	       //printf("do min\n");
-               //c5 e9 5d c9          	vminpd %xmm1,%xmm2,%xmm1
-               {const uint8_t instr[] = {0xc5,0xe9,0x5d,0xc9}; jit_push(instr,4);}
-	    }
-	 }
+      switch(PolytopeJIT_generator) {
+         case pjit_single_rax: {
+            Pjit_body_single(p,i,true,&t8);
+            break;
+         }
+         case pjit_single_data: {
+            Pjit_body_single(p,i,false,&t8);
+            break;
+         }
+	 default: {
+            assert(false && "missing gen code");
+            break;
+         }
       }
-      
+     
       // jump to end:
       // e9 xx xx xx xx       	jmpq xxxx
       {const uint8_t instr[] = {0xe9,1,1,1,1}; jit_push(instr,5);}
@@ -181,10 +219,10 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
  
    
    // ---------------------------------------- set L_end:
-   uint32_t offset = jit_head() - jump_end;
-   uint64_t offset64 = jit_head() - jump_end;
-   //printf("jump offset: %d %ld\n",offset, offset64);
-   jit_write(jump_end-4, (uint8_t*)&offset, 4);
+   //  uint32_t offset = jit_head() - jump_end;
+   //  uint64_t offset64 = jit_head() - jump_end;
+   //  //printf("jump offset: %d %ld\n",offset, offset64);
+   //  jit_write(jump_end-4, (uint8_t*)&offset, 4);
    
    // make all ends go here
    for(int i=0;i<p->n;i++) {
@@ -201,12 +239,14 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    //f2 0f 11 0a          	movsd  %xmm1,(%rdx)
    { uint8_t instr[] = {0xf2,0x0f,0x11,0x0a}; jit_push(instr,4); }
    
-   
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    
    o->intersectCoord_bytes = (void*)jit_head() - (void*)o->intersectCoord;
    
+   // -------------------------------- finish up code facilities:
+   jit_table_consume(t8);
+
    //jit_print();
 }
 

@@ -426,11 +426,11 @@ int main(int argc, char** argv) {
        }
    }
    
-   auto oJIT = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("PolytopeJIT_intersectCoord"));
+   auto oJIT = dynamic_cast<CLIF_Option<PolytopeJIT_Generator>*>(cliFun.getOption("PolytopeJIT_generator"));
    for (auto it : oJIT->fmap){
        // test PolytopeJIT
-       PolytopeJIT_T.intersectCoord = it.second.first;
-       std::cout << "Test PolytopeJIT for intersectCoord " << it.first << " - " << it.second.second << std::endl;
+       PolytopeJIT_generator = it.second.first;
+       std::cout << "Test PolytopeJIT for generator " << it.first << " - " << it.second.second << std::endl;
 
        // Generate new polytope box, n dim, 2 radius
        for(int n=4;n<20;n++) {

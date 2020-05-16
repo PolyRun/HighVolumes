@@ -15,6 +15,8 @@ Body_T PolytopeJIT_T = {
         .boundingSphere = PolytopeJIT_bounding_ref
 };
 
+PolytopeJIT_Generator PolytopeJIT_generator = pjit_single_rax;
+
 PolytopeJIT* PolytopeJIT_new(int n, int m) {
    PolytopeJIT* o = (PolytopeJIT*) malloc(sizeof(PolytopeJIT));
    o->n = n;
