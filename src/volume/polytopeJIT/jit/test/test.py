@@ -32,7 +32,14 @@ print("vmulpd %xmm2,%xmm3,%xmm8")
 print("vmulpd %xmm8,%xmm2,%xmm7")
 print("vmulpd %xmm8,%xmm2,%xmm8")
 
+for i in range(16):
+    for j in range(16):
+        print("vmaxpd %xmm{},%xmm{},%xmm0".format(i,j))
 
+print("vmulpd %xmm0,%xmm0,%xmm0".format(i,j))
+print("vmaxpd %xmm0,%xmm0,%xmm0".format(i,j))
+print("vminpd %xmm0,%xmm0,%xmm0".format(i,j))
+ 
 
 
 

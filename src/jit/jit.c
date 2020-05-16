@@ -301,7 +301,8 @@ void jit_loadu_16(jit_Register reg, uint32_t idx, int dst) {
    jit_push((const uint8_t*)&idx,4);
 }
 
-void jit_vmulpd_xmm(int src1, int src2, int dst) {
+
+void jit_vOPpd_xmm(uint8_t op, int src1, int src2, int dst) {
    // c5 f9 59 c0          	vmulpd %xmm0,%xmm0,%xmm0
    uint8_t b2 = 0xf9 - src2*8;
    uint8_t b4 = 0xc0 + (src1%8)*1 + (dst%8)*8;
@@ -309,11 +310,25 @@ void jit_vmulpd_xmm(int src1, int src2, int dst) {
    uint8_t bx = 0xc1;
    if(dst >= 8 && src1 >= 8) {bx-=0x80;}
    if(src1 < 8) {
-      { uint8_t instr[] = {0xc5,b2,0x59,b4}; jit_push(instr,4); }
+      { uint8_t instr[] = {0xc5,b2,op,b4}; jit_push(instr,4); }
    } else {
       b2-=0x80;
-      { uint8_t instr[] = {0xc4,bx,b2,0x59,b4}; jit_push(instr,5); }
+      { uint8_t instr[] = {0xc4,bx,b2,op,b4}; jit_push(instr,5); }
    }
+}
+
+void jit_vmulpd_xmm(int src1, int src2, int dst) {
+   // c5 f9 59 c0          	vmulpd %xmm0,%xmm0,%xmm0
+   jit_vOPpd_xmm(0x59,src1,src2,dst);
+}
+
+void jit_vmaxpd_xmm(int src1, int src2, int dst) {
+   // c5 f9 5f c0          	vmaxpd %xmm0,%xmm0,%xmm0
+   jit_vOPpd_xmm(0x5f,src1,src2,dst);
+}
+
+void jit_vminpd_xmm(int src1, int src2, int dst) {
+   jit_vOPpd_xmm(0x5d,src1,src2,dst);
 }
 
 void jit_emit_return() {
