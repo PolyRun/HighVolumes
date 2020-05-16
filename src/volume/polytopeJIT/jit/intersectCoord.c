@@ -1,13 +1,13 @@
 #include "intersectCoord.h"
 
-void Pjit_init_single() {
+void Pjit_intersectCoord_init_single() {
    double t00 = -FT_MAX;
    double t11 = FT_MAX;
    jit_immediate_via_rax(t00,0);
    jit_immediate_via_rax(t11,1);
 }
 
-void Pjit_body_single(const Polytope* p, const int i, const bool useRax, jit_Table_8** t8) {
+void Pjit_intersectCoord_body_single(const Polytope* p, const int i, const bool useRax, jit_Table_8** t8) {
    // find relevant entries in column i:
    for(int j=0;j<p->m;j++) {
       FT aij = Polytope_get_a(p,j,i);
@@ -145,7 +145,7 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    // ------------------------------------------- initialize t00,t11
    switch(PolytopeJIT_generator) {
       case pjit_single_rax: case pjit_single_data: {
-         Pjit_init_single();
+         Pjit_intersectCoord_init_single();
 	 break;
       }
       default: {
@@ -198,11 +198,11 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
       
       switch(PolytopeJIT_generator) {
          case pjit_single_rax: {
-            Pjit_body_single(p,i,true,&t8);
+            Pjit_intersectCoord_body_single(p,i,true,&t8);
             break;
          }
          case pjit_single_data: {
-            Pjit_body_single(p,i,false,&t8);
+            Pjit_intersectCoord_body_single(p,i,false,&t8);
             break;
          }
 	 default: {

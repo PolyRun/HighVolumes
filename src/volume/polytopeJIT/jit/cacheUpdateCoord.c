@@ -1,5 +1,36 @@
 #include "cacheUpdateCoord.h"
 
+
+void Pjit_cacheUpdateCoord_body_single(const Polytope* p, const int i, const bool useRax, jit_Table_8** t8) {
+   // find relevant entries in column:
+   for(int j=0;j<p->m;j++) {
+      FT aij = Polytope_get_a(p,j,i);
+      if(aij != 0.0) {
+	 if(useRax) {
+            jit_immediate_via_rax(-aij,4);
+	 } else {
+	    *t8 = jit_immediate_via_data(-aij,4,*t8);
+	 }
+
+         // goal:
+         // fmadd: cachej += xmm4 * xmm0
+         //
+         // now we changed to:
+         // cachej -= dx * aid.
+         // this we can just make into an addition by taking minus of aid
+         // 
+         // asm:  xmm4 = cachej + xmm0*xmm4
+         // c4 e2 f9 a9 a6 xx xx xx xx  vfmadd213sd 0x100(%rsi),%xmm0,%xmm4
+         {const uint8_t instr[] = {0xc4,0xe2,0xf9,0xa9,0xa6}; jit_push(instr,5); }
+         uint32_t cachej = 8*j;
+         jit_push((const uint8_t*)&cachej,4);
+         // f2 0f 11 a6 xx xx xx xx     movsd  %xmm4,0x100(%rsi)
+         {const uint8_t instr[] = {0xf2,0x0f,0x11,0xa6}; jit_push(instr,4); }
+         jit_push((const uint8_t*)&cachej,4);
+      }
+   }
+}
+
 void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o) {
    //jit_print();
    
@@ -40,6 +71,9 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
    ///  // ---- rep ret
    ///  { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    ///  return;
+
+   // --------------------- set up code facilities:
+   jit_Table_8* t8 = NULL;
 
    // ------------------------------------------ switch case head
    //  assert(p->n < 256 && "if this asserts, then extend for n larger!");
@@ -82,30 +116,21 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
       uint32_t entry = location - table;
       jit_write(table+4*i, (uint8_t*)&entry, 4);
       
-      // find relevant entries in column:
-      for(int j=0;j<p->m;j++) {
-         FT aij = Polytope_get_a(p,j,i);
-	 if(aij != 0.0) {
-            jit_immediate_via_rax(-aij,4);
-
-	    // goal:
-	    // fmadd: cachej += xmm4 * xmm0
-	    //
-	    // now we changed to:
-	    // cachej -= dx * aid.
-	    // this we can just make into an addition by taking minus of aid
-	    // 
-	    // asm:  xmm4 = cachej + xmm0*xmm4
-	    // c4 e2 f9 a9 a6 xx xx xx xx  vfmadd213sd 0x100(%rsi),%xmm0,%xmm4
-            {const uint8_t instr[] = {0xc4,0xe2,0xf9,0xa9,0xa6}; jit_push(instr,5); }
-	    uint32_t cachej = 8*j;
-	    jit_push((const uint8_t*)&cachej,4);
-	    // f2 0f 11 a6 xx xx xx xx     movsd  %xmm4,0x100(%rsi)
-            {const uint8_t instr[] = {0xf2,0x0f,0x11,0xa6}; jit_push(instr,4); }
-	    jit_push((const uint8_t*)&cachej,4);
-	 }
+      switch(PolytopeJIT_generator) {
+         case pjit_single_rax: {
+            Pjit_cacheUpdateCoord_body_single(p,i,true,&t8);
+            break;
+         }
+         case pjit_single_data: {
+            Pjit_cacheUpdateCoord_body_single(p,i,false,&t8);
+            break;
+         }
+	 default: {
+            assert(false && "missing gen code");
+            break;
+         }
       }
-      
+        
       // ---- rep ret
       { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    }
@@ -120,6 +145,9 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
    //  { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    
    o->cacheUpdateCoord_bytes = (void*)jit_head() - (void*)o->cacheUpdateCoord;
+
+   // -------------------------------- finish up code facilities:
+   jit_table_consume(t8);
 
    //jit_print();
 }

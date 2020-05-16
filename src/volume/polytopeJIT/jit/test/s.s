@@ -206,6 +206,22 @@ vmovsd 0x100(%rip), %xmm13
 vmovsd 0x100(%rip), %xmm14
 vmovsd 0x100(%rip), %xmm15
 
+vxorpd %ymm0 ,%ymm0 ,%ymm0
+vxorpd %ymm1 ,%ymm1 ,%ymm1
+vxorpd %ymm2 ,%ymm2 ,%ymm2
+vxorpd %ymm3 ,%ymm3 ,%ymm3
+vxorpd %ymm4 ,%ymm4 ,%ymm4
+vxorpd %ymm5 ,%ymm5 ,%ymm5
+vxorpd %ymm6 ,%ymm6 ,%ymm6
+vxorpd %ymm7 ,%ymm7 ,%ymm7
+vxorpd %ymm8 ,%ymm8 ,%ymm8
+vxorpd %ymm9 ,%ymm9 ,%ymm9
+vxorpd %ymm10,%ymm10,%ymm10
+vxorpd %ymm11,%ymm11,%ymm11
+vxorpd %ymm12,%ymm12,%ymm12
+vxorpd %ymm13,%ymm13,%ymm13
+vxorpd %ymm14,%ymm14,%ymm14
+vxorpd %ymm15,%ymm15,%ymm15
 
 
 
