@@ -168,8 +168,8 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
       j++;
    }
    
-   jit_permilpd(0b0101,0,2);
-   jit_permilpd(0b0101,1,3);
+   jit_permilpd_xmm(0b0101,0,2);
+   jit_permilpd_xmm(0b0101,1,3);
    jit_vmaxpd_xmm(2,0,0);
    jit_vminpd_xmm(3,1,1);
 }

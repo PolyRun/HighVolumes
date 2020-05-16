@@ -263,8 +263,29 @@ void jit_permilpd(uint8_t imm, int src, int dst) {
       b2 = 0x43;
    }
    uint8_t b5 = 0xc0 + (dst%8)*8 + (src%8)*1;
+   
+   // c4 e3 79 05 c0 aa    	vpermilpd $0xaa,%xmm0,%xmm0
    { uint8_t instr[] = {0xc4,b2,0x7d,0x05,b5,imm}; jit_push(instr,6); }
 }
+
+void jit_permilpd_xmm(uint8_t imm, int src, int dst) {
+   assert(imm<16);
+   uint8_t b2 = 0xe3;
+   if(src < 8 && dst < 8) {
+      b2 = 0xe3;
+   } else if(src < 8 && dst >= 8) {
+      b2 = 0x63;
+   } else if(src >= 8 && dst < 8) {
+      b2 = 0xc3;
+   } else if(src >= 8 && dst >= 8) {
+      b2 = 0x43;
+   }
+   uint8_t b5 = 0xc0 + (dst%8)*8 + (src%8)*1;
+   
+   // c4 e3 79 05 c0 aa    	vpermilpd $0xaa,%xmm0,%xmm0
+   { uint8_t instr[] = {0xc4,b2,0x79,0x05,b5,imm}; jit_push(instr,6); }
+}
+
 
 void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst) {
    uint8_t b2 = 0xf9;

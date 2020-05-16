@@ -98,6 +98,7 @@ jit_Table_16* jit_immediate_16_via_data(const double val0, const double val1, co
 void jit_table_16_consume(jit_Table_16* t);
 
 void jit_permilpd(uint8_t imm, int src, int dst);
+void jit_permilpd_xmm(uint8_t imm, int src, int dst);
 
 void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst);
 void jit_vmulpd_xmm(int src1, int src2, int dst);
