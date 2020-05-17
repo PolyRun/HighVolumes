@@ -102,3 +102,16 @@ void Matrix_rotate(Matrix *m, const int i, const int j, const FT angle) {
 	Matrix_set(m, j, k, s*vi + c*vj);
     }
 }
+
+void Matrix_MVM(const Matrix *M, const FT* x, FT* y) {
+   const int n=M->n;
+   const int m=M->m;
+   for(int i=0;i<m;i++) {
+      FT yi = 0;
+      for(int j=0;j<n;j++) {
+         yi += Matrix_get(M,i,j) * x[j];
+      }
+      y[i] = yi;
+      //printf("MVM %d %f\n",i,yi);
+   }
+}

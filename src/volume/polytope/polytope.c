@@ -12,7 +12,8 @@ Body_T Polytope_T = {
 	.cacheUpdateCoord = Polytope_cacheUpdateCoord_ref,
         .shallowCutOracle = Polytope_shallowCutOracle_ref,
 	.transform = Polytope_transform_ref,
-        .boundingSphere = Polytope_bounding_ref
+        .boundingSphere = Polytope_bounding_ref,
+        .normal = Polytope_normal,
 };
 
 Polytope* Polytope_new(int n, int m) {
@@ -364,3 +365,16 @@ void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, cons
 }
 
 
+void Polytope_normal(const void* o, const FT* v, FT* normal) {
+   const Polytope* p = (Polytope*)o;
+   int violating = -1;
+   for(int i=0; i<p->m; i++) {
+      FT sum = 0;
+      for(int x=0; x<p->n; x++) { sum+= v[x] * Polytope_get_a(p, i, x);}
+      if(sum > Polytope_get_b(p, i)) {violating=i;}
+   }
+   assert(violating >=0);
+   for(int i=0;i<p->n;i++) {
+      normal[i] = Polytope_get_a(p,violating,i);
+   }
+}

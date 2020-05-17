@@ -40,4 +40,7 @@ void Matrix_invert_pdsym(const Matrix *In, Matrix *Out);
 //   sin(a) cos(a)    --- line j
 void Matrix_rotate(Matrix *m, const int i, const int j, const FT angle);
 
+// y = m*x;
+void Matrix_MVM(const Matrix *m, const FT* x, FT* y);
+
 #endif

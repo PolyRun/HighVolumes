@@ -7,13 +7,15 @@ void optimize_test(const std::string& generator) {
    solved_body->print();
    const int n = solved_body->n;
 
-   assert(solved_body->bcount ==1);
-   assert(solved_body->type[0] == &Polytope_T);
-   Polytope* p = (Polytope*)solved_body->body[0];
+   if(solved_body->bcount ==1 && solved_body->type[0] == &Polytope_T) {
+      Polytope* p = (Polytope*)solved_body->body[0];
    
-   Polytope* q = optimize_polytope(p);
-   std::cout << "\n## Optimized: \n\n";
-   Polytope_T.print(q);
+      Polytope* q = optimize_polytope(p);
+      std::cout << "\n## Optimized: \n\n";
+      Polytope_T.print(q);
+   } else {
+      std::cout << "\n could not optimize, not a single polytope!\n";
+   }
 }
 
 
@@ -59,14 +61,12 @@ int main(int argc, char** argv) {
    std::cout << "choice "<< v3 << " " << v4 << " " << v5 << "\n";
    
    optimize_test(generator);
-   return 1;
 
    Solved_Body* solved_body = solved_body_generator()->get(generator,polytopeTranspose);
    solved_body->print();
    const int n = solved_body->n;
 
    FT* p = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-   
    Ellipsoid* e = Ellipsoid_new(n);
 
    auto f = [&](FT x, FT y, FT z, FT &r, FT &g, FT &b) {
@@ -86,21 +86,84 @@ int main(int argc, char** argv) {
       auto &bcount = solved_body->bcount;
       for(int c=0;c<bcount;c++) {
          if(type[c]->inside(body[c],p)) {
-	    r += 1.0/bcount;
+	    r+= 1.0/bcount;
 	 }
       }
    };
 
+   FT* dx = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* dx2 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* dy = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* dy2 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* dz = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* dz2 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   for(int i=0;i<n;i++) {dx[i] = (i==0);dy[i]=(i==1);dz[i]=(i==2);}
+   FT* normal = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   FT* p2 = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+   
+   Matrix* R = Matrix_new(n,n); // rotation matrix
+   for(int i=0;i<n;i++) {Matrix_set(R,i,i,1.0);}
+   for(int i=0;i<n;i++) {
+      for(int j=0;j<n;j++) {
+         FT angle = prng_get_random_double_in_range(-0.2/n,0.2/n);//2*M_PI); 
+         Matrix_rotate(R, i, j, angle);
+      }
+   }
+
+   auto f2 = [&](FT x, FT y, FT z, FT &r, FT &g, FT &b) {
+      FT xx = 4*x-2;//x*4*n-2*n;
+      FT yy = 4*y-2;//y*4*n-2*n;
+      FT zz = 0;
+      for(int i=0;i<n;i++) {p[i] = dx[i]*xx + dy[i]*yy + dz[i]*zz;}
+     
+      FT eval = Ellipsoid_eval(e,p);
+      r = 0;//2*n;
+      g = 0;//eval*(eval<=1.0);
+      b = 0;//eval/(4*n*n)*(eval <= 4*n*n);
+      
+      FT zzz = 2*n;
+
+      auto &type = solved_body->type;
+      auto &body = solved_body->body;
+      auto &bcount = solved_body->bcount;
+      for(int c=0;c<bcount;c++) {
+	 FT t0,t1;
+         type[c]->intersect(body[c], p, dz, &t0, &t1);
+	 if(t0 < t1) {
+	 //if(type[c]->inside(body[c],p)) {
+	 //   FT t0,t1;
+         //   type[c]->intersect(body[c], p, dz, &t0, &t1);
+	    if(t1 < zzz) {
+	       zzz = t1;
+	       // update normal!
+               for(int i=0;i<n;i++) {p2[i]=p[i] + dz[i]*(t1+0.001);}
+               type[c]->normal(body[c], p2, normal);
+	       FT n2 = squaredNorm(normal,n);
+	       FT nInv = 1.0/sqrt(n2);
+	       r = dotProduct(dx,normal,n)*nInv*0.5+0.5;
+	       g = dotProduct(dy,normal,n)*nInv*0.5+0.5;
+	       b = dotProduct(dz,normal,n)*nInv*0.5+0.5;
+	    }
+	 } else {
+	    zzz = -1e20;
+	 }
+      }
+      if(zzz < -1e19) {r = 0;g=0;b=0;}
+   };
+
    {// ---------------------- IMG
-      int width = 800;
-      int height = 800;
-      int depth = 100;
+      int width = 400;
+      int height = 400;
+      int depth = 200;
       EVP::Image_BMP img(height,width);
       for(int z=0;z<depth; z++) {
-         for(int i=0; i<height; i++){
+          Matrix_MVM(R,dx,dx2); std::swap(dx,dx2);
+          Matrix_MVM(R,dy,dy2); std::swap(dy,dy2);
+          Matrix_MVM(R,dz,dz2); std::swap(dz,dz2);
+     	  for(int i=0; i<height; i++){
              for(int j=0; j<width; j++){
                  FT rr,gg,bb;
-                 f((double)i/height, (double)j/width, (double)z/depth, rr,gg,bb);
+                 f2((double)i/height, (double)j/width, (double)z/depth, rr,gg,bb);
                  int r = (unsigned char)(rr*255); ///red
                  int g = (unsigned char)(gg*255); ///green
                  int b = (unsigned char)(bb*255); ///blue

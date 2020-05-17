@@ -50,6 +50,8 @@ void Polytope_transform_ref(const void* o_in, void* o_out, const Matrix* L, cons
 
 void Polytope_bounding_ref(const void *B, FT *R2, FT *ori);
 
+void Polytope_normal(const void* o, const FT* x, FT* normal);
+
 // --------------- inline Accessors:
 static inline FT* Polytope_get_Ai(const Polytope* p, int i) __attribute__((always_inline));
 static inline FT* Polytope_get_Ai(const Polytope* p, int i) {

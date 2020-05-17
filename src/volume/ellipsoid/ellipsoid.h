@@ -28,7 +28,7 @@ void* Ellipsoid_clone(const void* o);
 void* Ellipsoid_clone_with_T(const void* o);
 void Ellipsoid_print(const void* o);
 FT Ellipsoid_eval(const Ellipsoid* e, const FT* x);
-void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* normal);
+void Ellipsoid_normal(const void* o, const FT* x, FT* normal);
 void Ellipsoid_project(const Ellipsoid* e, const FT eFac, FT* x);
 void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, FT* x);
 void Ellipsoid_A_from_T(Ellipsoid* e);

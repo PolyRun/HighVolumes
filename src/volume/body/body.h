@@ -58,6 +58,10 @@ typedef void (*transform_f_t)(const void*, void*, const Matrix*, const FT*, cons
 // compute sphere with center ori and radius r that encloses the body
 typedef void (*boundingSphere_f_t)(const void *, FT *, FT *);
 
+// input body, point x
+// output: normal n (best effort)
+typedef bool (*normal_f_t)(const void*, const FT*, FT*);
+
 struct Body_T {
    print_f_t print;
    free_f_t free;
@@ -71,8 +75,8 @@ struct Body_T {
    shallowCutOracle_f_t shallowCutOracle;
    transform_f_t transform;
    boundingSphere_f_t boundingSphere;
+   normal_f_t normal;
 };
-
 
 
 #endif // HEADER_BODY_H

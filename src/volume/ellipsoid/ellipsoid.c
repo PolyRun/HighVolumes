@@ -13,7 +13,8 @@ Body_T Ellipsoid_T = {
 	.cacheUpdateCoord = Ellipsoid_cacheUpdateCoord_ref,
 	.shallowCutOracle = Ellipsoid_shallowCutOracle_ref,
 	.transform = Ellipsoid_transform_ref,
-        .boundingSphere = Ellipsoid_bounding_ref
+        .boundingSphere = Ellipsoid_bounding_ref,
+	.normal = Ellipsoid_normal,
 };
 
 Ellipsoid* Ellipsoid_new(int n) {
@@ -388,7 +389,8 @@ FT Ellipsoid_eval(const Ellipsoid* e, const FT* x) {
    return sum;
 }
 
-void Ellipsoid_normal(const Ellipsoid* e, const FT* x, FT* normal) {
+void Ellipsoid_normal(const void* o, const FT* x, FT* normal) {
+   const Ellipsoid *e = (Ellipsoid *) o;
    int n = e->n;
    for(int i=0;i<n;i++) {
       const FT* Ai = Ellipsoid_get_Ai(e,i);
