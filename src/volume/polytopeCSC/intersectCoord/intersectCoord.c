@@ -154,21 +154,21 @@ void PolytopeCSC_intersectCoord_cached_vec(const void* o, const FT* x, const int
 
 static inline void loop(const int *rowi, const FT *b_Aix, const FT *Ai, const __m128i rowmask, const __m256d zeros, __m256d *t00, __m256d *t11){
     
-    __m128i rows = _mm_maskload_epi32(rowi, rowmask);
+    __m128i rows = _mm_maskload_epi32(rowi, rowmask); // gap 2
         
-    __m256d b_Aix_vec = _mm256_i32gather_pd(b_Aix, rows, 8);
+    __m256d b_Aix_vec = _mm256_i32gather_pd(b_Aix, rows, 8); // gap 7
     __m256d dai = _mm256_load_pd(Ai);
 
-    __m256d t = _mm256_div_pd(b_Aix_vec, dai);
+    __m256d t = _mm256_div_pd(b_Aix_vec, dai); // gap 8
 
     // <comp>_OS -> signal nans
     // n_mask[i] is 0xff..ff if t[i] < 0 and 0 else
-    __m256d n_mask = _mm256_cmp_pd(dai, zeros, _CMP_LT_OS);
+    __m256d n_mask = _mm256_cmp_pd(dai, zeros, _CMP_LT_OS); // gap 1
 
-    __m256d t00_tmp = _mm256_blendv_pd(*t00, t, n_mask);
-    __m256d t11_tmp = _mm256_blendv_pd(t, *t11, n_mask);
+    __m256d t00_tmp = _mm256_blendv_pd(*t00, t, n_mask); // gap 2
+    __m256d t11_tmp = _mm256_blendv_pd(t, *t11, n_mask); 
 
-    *t00 = _mm256_max_pd(*t00, t00_tmp);
+    *t00 = _mm256_max_pd(*t00, t00_tmp); // gap 1
     *t11 = _mm256_min_pd(*t11, t11_tmp);
 }
 
@@ -192,13 +192,14 @@ void PolytopeCSC_intersectCoord_cached_vec_inline(const void* o, const FT* x, co
     
     __m256d zeros = _mm256_set1_pd(0.0);
 
+    // TODO: maybe for n loop unrolling use n accumulators
     __m256d t00 = _mm256_set1_pd(-FT_MAX);
     __m256d t11 = _mm256_set1_pd(FT_MAX);
 
     // the first c-1 vectors have all valid elements
     int i = 0;
-    for (; i < elems - 11; i+=4) {
-        
+    for (; i < elems - 11; i+=8) {
+            
         loop(row+i, b_Aix, A+i, rowmask, zeros, &t00, &t11);
         loop(row+i+4, b_Aix, A+i+4, rowmask, zeros, &t00, &t11);
     }

@@ -214,13 +214,14 @@ BENCHMARKS = [
           "const_configs": [],
           "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
                           "PolytopeCSC_intersectCoord=ref",
-                          "PolytopeCSC_intersectCoord=cached_b_vec"
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_inl",
           ],
           "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
-          "input_configs": [("generator", intersectSparseBodies)]
+          "input_configs": [("generator", intersectbodies)]
        },
     ],
-    "xoption": ("generator", intersectSparseDims),
+    "xoption": ("generator", intersectdims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
