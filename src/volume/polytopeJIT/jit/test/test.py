@@ -79,3 +79,7 @@ print("vmaxsd %xmm0,%xmm0,%xmm0".format(i,j))
 print("vminsd %xmm0,%xmm0,%xmm0".format(i,j))
  
 
+print("vmulsd 0x100(%rax),%xmm{},%xmm{}".format(0,0))
+print("vmulpd 0x100(%rax),%xmm{},%xmm{}".format(0,0))
+
+

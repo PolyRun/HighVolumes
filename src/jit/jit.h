@@ -101,6 +101,7 @@ void jit_permilpd(uint8_t imm, int src, int dst);
 void jit_permilpd_xmm(uint8_t imm, int src, int dst);
 
 void jit_vmulsd(int src1, int src2, int dst);
+void jit_vmulsd_mem(jit_Register reg, uint32_t idx, int src2, int dst);
 void jit_vmaxsd(int src1, int src2, int dst);
 void jit_vminsd(int src1, int src2, int dst);
 

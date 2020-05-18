@@ -24,47 +24,9 @@ void Pjit_intersectCoord_body_single(const Polytope* p, const int i, const bool 
 
          //printf("A j:%d i:%d a:%f aInv:%f bj:%f\n",j,i,aij, aijInv,bj);
 
-         ///  if(j==4) {
-         ///  // debug log out.
-         ///  // 0f 28 c4             	movaps %xmm4,%xmm0
-         ///  {const uint8_t instr[] = {0x0f,0x28,0xc4}; jit_push(instr,3); }
-         ///  // 0f 28 cb             	movaps %xmm3,%xmm1
-         ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
-         ///  break;
-         ///  }
-
-
-         ///  // f2 0f 10 a1 00 01 00 	movsd  0x100(%rcx),%xmm4
-         ///  {const uint8_t instr[] = {0xf2,0x0f,0x10,0xa1}; jit_push(instr,4);}
-         ///  uint32_t cachej = 0;//8*j;
-         ///  printf("cachej: %d\n",cachej);
-         ///  jit_push((const uint8_t*)&cachej,4);
-         ///  
-         ///  if(j==0) {
-         ///  // debug log out.
-         ///  // f2 0f 11 26          	movsd  %xmm4,(%rsi)
-         ///  { uint8_t instr[] = {0xf2,0x0f,0x11,0x26}; jit_push(instr,4); }
-         ///  // f2 0f 11 1a          	movsd  %xmm3,(%rdx)
-         ///  { uint8_t instr[] = {0xf2,0x0f,0x11,0x1a}; jit_push(instr,4); }
-         ///  
-         ///  { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
-         ///  return;
-         ///  }
-
          // aix = cache[j]   -- %rcx
-         // c5 db 59 91 xx xx xx xx  vmulsd xxxx(%rcx),%xmm4,%xmm2
-         {const uint8_t instr[] = {0xc5,0xdb,0x59,0x91}; jit_push(instr,4);}
          uint32_t cachej = 8*j;
-         jit_push((const uint8_t*)&cachej,4);
-
-         ///  if(j==4) {
-         ///  // debug log out.
-         ///  // 0f 28 c2             	movaps %xmm2,%xmm0
-         ///  {const uint8_t instr[] = {0x0f,0x28,0xc2}; jit_push(instr,3); }
-         ///  // 0f 28 cb             	movaps %xmm3,%xmm1
-         ///  {const uint8_t instr[] = {0x0f,0x28,0xcb}; jit_push(instr,3); }
-         ///  break;
-         ///  }
+         jit_vmulsd_mem(jit_rcx, cachej,4,2);
 
          // we already know if min or max!
          if(aij < 0.0) {
