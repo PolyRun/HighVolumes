@@ -170,6 +170,7 @@ public:
 						     {"single_data",       {pjit_single_data,     "single aij at time, load via data table"}},
 						     {"single_data_acc",   {pjit_single_data_acc, "single aij at time, load via data table, more than one acc"}},
 						     {"double_data",       {pjit_double_data,     "two aij at time (if possible), load via data table"}},
+						     {"quad_data",         {pjit_quad_data,       "four aij at time (if possible), load via data table"}},
 						  }));
 
       add(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,'f',"Ellipsoid_intersectCoord","cached_ref", {

@@ -82,4 +82,16 @@ print("vminsd %xmm0,%xmm0,%xmm0".format(i,j))
 print("vmulsd 0x100(%rax),%xmm{},%xmm{}".format(0,0))
 print("vmulpd 0x100(%rax),%xmm{},%xmm{}".format(0,0))
 
+print("vextractf128 $0,%ymm0,%xmm0")
+print("vperm2f128 $0b00010001,%ymm0,%ymm0,%ymm0")
+
+#for i in range(16):
+#    for j in range(16):
+#       print("vperm2f128 $0b00010001,%ymm0,%ymm0,%ymm0")
+
+print("vpermpd $0b11111111,%ymm0,%ymm0")
+
+print("vmulpd 0x100(%rax),%ymm0,%ymm0")
+
+
 

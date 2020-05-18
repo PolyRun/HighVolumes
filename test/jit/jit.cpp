@@ -587,6 +587,25 @@ int main() {
 	    std::cout << "res: " << res << std::endl;
          }
       }
+
+      std::cout << "immediate_32_via_data:\n";
+      {
+         jit_clear();
+         double (*func2)();
+         func2 = (double (*)()) jit_head();
+
+	 jit_Table_32* t32 = NULL;// empty list
+	 for(int i=0;i<16;i++) {
+	    t32 = jit_immediate_32_via_data(4.0,5.0,6.0,7.0, i, t32);
+            jit_permpd(0b11111111, i,i);
+	 }
+	 jit_emit_return();
+         jit_table_32_consume(t32);
+	 jit_print();
+	 double res = func2();
+	 assert(res == 7.0);
+	 std::cout << "res: " << res << std::endl;
+      }
  
    }
    // -------------------------------- end tests
