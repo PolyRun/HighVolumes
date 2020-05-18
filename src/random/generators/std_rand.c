@@ -1,11 +1,12 @@
 #include <stdlib.h>
+#include <time.h>
 #include "std_rand.h"
 
 
-void std_init(int seed){
+void std_init(void *seed){
     srand((unsigned) time(seed));
 }
 
-uint32_t std_random(){
+inline uint32_t std_rand(){
     return rand();
 }

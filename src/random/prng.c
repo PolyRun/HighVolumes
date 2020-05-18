@@ -2,26 +2,35 @@
 #include <time.h>
 #include <float.h>
 #include <math.h>
+#include "prng.h"
+
+typedef void(*init_fun_t)(void *seed);
+typedef uint32_t(*rand_fun_t)();
+
+//std, sr, mersenne
+init_fun_t init_fun = std_init;
+rand_fun_t rand_fun = std_rand;
 
 /**
  * \brief Initializes the prng
  **/
 void prng_init(){
-    srand((unsigned) time(NULL));
+    init_fun(NULL);
+    //srand((unsigned) time(NULL));
 }
 
 /**
  * \brief Returns a new random double
  **/
 double prng_get_random_double(){
-    return ((double) rand() / (RAND_MAX)) * (DBL_MAX);
+    return ((double) rand_fun() / (RAND_MAX)) * (DBL_MAX);
 }
 
 /**
  * \brief Returns a new random double in range [0,1)
  **/
 double prng_get_random_double_0_1(){
-    return ((double) rand() / (RAND_MAX));
+    return ((double) rand_fun() / (RAND_MAX));
 }
 
 /**
@@ -44,14 +53,14 @@ double prng_get_random_double_normal() {
  * \param upper_bound Upper bound on the value of the random double
  **/
 double prng_get_random_double_in_range(double lower_bound, double upper_bound){
-    return ((double) rand() / (RAND_MAX)) * (upper_bound-lower_bound) + lower_bound;
+    return ((double) rand_fun() / (RAND_MAX)) * (upper_bound-lower_bound) + lower_bound;
 }
 
 /**
  * \brief Returns a new random integer
  **/
 int prng_get_random_int(){
-    return rand();
+    return rand_fun();
 }
 
 /**
@@ -60,6 +69,5 @@ int prng_get_random_int(){
  * \param upper_bound Upper bound on the value of the random integer
  **/
 int prng_get_random_int_in_range(int lower_bound, int upper_bound){
-    int r = rand();
-    return (rand() % (upper_bound-lower_bound+1)) + lower_bound;
+    return (rand_fun() % (upper_bound-lower_bound+1)) + lower_bound;
 }

@@ -1,9 +1,10 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <time.h>
 #include "shiftreg.h"
 
-uint32_t state_32 = 1;
-uint64_t state_64 = 1;
+static uint32_t state_32 = 1;
+static uint64_t state_64 = 1;
 
 /* The state word must be initialized to non-zero */
 /* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
@@ -22,23 +23,23 @@ uint64_t xorshift64() {
 	return state_64;
 }
 
-void sr_init(int seed){
-    state32 = (xorshift32_state*) malloc(sizeof(xorshift32_state));
-    state64 = (xorshift64_state*) malloc(sizeof(xorshift64_state));
-    if (seed != NULL) {
-        state_32 = seed;
-        state_64 = seed;
+void sr_init(void *seed_){
+    if (seed_ != NULL) {
+        uint32_t seed_32 = *((uint32_t*) seed_);
+        uint64_t seed_64 = *((uint64_t*) seed_);
+        state_32 = seed_32;
+        state_64 = seed_64;
     } else { 
-        srand((unsigned) time(seed));
+        srand((unsigned) time(seed_));
         state_32 = rand();
         state_64 = rand();
     }
 }
 
-uint32_t sr_random_uint32(){
+inline uint32_t sr_random_uint32() {
     return xorshift32();
 }
 
-uint64_t sr_random_uint64(){
+inline uint64_t sr_random_uint64() {
     return xorshift64();
 }
