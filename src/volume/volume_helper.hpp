@@ -165,7 +165,7 @@ public:
             {"cached_b_vec", {{PolytopeCSC_intersectCoord_cached_vec, {PolytopeCSC_cacheReset_withb, PolytopeCSC_cacheUpdateCoord_withb}}, "vectorized, with cache, b in cache"}},
            }));
 
-      add(new CLIF_Option<PolytopeJIT_Generator>(&PolytopeJIT_generator,'f',"PolytopeJIT_generator","single_rax", {
+      add(new CLIF_Option<PolytopeJIT_Generator>(&PolytopeJIT_generator,'f',"PolytopeJIT_gen","single_rax", {
 						     {"single_rax",        {pjit_single_rax,      "single aij at time, load via rax"}},
 						     {"single_data",       {pjit_single_data,     "single aij at time, load via data table"}},
 						     {"single_data_acc",   {pjit_single_data_acc, "single aij at time, load via data table, more than one acc"}},

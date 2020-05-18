@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import re
+import pprint
 
 
 def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
@@ -62,6 +63,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     i = 0
     for name in time_function_names:
         #plt.plot(x_ticks, time_function_heights[name], label=name)
+        assert(len(x_ticks) == len(time_function_heights[name]) and "maybe you used 'generator' in some parameter?")
         plt.errorbar(x_ticks, time_function_heights[name], label=name, yerr=[time_function_ci_low[name], time_function_ci_high[name]], capsize=4)
         i += 1
 	
