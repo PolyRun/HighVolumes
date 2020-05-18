@@ -123,3 +123,7 @@ set_target_properties(silaeubl PROPERTIES
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
 )
+
+
+# ---------------------- random poly to file
+add_subdirectory(util)
