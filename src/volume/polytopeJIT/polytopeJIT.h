@@ -37,9 +37,10 @@ typedef struct PolytopeJIT {
 } PolytopeJIT;
 
 typedef enum PolytopeJIT_Generator {
-   pjit_single_rax, // load single aij at a time, via rax
-   pjit_single_data,// load single aij at a time, via data table
-   pjit_double_data,// load double/two aij at a time, via data table
+   pjit_single_rax,     // load single aij at a time, via rax
+   pjit_single_data,    // load single aij at a time, via data table
+   pjit_single_data_acc,// possibly more than one acc per min/max
+   pjit_double_data,    // load double/two aij at a time, via data table
 } PolytopeJIT_Generator;
 
 extern PolytopeJIT_Generator PolytopeJIT_generator;

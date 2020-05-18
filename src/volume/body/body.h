@@ -60,7 +60,7 @@ typedef void (*boundingSphere_f_t)(const void *, FT *, FT *);
 
 // input body, point x
 // output: normal n (best effort)
-typedef bool (*normal_f_t)(const void*, const FT*, FT*);
+typedef void (*normal_f_t)(const void*, const FT*, FT*);
 
 struct Body_T {
    print_f_t print;

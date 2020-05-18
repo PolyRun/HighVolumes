@@ -103,7 +103,11 @@ void PolytopeJIT_intersectCoord_ref(const void* o, const FT* x, const int d, FT*
    const int n = p->n;
    const int m = p->m;
    assert(p->intersectCoord && "intersectCoord function must be generated PolytopeJIT");
+   //printf("intersectCoord %d\n",d);
+   //for(int i=0;i<n;i++) {printf(" %f",x[i]);} printf(" x\n");
+   //for(int i=0;i<m;i++) {printf(" %f",((double*)cache)[i]);} printf(" c\n");
    p->intersectCoord(d,t0,t1,cache);
+   //printf("-> %lf %lf\n",*t0,*t1);
 }
 
 int  PolytopeJIT_cacheAlloc_ref(const void* o) {

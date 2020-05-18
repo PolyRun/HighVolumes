@@ -325,6 +325,65 @@ void jit_loadu_ymm(jit_Register reg, uint32_t idx, int dst) {
    jit_push((const uint8_t*)&idx,4);
 }
 
+void jit_vOPsd(uint8_t op, int src1, int src2, int dst) {
+   // c5 fb 59 c0          	vmulsd %xmm0,%xmm0,%xmm0
+   // c5 fb 5f c0          	vmaxsd %xmm0,%xmm0,%xmm0
+   // c5 fb 5d c0          	vminsd %xmm0,%xmm0,%xmm0
+   uint8_t b2 = 0xfb - src2*8;
+   uint8_t b4 = 0xc0 + (src1%8)*1 + (dst%8)*8;
+   if(dst >= 8) {b2-=0x80;}
+   uint8_t bx = 0xc1;
+   if(dst >= 8 && src1 >= 8) {bx-=0x80;}
+   if(src1 < 8) {
+      { uint8_t instr[] = {0xc5,b2,op,b4}; jit_push(instr,4); }
+   } else {
+      b2-=0x80;
+      { uint8_t instr[] = {0xc4,bx,b2,op,b4}; jit_push(instr,5); }
+   }
+}
+
+void jit_vmulsd(int src1, int src2, int dst) {
+   // c5 f9 59 c0          	vmulpd %xmm0,%xmm0,%xmm0
+   jit_vOPsd(0x59,src1,src2,dst);
+}
+
+void jit_vmaxsd(int src1, int src2, int dst) {
+   // c5 f9 5f c0          	vmaxpd %xmm0,%xmm0,%xmm0
+   jit_vOPsd(0x5f,src1,src2,dst);
+}
+
+void jit_vminsd(int src1, int src2, int dst) {
+   jit_vOPsd(0x5d,src1,src2,dst);
+}
+
+
+void jit_vOPsd_mem(uint8_t op, jit_Register reg, uint32_t idx, int src2, int dst) {
+   // c5 fb 59 80 00 01 00 	vmulsd 0x100(%rax),%xmm0,%xmm0
+   // c5 f9 59 80 00 01 00 	vmulpd 0x100(%rax),%xmm0,%xmm0
+   uint8_t b2 = 0xfb - src2*8;
+   uint8_t b4 = (dst%8)*8;
+   if(dst >= 8) {b2-=0x80;}
+   
+   switch(reg) {
+      case jit_rax: {b4+=0x80;break;}
+      case jit_rcx: {b4+=0x81;break;}
+      case jit_rdx: {b4+=0x82;break;}
+      case jit_rbx: {b4+=0x83;break;}
+      case jit_rsi: {b4+=0x86;break;}
+      case jit_rdi: {b4+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   
+   { uint8_t instr[] = {0xc5,b2,op,b4}; jit_push(instr,4); }
+   jit_push((const uint8_t*)&idx,4);
+}
+
+void jit_vmulsd_mem(jit_Register reg, uint32_t idx, int src2, int dst) {
+   // c5 f9 59 80 00 01 00 	vmulpd 0x100(%rax),%xmm0,%xmm0
+   jit_vOPsd_mem(0x59,reg,idx,src2,dst);
+}
+
+
 void jit_vOPpd_xmm(uint8_t op, int src1, int src2, int dst) {
    // c5 f9 59 c0          	vmulpd %xmm0,%xmm0,%xmm0
    uint8_t b2 = 0xf9 - src2*8;

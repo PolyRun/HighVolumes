@@ -68,3 +68,18 @@ for i in range(16):
         print("vpermilpd $0b10101010,%xmm{},%xmm{}".format(i,j))
         print("vpermilpd $0b10101010,%ymm{},%ymm{}".format(i,j))
 
+
+
+print("vmulpd %xmm0,%xmm0,%xmm0".format(i,j))
+print("vmaxpd %xmm0,%xmm0,%xmm0".format(i,j))
+print("vminpd %xmm0,%xmm0,%xmm0".format(i,j))
+ 
+print("vmulsd %xmm0,%xmm0,%xmm0".format(i,j))
+print("vmaxsd %xmm0,%xmm0,%xmm0".format(i,j))
+print("vminsd %xmm0,%xmm0,%xmm0".format(i,j))
+ 
+
+print("vmulsd 0x100(%rax),%xmm{},%xmm{}".format(0,0))
+print("vmulpd 0x100(%rax),%xmm{},%xmm{}".format(0,0))
+
+

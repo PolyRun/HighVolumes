@@ -121,7 +121,8 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
             Pjit_cacheUpdateCoord_body_single(p,i,true,&t8);
             break;
          }
-         case pjit_single_data: {
+         case pjit_single_data:
+         case pjit_single_data_acc: {
             Pjit_cacheUpdateCoord_body_single(p,i,false,&t8);
             break;
          }
