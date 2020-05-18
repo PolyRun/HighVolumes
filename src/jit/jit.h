@@ -145,6 +145,11 @@ void jit_vmulpd_mem_ymm(jit_Register reg, uint32_t idx, int src2, int dst);
 void jit_vmaxpd_ymm(int src1, int src2, int dst);
 void jit_vminpd_ymm(int src1, int src2, int dst);
 
+// dst = idx(%reg) + dst*src;
+void jit_vfmad213sd_mem(jit_Register reg, uint32_t idx, int src, int dst);
+void jit_vfmad213pd_mem_xmm(jit_Register reg, uint32_t idx, int src, int dst);
+void jit_vfmad213pd_mem_ymm(jit_Register reg, uint32_t idx, int src, int dst);
+
 void jit_emit_return();
 
 #endif // HEADER_JIT_H

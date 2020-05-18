@@ -100,6 +100,24 @@ for i in range(16):
 
 
 
+print("########################");
+for i in range(16):
+    for j in range(16):
+        print("vfmadd213sd 0x100(%rax),%xmm{},%xmm{}".format(i,j))
+        #print("vfmadd213pd 0x100(%rax),%xmm{},%xmm{}".format(i,j))
+        #print("vfmadd213pd 0x100(%rax),%ymm{},%ymm{}".format(i,j))
+        #print("vfmadd132pd 0x100(%rax),%ymm{},%ymm{}".format(i,j))
+        #print("vfmadd231pd 0x100(%rax),%ymm{},%ymm{}".format(i,j))
+        
+        #print("vmulpd 0x100(%rax),%xmm{},%xmm{}".format(i,j))
+        #print("vmulpd 0x100(%rbx),%xmm{},%xmm{}".format(i,j))
+        #print("vmulpd 0x100(%rcx),%xmm{},%xmm{}".format(i,j))
+        #print("vmulpd 0x100(%rdx),%xmm{},%xmm{}".format(i,j))
+        #print("vmulpd 0x100(%rdi),%xmm{},%xmm{}".format(i,j))
+        #print("vmulpd 0x100(%rsi),%xmm{},%xmm{}".format(i,j))
+
+
+
 
 
 
