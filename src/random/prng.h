@@ -1,3 +1,7 @@
+#include "generators/std_rand.h"
+#include "generators/mersenne.h"
+#include "generators/shiftreg.h"
+
 
 #ifndef HEADER_PRNG_H
 #define HEADER_PRNG_H
