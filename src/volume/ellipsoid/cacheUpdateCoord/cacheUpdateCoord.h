@@ -13,4 +13,15 @@ void Ellipsoid_cacheUpdateCoord_vec_u2(const void* o, const int d, const FT dx, 
 
 void Ellipsoid_cacheUpdateCoord_vec_u4(const void* o, const int d, const FT dx, void* cache);
 
+//void Ellipsoid_cacheUpdateCoord_vec_u8(const void* o, const int d, const FT dx, void* cache);
+
+//void Ellipsoid_cacheUpdateCoord_vec_u10(const void* o, const int d, const FT dx, void* cache);
+
+// Vectorized with 256d
+void Ellipsoid_cacheUpdateCoord_vec2(const void* o, const int d, const FT dx, void* cache);
+
+void Ellipsoid_cacheUpdateCoord_vec2_u2(const void* o, const int d, const FT dx, void* cache);
+
+void Ellipsoid_cacheUpdateCoord_vec2_u4(const void* o, const int d, const FT dx, void* cache);
+
 #endif // HEADER_ELLIPSOID_CACHEUPDATECOORD_H

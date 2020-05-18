@@ -83,7 +83,12 @@ public:
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_fma, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_fma"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u2, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u2"));
-      pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u4, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u4"));
+      //pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u4, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u4"));
+      //pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u8, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u8"));
+      //pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u10, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u10"));
+      pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec2, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec2"));
+      pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec2_u2, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec2_u2"));
+      pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec2_u4, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec2_u4"));
       pc_stack().add((void*)Ellipsoid_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(Ellipsoid_cacheReset_cost_ref,"Ellipsoid_cacheReset_ref"));
 
       // PolytopeCSC
@@ -180,7 +185,12 @@ public:
 						     {"fma",           {Ellipsoid_cacheUpdateCoord_fma, "cacheUpdateCoord (fma)"}},
 						     {"vec",           {Ellipsoid_cacheUpdateCoord_vec, "cacheUpdateCoord (vec)"}},
 						     {"vec_u2",           {Ellipsoid_cacheUpdateCoord_vec_u2, "cacheUpdateCoord (vec_u2)"}},
-						     {"vec_u4",           {Ellipsoid_cacheUpdateCoord_vec_u4, "cacheUpdateCoord (vec_u4)"}} }));
+						     //{"vec_u4",           {Ellipsoid_cacheUpdateCoord_vec_u4, "cacheUpdateCoord (vec_u4)"}},
+						     //{"vec_u8",           {Ellipsoid_cacheUpdateCoord_vec_u8, "cacheUpdateCoord (vec_u8)"}},
+						     //{"vec_u10",           {Ellipsoid_cacheUpdateCoord_vec_u10, "cacheUpdateCoord (vec_u10)"}},
+						     {"vec2",           {Ellipsoid_cacheUpdateCoord_vec2, "cacheUpdateCoord (vec2)"}},
+						     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
+						     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
 
 
       // number parameters:

@@ -112,7 +112,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord", "Ellipsoid_intersectCoord=cached_reord2", "Ellipsoid_intersectCoord=cached_reord3", "Ellipsoid_intersectCoord=cached_reord_fma"],
+          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord_fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=c", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u2"],
           "run_configs": ["r=100000,intersect=intersectCoord"],
           "input_configs": [("generator", intersectEbodies)]
        }
