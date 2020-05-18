@@ -19,7 +19,9 @@ class Benchmark_test : public Benchmark_base {
 	    
 	    for(int i=0;i<n;i++) {
 	       t32 = jit_immediate_32_via_data(2.0,2.0,2.0,2.0, 1, t32);
-	       jit_vmulpd_mem_ymm(jit_rdi,32*i,1,1);
+	       //int ii = prng_get_random_int_in_range(-10,10);
+               //ii = std::min(4*n-4, std::max(0, i*4 + ii));
+	       jit_vmulpd_mem_ymm(jit_rdi,4*8*n,1,1);
                jit_vmaxpd_ymm(1,0,0);
 	    }
 	    

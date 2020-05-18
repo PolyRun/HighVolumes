@@ -28,14 +28,14 @@ intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20'
 
 
 intersectSparseDims = [4,5,10,20,40,60,100]
-intersectSparseDims = {"2var_"+str(i):str(i) for i in intersectSparseDims}
+intersectSparseDims = {"4var_"+str(i):str(i) for i in intersectSparseDims}
 intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
 
 cubeRotDims = [3,10,20,40]
 cubeRotDims = {"cube_rot_r1.0_"+str(i):str(i) for i in cubeRotDims}
 cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
 
-jitTest = [2*i for i in range(1,20)]
+jitTest = [16*i for i in range(1,20)]
 jitTestDims = {str(i):str(4*i) for i in jitTest}
 jitTest = [str(i) for i in jitTest]
 
@@ -176,7 +176,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=quad_data"],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
           "run_configs": ["r=100000,polytopeType=3,intersect=intersectCoord_only"],
           "input_configs": [("generator", intersectSparseBodies)]
        },
