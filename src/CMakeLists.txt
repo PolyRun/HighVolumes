@@ -118,6 +118,8 @@ add_executable(silaeubl ${SILAEUBL_SOURCE_FILE} ${SILAEUBL_HEADER_FILES})
 
 target_link_libraries(silaeubl PUBLIC prng)
 
+add_subdirectory(random)
+
 set_target_properties(silaeubl PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
