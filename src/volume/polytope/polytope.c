@@ -125,7 +125,7 @@ void Polytope_print(const void* o) {
       for(int j=0; j<p->n; j++) {
          FT aij = Polytope_get_a(p,i,j);
 	 if(aij==0) {
-	    printf("  0    ",aij);
+	    printf("  0    ");
 	 } else if(aij<0) {
 	    printf(" %.3f",aij);
 	 } else {
