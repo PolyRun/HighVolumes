@@ -606,7 +606,56 @@ int main() {
 	 assert(res == 7.0);
 	 std::cout << "res: " << res << std::endl;
       }
+
+      std::cout << "storeu_xmm:\n";
+      {
+         jit_clear();
+         double (*func2)(double*);
+         func2 = (double (*)(double*)) jit_head();
+	 int n = 16;
+	 double* x = (double*)(aligned_alloc(32, 2*n*sizeof(double))); // align this to 32
+
+	 jit_Table_16* t16 = NULL;// empty list
+	 for(int i=0;i<16;i++) {
+            int ii = 2*i;
+	    t16 = jit_immediate_16_via_data(ii+0,ii+1, i, t16);
+	    jit_storeu_xmm(i,jit_rdi,16*i);
+	 }
+	 jit_emit_return();
+         jit_table_16_consume(t16);
+	 jit_print();
+	 double res = func2(x);
+	 for(int i=0;i<16*2;i++) {
+            assert(x[i]==i);
+	 }
+	 std::cout << "res: " << res << std::endl;
+      }
  
+      std::cout << "storeu_ymm:\n";
+      {
+         jit_clear();
+         double (*func2)(double*);
+         func2 = (double (*)(double*)) jit_head();
+	 int n = 16;
+	 double* x = (double*)(aligned_alloc(32, 4*n*sizeof(double))); // align this to 32
+
+	 jit_Table_32* t32 = NULL;// empty list
+	 for(int i=0;i<16;i++) {
+            int ii = 4*i;
+	    t32 = jit_immediate_32_via_data(ii+0,ii+1,ii+2,ii+3, i, t32);
+	    jit_storeu_ymm(i,jit_rdi,32*i);
+	 }
+	 jit_emit_return();
+         jit_table_32_consume(t32);
+	 jit_print();
+	 double res = func2(x);
+	 for(int i=0;i<16*4;i++) {
+            assert(x[i]==i);
+	 }
+	 std::cout << "res: " << res << std::endl;
+      }
+ 
+
    }
    // -------------------------------- end tests
 

@@ -132,12 +132,14 @@ void jit_vmaxsd(int src1, int src2, int dst);
 void jit_vminsd(int src1, int src2, int dst);
 
 void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst);
+void jit_storeu_xmm(int src, jit_Register reg, uint32_t idx);
 void jit_vmulpd_xmm(int src1, int src2, int dst);
 void jit_vmulpd_mem_xmm(jit_Register reg, uint32_t idx, int src2, int dst);
 void jit_vmaxpd_xmm(int src1, int src2, int dst);
 void jit_vminpd_xmm(int src1, int src2, int dst);
 
 void jit_loadu_ymm(jit_Register reg, uint32_t idx, int dst);
+void jit_storeu_ymm(int src, jit_Register reg, uint32_t idx);
 void jit_vmulpd_ymm(int src1, int src2, int dst);
 void jit_vmulpd_mem_ymm(jit_Register reg, uint32_t idx, int src2, int dst);
 void jit_vmaxpd_ymm(int src1, int src2, int dst);

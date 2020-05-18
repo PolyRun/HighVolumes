@@ -93,5 +93,17 @@ print("vpermpd $0b11111111,%ymm0,%ymm0")
 
 print("vmulpd 0x100(%rax),%ymm0,%ymm0")
 
+for i in range(16):
+   print("vmovupd %ymm{},0x100(%rax)".format(i))
+   print("vmovupd %xmm{},0x100(%rax)".format(i))
+   print("vmovupd %xmm{},0x100(%rcx)".format(i))
+
+
+
+
+
+
+
+
 
 

@@ -382,6 +382,44 @@ void jit_permilpd_xmm(uint8_t imm, int src, int dst) {
 }
 
 
+void jit_storeu_xmm(int src, jit_Register reg, uint32_t idx) {
+   uint8_t b2 = 0xf9;
+   if(src >= 8) {b2-=0x80;}
+   uint8_t b4 = (src%8)*8;
+   switch(reg) {
+      case jit_rax: {b4+=0x80;break;}
+      case jit_rcx: {b4+=0x81;break;}
+      case jit_rdx: {b4+=0x82;break;}
+      case jit_rbx: {b4+=0x83;break;}
+      case jit_rsi: {b4+=0x86;break;}
+      case jit_rdi: {b4+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   // c5 f9 11 80 00 01 00 	vmovupd %xmm0,0x100(%rax)
+   { uint8_t instr[] = {0xc5,b2,0x11,b4}; jit_push(instr,4); }
+   jit_push((const uint8_t*)&idx,4);
+}
+
+void jit_storeu_ymm(int src, jit_Register reg, uint32_t idx) {
+   uint8_t b2 = 0xfd;
+   if(src >= 8) {b2-=0x80;}
+   uint8_t b4 = (src%8)*8;
+   switch(reg) {
+      case jit_rax: {b4+=0x80;break;}
+      case jit_rcx: {b4+=0x81;break;}
+      case jit_rdx: {b4+=0x82;break;}
+      case jit_rbx: {b4+=0x83;break;}
+      case jit_rsi: {b4+=0x86;break;}
+      case jit_rdi: {b4+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   // c5 fd 11 80 00 01 00 	vmovupd %ymm0,0x100(%rax)
+   { uint8_t instr[] = {0xc5,b2,0x11,b4}; jit_push(instr,4); }
+   jit_push((const uint8_t*)&idx,4);
+}
+
+
+
 void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst) {
    uint8_t b2 = 0xf9;
    if(dst >= 8) {b2-=0x80;}
