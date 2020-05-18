@@ -127,7 +127,11 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
             break;
          }
          case pjit_double_data: {
-            Pjit_cacheUpdateCoord_body_single(p,i,false,&t8);
+            Pjit_cacheUpdateCoord_body_single(p,i,false,&t8); // TODO
+            break;
+         }
+	 case pjit_quad_data: {
+            Pjit_cacheUpdateCoord_body_single(p,i,false,&t8); // TODO
             break;
          }
 	 default: {
