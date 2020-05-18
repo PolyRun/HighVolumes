@@ -70,12 +70,14 @@ void Pjit_intersectCoord_body_single(const Polytope* p, const int i, const bool 
          if(aij < 0.0) {
             //printf("do max\n");
             //c5 e9 5f c0          	vmaxpd %xmm0,%xmm2,%xmm0
-            {const uint8_t instr[] = {0xc5,0xe9,0x5f,0xc0}; jit_push(instr,4);}
+            //{const uint8_t instr[] = {0xc5,0xe9,0x5f,0xc0}; jit_push(instr,4);}
+            jit_vmaxsd(0,2,0);
          } else {
             //printf("do min\n");
             //c5 e9 5d c9          	vminpd %xmm1,%xmm2,%xmm1
-            {const uint8_t instr[] = {0xc5,0xe9,0x5d,0xc9}; jit_push(instr,4);}
-         }
+            //{const uint8_t instr[] = {0xc5,0xe9,0x5d,0xc9}; jit_push(instr,4);}
+            jit_vminsd(1,2,1);
+	 }
       }
    }
 }
@@ -87,7 +89,12 @@ void Pjit_intersectCoord_init_double(jit_Table_16** t16) {
    *t16 = jit_immediate_16_via_data(t11,t11,1,*t16);
 }
 
+int min(int a, int b) {
+   return (a<b)?a:b;
+}
+
 void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_16** t16) {
+   //Polytope_print(p);
    // find all pairs in column i:
    int pairs_max[p->m]; int pairs_max_i = 0;
    int pairs_min[p->m]; int pairs_min_i = 0;
@@ -96,7 +103,7 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
    // 0: free
    // 1: last was max pair - want to join?
    // 2: last was min pair - want to join?
-
+   
    for(int j=0;j<p->m;j++) {
       FT aij = Polytope_get_a(p,j,i);
       if(aij != 0.0) { // TODO: make epsilon
@@ -133,26 +140,46 @@ void Pjit_intersectCoord_body_double(const Polytope* p, const int i, jit_Table_1
    int j = 0;
    while(j < pairs_max_i || j < pairs_min_i) {
       if(j < pairs_max_i) {
-         int jj = pairs_max[j];
+         int jj = min(p->m-2,pairs_max[j]);
 	 double a0 = Polytope_get_a(p,jj+0,i);
 	 double a1 = Polytope_get_a(p,jj+1,i);
-	 if(a1 >= 0 || jj+1 >= p->m) {a1 = -1.0/FT_MAX;}// make impotent
+	 if(a0 >= 0) {a0 = -1.0/1e100;}// make impotent
+	 if(a1 >= 0) {a1 = -1.0/1e100;}// make impotent
 	 
 	 //printf("max block at: %d %d %f %f\n",i,jj,a0,a1);
          
 	 *t16 = jit_immediate_16_via_data(1.0/a0,1.0/a1,4,*t16);
          
+         // // test:
+	 // if(i==3) {
+	 //    //uint32_t cachej = 8*jj;
+	 //    //jit_loadu_xmm(jit_rcx,cachej,0);
+         //    //jit_permilpd_xmm(0b1010,0,0);
+         //    jit_permilpd_xmm(0b1010,4,0);
+         //    jit_permilpd_xmm(0b1011,4,1);
+	 //    return;
+         // }
+
 	 uint32_t cachej = 8*jj;
 	 //jit_loadu_xmm(jit_rcx,cachej,3);
          //jit_vmulpd_xmm(4,3,2);
 	 jit_vmulpd_mem_xmm(jit_rcx,cachej,4,2);
+         
+         //// test:
+	 //if(i==3) {
+         //   jit_permilpd_xmm(0b1010,4,0);
+         //   jit_permilpd_xmm(0b1010,2,1);
+	 //   return;
+         //}
+
 	 jit_vmaxpd_xmm(0,2,0);
       }
       if(j < pairs_min_i) {
-         int jj = pairs_min[j];
+         int jj = min(p->m-2,pairs_min[j]);
 	 double a0 = Polytope_get_a(p,jj+0,i);
 	 double a1 = Polytope_get_a(p,jj+1,i);
-	 if(a1 <= 0 || jj+1 >= p->m) {a1 = 1.0/FT_MAX;}// make impotent
+	 if(a0 <= 0) {a0 = 1.0/1e100;}// make impotent
+	 if(a1 <= 0) {a1 = 1.0/1e100;}// make impotent
 	 
 	 //printf("min block at: %d %d %f %f\n",i,jj,a0,a1);
          
