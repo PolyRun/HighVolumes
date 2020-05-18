@@ -345,7 +345,13 @@ Solved_Body_Generator::Solved_Body_Generator() {
                                            "rv_8_13.ine",
                                            "rv_8_14.ine",
                                            "rv_8_20.ine",
-                                           "rv_8_30.ine"
+                                           "rv_8_30.ine",
+                                           "rand_3_30_1000.ine",
+                                           "rand_3_30_500.ine",
+                                           "rand_3_30_100.ine",
+                                           "rand_5_30_20.ine",
+                                           "rand_7_30_20.ine",
+                                           "rand_8_30_20.ine",
     };
     for(auto f : vinci_list) {
         std::string pname = "vinci_"+f;
@@ -410,7 +416,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
            sb->is_normalized = true;
            return sb;
        });
-    }
+    }    
 }
 
 Solved_Body*

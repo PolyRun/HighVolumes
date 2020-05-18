@@ -277,6 +277,8 @@ void PolytopeCSC_cacheUpdateCoord_withb(const void *o, const int d, const FT dx,
     for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
         c[p->row_idx[i]] -= dx * p->A[i];
     }
+
+    // _mm256_i32scatter_pd
 }
 
 
