@@ -35,6 +35,10 @@ cubeRotDims = [3,10,20,40]
 cubeRotDims = {"cube_rot_r1.0_"+str(i):str(i) for i in cubeRotDims}
 cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
 
+jitTest = [2*i for i in range(1,20)]
+jitTestDims = {str(i):str(4*i) for i in jitTest}
+jitTest = [str(i) for i in jitTest]
+
 # --- Benchmarks
 '''
     name:          name of the benchmark, has to be unique
@@ -180,6 +184,22 @@ BENCHMARKS = [
     "xoption": ("generator", intersectSparseDims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "jit_test",
+    "executable": "benchmark_jit",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["r=100000,experiment=test"],
+          "input_configs": [("n", jitTest)]
+       },
+    ],
+    "xoption": ("n", jitTestDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["n", "n", "n"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
