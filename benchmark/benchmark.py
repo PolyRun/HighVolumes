@@ -29,8 +29,11 @@ intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20'
 
 intersectSparseDims = [4,5,10,20,40,60,100,150,200]
 intersectSparseDims = {"2var_"+str(i):str(i) for i in intersectSparseDims}
-
 intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
+
+intersectSparse4Dims = [4,5,10,20,40,60,100,150,200]
+intersectSparse4Dims = {"4var_"+str(i):str(i) for i in intersectSparse4Dims}
+intersectSparse4Bodies = [ name for (name,i) in intersectSparse4Dims.items()]
 
 cubeRotDims = [3,10,20,40]
 cubeRotDims = {"cube_rot_r1.0_"+str(i):str(i) for i in cubeRotDims}
@@ -169,23 +172,39 @@ BENCHMARKS = [
           "input_configs": [("generator", intersectSparseBodies)]
        },
     ],
-    "xoption": ("generator", intersectSparseDims),
+    "xoption": ("generator", intersectSparse4Dims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
-   {"name": "sparse_polytopeJIT",
+   {"name": "sparse_polytopeJIT_intersect",
     "executable": "benchmark_intersect",
     "config": [       
        {
           "const_configs": [],
           "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
           "run_configs": ["r=100000,polytopeType=3,intersect=intersectCoord_only"],
-          "input_configs": [("generator", intersectSparseBodies)]
+          "input_configs": [("generator", intersectSparse4Bodies)]
        },
     ],
-    "xoption": ("generator", intersectSparseDims),
+    "xoption": ("generator", intersectSparse4Dims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "sparse_polytopeJIT_update",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
+          "run_configs": ["r=100000,polytopeType=3,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", intersectSparse4Bodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparse4Dims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
