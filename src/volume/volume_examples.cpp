@@ -370,7 +370,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     }
 
     // kvariable
-    std::vector<int> kvar_n = {4,5,10,20,30,40,50,60,100};
+    std::vector<int> kvar_n = {4,5,10,20,30,40,50,60,100,150,200};
     for(int n : kvar_n) {
        std::string nstr = std::to_string(n);
        add("2var_TSP_"+nstr, "2-variable-polytope, translated, axisScaled, preprocessed, 10n constraints, "+nstr+"-dim [normalized]", [n]() {

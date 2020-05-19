@@ -76,6 +76,9 @@ void *PolytopeCSC_clone(const void *o){
     p_clone->A = (FT *) aligned_alloc(32, ndata * sizeof(FT));
     memcpy(p_clone->A, p->A, ndata * sizeof(FT));
 
+    p_clone->Ainv = (FT *) aligned_alloc(32, ndata * sizeof(FT));
+    memcpy(p_clone->Ainv, p->Ainv, ndata *sizeof(FT));
+
     p_clone->row_idx = (int *) aligned_alloc(32, ndata * sizeof(int));
     memcpy(p_clone->row_idx, p->row_idx, ndata * sizeof(int));
 
@@ -85,6 +88,7 @@ void *PolytopeCSC_clone(const void *o){
 void PolytopeCSC_free(const void *o){
     PolytopeCSC *p = (PolytopeCSC *) o;
     free(p->A);
+    free(p->Ainv);
     free(p->b);
     free(p->row_idx);
     free(p->col_start);
@@ -222,11 +226,13 @@ int PolytopeCSC_cacheAlloc_ref(const void *o){
     return p->m * sizeof(FT);
 }
 
+
+
 void PolytopeCSC_cacheReset_ref(const void *o, const FT *x, void *cache){
 
     // compute dot product
     PolytopeCSC *p = (PolytopeCSC *) o;
-    FT *c = (FT *) cache;
+    FT *c = (FT *) cache; //
     memset(c, 0, p->m*sizeof(FT));
 
     for (int i = 0; i < p->n; i++){
@@ -242,7 +248,7 @@ void PolytopeCSC_cacheReset_withb(const void *o, const FT *x, void *cache){
 
     // set cache[i] = b[i] - Ai*x
     PolytopeCSC *p = (PolytopeCSC *) o;
-    FT *c = (FT *) cache;
+    FT *c = (FT *) cache; //(FT *) cache;
 
     for (int i = 0; i < p->m; i++){
         c[i] = p->b[i];
@@ -257,10 +263,34 @@ void PolytopeCSC_cacheReset_withb(const void *o, const FT *x, void *cache){
 }
 
 
+void PolytopeCSC_cacheReset_fma(const void *o, const FT *x, void *cache){
+
+    // set cache[i] = b[i] - Ai*x
+    PolytopeCSC *p = (PolytopeCSC *) o;
+    FT *c = (FT *) cache; //(FT *) cache;
+
+    for (int i = 0; i < p->m; i++){
+        c[i] = p->b[i];
+    }
+
+    __m128d zero = _mm_set_sd(0.0);
+    for (int i = 0; i < p->n; i++){
+        __m128d xi = _mm_load_sd(&x[i]);
+        __m128d xi_neg = _mm_fmsub_sd(zero, zero, xi);
+        for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
+            __m128d crj = _mm_load_sd(&c[p->row_idx[j]]);
+            __m128d Aj = _mm_load_sd(&p->A[j]);
+            __m128d crj_upd = _mm_fmadd_sd(Aj, xi_neg, crj);
+            _mm_store_sd(&c[p->row_idx[j]], crj_upd);
+        }
+    }
+}
+
+
 void PolytopeCSC_cacheUpdateCoord_ref(const void *o, const int d, const FT dx, void *cache) {
 
     const PolytopeCSC *p = (PolytopeCSC *) o;
-    FT *c = (FT *) cache;
+    FT *c = (FT *) cache; //(FT *) cache;
 
     // only update with column d of A
     for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
@@ -271,13 +301,60 @@ void PolytopeCSC_cacheUpdateCoord_ref(const void *o, const int d, const FT dx, v
 void PolytopeCSC_cacheUpdateCoord_withb(const void *o, const int d, const FT dx, void *cache) {
 
     const PolytopeCSC *p = (PolytopeCSC *) o;
-    FT *c = (FT *) cache;
+    FT *c = (FT *) cache; //(FT *) cache;
 
     // only update with column d of A
     for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
         c[p->row_idx[i]] -= dx * p->A[i];
     }
 
+    // _mm256_i32scatter_pd
+}
+
+
+
+void PolytopeCSC_cacheUpdateCoord_fma(const void *o, const int d, const FT dx, void *cache) {
+
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    FT *c = (FT *) cache; //(FT *) cache;
+
+    // only update with column d of A
+    __m128d dx_neg = _mm_set_sd(-dx);
+    for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
+        __m128d cri = _mm_load_sd(&c[p->row_idx[i]]);
+        __m128d Ai = _mm_load_sd(&p->A[i]);
+        __m128d cri_upd = _mm_fmadd_sd(dx_neg, Ai, cri);
+        _mm_store_sd(&c[p->row_idx[i]], cri_upd);
+    }
+
+    // _mm256_i32scatter_pd
+}
+
+
+void PolytopeCSC_cacheUpdateCoord_vec(const void *o, const int d, const FT dx, void *cache) {
+
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    FT *c = (FT *) cache; //(FT *) cache;
+
+    // only update with column d of A
+    __m256d dx_neg = _mm256_set1_pd(-dx);
+    for (int i = p->col_start[d]; i < p->col_start[d+1] - 7; i+=4){
+        __m256d cri = _mm256_set_pd(c[p->row_idx[i+3]], c[p->row_idx[i+2]], c[p->row_idx[i+1]], c[p->row_idx[i]]);
+        __m256d Ai = _mm256_load_pd(&p->A[i]);
+        __m256d cri_upd = _mm256_fmadd_pd(dx_neg, Ai, cri);
+        // we allow updating
+        c[p->row_idx[i]] = cri_upd[0];
+        c[p->row_idx[i+1]] = cri_upd[1];
+        c[p->row_idx[i+2]] = cri_upd[2];
+        c[p->row_idx[i+3]] = cri_upd[3];
+    }
+    __m128d dx_ne = _mm_set_sd(-dx);
+    for (int i = p->col_start[d+1]-4; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
+        __m128d cri = _mm_load_sd(&c[p->row_idx[i]]);
+        __m128d Ai = _mm_load_sd(&p->A[i]);
+        __m128d cri_upd = _mm_fmadd_sd(dx_ne, Ai, cri);
+        _mm_store_sd(&c[p->row_idx[i]], cri_upd);
+    }
     // _mm256_i32scatter_pd
 }
 
@@ -409,6 +486,7 @@ void PolytopeCSC_transform_ref(const void *o_in, void *o_out, const Matrix *L, c
     
     // second fill values into A and row indices into row_idx
     p_out->A = (FT *) aligned_alloc(32, p_out->col_start[p_out->n] * sizeof(FT));
+    p_out->Ainv = (FT *) aligned_alloc(32, p_out->col_start[p_out->n] * sizeof(FT));
     p_out->row_idx = (int *) aligned_alloc(32, p_out->col_start[p_out->n] * sizeof(int));
 
     int idx = 0;
@@ -416,17 +494,21 @@ void PolytopeCSC_transform_ref(const void *o_in, void *o_out, const Matrix *L, c
         for (int j = 0; j < p_out->m; j++){
             if (Matrix_get(M, i, j) != 0){
                 p_out->A[idx] = Matrix_get(M, i, j);
+                p_out->Ainv[idx] = 1/p_out->A[idx];
                 p_out->row_idx[idx] = j;
                 idx++;
             }
         }
         for (; idx < p_out->col_start[i+1]; idx++){
             p_out->row_idx[idx] = -1;
+            p_out->A[idx] = 0;
+            p_out->Ainv[idx] = 1/p_out->A[idx];
         }
     }
 
     // compute updated b and load into p_out
-    p_out->b = (FT *) aligned_alloc(32, p_out->m * sizeof(FT));    
+    // TODO: test!
+    p_out->b = (FT *) aligned_alloc(32, p_out->m * sizeof(FT));
     PolytopeCSC_mvm(p, a, p_out->b);
 
     FT beta_r = 1.0/beta;
