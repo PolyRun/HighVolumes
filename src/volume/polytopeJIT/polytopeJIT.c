@@ -126,6 +126,7 @@ void PolytopeJIT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, v
    const PolytopeJIT* p = (PolytopeJIT*)o;
    assert(p->cacheUpdateCoord && "cacheReset function must be generated PolytopeJIT");
    
+   //printf("cacheUpdateCoord %d %f\n",d,dx);
    //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}
    //printf(" before\n");
    p->cacheUpdateCoord(d,dx,cache);

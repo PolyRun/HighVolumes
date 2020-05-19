@@ -75,6 +75,18 @@ void intersectCoord_2pack(const double*x,const double*y, double *t0, double*t1) 
    *t0 = t00[0];
 }
 
+typedef struct TTT {
+   __m256d a;
+   __m256d b;
+} TTT;
+
+TTT setTTT(double a, double b) {
+   TTT ttt;
+   ttt.a = _mm256_set1_pd(a);
+   ttt.b = _mm256_set1_pd(b);
+   return ttt;
+}
+
 int main () {
    __m256d a = _mm256_set_pd(4.0, 3.0, 2.0, 1.0);
    __m256d b = _mm256_set_pd(4.0, 3.0, 2.0, 1.1);
