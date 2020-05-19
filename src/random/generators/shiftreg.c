@@ -38,7 +38,7 @@ void sr_init(void *seed_){
 }
 
 inline uint32_t sr_random_uint32() {
-    return xorshift32();
+    return (xorshift32() & ~(1UL << 31)); // Clearing sign bit
 }
 
 inline uint64_t sr_random_uint64() {

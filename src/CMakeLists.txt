@@ -116,7 +116,7 @@ set(SILAEUBL_SOURCE_FILE
 )
 add_executable(silaeubl ${SILAEUBL_SOURCE_FILE} ${SILAEUBL_HEADER_FILES})
 
-target_link_libraries(silaeubl PUBLIC prng)
+target_link_libraries(silaeubl PUBLIC volume_helper prng)
 
 add_subdirectory(random)
 
