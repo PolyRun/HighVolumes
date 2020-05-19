@@ -62,6 +62,36 @@ void Pjit_cacheUpdateCoord_body_quad(const Polytope* p, const int i, jit_Table_3
    jit_emit_vzeroupper();
 }
 
+void Pjit_cacheUpdateCoord_init_double() {
+   // go broadcast xmm to xmm
+   jit_permilpd_xmm(0b0000,0,0);
+}
+
+void Pjit_cacheUpdateCoord_body_double(const Polytope* p, const int i, jit_Table_16** t16) {
+   // find quads:
+   int last_double = -10;
+   for(int j=0;j<p->m;j++) {
+      FT aij = Polytope_get_a(p,j,i);
+      if(aij != 0.0 && last_double < j-1) {
+      	 last_double = j;
+	 double aa[2];
+	 for(int k=0;k<2;k++) {
+	    if(j+k<p->m) {
+	       aa[k] = -Polytope_get_a(p,j+k,i);
+	    } else {
+	       aa[k] = 0;
+	    }
+	 }
+	 *t16 = jit_immediate_16_via_data(aa[0],aa[1], 4,*t16);
+	 //printf("block at: %d %d: %f %f %f %f\n",i,j,aa[0],aa[1],aa[2],aa[3]);
+
+	 uint32_t cachej = 8*j;
+         jit_vfmad213pd_mem_xmm(jit_rsi,cachej,0,4);
+	 jit_storeu_xmm(4,jit_rsi,cachej);
+      }
+   }
+}
+
 
 
 void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o) {
@@ -129,7 +159,7 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
          break;
       }
       case pjit_double_data: {
-         // TODO
+         Pjit_cacheUpdateCoord_init_double(); // go broadcast xmm to xmm
 	 break;
       }
       case pjit_quad_data: {
@@ -185,7 +215,7 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
             break;
          }
          case pjit_double_data: {
-            Pjit_cacheUpdateCoord_body_single(p,i,false,&t8); // TODO
+            Pjit_cacheUpdateCoord_body_double(p,i,&t16);
             break;
          }
 	 case pjit_quad_data: {
