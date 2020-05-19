@@ -101,7 +101,7 @@ BENCHMARKS = [
        },
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref"],
+          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
           "run_configs": ["intersect=intersectCoord,polytopeTranspose=true"],
           "input_configs": [("generator", intersectbodies)]
        },
