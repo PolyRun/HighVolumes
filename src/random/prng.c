@@ -9,6 +9,11 @@ rand_f_t rand_f = std_rand;
 
 int rand_chunk_size = 1024;
 
+union hack {
+    long l;
+    double d
+};
+
 /**
  * \brief Initializes the prng
  **/
@@ -32,14 +37,15 @@ double prng_get_random_double_0_1(){
 }
 
 double prng_fast_32_get_random_double_0_1() {
-    long temp = (long) rand();
+    union hack myHack;
+    myHack.l = (long) rand();
     double rand_double;
 
     // We put the 32 bits of num to the beginning (MSB-wise) of the mantissa and
     // the 20 bits in the bottom are zero, which is an error of 2^(-20)
     // Note that we can't convert directly to double and instead do address-magic
-    const long num = (temp << 20) && (1023 << 53);
-    memcpy(&rand_double, &num, sizeof(num));
+    myHack.l = (myHack.l << 21) | (1023L << 52);
+    rand_double = myHack.d;
 
     // Since rand_double has a zero exponent (2^0), it is between 2 and 1.
     rand_double = rand_double - 1;

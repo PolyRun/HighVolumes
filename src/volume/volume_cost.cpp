@@ -241,6 +241,7 @@ void PolytopeT_intersectCoord_cached_b_cost_vec(const void* o) {
    const int dims = poly->n;
    const int constraints = poly->m;
 
+   pc_stack().log(0, 0, "TODO");
    
 }
 
