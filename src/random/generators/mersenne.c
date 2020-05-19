@@ -91,7 +91,7 @@ uint32_t mt_rand () {
     e ^= (e << 15) & 0xEFC60000;
     e ^= (e >> 18);
 
-    return e;
+    return (e & ~(1UL << 31)); // Clearing sign bit;
 }
 
 inline void mt_init(void *seed) {
