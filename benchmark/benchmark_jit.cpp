@@ -16,6 +16,7 @@ class Benchmark_test : public Benchmark_base {
 	    jit_Table_32* t32 = NULL;// empty list
 	    
 	    t32 = jit_immediate_32_via_data(0,0,0,0, 0, t32);
+	    //t32 = jit_immediate_32_via_data(0,0,0,0, 4, t32);
 	    
 	    for(int i=0;i<n;i++) {
 	       //int ii = prng_get_random_int_in_range(-10,10);
@@ -23,8 +24,11 @@ class Benchmark_test : public Benchmark_base {
 	       //t32 = jit_immediate_32_via_data(2.0,2.0,2.0,2.0, 2, t32);
 	       jit_loadu_ymm(jit_rsi,4*8*i,2);
 	       jit_vmulpd_mem_ymm(jit_rdi,4*8*i,2,1);
+               //jit_vmaxpd_ymm(1,4*(i%2),4*(i%2));
                jit_vmaxpd_ymm(1,0,0);
 	    }
+            
+	    //jit_vmaxpd_ymm(4,0,0);
 	    
 	    jit_emit_return();
             bytes_op = jit_head() - (uint8_t*)func;
