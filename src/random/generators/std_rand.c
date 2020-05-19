@@ -13,7 +13,7 @@ inline uint32_t std_rand(){
     return rand();
 }
 
-void refill_chunk() {
+inline void refill_chunk() {
     for(int i = 0; i < rand_chunk_size; ++i) {
         chunk[i] = rand();
     }

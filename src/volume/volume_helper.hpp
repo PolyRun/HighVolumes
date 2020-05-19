@@ -210,17 +210,12 @@ public:
 						     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
 						     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
 
-      add(new CLIF_Option<rand_init_f_t>(&rand_init_f,'f',"rand_init_f","std_init", {
-                       {"std_init",{std_init, "standard rand init"}},
-                       {"std_init_chunked",{std_init_chunked, "standard rand init (chunked)"}},
-						     {"sr_init",{sr_init, "shift register init"}},
-						     {"mt_init",{mt_init, "mersenne twister init"}} }));
-
-      add(new CLIF_Option<rand_f_t>(&rand_f,'f',"rand_f","std_rand", {
-                       {"std_rand",{std_rand, "standard rand"}},
-                       {"std_rand_chunked",{std_rand_chunked, "standard rand (chunked)"}},
-						     {"sr_rand",{sr_random_uint32, "shift register rand"}},
-						     {"mt_rand",{mt_rand, "mersenne twister rand"}} }));
+      add(new CLIF_DoubleOption<rand_init_f_t,rand_f_t>(&rand_init_f, &rand_f,'f',"rand_f","std_rand", {
+                       {"std_rand",{{std_init, std_rand}, "standard rand"}},
+                       {"std_rand_chunked",{{std_init_chunked, std_rand_chunked}, "standard rand (chunked)"}},
+						     {"sr_rand",{{sr_init, sr_random_uint32}, "shift register rand"}},
+						     {"mt_rand",{{mt_init, mt_rand}, "mersenne twister rand"}}
+                     }));
 
 
       // number parameters:

@@ -347,8 +347,8 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["rand_f=std_rand,rand_init_f=std_init", "rand_f=sr_rand,rand_init_f=sr_init", "rand_f=mt_rand,rand_init_f=mt_init"],
-          "run_configs": ["r=10000"],
+          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=mt_rand"],
+          "run_configs": ["r=1000,d=16384,i=16384,rand_chunk_size=512"],
           "input_configs": [("type", randValTypes)]
        }
     ],
