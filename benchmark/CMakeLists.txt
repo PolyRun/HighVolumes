@@ -123,3 +123,15 @@ set_target_properties(convergence PROPERTIES
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
 )
+
+project(benchmark_randomness)
+
+add_executable(benchmark_randomness benchmark_randomness.cpp)
+
+target_link_libraries(benchmark_randomness PUBLIC volume_helper prng)
+
+set_target_properties(benchmark_randomness PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
