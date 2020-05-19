@@ -35,7 +35,7 @@ cubeRotDims = [3,10,20,40]
 cubeRotDims = {"cube_rot_r1.0_"+str(i):str(i) for i in cubeRotDims}
 cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
 
-jitTest = [16*i for i in range(1,20)]
+jitTest = [256*i for i in range(1,20)]
 jitTestDims = {str(i):str(4*i) for i in jitTest}
 jitTest = [str(i) for i in jitTest]
 

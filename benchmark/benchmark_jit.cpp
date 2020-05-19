@@ -5,23 +5,24 @@
 class Benchmark_test : public Benchmark_base {
     public:
         Benchmark_test(std::string name, int reps, bool convergence, int warmup_reps, const double time_ci_alpha_, const double results_ci_alpha_, int n)
-		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), n(4*n) {}
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), n(n) {}
 
     protected:
         void initialize () {
             std::cout << "initializing test data..." << std::endl;
 	    
             jit_clear();
-            func = (double (*)(double*)) jit_head();
+            func = (double (*)(double*,double*)) jit_head();
 	    jit_Table_32* t32 = NULL;// empty list
 	    
 	    t32 = jit_immediate_32_via_data(0,0,0,0, 0, t32);
 	    
 	    for(int i=0;i<n;i++) {
-	       t32 = jit_immediate_32_via_data(2.0,2.0,2.0,2.0, 1, t32);
 	       //int ii = prng_get_random_int_in_range(-10,10);
                //ii = std::min(4*n-4, std::max(0, i*4 + ii));
-	       jit_vmulpd_mem_ymm(jit_rdi,4*8*n,1,1);
+	       //t32 = jit_immediate_32_via_data(2.0,2.0,2.0,2.0, 2, t32);
+	       jit_loadu_ymm(jit_rsi,4*8*i,2);
+	       jit_vmulpd_mem_ymm(jit_rdi,4*8*i,2,1);
                jit_vmaxpd_ymm(1,0,0);
 	    }
 	    
@@ -34,15 +35,19 @@ class Benchmark_test : public Benchmark_base {
 	    
 	    //jit_print();
      
-	    x = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-	    for(int i=0;i<n;i++) {x[i] = i;}
+	    x = (FT*)(aligned_alloc(32, 4*n*sizeof(FT))); // align this to 32
+	    y = (FT*)(aligned_alloc(32, 4*n*sizeof(FT))); // align this to 32
+	    for(int i=0;i<4*n;i++) {x[i] = i; y[i]=2;}
+
+            double res = func(x,y);
+	    std::cout << "res: " << res << " " << 4*n << "\n";
 
 	    reset();
         }
         void reset () {
 	}
         double run () {
-            double res = func(x);
+            double res = func(x,y);
 	    //std::cout << "res: " << res << "\n";
 	    return 0;
 	}
@@ -61,7 +66,8 @@ class Benchmark_test : public Benchmark_base {
     protected:
         int n;
 	double* x;
-	double (*func)(double*);
+	double* y;
+	double (*func)(double*,double*);
 	size_t bytes_op;
 	size_t bytes_data;
 };
