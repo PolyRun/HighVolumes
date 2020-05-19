@@ -58,6 +58,20 @@ set_target_properties(benchmark_intersect PROPERTIES
 )
 
 
+project(benchmark_jit)
+
+add_executable(benchmark_jit benchmark_jit.cpp)
+
+target_link_libraries(benchmark_jit PUBLIC volume_helper)
+
+set_target_properties(benchmark_jit PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+
+
 project(benchmark_ball_intersect)
 
 add_executable(benchmark_ball_intersect benchmark_ball_intersect.cpp)
@@ -105,6 +119,18 @@ add_executable(convergence convergence.cpp)
 target_link_libraries(convergence PUBLIC volume_helper)
 
 set_target_properties(convergence PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+project(benchmark_randomness)
+
+add_executable(benchmark_randomness benchmark_randomness.cpp)
+
+target_link_libraries(benchmark_randomness PUBLIC volume_helper prng)
+
+set_target_properties(benchmark_randomness PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO

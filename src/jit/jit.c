@@ -382,6 +382,44 @@ void jit_permilpd_xmm(uint8_t imm, int src, int dst) {
 }
 
 
+void jit_storeu_xmm(int src, jit_Register reg, uint32_t idx) {
+   uint8_t b2 = 0xf9;
+   if(src >= 8) {b2-=0x80;}
+   uint8_t b4 = (src%8)*8;
+   switch(reg) {
+      case jit_rax: {b4+=0x80;break;}
+      case jit_rcx: {b4+=0x81;break;}
+      case jit_rdx: {b4+=0x82;break;}
+      case jit_rbx: {b4+=0x83;break;}
+      case jit_rsi: {b4+=0x86;break;}
+      case jit_rdi: {b4+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   // c5 f9 11 80 00 01 00 	vmovupd %xmm0,0x100(%rax)
+   { uint8_t instr[] = {0xc5,b2,0x11,b4}; jit_push(instr,4); }
+   jit_push((const uint8_t*)&idx,4);
+}
+
+void jit_storeu_ymm(int src, jit_Register reg, uint32_t idx) {
+   uint8_t b2 = 0xfd;
+   if(src >= 8) {b2-=0x80;}
+   uint8_t b4 = (src%8)*8;
+   switch(reg) {
+      case jit_rax: {b4+=0x80;break;}
+      case jit_rcx: {b4+=0x81;break;}
+      case jit_rdx: {b4+=0x82;break;}
+      case jit_rbx: {b4+=0x83;break;}
+      case jit_rsi: {b4+=0x86;break;}
+      case jit_rdi: {b4+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   // c5 fd 11 80 00 01 00 	vmovupd %ymm0,0x100(%rax)
+   { uint8_t instr[] = {0xc5,b2,0x11,b4}; jit_push(instr,4); }
+   jit_push((const uint8_t*)&idx,4);
+}
+
+
+
 void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst) {
    uint8_t b2 = 0xf9;
    if(dst >= 8) {b2-=0x80;}
@@ -529,7 +567,43 @@ void jit_vOPpd_mem_xmm(uint8_t op, jit_Register reg, uint32_t idx, int src2, int
    jit_push((const uint8_t*)&idx,4);
 }
 
+void jit_fma_mem(jit_Register reg, uint32_t idx, int a, int b, uint8_t b3, uint8_t b4) {
+   // c4 e2 f9 a9 80 00 01 	vfmadd213sd 0x100(%rax),%xmm0,%xmm0
+   // c4 e2 f9 a8 80 00 01 	vfmadd213pd 0x100(%rax),%xmm0,%xmm0
+   // c4 e2 fd a8 80 00 01 	vfmadd213pd 0x100(%rax),%ymm0,%ymm0
+   // c4 e2 fd 98 80 00 01 	vfmadd132pd 0x100(%rax),%ymm0,%ymm0
+   // c4 e2 fd b8 80 00 01 	vfmadd231pd 0x100(%rax),%ymm0,%ymm0
+   uint8_t b5 = 8*(b%8);
+   uint8_t b2 = 0xe2;
+   if(b>=8) {b2-=0x80;}
+   b3-= a*8;
+   switch(reg) {
+      case jit_rax: {b5+=0x80;break;}
+      case jit_rcx: {b5+=0x81;break;}
+      case jit_rdx: {b5+=0x82;break;}
+      case jit_rbx: {b5+=0x83;break;}
+      case jit_rsi: {b5+=0x86;break;}
+      case jit_rdi: {b5+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   { uint8_t instr[] = {0xc4,b2,b3,b4,b4}; jit_push(instr,5); }
+   jit_push((const uint8_t*)&idx,4);
+}
 
+void jit_vfmad213sd_mem(jit_Register reg, uint32_t idx, int src, int dst) {
+   // c4 e2 f9 a9 80 00 01 	vfmadd213sd 0x100(%rax),%xmm0,%xmm0
+   jit_fma_mem(reg,idx,src,dst,0xf9,0xa9);
+}
+
+void jit_vfmad213pd_mem_xmm(jit_Register reg, uint32_t idx, int src, int dst) {
+   // c4 e2 f9 a8 80 00 01 	vfmadd213pd 0x100(%rax),%xmm0,%xmm0
+   jit_fma_mem(reg,idx,src,dst,0xf9,0xa8);
+}
+
+void jit_vfmad213pd_mem_ymm(jit_Register reg, uint32_t idx, int src, int dst) {
+   // c4 e2 fd a8 80 00 01 	vfmadd213pd 0x100(%rax),%ymm0,%ymm0
+   jit_fma_mem(reg,idx,src,dst,0xfd,0xa8);
+}
 
 void jit_vmulpd_mem_xmm(jit_Register reg, uint32_t idx, int src2, int dst) {
    // c5 f9 59 80 00 01 00 	vmulpd 0x100(%rax),%xmm0,%xmm0
@@ -595,7 +669,10 @@ void jit_vmulpd_mem_ymm(jit_Register reg, uint32_t idx, int src2, int dst) {
    jit_vOPpd_mem_ymm(0x59,reg,idx,src2,dst);
 }
 
-
+void jit_emit_vzeroupper() {
+   // c5 f8 77                vzeroupper
+   { uint8_t instr[] = {0xc5,0xf8,0x77}; jit_push(instr,3); }
+}
 
 void jit_emit_return() {
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }

@@ -6,6 +6,7 @@
 static uint32_t state_32 = 1;
 static uint64_t state_64 = 1;
 
+/* Base implementation taken from: https://en.wikipedia.org/wiki/Xorshift#Example_implementation */
 /* The state word must be initialized to non-zero */
 /* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
 
@@ -37,7 +38,7 @@ void sr_init(void *seed_){
 }
 
 inline uint32_t sr_random_uint32() {
-    return xorshift32();
+    return (xorshift32() & ~(1UL << 31)); // Clearing sign bit
 }
 
 inline uint64_t sr_random_uint64() {

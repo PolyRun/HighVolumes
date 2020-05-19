@@ -3,8 +3,8 @@
 #ifndef HEADER_PRNG_MERSENNE_H
 #define HEADER_PRNG_MERSENNE_H
 
-uint32_t mersenne_twister();
+uint32_t mt_rand();
 
-void mersenne_twister_init(void *seed);
+void mt_init(void *seed);
 
 #endif // HEADER_PRNG_MERSENNE_H

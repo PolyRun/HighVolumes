@@ -4,7 +4,7 @@
 #include "mersenne.h"
 
 /*
-    Taken from https://de.wikipedia.org/wiki/Mersenne-Twister#Code
+    Base implementation taken from https://de.wikipedia.org/wiki/Mersenne-Twister#Code
 */
 #include <stdint.h>
 
@@ -77,7 +77,7 @@ static void mersenne_twister_vector_update (uint32_t* const p)
  * - bei jedem Aufruf wird eine Zufallszahl aus dem Vektor gelesen und noch einem Tempering unterzogen.
  */
 
-uint32_t mersenne_twister () {
+uint32_t mt_rand () {
     uint32_t e;
 
     if (idx >= N) {
@@ -91,10 +91,10 @@ uint32_t mersenne_twister () {
     e ^= (e << 15) & 0xEFC60000;
     e ^= (e >> 18);
 
-    return e;
+    return (e & ~(1UL << 31)); // Clearing sign bit;
 }
 
-void mersenne_twister_init(void *seed) {
+inline void mt_init(void *seed) {
     mersenne_twister_vector_init (vektor, N, seed);
 }
 

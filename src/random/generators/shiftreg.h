@@ -1,9 +1,10 @@
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifndef HEADER_PRNG_SHIFTREG_H
 #define HEADER_PRNG_SHIFTREG_H
 
-#include <stdlib.h>
+extern int rand_chunk_size;
 
 void sr_init(void *seed);
 
