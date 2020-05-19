@@ -669,7 +669,10 @@ void jit_vmulpd_mem_ymm(jit_Register reg, uint32_t idx, int src2, int dst) {
    jit_vOPpd_mem_ymm(0x59,reg,idx,src2,dst);
 }
 
-
+void jit_emit_vzeroupper() {
+   // c5 f8 77                vzeroupper
+   { uint8_t instr[] = {0xc5,0xf8,0x77}; jit_push(instr,3); }
+}
 
 void jit_emit_return() {
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }

@@ -174,6 +174,7 @@ class Benchmark_test3 : public Benchmark_base {
                   jit_vmaxpd_ymm(1,4*(i%2),4*(i%2));
 	       }
 	       jit_vmaxpd_ymm(4,0,0);
+	       jit_emit_vzeroupper();
 	       jit_emit_return();
 	    }
             bytes_op = jit_head() - (uint8_t*)funcs[0];
