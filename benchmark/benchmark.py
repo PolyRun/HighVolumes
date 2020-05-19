@@ -39,6 +39,9 @@ jitTest = [256*i for i in range(1,20)]
 jitTestDims = {str(i):str(4*i) for i in jitTest}
 jitTest = [str(i) for i in jitTest]
 
+randValTypes = ["random_int", "random_int_in_range", "random_double", "random_double_0_1", "random_double_normal", "random_double_in_range"]
+randValTypes_ = {"random_int": '0', "random_int_in_range": '1', "random_double": '2', "random_double_0_1": '3', "random_double_normal": '4', "random_double_in_range": '5'}
+
 # --- Benchmarks
 '''
     name:          name of the benchmark, has to be unique
@@ -260,6 +263,22 @@ BENCHMARKS = [
     "xoption": ("generator", intersectdims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "randomness",
+    "executable": "benchmark_randomness",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["rand_f=std_rand,rand_init_f=std_init", "rand_f=sr_rand,rand_init_f=sr_init", "rand_f=mt_rand,rand_init_f=mt_init"],
+          "run_configs": ["r=10000"],
+          "input_configs": [("type", randValTypes)]
+       }
+    ],
+    "xoption": ("type", randValTypes_),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["rand value type", "rand value type", "rand value type"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
