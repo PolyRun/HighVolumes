@@ -510,6 +510,8 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    //f2 0f 11 0a          	movsd  %xmm1,(%rdx)
    { uint8_t instr[] = {0xf2,0x0f,0x11,0x0a}; jit_push(instr,4); }
    
+   jit_emit_vzeroupper();// make sure to remove false dependencies!
+
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
    
