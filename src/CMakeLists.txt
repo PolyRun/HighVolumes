@@ -116,10 +116,16 @@ set(SILAEUBL_SOURCE_FILE
 )
 add_executable(silaeubl ${SILAEUBL_SOURCE_FILE} ${SILAEUBL_HEADER_FILES})
 
-target_link_libraries(silaeubl PUBLIC prng)
+target_link_libraries(silaeubl PUBLIC volume_helper prng)
+
+add_subdirectory(random)
 
 set_target_properties(silaeubl PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
 )
+
+
+# ---------------------- random poly to file
+add_subdirectory(util)

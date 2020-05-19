@@ -78,7 +78,7 @@ jit_Table_8* jit_immediate_8_via_data(const double val, const int xmm, jit_Table
 void jit_table_8_consume(jit_Table_8* t);
 
 // -------------------------------------- table 16
-// table: 1 double
+// table: 2 double
 typedef struct jit_Table_16 {
    struct jit_Table_16* next; // linked list
    size_t children;  // number of children in list
@@ -97,23 +97,62 @@ jit_Table_16* jit_immediate_16_via_data(const double val0, const double val1, co
 // write table in memory, go set up references to it
 void jit_table_16_consume(jit_Table_16* t);
 
+// -------------------------------------- table 32
+// table: 4 double
+typedef struct jit_Table_32 {
+   struct jit_Table_32* next; // linked list
+   size_t children;  // number of children in list
+   uint8_t data[32]; // payload
+   uint8_t* src;     // end of instruction
+   // will write relative offset at src-4;
+} jit_Table_32;
+
+jit_Table_32* jit_Table_32_prepend(jit_Table_32* old, uint8_t* bytes, uint8_t* src);
+
+// sets op down
+// prepends entry to table
+jit_Table_32* jit_immediate_32_via_data(const double val0, const double val1, const double val2, const double val3, const int xmm, jit_Table_32* t);
+
+// consume and free table
+// write table in memory, go set up references to it
+void jit_table_32_consume(jit_Table_32* t);
+
+
+
+//------------------------------------- flops:
+// 3 lat, _mm256_permute4x64_pd
+void jit_permpd(uint8_t imm, int src, int dst);
+// 1 lat, _mm256_permute_pd
 void jit_permilpd(uint8_t imm, int src, int dst);
 void jit_permilpd_xmm(uint8_t imm, int src, int dst);
 
 void jit_vmulsd(int src1, int src2, int dst);
+void jit_vmulsd_mem(jit_Register reg, uint32_t idx, int src2, int dst);
 void jit_vmaxsd(int src1, int src2, int dst);
 void jit_vminsd(int src1, int src2, int dst);
 
 void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst);
+void jit_storeu_xmm(int src, jit_Register reg, uint32_t idx);
 void jit_vmulpd_xmm(int src1, int src2, int dst);
 void jit_vmulpd_mem_xmm(jit_Register reg, uint32_t idx, int src2, int dst);
 void jit_vmaxpd_xmm(int src1, int src2, int dst);
 void jit_vminpd_xmm(int src1, int src2, int dst);
 
 void jit_loadu_ymm(jit_Register reg, uint32_t idx, int dst);
+void jit_storeu_ymm(int src, jit_Register reg, uint32_t idx);
 void jit_vmulpd_ymm(int src1, int src2, int dst);
+void jit_vmulpd_mem_ymm(jit_Register reg, uint32_t idx, int src2, int dst);
 void jit_vmaxpd_ymm(int src1, int src2, int dst);
 void jit_vminpd_ymm(int src1, int src2, int dst);
+
+// dst = idx(%reg) + dst*src;
+void jit_vfmad213sd_mem(jit_Register reg, uint32_t idx, int src, int dst);
+void jit_vfmad213pd_mem_xmm(jit_Register reg, uint32_t idx, int src, int dst);
+void jit_vfmad213pd_mem_ymm(jit_Register reg, uint32_t idx, int src, int dst);
+
+void jit_vbroadcastsd_ymm(int src, int dst);
+
+void jit_emit_vzeroupper();
 
 void jit_emit_return();
 

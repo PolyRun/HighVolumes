@@ -31,6 +31,39 @@ void Pjit_cacheUpdateCoord_body_single(const Polytope* p, const int i, const boo
    }
 }
 
+void Pjit_cacheUpdateCoord_init_quad() {
+   // go broadcast xmm to ymm
+   jit_vbroadcastsd_ymm(0,0);
+}
+
+void Pjit_cacheUpdateCoord_body_quad(const Polytope* p, const int i, jit_Table_32** t32) {
+   // find quads:
+   int last_quad = -10;
+   for(int j=0;j<p->m;j++) {
+      FT aij = Polytope_get_a(p,j,i);
+      if(aij != 0.0 && last_quad < j-3) {
+      	 last_quad = j;
+	 double aa[4];
+	 for(int k=0;k<4;k++) {
+	    if(j+k<p->m) {
+	       aa[k] = -Polytope_get_a(p,j+k,i);
+	    } else {
+	       aa[k] = 0;
+	    }
+	 }
+	 *t32 = jit_immediate_32_via_data(aa[0],aa[1],aa[2],aa[3], 4,*t32);
+	 //printf("block at: %d %d: %f %f %f %f\n",i,j,aa[0],aa[1],aa[2],aa[3]);
+
+	 uint32_t cachej = 8*j;
+         jit_vfmad213pd_mem_ymm(jit_rsi,cachej,0,4);
+	 jit_storeu_ymm(4,jit_rsi,cachej);
+      }
+   }
+   jit_emit_vzeroupper();
+}
+
+
+
 void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o) {
    //jit_print();
    
@@ -74,6 +107,8 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
 
    // --------------------- set up code facilities:
    jit_Table_8* t8 = NULL;
+   jit_Table_16* t16 = NULL;
+   jit_Table_32* t32 = NULL;
 
    // ------------------------------------------ switch case head
    //  assert(p->n < 256 && "if this asserts, then extend for n larger!");
@@ -86,6 +121,29 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
    //  {const uint8_t instr[] = {0x0f,0x87,0,0,0,0}; jit_push(instr,6);}
    //  uint8_t* jump_end = jit_head();// prepare to set L_end here
    
+   // -------------------- init: potentially broadcast t:
+   switch(PolytopeJIT_generator) {
+      case pjit_single_rax:
+      case pjit_single_data:
+      case pjit_single_data_acc: {
+         break;
+      }
+      case pjit_double_data: {
+         // TODO
+	 break;
+      }
+      case pjit_quad_data: {
+         Pjit_cacheUpdateCoord_init_quad(); // go broadcast xmm to ymm
+         break;
+      }
+      default: {
+         assert(false && "missing gen code");
+         break;
+      }
+   }
+    
+
+
    // ------ get ref to jump table
    // 48 8d 05 xx xx xx xx 	lea    xxxx(%rip),%rax
    {const uint8_t instr[] = {0x48,0x8d,0x05,0,0,0,0}; jit_push(instr,7);}
@@ -121,12 +179,17 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
             Pjit_cacheUpdateCoord_body_single(p,i,true,&t8);
             break;
          }
-         case pjit_single_data: {
+         case pjit_single_data:
+         case pjit_single_data_acc: {
             Pjit_cacheUpdateCoord_body_single(p,i,false,&t8);
             break;
          }
          case pjit_double_data: {
-            Pjit_cacheUpdateCoord_body_single(p,i,false,&t8);
+            Pjit_cacheUpdateCoord_body_single(p,i,false,&t8); // TODO
+            break;
+         }
+	 case pjit_quad_data: {
+            Pjit_cacheUpdateCoord_body_quad(p,i,&t32);
             break;
          }
 	 default: {
@@ -152,6 +215,8 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
 
    // -------------------------------- finish up code facilities:
    jit_table_8_consume(t8);
+   jit_table_16_consume(t16);
+   jit_table_32_consume(t32);
 
    //jit_print();
 }

@@ -1,17 +1,10 @@
 #include <stdlib.h>
+#include <stdint.h>
+#include <time.h>
 #include "mersenne.h"
 
-
-void init(int seed){
-    srand((unsigned) time(seed));
-}
-
-uint32_t random(){
-    return rand();
-}
-
 /*
-    Taken from https://de.wikipedia.org/wiki/Mersenne-Twister#Code
+    Base implementation taken from https://de.wikipedia.org/wiki/Mersenne-Twister#Code
 */
 #include <stdint.h>
 
@@ -30,12 +23,14 @@ static int      idx = N+1;   /* Auslese-Index; idx >= N: neuer Vektor muss berec
  *   In der vorhergehenden Version die MSBs des Seeds haben auch nur die MSBs des Arrays beeinflusst.
  */
 
-static void mersenne_twister_vector_init (uint32_t* const p, const int len, int seed_) {
+static void mersenne_twister_vector_init (uint32_t* const p, const int len, void *seed_) {
     const uint32_t  mult = 1812433253ul;
-    if (seed_ == NULL) {
-        uint32_t        seed = 5489ul;
+    uint32_t seed = 5489ul;
+    if (seed_ != NULL) {
+        seed = *((uint32_t*) seed_);
     } else {
-        seed = seed_;
+        srand((unsigned) time(seed_));
+        seed = rand();
     }
   
     int i;
@@ -82,7 +77,7 @@ static void mersenne_twister_vector_update (uint32_t* const p)
  * - bei jedem Aufruf wird eine Zufallszahl aus dem Vektor gelesen und noch einem Tempering unterzogen.
  */
 
-uint32_t mersenne_twister () {
+uint32_t mt_rand () {
     uint32_t e;
 
     if (idx >= N) {
@@ -96,10 +91,10 @@ uint32_t mersenne_twister () {
     e ^= (e << 15) & 0xEFC60000;
     e ^= (e >> 18);
 
-    return e;
+    return (e & ~(1UL << 31)); // Clearing sign bit;
 }
 
-void mersenne_twister_init(int seed) {
+inline void mt_init(void *seed) {
     mersenne_twister_vector_init (vektor, N, seed);
 }
 

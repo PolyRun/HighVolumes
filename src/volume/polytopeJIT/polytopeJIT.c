@@ -113,7 +113,8 @@ void PolytopeJIT_intersectCoord_ref(const void* o, const FT* x, const int d, FT*
 int  PolytopeJIT_cacheAlloc_ref(const void* o) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
    // allocate one FT per inequality: store dot product: dot(ai,x)
-   return p->m * sizeof(FT);
+   return (p->m+4) * sizeof(FT);
+   // +4 just in case something writes over end...
 }
 void PolytopeJIT_cacheReset_ref(const void* o, const FT* x, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
@@ -125,6 +126,7 @@ void PolytopeJIT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, v
    const PolytopeJIT* p = (PolytopeJIT*)o;
    assert(p->cacheUpdateCoord && "cacheReset function must be generated PolytopeJIT");
    
+   //printf("cacheUpdateCoord %d %f\n",d,dx);
    //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}
    //printf(" before\n");
    p->cacheUpdateCoord(d,dx,cache);

@@ -20,20 +20,28 @@ for index, item in enumerate(dotProduct):
    dotProduct[index] = "dotProduct="+item
 
 
-intersectbodies = [ "cube_rot_r1.0_3", "cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40"]
-intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40'}
+intersectbodies = [ "cube_rot_r1.0_3", "cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40", "cube_rot_r1.0_60", "cube_rot_r1.0_100"]
+intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40', "cube_rot_r1.0_60": '60', "cube_rot_r1.0_100": '100'}
 
 intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20",  "ball_r1.0_40"]
 intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40'}
 
 
-intersectSparseDims = [2,3,4,5,10,20,40,60,100]
-intersectSparseDims = {"2var_"+str(i):i for i in intersectSparseDims}
+intersectSparseDims = [4,5,10,20,40,60,100,150,200]
+intersectSparseDims = {"2var_"+str(i):str(i) for i in intersectSparseDims}
+
 intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
 
 cubeRotDims = [3,10,20,40]
-cubeRotDims = {"cube_rot_r1.0_"+str(i):i for i in cubeRotDims}
+cubeRotDims = {"cube_rot_r1.0_"+str(i):str(i) for i in cubeRotDims}
 cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
+
+jitTest = [4*i for i in range(1,20)]
+jitTestDims = {str(i):str(4*i) for i in jitTest}
+jitTest = [str(i) for i in jitTest]
+
+randValTypes = ["random_int", "random_int_in_range", "random_double", "random_double_0_1", "random_double_normal", "random_double_in_range"]
+randValTypes_ = {"random_int": '0', "random_int_in_range": '1', "random_double": '2', "random_double_0_1": '3', "random_double_normal": '4', "random_double_in_range": '5'}
 
 # --- Benchmarks
 '''
@@ -167,6 +175,87 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
+   {"name": "sparse_polytopeJIT",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
+          "run_configs": ["r=100000,polytopeType=3,intersect=intersectCoord_only"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "jit_test",
+    "executable": "benchmark_jit",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["r=100000,experiment=test","r=100000,experiment=test2"],
+          "input_configs": [("n", jitTest)]
+       },
+    ],
+    "xoption": ("n", jitTestDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["n", "n", "n"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "jit_test_3",
+    "executable": "benchmark_jit",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": [
+              "r=100000,experiment=test3,m=1,w=1",
+              "r=100000,experiment=test3,m=10,w=2",
+              "r=100000,experiment=test3,m=100,w=3",
+              "r=100000,experiment=test3,m=100,w=2",
+              "r=100000,experiment=test3,m=100,w=1",
+              "r=100000,experiment=test3,m=10,w=3",
+              "r=100000,experiment=test3,m=1,w=3",
+              ],
+          "input_configs": [("n", jitTest)]
+       },
+    ],
+    "xoption": ("n", jitTestDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["n", "n", "n"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "jit_test_4",
+    "executable": "benchmark_jit",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": [
+              "r=100000,experiment=test4,m=1,w=1",
+              "r=100000,experiment=test4,m=10,w=2",
+              "r=100000,experiment=test4,m=100,w=3",
+              "r=100000,experiment=test4,m=100,w=2",
+              "r=100000,experiment=test4,m=100,w=1",
+              "r=100000,experiment=test4,m=10,w=3",
+              "r=100000,experiment=test4,m=1,w=3",
+              ],
+          "input_configs": [("n", jitTest)]
+       },
+    ],
+    "xoption": ("n", {k:int(v)/2 for (k,v) in jitTestDims.items()}),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["n", "n", "n"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+
    {"name": "cube_rot_volume",
     "executable": "benchmark_A1_volume",
     "config": [ 
@@ -206,6 +295,69 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
+   
+   {"name": "csc_intersect_7",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
+                          "PolytopeCSC_intersectCoord=ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_ref",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_nogather",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_nan",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   
+   {"name": "csc_cache_update",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
+                          "PolytopeCSC_intersectCoord=ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+    ],
+    "xoption": ("generator", intersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "randomness",
+    "executable": "benchmark_randomness",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["rand_f=std_rand,rand_init_f=std_init", "rand_f=sr_rand,rand_init_f=sr_init", "rand_f=mt_rand,rand_init_f=mt_init"],
+          "run_configs": ["r=10000"],
+          "input_configs": [("type", randValTypes)]
+       }
+    ],
+    "xoption": ("type", randValTypes_),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["rand value type", "rand value type", "rand value type"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
 ]
 
 
@@ -342,4 +494,5 @@ for benchmark in DO_BENCHMARKS:
    )
    # get x-axis labels and add them to data 
    result = list(map(lambda res: (*res, get_label(benchmark["xoption"], res[0])), result))
+   pprint.pprint(result)
    plot(sys.path[0], bname, result, benchmark["xoption"][0], benchmark["title"], benchmark["xlabel"], benchmark["ylabel"])

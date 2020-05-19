@@ -2,28 +2,33 @@
 #include <time.h>
 #include <float.h>
 #include <math.h>
-#include <string.h>
 #include "prng.h"
+
+rand_init_f_t rand_init_f = std_init;
+rand_f_t rand_f = std_rand;
+
+int rand_chunk_size = 1024;
 
 /**
  * \brief Initializes the prng
  **/
 void prng_init(){
-    srand((unsigned) time(NULL));
+    rand_init_f(NULL);
+    //srand((unsigned) time(NULL));
 }
 
 /**
  * \brief Returns a new random double
  **/
 double prng_get_random_double(){
-    return ((double) rand() / (RAND_MAX)) * (DBL_MAX);
+    return ((double) rand_f() / (RAND_MAX)) * (DBL_MAX);
 }
 
 /**
  * \brief Returns a new random double in range [0,1)
  **/
 double prng_get_random_double_0_1(){
-    return ((double) rand() / (RAND_MAX));
+    return ((double) rand_f() / (RAND_MAX));
 }
 
 double prng_fast_32_get_random_double_0_1() {
@@ -77,14 +82,14 @@ double prng_get_random_double_normal() {
  * \param upper_bound Upper bound on the value of the random double
  **/
 double prng_get_random_double_in_range(double lower_bound, double upper_bound){
-    return ((double) rand() / (RAND_MAX)) * (upper_bound-lower_bound) + lower_bound;
+    return ((double) rand_f() / (RAND_MAX)) * (upper_bound-lower_bound) + lower_bound;
 }
 
 /**
  * \brief Returns a new random integer
  **/
 int prng_get_random_int(){
-    return rand();
+    return rand_f();
 }
 
 /**
@@ -93,6 +98,5 @@ int prng_get_random_int(){
  * \param upper_bound Upper bound on the value of the random integer
  **/
 int prng_get_random_int_in_range(int lower_bound, int upper_bound){
-    int r = rand();
-    return (rand() % (upper_bound-lower_bound+1)) + lower_bound;
+    return (rand_f() % (upper_bound-lower_bound+1)) + lower_bound;
 }

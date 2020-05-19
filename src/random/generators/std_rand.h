@@ -1,13 +1,17 @@
+#include <stdint.h>
 
 #ifndef HEADER_PRNG_STD_H
 #define HEADER_PRNG_STD_H
 
-#include <stdlib.h>
-#include <stdint.h>
+extern int rand_chunk_size;
 
-void std_init(int seed);
+void std_init(void *seed);
 
-uint32_t std_random();
+uint32_t std_rand();
 
+// Chunked random values
+void std_init_chunked(void *seed);
+
+uint32_t std_rand_chunked();
 
 #endif // HEADER_PRNG_STD_H

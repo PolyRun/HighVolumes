@@ -6,10 +6,14 @@
 #ifndef HEADER_PRNG_H
 #define HEADER_PRNG_H
 
-union hack {
-    long l;
-    double d;
-};
+// Generator for randomness
+typedef void(*rand_init_f_t)(void *seed);
+typedef uint32_t(*rand_f_t)();
+
+extern rand_init_f_t rand_init_f;
+extern rand_f_t rand_f;
+
+extern int rand_chunk_size;
 
 /**
  * \brief Initializes the prng
