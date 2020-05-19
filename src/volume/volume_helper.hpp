@@ -194,11 +194,22 @@ public:
 						     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
 						     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
 
+      add(new CLIF_Option<rand_init_f_t>(&rand_init_f,'f',"rand_init_f","std_init", {
+                       {"std_init",{std_init, "standard rand init"}},
+						     {"sr_init",{sr_init, "shift register init"}},
+						     {"mt_init",{mt_init, "mersenne twister init"}} }));
+
+      add(new CLIF_Option<rand_f_t>(&rand_f,'f',"rand_f","std_rand", {
+                       {"std_rand",{std_rand, "standard rand"}},
+						     {"sr_rand",{sr_random_uint32, "shift register rand"}},
+						     {"mt_rand",{mt_rand, "mersenne twister rand"}} }));
+
 
       // number parameters:
       claimOpt('c',"Algorithm Constants");
       add(new CLIF_OptionNumber<int>(&step_size,'c',"step_size","100000", 100, 1e7));
       add(new CLIF_OptionNumber<int>(&walk_size,'c',"walk_size","1", 1, 1e6));
+      add(new CLIF_OptionNumber<int>(&rand_chunk_size,'c',"rand_chunk_size","1024", 1, 524288)); // Max: 1 page(4096KB) of doubles
    }
 };
 
