@@ -18,9 +18,11 @@
   * Ellipsoid.intersectCoord
     * try to cache and vectorize
     * Else: vectorize MVM
-
+  * Sparse bodies
+  * JIT
+  * improve prng, mostly relevant for random direction intersection/sparse bodies
+  
 * What we could do if we have enough time:
-  * improve prng, mostly relevant for random direction intersection
   * parallelize sample point x
     * would lead to MMM for random direction intersect
     * Could increase op density
@@ -59,16 +61,13 @@
 
 * Polytope vs PolytopeT
   * row vs column matrix A. allows for different impl, especially when vectorizing
-
 * Polytope.intersect
   * mostly dotProduct, could be fused to decrease reads.
   * may be harder to vectorize if dotProducts are subfunctions
   * conditionals / min / max could also be bottlenecks
-
 * PolytopeT.intersect
   * vectorize. take k rows/constraints at a time, k multiple of 4
   * turn conditionals / min / max into vector instructions 
-
 * Polytope(T).intersectCoord (with or without cache - store dot product for polytope intersection)
   * reduces flop/memory access -> about factor n
   * but: Polytope flop / memory density is now worse -> potential for improvement! 
@@ -79,17 +78,19 @@
     * for Polytope, this may be bad bc strided memory access, in PolytopeT this is a simple vector += vector x scalar (vfma)
 ![intersectCoord-cached](./optimizations/opt1_intersectCoord_cached_100.jpeg)
 ![intersectCoord-cached-T](./optimizations/opt1_intersectCoord_cached_100_T.jpeg)
-
 * Ellipsoid
   * Cost difference is not so big between intersect and intersectCoord, only flop count is halved.
   * probably could gain some speedup with traditional MVM techniques
   * Maybe there could be a way to cache the MVM? Maybe in the intersectCoord case this could lead to something.
 ![ellipsoid-intersect](./optimizations/opt1_intersect_ellipsoid_100.jpeg)
-
-* Randomness - very costly for intersect
-  * could improve if required
+* Randomness - very costly for intersect/sparse bodies
+  * Precompute values
+    * No benefit for std_rand
   * Use a mersenne twister -> Vectorize it
-  * Use hardware randomness (int _rdrand64_step)
+  * Use a shift register
+    * Vectorize it
+    * Is the distribution uniform enough?
+  * Use hardware randomness (int _rdrand64_step) - Has a gap of 250 on haswell -> Not competitive
   * Better randomness could have a positive effect on convergence
 
 # Big picture
