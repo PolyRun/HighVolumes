@@ -35,7 +35,7 @@ void test() {
    void* body3[1] = {box3};
    Body_T* type3[1] = {&PolytopeT_T};
    
-   step_size = 5000; // hot fix this to be a bit faster
+   step_size = 20000; // hot fix this to be a bit faster
    for(int i=0; i<5; i++) {
       FT rx = 0.1*i;
       FT r0 = 1.5 - rx;

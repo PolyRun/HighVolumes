@@ -606,7 +606,119 @@ int main() {
 	 assert(res == 7.0);
 	 std::cout << "res: " << res << std::endl;
       }
+
+      std::cout << "storeu_xmm:\n";
+      {
+         jit_clear();
+         double (*func2)(double*);
+         func2 = (double (*)(double*)) jit_head();
+	 int n = 16;
+	 double* x = (double*)(aligned_alloc(32, 2*n*sizeof(double))); // align this to 32
+
+	 jit_Table_16* t16 = NULL;// empty list
+	 for(int i=0;i<16;i++) {
+            int ii = 2*i;
+	    t16 = jit_immediate_16_via_data(ii+0,ii+1, i, t16);
+	    jit_storeu_xmm(i,jit_rdi,16*i);
+	 }
+	 jit_emit_return();
+         jit_table_16_consume(t16);
+	 jit_print();
+	 double res = func2(x);
+	 for(int i=0;i<16*2;i++) {
+            assert(x[i]==i);
+	 }
+	 std::cout << "res: " << res << std::endl;
+      }
  
+      std::cout << "storeu_ymm:\n";
+      {
+         jit_clear();
+         double (*func2)(double*);
+         func2 = (double (*)(double*)) jit_head();
+	 int n = 16;
+	 double* x = (double*)(aligned_alloc(32, 4*n*sizeof(double))); // align this to 32
+
+	 jit_Table_32* t32 = NULL;// empty list
+	 for(int i=0;i<16;i++) {
+            int ii = 4*i;
+	    t32 = jit_immediate_32_via_data(ii+0,ii+1,ii+2,ii+3, i, t32);
+	    jit_storeu_ymm(i,jit_rdi,32*i);
+	 }
+	 jit_emit_return();
+         jit_table_32_consume(t32);
+	 jit_print();
+	 double res = func2(x);
+	 for(int i=0;i<16*4;i++) {
+            assert(x[i]==i);
+	 }
+	 std::cout << "res: " << res << std::endl;
+      }
+  
+      std::cout << "fma_ymm:\n";
+      {
+	 double* x = (double*)(aligned_alloc(32, 4*16*sizeof(double))); // align this to 32
+         for(int i=2;i<16;i++) {
+            for(int j=2;j<16;j++) {
+	       if(i==j) {continue;}
+	       jit_clear();
+               std::cout << "fmadd test ymm " << i << " " << j << "\n";
+               double (*func2)(double*);
+               func2 = (double (*)(double*)) jit_head();
+	       jit_Table_32* t32 = NULL;// empty list
+	       
+               for(int k=0;k<16;k++) {
+		  int ii = k*4;
+	          t32 = jit_immediate_32_via_data(ii+0,ii+1,ii+2,ii+3, i, t32);
+	          t32 = jit_immediate_32_via_data(1,1,1,1, j, t32);
+	          jit_vfmad213pd_mem_ymm(jit_rdi,ii*8,i,j);
+		  jit_storeu_ymm(j,jit_rdi,ii*8);
+	       }
+	       for(int k=0;k<16*4;k++) {x[k]=2.0;}
+
+	       jit_emit_return();
+               jit_table_32_consume(t32);
+	       double res = func2(x);
+	       for(int k=0;k<16*4;k++) {
+		  assert(x[k]=2+k);
+	       }
+	    }
+	 }
+      }
+ 
+      std::cout << "fma_xmm:\n";
+      {
+	 double* x = (double*)(aligned_alloc(32, 2*16*sizeof(double))); // align this to 32
+         for(int i=2;i<16;i++) {
+            for(int j=2;j<16;j++) {
+	       if(i==j) {continue;}
+	       jit_clear();
+               std::cout << "fmadd test xmm " << i << " " << j << "\n";
+               double (*func2)(double*);
+               func2 = (double (*)(double*)) jit_head();
+	       jit_Table_16* t16 = NULL;// empty list
+	       
+               for(int k=0;k<16;k++) {
+		  int ii = k*2;
+	          t16 = jit_immediate_16_via_data(ii+0,ii+1, i, t16);
+	          t16 = jit_immediate_16_via_data(1,1, j, t16);
+	          jit_vfmad213pd_mem_xmm(jit_rdi,ii*8,i,j);
+		  jit_storeu_xmm(j,jit_rdi,ii*8);
+	       }
+	       for(int k=0;k<16*2;k++) {x[k]=2.0;}
+
+	       jit_emit_return();
+               jit_table_16_consume(t16);
+	       double res = func2(x);
+	       for(int k=0;k<16*2;k++) {
+		  assert(x[k]=2+k);
+	       }
+	    }
+	 }
+      }
+
+
+
    }
    // -------------------------------- end tests
 

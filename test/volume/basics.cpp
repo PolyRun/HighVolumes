@@ -426,7 +426,7 @@ int main(int argc, char** argv) {
        }
    }
    
-   auto oJIT = dynamic_cast<CLIF_Option<PolytopeJIT_Generator>*>(cliFun.getOption("PolytopeJIT_generator"));
+   auto oJIT = dynamic_cast<CLIF_Option<PolytopeJIT_Generator>*>(cliFun.getOption("PolytopeJIT_gen"));
    for (auto it : oJIT->fmap){
        // test PolytopeJIT
        PolytopeJIT_generator = it.second.first;

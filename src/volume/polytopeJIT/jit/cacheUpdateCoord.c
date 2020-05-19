@@ -31,6 +31,26 @@ void Pjit_cacheUpdateCoord_body_single(const Polytope* p, const int i, const boo
    }
 }
 
+//void Pjit_cacheUpdateCoord_body_quad(const Polytope* p, const int i, jit_Table_32** t32) {
+//   // find relevant entries in column:
+//   for(int j=0;j<p->m;j++) {
+//      FT aij = Polytope_get_a(p,j,i);
+//      if(aij != 0.0) {
+//	 //*t8 = jit_immediate_8_via_data(-aij,4,*t8);
+//         
+//	 // c4 e2 f9 a9 a6 xx xx xx xx  vfmadd213sd 0x100(%rsi),%xmm0,%xmm4
+//         {const uint8_t instr[] = {0xc4,0xe2,0xf9,0xa9,0xa6}; jit_push(instr,5); }
+//         uint32_t cachej = 8*j;
+//         jit_push((const uint8_t*)&cachej,4);
+//         // f2 0f 11 a6 xx xx xx xx     movsd  %xmm4,0x100(%rsi)
+//         {const uint8_t instr[] = {0xf2,0x0f,0x11,0xa6}; jit_push(instr,4); }
+//         jit_push((const uint8_t*)&cachej,4);
+//      }
+//   }
+//}
+
+
+
 void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o) {
    //jit_print();
    
