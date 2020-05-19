@@ -503,6 +503,8 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
       //printf("jump offset: %d %x %lx \n",i,jump_offset,jump_offset64);
       assert(((uint64_t)jump_offset) == jump_offset64);
    }
+   
+   jit_emit_vzeroupper();// make sure to remove false dependencies!
 
    // -------------------------------------------- move t00, t11 back
    //f2 0f 11 06          	movsd  %xmm0,(%rsi)
@@ -510,7 +512,6 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    //f2 0f 11 0a          	movsd  %xmm1,(%rdx)
    { uint8_t instr[] = {0xf2,0x0f,0x11,0x0a}; jit_push(instr,4); }
    
-   jit_emit_vzeroupper();// make sure to remove false dependencies!
 
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
