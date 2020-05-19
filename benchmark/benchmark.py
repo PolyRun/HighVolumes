@@ -196,7 +196,7 @@ BENCHMARKS = [
        {
           "const_configs": [],
           "fun_configs": [],
-          "run_configs": ["r=100000,experiment=test"],
+          "run_configs": ["r=100000,experiment=test","r=100000,experiment=test2"],
           "input_configs": [("n", jitTest)]
        },
     ],
