@@ -98,6 +98,7 @@ PolytopeCSC *Polytope_to_PolytopeCSC(const Polytope *O){
     
     // second fill values into A and row indices into row_idx
     P->A = (FT *) aligned_alloc(32, P->col_start[P->n] * sizeof(FT));
+    P->Ainv = (FT *) aligned_alloc(32, P->col_start[P->n] * sizeof(FT));
     P->row_idx = (int *) aligned_alloc(32, P->col_start[P->n] * sizeof(int));
 
     int idx = 0;
@@ -106,12 +107,16 @@ PolytopeCSC *Polytope_to_PolytopeCSC(const Polytope *O){
             // we already get rid of very small values, then we can omit the check |dai| > eps in intersectCoord
             if (Polytope_get_a(O, j, i) > FT_EPS || -Polytope_get_a(O, j, i) > FT_EPS){
                 P->A[idx] = Polytope_get_a(O, j, i);
+                P->Ainv[idx] = 1/P->A[idx];
                 P->row_idx[idx] = j;
                 idx++;
             }
         }
         for (; idx < P->col_start[i+1]; idx++){
             P->row_idx[idx] = -1;
+            // fill with zero to omit mask in intersectCoord
+            P->A[idx] = 0;
+            P->Ainv[idx] = 1/P->A[idx];
         }
     }
 

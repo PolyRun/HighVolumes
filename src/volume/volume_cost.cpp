@@ -423,6 +423,20 @@ void PolytopeCSC_intersectCoord_cached_cost_withb(const void *o){
 }
 
 
+void PolytopeCSC_intersectCoord_cached_cost_vec(const void *o){
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+
+    // read #non-zeros in col * (2 doubles (for A and b_Aix) + 1 int (row_idx))
+    // divs #non-zeros in col
+    // min and max each #non-zeros in col
+    pc_stack().log(3*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
+
+}
+
+
 
 // NOTE: the actual #flops & #bytes depends on direction d (c.f. nonzerosCSC)
 void PolytopeCSC_cacheReset_cost_ref(const void *o){

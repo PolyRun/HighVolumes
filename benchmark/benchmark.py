@@ -20,15 +20,16 @@ for index, item in enumerate(dotProduct):
    dotProduct[index] = "dotProduct="+item
 
 
-intersectbodies = [ "cube_rot_r1.0_3", "cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40"]
-intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40'}
+intersectbodies = [ "cube_rot_r1.0_3", "cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40", "cube_rot_r1.0_60", "cube_rot_r1.0_100"]
+intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40', "cube_rot_r1.0_60": '60', "cube_rot_r1.0_100": '100'}
 
 intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20",  "ball_r1.0_40"]
 intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40'}
 
 
-intersectSparseDims = [4,5,10,20,40,60,100]
-intersectSparseDims = {"4var_"+str(i):str(i) for i in intersectSparseDims}
+intersectSparseDims = [4,5,10,20,40,60,100,150,200]
+intersectSparseDims = {"2var_"+str(i):str(i) for i in intersectSparseDims}
+
 intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
 
 cubeRotDims = [3,10,20,40]
@@ -295,7 +296,7 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
    
-   {"name": "csc_intersect",
+   {"name": "csc_intersect_7",
     "executable": "benchmark_intersect",
     "config": [
        {
@@ -303,9 +304,35 @@ BENCHMARKS = [
           "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
                           "PolytopeCSC_intersectCoord=ref",
                           "PolytopeCSC_intersectCoord=cached_b_vec",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_inl",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_ref",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_nogather",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_nan",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
           ],
-          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   
+   {"name": "csc_cache_update",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
+                          "PolytopeCSC_intersectCoord=ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
           "input_configs": [("generator", intersectbodies)]
        },
     ],
