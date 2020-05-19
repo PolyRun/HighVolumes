@@ -35,7 +35,7 @@ cubeRotDims = [3,10,20,40]
 cubeRotDims = {"cube_rot_r1.0_"+str(i):str(i) for i in cubeRotDims}
 cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
 
-jitTest = [256*i for i in range(1,20)]
+jitTest = [4*i for i in range(1,20)]
 jitTestDims = {str(i):str(4*i) for i in jitTest}
 jitTest = [str(i) for i in jitTest]
 
@@ -205,6 +205,55 @@ BENCHMARKS = [
     "xlabel": ["n", "n", "n"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
+
+   {"name": "jit_test_3",
+    "executable": "benchmark_jit",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": [
+              "r=100000,experiment=test3,m=1,w=1",
+              "r=100000,experiment=test3,m=10,w=2",
+              "r=100000,experiment=test3,m=100,w=3",
+              "r=100000,experiment=test3,m=100,w=2",
+              "r=100000,experiment=test3,m=100,w=1",
+              "r=100000,experiment=test3,m=10,w=3",
+              "r=100000,experiment=test3,m=1,w=3",
+              ],
+          "input_configs": [("n", jitTest)]
+       },
+    ],
+    "xoption": ("n", jitTestDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["n", "n", "n"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "jit_test_4",
+    "executable": "benchmark_jit",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": [
+              "r=100000,experiment=test4,m=1,w=1",
+              "r=100000,experiment=test4,m=10,w=2",
+              "r=100000,experiment=test4,m=100,w=3",
+              "r=100000,experiment=test4,m=100,w=2",
+              "r=100000,experiment=test4,m=100,w=1",
+              "r=100000,experiment=test4,m=10,w=3",
+              "r=100000,experiment=test4,m=1,w=3",
+              ],
+          "input_configs": [("n", jitTest)]
+       },
+    ],
+    "xoption": ("n", {k:int(v)/2 for (k,v) in jitTestDims.items()}),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["n", "n", "n"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
 
    {"name": "cube_rot_volume",
     "executable": "benchmark_A1_volume",

@@ -132,9 +132,6 @@ class Benchmark_test2 : public Benchmark_base {
 	    return 0;
 	}
 	void finalize() {
-	    std::cout << "Bytes  op: " << bytes_op << ", data: "<< bytes_data <<"\n";
-	    std::cout << "Expected flops/cycle: mul and max per 3 cycles, times 4 = 8/3 = 2.66\n";
-	    std::cout << "Expected bytes/cycle: data in x, but also constants!\n";
 	    pc_stack().reset();
             {
                 pc_stack().log(8*n, 8*n*sizeof(FT)," 4 mul, 4 max, ld x and consts!");
@@ -151,6 +148,150 @@ class Benchmark_test2 : public Benchmark_base {
 	size_t bytes_op;
 	size_t bytes_data;
 };
+
+class Benchmark_test3 : public Benchmark_base {
+    public:
+	typedef double (*FF)(const double*);
+        Benchmark_test3(std::string name, int reps, bool convergence, int warmup_reps, const double time_ci_alpha_, const double results_ci_alpha_, int n, int m, int w)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), n(n), m(m),w(w) {}
+
+    protected:
+        void initialize () {
+            std::cout << "initializing test data..." << std::endl;
+	    
+            jit_clear();
+            funcs.resize(m,NULL);
+	    jit_Table_32* t32 = NULL;// empty list
+	    for(int j=0;j<m;j++) {
+	       funcs[j] = (double (*)(const double*)) jit_head();
+	       t32 = jit_immediate_32_via_data(0,0,0,0, 0, t32);
+	       t32 = jit_immediate_32_via_data(0,0,0,0, 4, t32);
+	    
+ 	       for(int i=0;i<w;i++) {
+	          t32 = jit_immediate_32_via_data(j,j,j,j, 2, t32);
+	          int ii = prng_get_random_int_in_range(0,4*n-4);
+	          jit_vmulpd_mem_ymm(jit_rdi,ii*8,2,1);
+                  jit_vmaxpd_ymm(1,4*(i%2),4*(i%2));
+	       }
+	       jit_vmaxpd_ymm(4,0,0);
+	       jit_emit_return();
+	    }
+            bytes_op = jit_head() - (uint8_t*)funcs[0];
+	    jit_table_32_consume(t32);
+	    bytes_data = jit_head() - (uint8_t*)funcs[0] - bytes_op;
+	    
+	    //jit_print();
+     
+	    x = (FT*)(aligned_alloc(32, 4*n*sizeof(FT))); // align this to 32
+	    for(int i=0;i<4*n;i++) {x[i] = i;}
+
+            double res = funcs[0](x);
+	    std::cout << "res: " << res << " " << 4*n << "\n";
+
+	    reset();
+        }
+        void reset () {
+	   d = prng_get_random_int_in_range(0,m-1);
+	}
+        double run () {
+            double res = funcs[d](x);
+	    //std::cout << "res: " << res << "\n";
+	    return 0;
+	}
+	void finalize() {
+	    pc_stack().reset();
+            {
+                pc_stack().log(8*w, 8*w*sizeof(FT)," 4 mul, 4 max, ld x and consts!");
+	    }
+            pc_stack().print();
+	    pc_flops = pc_stack().flops();
+	    pc_bytes = pc_stack().bytes();
+	}
+    protected:
+        int n;
+        int m;
+        int w;
+	double* x;
+	std::vector<FF> funcs;
+	//double (*func)(double*,double*);
+	size_t bytes_op;
+	size_t bytes_data;
+	int d=0;// dimension
+};
+
+
+class Benchmark_test4 : public Benchmark_base {
+    public:
+	typedef double (*FF)(const double*);
+        Benchmark_test4(std::string name, int reps, bool convergence, int warmup_reps, const double time_ci_alpha_, const double results_ci_alpha_, int n, int m, int w)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), n(n), m(m),w(w) {}
+
+    protected:
+        void initialize () {
+            std::cout << "initializing test data..." << std::endl;
+	    
+            jit_clear();
+            funcs.resize(m,NULL);
+	    jit_Table_16* t16 = NULL;// empty list
+	    for(int j=0;j<m;j++) {
+	       funcs[j] = (double (*)(const double*)) jit_head();
+	       t16 = jit_immediate_16_via_data(0,0, 0, t16);
+	       t16 = jit_immediate_16_via_data(0,0, 4, t16);
+	    
+ 	       for(int i=0;i<w;i++) {
+	          t16 = jit_immediate_16_via_data(j,j, 2, t16);
+	          int ii = prng_get_random_int_in_range(0,2*n-2);
+	          jit_vmulpd_mem_xmm(jit_rdi,ii*8,2,1);
+                  jit_vmaxpd_xmm(1,4*(i%2),4*(i%2));
+	       }
+	       jit_vmaxpd_xmm(4,0,0);
+	       jit_emit_return();
+	    }
+            bytes_op = jit_head() - (uint8_t*)funcs[0];
+	    jit_table_16_consume(t16);
+	    bytes_data = jit_head() - (uint8_t*)funcs[0] - bytes_op;
+	    
+	    //jit_print();
+     
+	    x = (FT*)(aligned_alloc(32, 2*n*sizeof(FT))); // align this to 32
+	    for(int i=0;i<2*n;i++) {x[i] = i;}
+
+            double res = funcs[0](x);
+	    std::cout << "res: " << res << " " << 4*n << "\n";
+
+	    reset();
+        }
+        void reset () {
+	   d = prng_get_random_int_in_range(0,m-1);
+	}
+        double run () {
+            double res = funcs[d](x);
+	    //std::cout << "res: " << res << "\n";
+	    return 0;
+	}
+	void finalize() {
+	    pc_stack().reset();
+            {
+                pc_stack().log(4*w, 4*w*sizeof(FT)," 4 mul, 4 max, ld x and consts!");
+	    }
+            pc_stack().print();
+	    pc_flops = pc_stack().flops();
+	    pc_bytes = pc_stack().bytes();
+	}
+    protected:
+        int n;
+        int m;
+        int w;
+	double* x;
+	std::vector<FF> funcs;
+	//double (*func)(double*,double*);
+	size_t bytes_op;
+	size_t bytes_data;
+	int d=0;// dimension
+};
+
+
+
 
 
 
@@ -169,13 +310,19 @@ int main(int argc, char *argv[]){
     cliFun.add(new CLIF_OptionNumber<double>(&results_ci_alpha,'b',"results_ci_alpha","0.95", 0, 1));
     
     int n = 1;
+    int m = 1;
+    int w = 1;
     cliFun.add(new CLIF_OptionNumber<int>(&n,'b',"n","1000", 1, 10000000));
+    cliFun.add(new CLIF_OptionNumber<int>(&m,'b',"m","10", 1, 10000000));
+    cliFun.add(new CLIF_OptionNumber<int>(&w,'b',"w","100", 1, 10000000));
 
     std::string experiment = "";
     cliFun.add(new CLIF_Option<std::string>(&experiment,'b',"experiment","test",
                                     {
-                                     {"test",{"test", "first experiment"}},
-                                     {"test2",{"test2", "second experiment"}},
+                                     {"test",{"test", "linear access - n=data"}},
+                                     {"test2",{"test2", "random access - n=data"}},
+                                     {"test3",{"test3", "ymm, many functions, random access - n=data,m=Nfunctions,w=dataPerFunction"}},
+                                     {"test4",{"test4", "xmm, many functions, random access - n=data,m=Nfunctions,w=dataPerFunction"}},
                                     }));
 
     cliFun.preParse();
@@ -187,6 +334,12 @@ int main(int argc, char *argv[]){
         b.run_benchmark();
     } else if(experiment == "test2") {
         Benchmark_test2 b(experiment, r, true, warmup, time_ci_alpha, results_ci_alpha, n);
+        b.run_benchmark();
+    } else if(experiment == "test3") {
+        Benchmark_test3 b(experiment, r, true, warmup, time_ci_alpha, results_ci_alpha, n,m,w);
+        b.run_benchmark();
+    } else if(experiment == "test4") {
+        Benchmark_test4 b(experiment, r, true, warmup, time_ci_alpha, results_ci_alpha, n,m,w);
         b.run_benchmark();
     } else {
         assert(false && "experiment not hantled!");
