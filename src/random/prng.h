@@ -6,6 +6,11 @@
 #ifndef HEADER_PRNG_H
 #define HEADER_PRNG_H
 
+union hack {
+    long l;
+    double d;
+};
+
 /**
  * \brief Initializes the prng
  **/
@@ -20,6 +25,8 @@ double prng_get_random_double();
  * \brief Returns a new random double in range [0,1]
  **/
 double prng_get_random_double_0_1();
+double prng_fast_32_get_random_double_0_1();
+//double prng_fast_64_get_random_double_0_1();
 
 /**
  * \brief Returns a new random double from normal distribution

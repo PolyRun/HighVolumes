@@ -209,6 +209,16 @@ void PolytopeT_intersectCoord_cached_b_cost_ref(const void* o) {
    pc_stack().log(8*m, 3*m*sizeof(FT), "read cache, calculate");
    pc_stack().log(0,0, "TODO - update after impl!");
 }
+
+void PolytopeT_intersectCoord_cached_b_cost_vec(const void* o) {
+
+   const PolytopeT *poly = (PolytopeT*) o;
+   const int dims = poly->n;
+   const int constraints = poly->m;
+
+   
+}
+
 void PolytopeT_cacheUpdateCoord_b_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
    const int n = p->n;

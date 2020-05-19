@@ -2,6 +2,8 @@
 #include <time.h>
 #include <float.h>
 #include <math.h>
+#include <string.h>
+#include "prng.h"
 
 /**
  * \brief Initializes the prng
@@ -23,6 +25,37 @@ double prng_get_random_double(){
 double prng_get_random_double_0_1(){
     return ((double) rand() / (RAND_MAX));
 }
+
+double prng_fast_32_get_random_double_0_1() {
+    long temp = (long) rand();
+    double rand_double;
+
+    // We put the 32 bits of num to the beginning (MSB-wise) of the mantissa and
+    // the 20 bits in the bottom are zero, which is an error of 2^(-20)
+    // Note that we can't convert directly to double and instead do address-magic
+    const long num = (temp << 20) && (1023 << 53);
+    memcpy(&rand_double, &num, sizeof(num));
+
+    // Since rand_double has a zero exponent (2^0), it is between 2 and 1.
+    rand_double = rand_double - 1;
+    return rand_double;
+}
+
+/*
+double prng_fast_64_get_random_double_0_1() {
+    long num = (long) xorshift64();
+    long mask = (1L << 52) - 1; // This gives a mask which has 12 bits 0 and 52 bits 1
+    double rand_double;
+
+    // Note that we can't convert directly to double and instead do address-magic
+    num = num & mask;
+    rand_double = *(double*) &num; // This is undefined behaviour btw :)
+
+    // Since rand_double has a zero exponent (2^0), it is between 2 and 1
+    rand_double = rand_double - 1;
+    return rand_double;
+}
+*/
 
 /**
  * \brief Returns a new random double from normal distribution

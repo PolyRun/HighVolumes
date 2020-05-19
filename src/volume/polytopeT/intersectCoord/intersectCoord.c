@@ -92,6 +92,71 @@ void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int
    *t1 = t11;
 }
 
+void PolytopeT_intersectCoord_cached_b_vec(const void *p, const FT *x, const int d,
+                                           FT *t0_out, FT *t1_out, void *cache) {
+
+   const PolytopeT *poly = (PolytopeT*) p;
+   const int dims = poly->n;
+   const int constraints = poly->m;
+
+   FT *b_sub_Aix_slice = (FT*) cache;
+   FT *Aid_slice = poly->A + (poly->line * d);
+
+   __m256d t0_vec_0 = _mm256_set1_pd(-FT_MAX);
+   __m256d t1_vec_0 = _mm256_set1_pd(FT_MAX);
+
+   __m256d ft_neg_vec = _mm256_set1_pd(-FT_EPS);
+   __m256d ft_pos_vec = _mm256_set1_pd(FT_EPS);
+
+   int i = 0;
+   for (; i < constraints - 4; i += 4) {
+
+      __m256d b_sub_Aix_vec_0 = _mm256_load_pd(b_sub_Aix_slice + i);
+      __m256d Aid_vec_0 = _mm256_load_pd(Aid_slice + i);
+
+      __m256d t_vec_0 = _mm256_div_pd(b_sub_Aix_vec_0, Aid_vec_0);
+
+      __m256d neg_mask = _mm256_cmp_pd(Aid_vec_0, ft_neg_vec, _CMP_LE_OQ);
+      __m256d pos_mask = _mm256_cmp_pd(Aid_vec_0, ft_pos_vec, _CMP_GE_OQ);
+
+      __m256d tmp_t0_vec_0 = _mm256_blendv_pd(t0_vec_0, t_vec_0, neg_mask);
+      __m256d tmp_t1_vec_0 = _mm256_blendv_pd(t1_vec_0, t_vec_0, pos_mask);
+
+      t0_vec_0 = _mm256_max_pd(t0_vec_0, tmp_t0_vec_0);
+      t1_vec_0 = _mm256_min_pd(t1_vec_0, tmp_t1_vec_0);
+   }
+
+   FT t0;
+   FT t1;
+
+   t0 = t0_vec_0[0];
+   t0 = (t0_vec_0[1] > t0) ? t0_vec_0[1] : t0;
+   t0 = (t0_vec_0[2] > t0) ? t0_vec_0[2] : t0;
+   t0 = (t0_vec_0[3] > t0) ? t0_vec_0[3] : t0;
+
+   t1 = t1_vec_0[0];
+   t1 = (t1_vec_0[1] < t1) ? t1_vec_0[1] : t1;
+   t1 = (t1_vec_0[2] < t1) ? t1_vec_0[2] : t1;
+   t1 = (t1_vec_0[3] < t1) ? t1_vec_0[3] : t1;
+
+   for (; i < constraints; i++) {
+
+      FT b_sub_Aix = b_sub_Aix_slice[i];
+      FT Aid = Aid_slice[i];
+
+      FT t = b_sub_Aix / Aid;
+
+      if (Aid < 0.0) {
+         t0 = (t0 > t) ? t0 : t;
+      } else {
+         t1 = (t1 < t) ? t1 : t;
+      }
+   }
+
+   *t0_out = t0;
+   *t1_out = t1;
+}
+
 void PolytopeT_cacheReset_b_ref(const void* o, const FT* x, void* cache) {
    const PolytopeT* p = (PolytopeT*)o;
    FT* c = (FT*)cache; // set c[i] = bi - Ai*x
@@ -106,6 +171,50 @@ void PolytopeT_cacheReset_b_ref(const void* o, const FT* x, void* cache) {
    }
 }
 
+void PolytopeT_cacheReset_b_vec(const void *p, const FT *x, void *cache) {
+
+   const PolytopeT *poly = (PolytopeT*) p;
+   FT *cache_slice = (FT*) cache;
+   FT *A_slice =poly->A;
+   FT *b_slice = poly->b;
+
+   const int dims = poly->n;
+   const int constraints = poly->m;
+
+   // Initializing the cache with b[i], so we can later subtract Ai dot x from it
+   int i;
+   for (i = 0; i < constraints - 4; i += 4) {
+      __m256d b_vec = _mm256_load_pd(b_slice + i);
+      _mm256_store_pd(cache_slice + i, b_vec);
+   }
+   for (; i < constraints; i++) {
+      cache_slice[i] = b_slice[i];
+   }
+
+   // Accessing row-major
+   int j;
+   for (j = 0; j < dims; j++) {
+
+      FT *Aij_slice = A_slice + (poly->line * j);
+      FT x_j = x[j];
+      __m256d x_j_vec = _mm256_set1_pd(x_j);
+
+      for (i = 0; i < constraints - 4; i += 4) {
+         __m256d cache_vec = _mm256_load_pd(cache_slice + i);
+         __m256d A_vec = _mm256_load_pd(Aij_slice + i);
+
+         __m256d A_dot_x_vec = _mm256_mul_pd(A_vec, x_j_vec);
+         cache_vec = _mm256_sub_pd(cache_vec, A_dot_x_vec);
+
+         _mm256_store_pd(cache_slice + i, cache_vec);
+      }
+
+      for (; i < constraints; i++) {
+         cache_slice[i] -= x_j * Aij_slice[i];
+      }
+
+   }
+}
 
 void PolytopeT_cacheUpdateCoord_b_ref(const void* o, const int d, const FT dx, void* cache) {
    const PolytopeT* p = (PolytopeT*)o;
@@ -114,6 +223,33 @@ void PolytopeT_cacheUpdateCoord_b_ref(const void* o, const int d, const FT dx, v
    for(int i=0; i<m; i++) {
       c[i] -= dx * PolytopeT_get_a(p,i,d); // watch the minus !
    } 
+}
+
+void PolytopeT_cacheUpdateCoord_b_vec(const void *p, const int d, const FT dx, void *cache) {
+
+   const PolytopeT *poly = (PolytopeT*) p;
+   const int constraints = poly->m;
+
+   FT *cache_slice = (FT*) cache;
+   FT *Aid_slice = poly->A + (poly->line * d);
+   
+   __m256d dx_vec = _mm256_set1_pd(dx);
+
+   int i;
+   for (i = 0; i < constraints; i += 4) {
+      
+      __m256d Aid_vec = _mm256_load_pd(Aid_slice + i);
+      __m256d cache_vec = _mm256_load_pd(cache_slice + i);
+
+      __m256d Aid_mul_dx_vec = _mm256_mul_pd(Aid_vec, dx_vec);
+      __m256d update_vec = _mm256_sub_pd(cache_vec, Aid_mul_dx_vec);
+
+      _mm256_store_pd(cache_slice + i, update_vec);
+   }
+
+   for (; i < constraints; i++) {
+      cache_slice[i] -= dx * Aid_slice[i];
+   }
 }
 
 
@@ -291,8 +427,6 @@ void PolytopeT_intersectCoord_vectorized(const void *p, const FT* x,
          t1 = (t1 < t) ? t1 : t;
       }
    }
-
-   printf("%f and %f \n", t0, t1);
    
    *t0_out = t0;
    *t1_out = t1;
