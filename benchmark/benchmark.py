@@ -398,8 +398,8 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=mt_rand"],
-          "run_configs": ["r=10000,d=16384,i=16384,rand_chunk_size=512"],
+          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=sr_rand_vec", "rand_f=mt_rand"],
+          "run_configs": ["r=100000,d=16384,i=16384,rand_chunk_size=512"],
           "input_configs": [("type", randValTypes)]
        }
     ],
