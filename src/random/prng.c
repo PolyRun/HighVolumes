@@ -7,11 +7,13 @@
 rand_init_f_t rand_init_f = std_init;
 rand_f_t rand_f = std_rand;
 
+rd_0_1_f_t prng_get_random_double_0_1 = prng_get_random_double_0_1_ref;
+
 int rand_chunk_size = 1024;
 
 union hack {
     long l;
-    double d
+    double d;
 };
 
 /**
@@ -19,7 +21,6 @@ union hack {
  **/
 void prng_init(){
     rand_init_f(NULL);
-    //srand((unsigned) time(NULL));
 }
 
 /**
@@ -32,13 +33,13 @@ double prng_get_random_double(){
 /**
  * \brief Returns a new random double in range [0,1)
  **/
-double prng_get_random_double_0_1(){
+double prng_get_random_double_0_1_ref(){
     return ((double) rand_f() / (RAND_MAX));
 }
 
 double prng_fast_32_get_random_double_0_1() {
     union hack myHack;
-    myHack.l = (long) rand();
+    myHack.l = (long) rand_f();
     double rand_double;
 
     // We put the 32 bits of num to the beginning (MSB-wise) of the mantissa and

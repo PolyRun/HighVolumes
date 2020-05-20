@@ -223,6 +223,11 @@ public:
 						     {"mt_rand",{{mt_init, mt_rand}, "mersenne twister rand"}}
                      }));
 
+      add(new CLIF_Option<rd_0_1_f_t>(&prng_get_random_double_0_1,'f',"rd_0_1","ref", {
+                       {"ref",   {prng_get_random_double_0_1, "prng_get_random_double_0_1 (ref)"}},
+						     {"fast",  {prng_fast_32_get_random_double_0_1, "prng_get_random_double_0_1 (fast)"}}
+                     }));
+
 
       // number parameters:
       claimOpt('c',"Algorithm Constants");
