@@ -99,6 +99,7 @@ class Benchmark_Polyvest_Vol : public Benchmark_base {
 	    return (res - exact)/exact;
 	}
 	void finalize() {
+            cout << "stepsize if " << step_size << "\n";
 	    pc_stack().reset();
             {
                pc_stack().log(0,0,"TODO");
