@@ -241,7 +241,25 @@ void PolytopeT_intersectCoord_cached_b_cost_vec(const void* o) {
    const int dims = poly->n;
    const int constraints = poly->m;
 
-   pc_stack().log(0, 0, "TODO");
+   int vectorized_loop_iterations = constraints / 4;
+   int remaining_loop_iterations = constraints - (constraints / 4);
+
+   // div, 2 * cmp, 2 * blendv, max, min = 7 flops
+   // 2 loads of 4 doubles each = 8 doubles = 64 bytes
+   pc_stack().log(7 * vectorized_loop_iterations,
+                  64 * vectorized_loop_iterations,
+                  "Vectorized loop iterations intersectCoord_cached_b_vec");
+
+   // This is a constant size operations, so it's ok if we ignore it for now
+   // But note that the code gets lowered to vector instructions
+   // Check the true number of flops that the compiler produces
+   pc_stack().log(0, 0, "TODO: max of t0_vec_0 and min of t1_vec_0");
+
+   // div, cmp, cmp (either t0 < t or t1 > t)
+   // 2 loads of 1 double each = 2 doubles = 16 bytes
+   pc_stack().log(3 * remaining_loop_iterations,
+                  16 * remaining_loop_iterations,
+                  "Remaining non-vect. loop iterations");
    
 }
 
@@ -256,6 +274,30 @@ void PolytopeT_cacheUpdateCoord_b_cost_ref(const void* o) {
    pc_stack().log(2*m,3*m*sizeof(FT), "update cached dotProduct");
    pc_stack().log(0,0, "TODO - update after impl!");
 }
+
+void PolytopeT_cacheUpdateCoord_b_cost_vec(const void* o) {
+
+   const PolytopeT *poly = (PolytopeT*) o;
+   const int dims = poly->n;
+   const int constraints = poly->m;
+
+   int vectorized_loop_iterations = constraints / 4;
+   int remaining_loop_iterations = constraints - (constraints / 4);
+
+   // 1 set at the beginning outside of the loop
+   // 1 mul and 1 sub
+   // 2 loads and 1 store of 4 doubles each = 12 doubles = 96 bytes
+   pc_stack().log(2 * vectorized_loop_iterations,
+                  96 * vectorized_loop_iterations,
+                  "Vectorized loop iterations cacheUpdateCoord_b_vec");
+
+   // 1 mul and 1 sub
+   // 2 loads and 1 store of 1 double each = 3 doubles = 24 bytes
+   pc_stack().log(2 * remaining_loop_iterations,
+                  24 * remaining_loop_iterations,
+                  "Remaining loop iterations");
+}
+
 void PolytopeT_cacheReset_b_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
    const int n = p->n;
@@ -266,6 +308,44 @@ void PolytopeT_cacheReset_b_cost_ref(const void* o) {
    // add n*m
    pc_stack().log(2*m*n,(n*m + n + 2*m)*sizeof(FT), "recompute dotproduct");
    pc_stack().log(0,0, "TODO - update after impl!");
+}
+
+void PolytopeT_cacheReset_b_cost_vec(const void* o) {
+
+   const PolytopeT *poly = (PolytopeT*) o;
+   const int dims = poly->n;
+   const int constraints = poly->m;
+
+   // First calculating the first loop where we initialize the cache with b[i]
+   int cache_init_vectorized_loop_iterations = constraints / 4;
+   int cache_init_remaining_loop_iterations = constraints - (constraints / 4);
+
+   // 1 load and 1 store of 4 doubles each = 8 doubles = 64 bytes
+   pc_stack().log(0,
+                  64 * cache_init_vectorized_loop_iterations,
+                  "Vectorized cache assignments cacheReset_b_vec");
+   // 1 load and 1 store of 1 double each = 2 doubles = 8 bytes
+   pc_stack().log(0,
+                  8 * cache_init_remaining_loop_iterations,
+                  "Remaining cache assignments");
+
+   // Now calculating the loop iterations for Ai dot x
+   int outer_loop_iterations = dims;
+   int vectorized_loop_iterations = outer_loop_iterations * constraints / 4;
+   int remaining_loop_iterations = outer_loop_iterations * (constraints - constraints / 4);
+
+   // 1 load of x[j] = 8 bytes
+   pc_stack().log(0, 8*outer_loop_iterations, "Loading x[j]");
+   // 1 mul and 1 sub
+   // 2 loads and 1 store of 4 doubles each = 12 doubles = 96 bytes
+   pc_stack().log(2 * vectorized_loop_iterations,
+                  96 * vectorized_loop_iterations,
+                  "Vectorized cache reset");
+   // 1 mul and 1 sub
+   // 2 loads and 1 store of 1 double each = 3 doubles = 24 bytes
+   pc_stack().log(2 * remaining_loop_iterations,
+                  24 * remaining_loop_iterations,
+                  "Remaining cache reset");
 }
 
 void Ellipsoid_intersect_cost_ref(const void* o) {
