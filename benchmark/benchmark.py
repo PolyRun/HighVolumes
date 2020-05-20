@@ -29,10 +29,13 @@ intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20'
 
 intersectSparseDims = [4,5,10,20,40,60,100,150,200]
 intersectSparseDims = {"2var_"+str(i):str(i) for i in intersectSparseDims}
-
 intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
 
-cubeRotDims = [3,10,20,40]
+intersectSparse4Dims = [4,5,10,20,40,60,100,150,200]
+intersectSparse4Dims = {"4var_"+str(i):str(i) for i in intersectSparse4Dims}
+intersectSparse4Bodies = [ name for (name,i) in intersectSparse4Dims.items()]
+
+cubeRotDims = [3,10,20,40,60,100]
 cubeRotDims = {"cube_rot_r1.0_"+str(i):str(i) for i in cubeRotDims}
 cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
 
@@ -98,7 +101,7 @@ BENCHMARKS = [
        },
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref"],
+          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
           "run_configs": ["intersect=intersectCoord,polytopeTranspose=true"],
           "input_configs": [("generator", intersectbodies)]
        },
@@ -169,23 +172,71 @@ BENCHMARKS = [
           "input_configs": [("generator", intersectSparseBodies)]
        },
     ],
-    "xoption": ("generator", intersectSparseDims),
+    "xoption": ("generator", intersectSparse4Dims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
-   {"name": "sparse_polytopeJIT",
+   {"name": "sparse_polytopeJIT_intersect",
     "executable": "benchmark_intersect",
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
           "run_configs": ["r=100000,polytopeType=3,intersect=intersectCoord_only"],
-          "input_configs": [("generator", intersectSparseBodies)]
+          "input_configs": [("generator", intersectSparse4Bodies)]
        },
     ],
-    "xoption": ("generator", intersectSparseDims),
+    "xoption": ("generator", intersectSparse4Dims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "dense_polytopeJIT_intersect",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
+          "run_configs": ["r=200000,polytopeType=3,intersect=intersectCoord_only"],
+          "input_configs": [("generator", cubeRotBodies)]
+       },
+    ],
+    "xoption": ("generator", cubeRotDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "sparse_polytopeJIT_update",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
+          "run_configs": ["r=100000,polytopeType=3,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", intersectSparse4Bodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparse4Dims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "dense_polytopeJIT_update",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
+          "run_configs": ["r=200000,polytopeType=3,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", cubeRotBodies)]
+       },
+    ],
+    "xoption": ("generator", cubeRotDims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
@@ -347,8 +398,8 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["rand_f=std_rand,rand_init_f=std_init", "rand_f=sr_rand,rand_init_f=sr_init", "rand_f=mt_rand,rand_init_f=mt_init"],
-          "run_configs": ["r=10000"],
+          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=mt_rand"],
+          "run_configs": ["r=1000,d=16384,i=16384,rand_chunk_size=512"],
           "input_configs": [("type", randValTypes)]
        }
     ],

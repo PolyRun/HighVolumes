@@ -55,10 +55,11 @@ public:
       pc_stack().add((void*)Polytope_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(Polytope_intersect_cost_ref,"Polytope_intersect_ref"));
       pc_stack().add((void*)Polytope_intersectCoord_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(Polytope_intersectCoord_cost_ref,"Polytope_intersectCoord_ref"));
       pc_stack().add((void*)Polytope_intersectCoord_cached_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(Polytope_intersectCoord_cached_cost_ref,"Polytope_intersectCoord_cached_ref"));
-      pc_stack().add((void*)Polytope_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Polytope_cacheUpdateCoord_cost_ref,"Polytope_cacheUpdateCoord_ref"));
+      pc_stack().add((void*)Polytope_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Polytope_cacheUpdateCoord_cost_ref,"Polytope_cacheUpdateCoord_ref")); 
       pc_stack().add((void*)Polytope_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(Polytope_cacheReset_cost_ref,"Polytope_cacheReset_ref"));
       
       // PolytopeT
+      pc_stack().add((void*)PolytopeT_intersectCoord_cached_b_vec, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_b_cost_vec,"PolytopeT_intersectCoord_cached_b_vec"));
       pc_stack().add((void*)PolytopeT_intersectCoord_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cost_ref,"PolytopeT_intersectCoord_ref"));
       pc_stack().add((void*)PolytopeT_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(PolytopeT_intersect_cost_ref,"PolytopeT_intersect_ref"));
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_cached_ref"));
@@ -161,6 +162,7 @@ public:
                         {"ref",        {{PolytopeT_intersectCoord_ref, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "no cache (ref)"}},
                         {"cached_ref",        {{PolytopeT_intersectCoord_cached_ref, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "no cache (ref)"}},
                         {"cached_nc1",        {{PolytopeT_intersectCoord_cached_nc1, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache, no condition - failed though"}},
+                        {"cached_b_vec",        {{PolytopeT_intersectCoord_cached_b_vec, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache, b and vectorized"}},
                         {"cached_b_ref",        {{PolytopeT_intersectCoord_cached_b_ref, {PolytopeT_cacheReset_b_ref,PolytopeT_cacheUpdateCoord_b_ref}}, "with cache, b in cache (ref)"}},
                         {"cached_vectorized", {{PolytopeT_intersectCoord_vectorized, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache and vectorized"}},
 		       	}));
@@ -187,6 +189,7 @@ public:
 						     {"single_data_acc",   {pjit_single_data_acc, "single aij at time, load via data table, more than one acc"}},
 						     {"double_data",       {pjit_double_data,     "two aij at time (if possible), load via data table"}},
 						     {"quad_data",         {pjit_quad_data,       "four aij at time (if possible), load via data table"}},
+						     {"quad_data_acc",     {pjit_quad_data_acc,   "four aij at time (if possible), load via data table, more than one acc"}},
 						  }));
 
       add(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,'f',"Ellipsoid_intersectCoord","cached_ref", {
@@ -210,22 +213,19 @@ public:
 						     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
 						     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
 
-      add(new CLIF_Option<rand_init_f_t>(&rand_init_f,'f',"rand_init_f","std_init", {
-                       {"std_init",{std_init, "standard rand init"}},
-						     {"sr_init",{sr_init, "shift register init"}},
-						     {"mt_init",{mt_init, "mersenne twister init"}} }));
-
-      add(new CLIF_Option<rand_f_t>(&rand_f,'f',"rand_f","std_rand", {
-                       {"std_rand",{std_rand, "standard rand"}},
-						     {"sr_rand",{sr_random_uint32, "shift register rand"}},
-						     {"mt_rand",{mt_rand, "mersenne twister rand"}} }));
+      add(new CLIF_DoubleOption<rand_init_f_t,rand_f_t>(&rand_init_f, &rand_f,'f',"rand_f","std_rand", {
+                       {"std_rand",{{std_init, std_rand}, "standard rand"}},
+                       {"std_rand_chunked",{{std_init_chunked, std_rand_chunked}, "standard rand (chunked)"}},
+						     {"sr_rand",{{sr_init, sr_random_uint32}, "shift register rand"}},
+						     {"mt_rand",{{mt_init, mt_rand}, "mersenne twister rand"}}
+                     }));
 
 
       // number parameters:
       claimOpt('c',"Algorithm Constants");
       add(new CLIF_OptionNumber<int>(&step_size,'c',"step_size","100000", 100, 1e7));
       add(new CLIF_OptionNumber<int>(&walk_size,'c',"walk_size","1", 1, 1e6));
-      add(new CLIF_OptionNumber<int>(&rand_chunk_size,'c',"rand_chunk_size","1024", 1, 524288)); // Max: 1 page(4096KB) of doubles
+      add(new CLIF_OptionNumber<int>(&rand_chunk_size,'c',"rand_chunk_size","512", 1, 524288)); // Max: 1 page(4096KB) of doubles
    }
 };
 

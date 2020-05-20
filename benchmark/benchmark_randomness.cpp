@@ -96,10 +96,10 @@ int main(int argc, char *argv[]){
     cliFun.claimOpt('b',"Benchmarking configuration");
     cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 1000000)); // 1 page of ints
 
-    int nr_ints = 100;
+    int nr_ints = 2048;
     cliFun.add(new CLIF_OptionNumber<int>(&nr_ints,'b',"i","100", 1, 1048576)); // 1 page of ints
 
-    int nr_doubles = 100;
+    int nr_doubles = 1024;
     cliFun.add(new CLIF_OptionNumber<int>(&nr_doubles,'b',"d","100", 1, 524288)); // 1 page of doubles
 
     Value_type v_t = random_int;
@@ -115,6 +115,6 @@ int main(int argc, char *argv[]){
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
     
-    Benchmark_randomness b("randomness", r, true, 1, nr_ints, nr_doubles, v_t);
+    Benchmark_randomness b("randomness", r, true, 10, nr_ints, nr_doubles, v_t);
     b.run_benchmark();
 }

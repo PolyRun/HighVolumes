@@ -9,6 +9,11 @@ rand_f_t rand_f = std_rand;
 
 int rand_chunk_size = 1024;
 
+union hack {
+    long l;
+    double d
+};
+
 /**
  * \brief Initializes the prng
  **/
@@ -30,6 +35,38 @@ double prng_get_random_double(){
 double prng_get_random_double_0_1(){
     return ((double) rand_f() / (RAND_MAX));
 }
+
+double prng_fast_32_get_random_double_0_1() {
+    union hack myHack;
+    myHack.l = (long) rand();
+    double rand_double;
+
+    // We put the 32 bits of num to the beginning (MSB-wise) of the mantissa and
+    // the 20 bits in the bottom are zero, which is an error of 2^(-20)
+    // Note that we can't convert directly to double and instead do address-magic
+    myHack.l = (myHack.l << 21) | (1023L << 52);
+    rand_double = myHack.d;
+
+    // Since rand_double has a zero exponent (2^0), it is between 2 and 1.
+    rand_double = rand_double - 1;
+    return rand_double;
+}
+
+/*
+double prng_fast_64_get_random_double_0_1() {
+    long num = (long) xorshift64();
+    long mask = (1L << 52) - 1; // This gives a mask which has 12 bits 0 and 52 bits 1
+    double rand_double;
+
+    // Note that we can't convert directly to double and instead do address-magic
+    num = num & mask;
+    rand_double = *(double*) &num; // This is undefined behaviour btw :)
+
+    // Since rand_double has a zero exponent (2^0), it is between 2 and 1
+    rand_double = rand_double - 1;
+    return rand_double;
+}
+*/
 
 /**
  * \brief Returns a new random double from normal distribution

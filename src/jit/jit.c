@@ -15,7 +15,7 @@ jit_MemoryPages* jit_memoryPages() {
       
       size_t psize = sysconf(_SC_PAGE_SIZE);
       jit_memoryPages_->page_size = psize;
-      jit_memoryPages_->pages = 500;
+      jit_memoryPages_->pages = 1000;
       jit_memoryPages_->head = 0;
       jit_memoryPages_->mem = jit_mmap(jit_memoryPages_->pages);;
    }
@@ -586,7 +586,7 @@ void jit_fma_mem(jit_Register reg, uint32_t idx, int a, int b, uint8_t b3, uint8
       case jit_rdi: {b5+=0x87;break;}
       default: {assert(0 && "reg not handled!");}
    }
-   { uint8_t instr[] = {0xc4,b2,b3,b4,b4}; jit_push(instr,5); }
+   { uint8_t instr[] = {0xc4,b2,b3,b4,b5}; jit_push(instr,5); }
    jit_push((const uint8_t*)&idx,4);
 }
 
@@ -669,10 +669,20 @@ void jit_vmulpd_mem_ymm(jit_Register reg, uint32_t idx, int src2, int dst) {
    jit_vOPpd_mem_ymm(0x59,reg,idx,src2,dst);
 }
 
+void jit_vbroadcastsd_ymm(int src, int dst) {
+   // c4 e2 7d 19 c0       	vbroadcastsd %xmm0,%ymm0
+   uint8_t b2 = 0xe2;
+   uint8_t b5 = 0xc0 + 8*(dst%8) + 1*(src%8);
+   if(dst>=8) {b2-=0x80;}
+   if(src>=8) {b2-=0x20;}
+   { uint8_t instr[] = {0xc4,b2,0x7d,0x19,b5}; jit_push(instr,5); }
+}
+
 void jit_emit_vzeroupper() {
    // c5 f8 77                vzeroupper
    { uint8_t instr[] = {0xc5,0xf8,0x77}; jit_push(instr,3); }
 }
+
 
 void jit_emit_return() {
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }

@@ -327,6 +327,126 @@ void Pjit_intersectCoord_body_quad(const Polytope* p, const int i, jit_Table_32*
    jit_vminpd_ymm(1,3,1);
 }
 
+void Pjit_intersectCoord_body_quad_acc(const Polytope* p, const int i, jit_Table_32** t32) {
+   //Polytope_print(p);
+   // find all pairs in column i:
+   int quad_max[p->m]; int quad_max_i = 0;
+   int quad_min[p->m]; int quad_min_i = 0;
+   
+   int last_max = -10;
+   int last_min = -10;
+   for(int j=0;j<p->m;j++) {
+      FT aij = Polytope_get_a(p,j,i);
+      if(aij != 0.0) { // TODO: make epsilon
+         if(aij < 0.0) {
+	    // max
+	    if(last_max < j-3) {
+	       quad_max[quad_max_i++] = j;
+	       last_max = j;
+	    }
+	 } else {
+            // min
+	    if(last_min < j-3) {
+	       quad_min[quad_min_i++] = j;
+	       last_min = j;
+	    }
+	 }
+      }
+   }
+
+   // decide how many accs to use:
+   int nNegAcc = min(3,quad_max_i);
+   int nPosAcc = min(3,quad_min_i);
+   //printf("Acc: %d %d\n",nNegAcc,nPosAcc);
+   
+   int negAcc[] = {0,2,4};
+   int posAcc[] = {1,3,5};
+
+   // find relevant entries in column i:
+   int i_neg = 0;
+   int i_pos = 0;
+
+   int j = 0;
+   while(j < quad_max_i || j < quad_min_i) {
+      if(j < quad_max_i) {
+         int jj = min(p->m-4,quad_max[j]);
+      	 double a0 = Polytope_get_a(p,jj+0,i);
+	 double a1 = Polytope_get_a(p,jj+1,i);
+	 double a2 = Polytope_get_a(p,jj+2,i);
+	 double a3 = Polytope_get_a(p,jj+3,i);
+	 if(a0 >= 0) {a0 = -1.0/1e100;}// make impotent
+	 if(a1 >= 0) {a1 = -1.0/1e100;}// make impotent
+	 if(a2 >= 0) {a2 = -1.0/1e100;}// make impotent
+	 if(a3 >= 0) {a3 = -1.0/1e100;}// make impotent
+	 
+	 //printf("max block at: %d %d %f %f %f %f\n",i,jj,a0,a1,a2,a3);
+         
+	 int reg = 6+negAcc[i_neg%nNegAcc];
+	 int acc = negAcc[i_neg%nNegAcc];
+	 *t32 = jit_immediate_32_via_data(1.0/a0,1.0/a1,1.0/a2,1.0/a3,reg,*t32);
+
+	 uint32_t cachej = 8*jj;
+	 if(i_neg < nNegAcc) {
+	    jit_vmulpd_mem_ymm(jit_rcx,cachej,reg,acc);
+	 } else {
+	    jit_vmulpd_mem_ymm(jit_rcx,cachej,reg,reg);
+	    jit_vmaxpd_ymm(acc,reg,acc);
+	 }
+	 i_neg++;
+      }
+      if(j < quad_min_i) {
+         int jj = min(p->m-4,quad_min[j]);
+      	 double a0 = Polytope_get_a(p,jj+0,i);
+	 double a1 = Polytope_get_a(p,jj+1,i);
+	 double a2 = Polytope_get_a(p,jj+2,i);
+	 double a3 = Polytope_get_a(p,jj+3,i);
+	 if(a0 <= 0) {a0 = 1.0/1e100;}// make impotent
+	 if(a1 <= 0) {a1 = 1.0/1e100;}// make impotent
+	 if(a2 <= 0) {a2 = 1.0/1e100;}// make impotent
+	 if(a3 <= 0) {a3 = 1.0/1e100;}// make impotent
+	 
+	 //printf("min block at: %d %d %f %f %f %f\n",i,jj,a0,a1,a2,a3);
+          
+	 int reg = 6+posAcc[i_pos%nPosAcc];
+	 int acc = posAcc[i_pos%nPosAcc];
+	 *t32 = jit_immediate_32_via_data(1.0/a0,1.0/a1,1.0/a2,1.0/a3,reg,*t32);
+
+	 uint32_t cachej = 8*jj;
+	 if(i_pos < nPosAcc) {
+	    jit_vmulpd_mem_ymm(jit_rcx,cachej,reg,acc);
+	 } else {
+	    jit_vmulpd_mem_ymm(jit_rcx,cachej,reg,reg);
+	    jit_vminpd_ymm(acc,reg,acc);
+	 }
+	 i_pos++;
+      }
+      j++;
+   } 
+   
+   // recursively min/max accs
+   if(nNegAcc==3) {
+      jit_vmaxpd_ymm(negAcc[0],negAcc[1],negAcc[1]);
+      jit_vmaxpd_ymm(negAcc[1],negAcc[2],negAcc[0]);
+   } else if (nNegAcc==2) {
+      jit_vmaxpd_ymm(negAcc[0],negAcc[1],negAcc[0]);
+   }
+   if(nPosAcc==3) {
+      jit_vminpd_ymm(posAcc[0],posAcc[1],posAcc[1]);
+      jit_vminpd_ymm(posAcc[1],posAcc[2],posAcc[0]);
+   } else if (nPosAcc==2) {
+      jit_vminpd_ymm(posAcc[0],posAcc[1],posAcc[0]);
+   }
+
+   jit_permilpd(0b0101,0,2);
+   jit_permilpd(0b0101,1,3);
+   jit_vmaxpd_ymm(0,2,0);
+   jit_vminpd_ymm(1,3,1);
+   jit_permpd(0b00001110,0,2);
+   jit_permpd(0b00001110,1,3);
+   jit_vmaxpd_ymm(0,2,0);
+   jit_vminpd_ymm(1,3,1);
+}
+
 void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) {
    //jit_print();
    
@@ -403,7 +523,8 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
          Pjit_intersectCoord_init_double(&t16);
 	 break;
       }
-      case pjit_quad_data: {
+      case pjit_quad_data:
+      case pjit_quad_data_acc: {
          Pjit_intersectCoord_init_quad(&t32);
 	 break;
       }
@@ -474,6 +595,10 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
          }
 	 case pjit_quad_data: {
             Pjit_intersectCoord_body_quad(p,i,&t32);
+            break;
+         }
+	 case pjit_quad_data_acc: {
+            Pjit_intersectCoord_body_quad_acc(p,i,&t32);
             break;
          }
 	 default: {

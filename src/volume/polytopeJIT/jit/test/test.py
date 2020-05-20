@@ -117,7 +117,10 @@ for i in range(16):
         #print("vmulpd 0x100(%rsi),%xmm{},%xmm{}".format(i,j))
 
 
-
+print("########################");
+for i in range(16):
+    for j in range(16):
+        print("vbroadcastsd %xmm{},%ymm{}".format(i,j))
 
 
 
