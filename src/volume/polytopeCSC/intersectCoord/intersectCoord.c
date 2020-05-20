@@ -301,6 +301,53 @@ void PolytopeCSC_intersectCoord_cached_vec_nan(const void* o, const FT* x, const
 
 
 
+void PolytopeCSC_intersectCoord_cached_vec_onlyread(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache){
+
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    FT *b_Aix = (FT *) cache; //(FT *) cache;
+
+    int colstrt = p->col_start[d];
+    FT *A = &p->A[colstrt];
+    int *row = &p->row_idx[colstrt];
+    
+    // elems is a multiple of 4!
+    // thus we need to consider exactly c := |col|/4 vectors
+    int elems = p->col_start[d+1] - colstrt;
+
+    __m256d zeros = _mm256_set1_pd(0.0);
+
+    __m256d t00 = _mm256_set1_pd(-FT_MAX);
+    __m256d t11 = _mm256_set1_pd(FT_MAX);
+
+    // the first c-1 vectors have all valid elements
+    int i = 0;
+    for (; i < elems - 3; i+=4) {
+
+        //__m128i rows = _mm_maskload_epi32(row + i, rowmask);
+        
+        __m256d b_Aix_vec = _mm256_set_pd(b_Aix[row[i+3]], b_Aix[row[i+2]], b_Aix[row[i+1]], b_Aix[row[i]]);
+        __m256d dai = _mm256_load_pd(A + i);
+
+        t11 = _mm256_xor_pd(t11, dai);
+        t00 = _mm256_xor_pd(t00, b_Aix_vec);
+    }
+
+    FT t0_tmp = t00[0];
+    FT t0_tmptmp = (t00[1] > t0_tmp) ? t00[1] : t0_tmp;
+    FT t0_tmptmptmp = (t00[2] > t0_tmptmp) ? t00[2] : t0_tmptmp;
+    *t0 = (t00[3] > t0_tmptmptmp) ? t00[3] : t0_tmptmptmp;
+
+    FT t1_tmp = t11[0];
+    FT t1_tmptmp = (t11[1] < t1_tmp) ? t11[1] : t1_tmp;
+    FT t1_tmptmptmp = (t11[2] < t1_tmptmp) ? t11[2] : t1_tmptmp;
+    *t1 = (t11[3] < t1_tmptmptmp) ? t11[3] : t1_tmptmptmp;
+
+}
+
+
+
+
 void PolytopeCSC_intersectCoord_cached_vec_nan_inv(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache){
 
     const PolytopeCSC *p = (PolytopeCSC *) o;
@@ -333,6 +380,7 @@ void PolytopeCSC_intersectCoord_cached_vec_nan_inv(const void* o, const FT* x, c
 
         // <comp>_OS -> signal nans
         // n_mask[i] is 0xff..ff if t[i] < 0 and 0 else
+        // [add port, gap 1, latency 3]
         __m256d n_mask = _mm256_cmp_pd(t, zeros, _CMP_LT_OS);
         //__m256d p_mask = _mm256_cmp_pd(t, zeros, _CMP_GE_OS);
 
@@ -340,7 +388,9 @@ void PolytopeCSC_intersectCoord_cached_vec_nan_inv(const void* o, const FT* x, c
         __m256d t11_tmp = _mm256_blendv_pd(t, t11, n_mask);
 
         // fill dai with 0 for invalid entries -> t will have inf at those entries -> they are ignored here!
+        // [add port, gap 1, latency 3]
         t00 = _mm256_max_pd(t00, t00_tmp);
+        // [add port, gap 1, latency 3]
         t11 = _mm256_min_pd(t11, t11_tmp);
     }
 

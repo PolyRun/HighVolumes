@@ -114,6 +114,8 @@ public:
       pc_stack().add((void *) PolytopeCSC_cacheUpdateCoord_fma, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeCSC_cacheUpdateCoord_cost_withb, "PolytopeCSC_cacheUpdateCoord_fma"));
       pc_stack().add((void *) PolytopeCSC_cacheUpdateCoord_vec, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeCSC_cacheUpdateCoord_cost_withb, "PolytopeCSC_cacheUpdateCoord_vec"));
 
+      
+      pc_stack().add((void *) PolytopeCSC_intersectCoord_cached_vec_onlyread, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeCSC_intersectCoord_cached_cost_vec, "PolytopeCSC_intersectCoord_cached_vec_only_read"));
        
       // PolytopeJIT
       pc_stack().add((void*)PolytopeJIT_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(PolytopeJIT_intersect_cost_ref,"PolytopeJIT_intersect_ref"));
@@ -184,6 +186,8 @@ public:
             {"cached_b_vec_nan_inv", {{PolytopeCSC_intersectCoord_cached_vec_nan_inv, {PolytopeCSC_cacheReset_fma, PolytopeCSC_cacheUpdateCoord_fma}}, "vectorized (without gather instr, use nan) and fma and store Ainv, with cache, b in cache"}},
             {"cached_b_vec_inl", {{PolytopeCSC_intersectCoord_cached_vec_inline, {PolytopeCSC_cacheReset_fma, PolytopeCSC_cacheUpdateCoord_fma}}, "vectorized inlined, with cache, b in cache"}},
             {"cached_b_vec_inl_2accs", {{PolytopeCSC_intersectCoord_cached_vec_inline_2accs, {PolytopeCSC_cacheReset_fma, PolytopeCSC_cacheUpdateCoord_fma}}, "vectorized inlined 2 accs, with cache, b in cache"}},
+            // onlyread is meant for testing io bound, doesn't compute the right thing
+            //{"cached_vec_onlyread", {{PolytopeCSC_intersectCoord_cached_vec_onlyread, {PolytopeCSC_cacheReset_fma, PolytopeCSC_cacheUpdateCoord_vec}}, "only read!"}},
            }));
 
       add(new CLIF_Option<PolytopeJIT_Generator>(&PolytopeJIT_generator,'f',"PolytopeJIT_gen","single_rax", {
