@@ -109,7 +109,7 @@ void PolytopeT_intersectCoord_cached_b_vec(const void *p, const FT *x, const int
    __m256d ft_pos_vec = _mm256_set1_pd(FT_EPS);
 
    int i = 0;
-   for (; i < constraints - 4; i += 4) {
+   for (; i < constraints - 3; i += 4) {
 
       __m256d b_sub_Aix_vec_0 = _mm256_load_pd(b_sub_Aix_slice + i);
       __m256d Aid_vec_0 = _mm256_load_pd(Aid_slice + i);

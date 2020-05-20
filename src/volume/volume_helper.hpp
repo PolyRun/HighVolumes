@@ -162,7 +162,7 @@ public:
                         {"ref",        {{PolytopeT_intersectCoord_ref, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "no cache (ref)"}},
                         {"cached_ref",        {{PolytopeT_intersectCoord_cached_ref, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "no cache (ref)"}},
                         {"cached_nc1",        {{PolytopeT_intersectCoord_cached_nc1, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache, no condition - failed though"}},
-                        {"cached_b_vec",        {{PolytopeT_intersectCoord_cached_b_vec, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache, b and vectorized"}},
+                        {"cached_b_vec",        {{PolytopeT_intersectCoord_cached_b_vec, {PolytopeT_cacheReset_b_ref,PolytopeT_cacheUpdateCoord_b_ref}}, "with cache, b and vectorized"}},
                         {"cached_b_ref",        {{PolytopeT_intersectCoord_cached_b_ref, {PolytopeT_cacheReset_b_ref,PolytopeT_cacheUpdateCoord_b_ref}}, "with cache, b in cache (ref)"}},
                         {"cached_vectorized", {{PolytopeT_intersectCoord_vectorized, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache and vectorized"}},
 		       	}));
