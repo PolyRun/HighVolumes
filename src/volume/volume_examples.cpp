@@ -73,7 +73,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     
 
     // ball - ellipsoids:
-    std::vector<int> ball_n = {3,10,20,40,60,100};
+    std::vector<int> ball_n = {3,10,20,40,60,100,150,200};
     for(int n : ball_n) {
        std::string nstr = std::to_string(n);
        add("ball_r1.0_"+nstr, "ball ellipsoid, centered, dim-"+nstr+", radius 1 [normalized]", [n]() {

@@ -45,6 +45,9 @@ void Ellipsoid_cacheUpdateCoord_c(const void* o, const int d, const FT dx, void*
  * n times
  * c[i]    | c[i]+dx*A[i][d] |     x    |   x+4    |     x    |    x+5
  * 
+ * 5 flops in 12(13) cycles
+ * n=100:
+ * 200 flops in 104(105) cycles
  **/
 
 void Ellipsoid_cacheUpdateCoord_fma(const void* o, const int d, const FT dx, void* cache){
@@ -224,7 +227,6 @@ void Ellipsoid_cacheUpdateCoord_vec_u4(const void* o, const int d, const FT dx, 
    FT* c4 = c+6;
    FT* dcol4 = dcol + 6;
 
-
    int i = 0;
    for(; i < n-7; i+=8) {
       __m128d dcoli_ = _mm_load_pd(dcol);
@@ -236,7 +238,7 @@ void Ellipsoid_cacheUpdateCoord_vec_u4(const void* o, const int d, const FT dx, 
       __m128d ci2_ = _mm_load_pd(c2);
       ci2_ = _mm_fmadd_pd(dxp_, dcoli2_, ci2_);
       _mm_store_pd(c2, ci2_);
-      
+
       __m128d dcoli3_ = _mm_load_pd(dcol3);
       __m128d ci3_ = _mm_load_pd(c3);
       ci3_ = _mm_fmadd_pd(dxp_, dcoli3_, ci3_);
@@ -246,15 +248,15 @@ void Ellipsoid_cacheUpdateCoord_vec_u4(const void* o, const int d, const FT dx, 
       __m128d ci4_ = _mm_load_pd(c4);
       ci4_ = _mm_fmadd_pd(dxp_, dcoli4_, ci4_);
       _mm_store_pd(c4, ci4_);
-
+      
       c += 8;
       dcol += 8;
-      c2 +=8;
+      c2 += 8;
       dcol2 += 8;
-      c3 +=8;
+      c3 += 8;
       dcol3 += 8;
-      c4 +=8;
-      dcol4 += 8;
+      c3 += 8;
+      dcol3 += 8;
    }
    for(; i < n-3; i+=4) {
       __m128d dcoli_ = _mm_load_pd(dcol);
@@ -269,7 +271,7 @@ void Ellipsoid_cacheUpdateCoord_vec_u4(const void* o, const int d, const FT dx, 
       
       c += 4;
       dcol += 4;
-      c2 += 4;
+      c2 +=4;
       dcol2 += 4;
    }
    for(; i < n-1; i+=2) {
@@ -277,7 +279,7 @@ void Ellipsoid_cacheUpdateCoord_vec_u4(const void* o, const int d, const FT dx, 
       __m128d ci_ = _mm_load_pd(dcol);
       ci_ = _mm_fmadd_pd(dxp_, dcoli_, ci_);
       _mm_store_pd(c, ci_);
-      
+
       c += 2;
       dcol += 2;
    }
@@ -286,7 +288,7 @@ void Ellipsoid_cacheUpdateCoord_vec_u4(const void* o, const int d, const FT dx, 
       __m128d ci_ = _mm_load_sd(c);
       ci_ = _mm_fmadd_sd(dx_, dcoli_, ci_);
       _mm_store_sd(c, ci_);
-      
+
       c++;
       dcol++;
    }
