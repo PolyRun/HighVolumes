@@ -212,7 +212,6 @@ void Polytope_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
       
       const FT aix = dotProduct(ai,x,n);
-      assert(abs(aix-Aix[i]) < 0.0000001 && "Cache must be accurate!");
       FT t = (b - aix) / dai;
       
       if(dai < 0.0) {
@@ -237,9 +236,9 @@ void Polytope_intersectCoord_cached_ref(const void* o, const FT* x, const int d,
    FT t11 = FT_MAX;
 
    for(int i=0; i<m; i++) {
-      const FT* ai = Polytope_get_Ai(p,i);
-      const FT b = Polytope_get_b(p, i);
+      const FT* ai = Polytope_get_Ai(p,i); // read column entry on next line
       const FT dai = ai[d]; // dot product with unit vector dim d
+      const FT b = Polytope_get_b(p, i);
       
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
       

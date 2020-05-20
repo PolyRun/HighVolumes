@@ -42,7 +42,6 @@ void PolytopeT_intersectCoord_cost_ref(const void* o);
 void PolytopeT_intersectCoord_cost_vec(const void* o);
 void PolytopeT_intersectCoord_cached_cost_ref(const void* o);
 void PolytopeT_intersectCoord_cached_b_cost_ref(const void* o);
-void PolytopeT_intersectCoord_cached_b_cost_vec(const void* o);
 void PolytopeT_cacheUpdateCoord_cost_ref(const void* o);
 void PolytopeT_cacheUpdateCoord_b_cost_ref(const void* o);
 void PolytopeT_cacheUpdateCoord_b_cost_vec(const void* o);

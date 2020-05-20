@@ -105,7 +105,7 @@ i.e. 1 comparison and 1 max (min respectively) per iteration
     */
    
    // read m (all of b)
-   // (1) 2*m compares with +-FT_EPS and m ifs
+   // (1) 2*m compares with +-FT_EPS
    // (2) add m
    // (3) div m
    // (4) m compares with 0.0 and m ifs (MB: i think this should be only 1*m, c.f. assembly)
@@ -124,7 +124,7 @@ void Polytope_intersectCoord_cost_ref(const void* o) {
       frame.costf()(n);
    }
 
-   // read 3*m (all of b, ai[d] and Aix[i]) -> MB: ai[d] is only 1 double in total and we read Aix[i] only for debugging -> i guess this should be m+1
+   // read 2*m (all of b, ai[d])
    // 2*m compares with +-FT_EPS and m ifs
    // add m
    // div m
@@ -132,7 +132,7 @@ void Polytope_intersectCoord_cost_ref(const void* o) {
    // m compares, either t00>t or t11<t
    ///////////////////////////////////////////////////////////////////////////
    // assert reads ???
-   pc_stack().log(6*m, (m+1)*sizeof(FT), "intersect");
+   pc_stack().log(6*m, 2*m*sizeof(FT), "intersect");
 }
 
 void Polytope_intersectCoord_cached_cost_ref(const void* o) {
@@ -140,13 +140,13 @@ void Polytope_intersectCoord_cached_cost_ref(const void* o) {
    const int n = p->n;
    const int m = p->m;
 
-   // read 3*m (ai[d], b, cache) -> MB: ai[d] only one entry -> 2m + 1 doubles
-   // 2*m compares with +-FT_EPS and m ifs
+   // read 3*m (ai[d], b, cache)
+   // 2*m compares with +-FT_EPS
    // add 1 * m
    // div 1 * m
    // m compares with 0.0 and m ifs -> MB: as in intersect_ref -> 1*m
    // m compares, either t00>t or t11<t
-   pc_stack().log(6*m, (2*m + 1)*sizeof(FT), "read cache, calculate");
+   pc_stack().log(6*m, 3*m*sizeof(FT), "read cache, calculate");
 }
 void Polytope_cacheUpdateCoord_cost_ref(const void* o) {
    const Polytope* p = (Polytope*)o;
@@ -168,10 +168,8 @@ void Polytope_cacheReset_cost_ref(const void* o) {
       frame.costf()(n);
    }
 
-   ////////////////////////////////////////////////////////////////////
-   // read m doubles from Ai ??? -> MB: I guess we don't need to count them as they are only pointers, not "values"... but not sure...
-   // read and write m from c
-   pc_stack().log(0, 2*m, "write results");
+   // read and write m from c (read before write!)
+   pc_stack().log(0, 2*m*sizeof(FT), "write results");
 }
 
 void PolytopeT_intersect_cost_ref(const void* o) {
@@ -179,16 +177,13 @@ void PolytopeT_intersect_cost_ref(const void* o) {
    const int n = p->n;
    const int m = p->m;
 
-   {// frame for dotProduct: m times d*ai, m times ai*x
-      PC_Frame<dotProduct_cost_f> frame((void*)dotProduct, 2*m);
-      frame.costf()(n);
-   }
+   pc_stack().log(4*m*n, (m*n+2*n)*sizeof(FT), "Fuzed dot products d*a and x*a");
 
    // read m (all of b)
-   // 2*m compares with +-FT_EPS and m ifs
+   // 2*m compares with +-FT_EPS
    // add m
    // div m
-   // m compares with 0.0 and m ifs
+   // m compares with 0.0
    // m compares, either t00>t or t11<t
    pc_stack().log(6*m, m*sizeof(FT), "intersect");
 }
@@ -198,15 +193,15 @@ void PolytopeT_intersectCoord_cost_ref(const void* o) {
    const int m = p->m;
    
    pc_stack().log(0,0, "Note: early 'continue' can speed up things!");
-   pc_stack().log(m*n*2,m*n*2*sizeof(FT), "dotProduct implemented locally because column-format");
+   pc_stack().log(m*n*2,(m*n+n)*sizeof(FT), "dotProduct implemented locally because column-format");
 
-   // read m + m (all of b, col d of A)
-   // 2*m compares with +-FT_EPS and m ifs
+   // read m (all of b)
+   // 2*m compares with +-FT_EPS
    // add m
    // div m
-   // m compares with 0.0 and m ifs
+   // m compares with 0.0
    // m compares, either t00>t or t11<t
-   pc_stack().log(6*m, 2*m*sizeof(FT), "intersect");
+   pc_stack().log(6*m, m*sizeof(FT), "intersect");
 }
 void PolytopeT_intersectCoord_cached_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
@@ -236,7 +231,7 @@ void PolytopeT_cacheReset_cost_ref(const void* o) {
    const int n = p->n;
    const int m = p->m;
    // read n*m + n   (A, x)
-   // write m  (c) MB: also need to read c before write
+   // read + write m  (c) MB: also need to read c before write
    // mul n*m
    // add n*m
    pc_stack().log(2*m*n,(n*m + n + 2*m)*sizeof(FT), "recompute dotproduct");
@@ -246,29 +241,12 @@ void PolytopeT_intersectCoord_cached_b_cost_ref(const void* o) {
    const int n = p->n;
    const int m = p->m;
 
-   // read 3*m (A, b, cache) -> 2*m, we cache b - Aix!
-   // 2*m compares with +-FT_EPS and m ifs
-   // add 1 * m -> MB: no more adds, that's why we store b-Aix
+   // read 2*m (A, cache)
+   // 2*m compares with +-FT_EPS
    // div 1 * m 
-   // m compares with 0.0 and m ifs -> as above, only 1m
+   // m compares with 0.0
    // m compares, either t00>t or t11<t
    pc_stack().log(5*m, 2*m*sizeof(FT), "read cache, calculate");
-   pc_stack().log(0,0, "TODO - update after impl!"); // MB: what is this for?
-}
-
-void PolytopeT_intersectCoord_cached_b_cost_vec(const void* o) {
-
-   const PolytopeT *poly = (PolytopeT*) o;
-   const int n = poly->n;
-   const int m = poly->m;
-
-   // MB:
-   // read 2m double (cache and col d of A)
-   // m divs
-   // m+3 max
-   // m+3 min
-   pc_stack().log(5*m + 6, 2*m*sizeof(FT), "read cache, calculate");
-   
 }
 
 void PolytopeT_cacheUpdateCoord_b_cost_ref(const void* o) {
@@ -280,105 +258,47 @@ void PolytopeT_cacheUpdateCoord_b_cost_ref(const void* o) {
    // mul m
    // add m
    pc_stack().log(2*m,3*m*sizeof(FT), "update cached dotProduct");
-   pc_stack().log(0,0, "TODO - update after impl!");
 }
 
 void PolytopeT_cacheUpdateCoord_b_cost_vec(const void* o) {
-
-   const PolytopeT *poly = (PolytopeT*) o;
-   const int dims = poly->n;
-   const int constraints = poly->m;
-
-   int vectorized_loop_iterations = constraints / 4;
-   int remaining_loop_iterations = constraints - (constraints / 4);
-
-   // 1 set at the beginning outside of the loop
-   // 1 mul and 1 sub
-   // 2 loads and 1 store of 4 doubles each = 12 doubles = 96 bytes
-   pc_stack().log(2 * vectorized_loop_iterations,
-                  96 * vectorized_loop_iterations,
-                  "Vectorized loop iterations cacheUpdateCoord_b_vec");
-
-   // 1 mul and 1 sub
-   // 2 loads and 1 store of 1 double each = 3 doubles = 24 bytes
-   pc_stack().log(2 * remaining_loop_iterations,
-                  24 * remaining_loop_iterations,
-                  "Remaining loop iterations");
+   PolytopeT_cacheUpdateCoord_b_cost_ref(o);
 }
 
 void PolytopeT_cacheReset_b_cost_ref(const void* o) {
    const PolytopeT* p = (PolytopeT*)o;
    const int n = p->n;
    const int m = p->m;
-   // read n*m + n   (A, x)
-   // write m  (c) -> MB: also need to read c
+   // read n*m + n + m + 2*m   (A, x, b, rw c)
    // mul n*m
    // add n*m
-   pc_stack().log(2*m*n,(n*m + n + 2*m)*sizeof(FT), "recompute dotproduct");
-   pc_stack().log(0,0, "TODO - update after impl!");
+   pc_stack().log(2*m*n,(n*m + n + 3*m)*sizeof(FT), "recompute dotproduct with b");
 }
 
 void PolytopeT_cacheReset_b_cost_vec(const void* o) {
-
-   const PolytopeT *poly = (PolytopeT*) o;
-   const int dims = poly->n;
-   const int constraints = poly->m;
-
-   // First calculating the first loop where we initialize the cache with b[i]
-   int cache_init_vectorized_loop_iterations = constraints / 4;
-   int cache_init_remaining_loop_iterations = constraints - (constraints / 4);
-
-   // 1 load and 1 store of 4 doubles each = 8 doubles = 64 bytes
-   pc_stack().log(0,
-                  64 * cache_init_vectorized_loop_iterations,
-                  "Vectorized cache assignments cacheReset_b_vec");
-   // 1 load and 1 store of 1 double each = 2 doubles = 8 bytes
-   pc_stack().log(0,
-                  8 * cache_init_remaining_loop_iterations,
-                  "Remaining cache assignments");
-
-   // Now calculating the loop iterations for Ai dot x
-   int outer_loop_iterations = dims;
-   int vectorized_loop_iterations = outer_loop_iterations * constraints / 4;
-   int remaining_loop_iterations = outer_loop_iterations * (constraints - constraints / 4);
-
-   // 1 load of x[j] = 8 bytes
-   pc_stack().log(0, 8*outer_loop_iterations, "Loading x[j]");
-   // 1 mul and 1 sub
-   // 2 loads and 1 store of 4 doubles each = 12 doubles = 96 bytes
-   pc_stack().log(2 * vectorized_loop_iterations,
-                  96 * vectorized_loop_iterations,
-                  "Vectorized cache reset");
-   // 1 mul and 1 sub
-   // 2 loads and 1 store of 1 double each = 3 doubles = 24 bytes
-   pc_stack().log(2 * remaining_loop_iterations,
-                  24 * remaining_loop_iterations,
-                  "Remaining cache reset");
+   PolytopeT_cacheReset_b_cost_ref(o);
 }
 
 void Ellipsoid_intersect_cost_ref(const void* o) {
    const Ellipsoid* e = (Ellipsoid*)o;
    const int n = e->n;
    
-   // read: n^2 + n + n (all of A, all of a, all of x)
-   size_t add = n + 2*n*n + 3*n + 3; // z = x-a, Az, Ad, dt*Ad, dt*Az, zt*Az, eq
-   size_t mul = 2*n*n + 3*n + 6; // Az, Ad, dt*Ad, dt*Az, zt*Az, eq
+   // read: n^2 + n + n + n (all of A, all of a, all of x, all of d)
+   size_t add = 4*n + 3*n*n + 3;  
+   size_t mul = 2*n*n + 3*n + 6; 
    // sqrt 1
    // div 1
-   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "2 MVM (parallel), some VVM");
+   pc_stack().log(add + mul + 1 + 1, (n*n + 3*n)*sizeof(FT), "2 MVM (parallel), some VVM");
 }
 void Ellipsoid_intersectCoord_cost_ref(const void* o) {
    const Ellipsoid* e = (Ellipsoid*)o;
    const int n = e->n;
    
    // read: n^2 + n + n (all of A, all of a, all of x)
-   size_t add = n + n*n + n + 3; // z = x-a, Az,zt*Az, eq
-   size_t mul =  n*n + n + 6; // Az, zt*Az, eq
-   size_t comp = n; // selection
+   size_t add = 2*n + 2*n*n + 3;
+   size_t mul =  n*n + n + 6; 
    // sqrt 1
    // div 1
-
-   pc_stack().log(add + mul + comp + 1 + 1, (n*n + 2*n)*sizeof(FT), "1 MVM, 1 VVM");
+   pc_stack().log(add + mul + 1 + 1, (n*n + 2*n)*sizeof(FT), "1 MVM, 1 VVM");
 }
 
 void Ellipsoid_intersectCoord_cached_cost_ref(const void* o) {
@@ -395,13 +315,8 @@ void Ellipsoid_intersectCoord_cached_cost_ref(const void* o) {
 }
 
 void Ellipsoid_intersectCoord_cached_cost_reord_fma(const void* o) {
-   const Ellipsoid* e = (Ellipsoid*)o;
-   const int n = e->n;
-   
-   // read: 1 + 1+1 (one element of A, two elements out of cache)
    // flops: see reasoning in file
-   
-   pc_stack().log(12, 3*sizeof(FT), "read cache, calculate");
+   Ellipsoid_intersectCoord_cached_cost_ref(o);
 }
 
 void Ellipsoid_cacheUpdateCoord_cost_ref(const void* o) {
@@ -417,10 +332,10 @@ void Ellipsoid_cacheReset_cost_ref(const void* o) {
    const Ellipsoid* e = (Ellipsoid*)o;
    const int n = e->n;
    // read n*n + n + n   (A, x, a)
-   // write n+1  (cache)
+   // rd/write 2*n+2  (cache)
    // mul n*n+n
-   // add n*n+n
-   pc_stack().log(2*n*n+2*n,(n*n + 2*n + n + 1)*sizeof(FT), "recompute MVM, c");
+   // add 2*n*n+2*n
+   pc_stack().log(3*n*n+3*n,(n*n + 4*n + 2)*sizeof(FT), "recompute MVM, c");
 }
 
 
@@ -447,14 +362,15 @@ void PolytopeCSC_intersect_cost_ref(const void *o){
     int m = p->m;
     int nz = nonzerosCSC(p);
 
-    // read 4m (read and write dotd, dotx) + nz read a + m read b doubles
+    // nz read A + m read b doubles
     // read 2n (dir, x) doubles
     // read nz ints (row_idx)
     // add 2*#non-zeros + m
     // mult 2*#non-zeros
     // div m
     // compare 3m (upper bound)
-    pc_stack().log(4*nz + 5*m, (4*m + nz + m + 2*n) * sizeof(FT) + nz * sizeof(int), "intersect CSC");
+    // max/min m
+    pc_stack().log(4*nz + 6*m, (nz + m + 2*n) * sizeof(FT) + nz * sizeof(int), "intersect CSC");
 }
 
 
@@ -482,12 +398,13 @@ void PolytopeCSC_intersectCoord_cost_ref(const void *o){
         frame.costf()(p);
     }
 
-    // read 3*#non-zeros in col (for b, A and dotx (don't count cache here as its only for validation))
+    // read 2*#non-zeros in col (for b, A (don't count cache here as its only for validation))
     // read #non-zeros ints (row_idx)
     // adds #non-zeros in col (1 flop each)
     // division #non-zeros in col (1 flop each)
     // comparison #non-zeros in col (1 flop each)
-    pc_stack().log(3* nz/n, 3*nz/n*sizeof(FT) + nz/n *sizeof(int), "intersect Coord CSC");
+    // min/max 1 flop each
+    pc_stack().log(4* nz/n, 2*nz/n*sizeof(FT) + nz/n *sizeof(int), "intersect Coord CSC");
     
 }
 
@@ -503,8 +420,8 @@ void PolytopeCSC_intersectCoord_cached_cost_ref(const void *o){
     // adds non-zeros in col
     // divs non-zeros in col
     // comparisons non-zeros in col
-
-    pc_stack().log(3*nz/n, (3 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_ref CSC");
+    // min/max
+    pc_stack().log(4*nz/n, (3 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_ref CSC");
 }
 
 
@@ -517,8 +434,8 @@ void PolytopeCSC_intersectCoord_cached_cost_withb(const void *o){
     // read #non-zeros in col * (2 doubles (for A and b_Aix) + 1 int (row_idx))
     // divs #non-zeros in col
     // comparisons #non-zeros in col
-    pc_stack().log(2*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
-
+    // min/max
+    pc_stack().log(3*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
 }
 
 
@@ -533,7 +450,6 @@ void PolytopeCSC_intersectCoord_cached_cost_vec(const void *o){
     // min and max each #non-zeros in col
     // comparison #non-zeros in col
     pc_stack().log(4*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
-
 }
 
 
@@ -596,9 +512,8 @@ void PolytopeJIT_intersectCoord_cost_ref(const void* o) {
    
    double nzAavg = p->nzA / (double)n;
    double flops = nzAavg*2; // mul, min/max
-   double data = nzAavg*1; // read cache
-   pc_stack().log(flops,2*data*sizeof(FT),"rd cache+const, mul, min/max");
-   pc_stack().log(0,0,"write back t0,t1");
+   double data = nzAavg*2; // read cache + A
+   pc_stack().log(flops,data*sizeof(FT),"rd cache+const, mul, min/max");
 }
 void PolytopeJIT_cacheUpdateCoord_cost_ref(const void* o) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
@@ -607,21 +522,22 @@ void PolytopeJIT_cacheUpdateCoord_cost_ref(const void* o) {
 
    double nzAavg = p->nzA / (double)n;
    double flops = nzAavg*2; // fmadd
-   double data = nzAavg; // rd/wr cache
-   pc_stack().log(flops,3*data*sizeof(FT),"rd/wr cache, rd const, fmadd");
+   double data = nzAavg*3; // rd/wr cache
+   pc_stack().log(flops,data*sizeof(FT),"rd/wr cache, rd const, fmadd");
 }
 void PolytopeJIT_cacheReset_cost_ref(const void* o) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
-   pc_stack().log(0,0,"TODO");
+   // read A, b, x, rw b
+   // fmsub for nz
+   pc_stack().log(p->nzA*2,(p->nzA + 3*p->m + p->n)*sizeof(FT),"recompute cache, dot prod");
 }
 
 
 void volume_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
 
-   pc_stack().log(0, n*sizeof(FT), "init_x");
+   pc_stack().log(0, 2*n*sizeof(FT), "init_x");
    
    pc_stack().log(0, 0, "cacheAlloc");
-   pc_stack().log(0, 0, "cacheReset - TODO");
    
    pc_stack().log(0, 0, "Ball_volume - TODO");
    
@@ -646,19 +562,22 @@ void volume_cost_ref(const int n, const int bcount, const void** body, const Bod
       // log 2
       // div 2
       // mul 2
-      pc_stack().log(6, 0, "find layer: logs!");
+      // ceil
+      // comp
+      pc_stack().log(8, 0, "find layer: logs!");
    }
    
    // rest of ops:
    // div 1 * l
    // mul 1 * l
    // read n * l and write n * l  (reset x)
-   pc_stack().log(2*l, 2*n*l*sizeof(FT), "end of layer");
+   // mul n * l
+   pc_stack().log(2*l + n*l, 2*n*l*sizeof(FT), "end of layer");
 
    // body intersect
    for (int c = 0; c < bcount; c++) {
       // per layer
-      PC_Frame<cacheReset_cost_f> frame((void*) type[c]->cacheReset, l);
+      PC_Frame<cacheReset_cost_f> frame((void*) type[c]->cacheReset, l+1);// +1 for init
       frame.costf()(body[c]);
    }
 
