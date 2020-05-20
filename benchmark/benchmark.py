@@ -520,11 +520,11 @@ BENCHMARKS = [
        {
           "const_configs": [],
           "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=sr_rand_vec", "rand_f=mt_rand"],
-          "run_configs": ["r=100000,d=16384,i=16384,rand_chunk_size=512"],
-          "input_configs": [("type", randValTypes)]
+          "run_configs": ["r=10000,d=16384,i=16384,rand_chunk_size=512"],
+          "input_configs": [("rand_val_t", randValTypes)]
        }
     ],
-    "xoption": ("type", randValTypes_),
+    "xoption": ("rand_val_t", randValTypes_),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["rand value type", "rand value type", "rand value type"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
@@ -536,7 +536,7 @@ BENCHMARKS = [
        {
           "const_configs": [],
           "fun_configs": rd_0_1,
-          "run_configs": ["r=1000000"],
+          "run_configs": ["r=10000,rand_val_t=random_double_0_1"],
           "input_configs": [("d", [2**i for i in range(10,16)])],
        }
     ],

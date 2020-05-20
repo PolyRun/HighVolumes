@@ -30,7 +30,7 @@ public:
 protected:
     void initialize () {
         ints = (int*) malloc(nr_ints*sizeof(int));
-        doubles = (FT*) malloc(nr_doubles*sizeof(FT));
+        doubles = (FT*) malloc(nr_doubles*sizeof(double));
         prng_init();
     }
     
@@ -50,22 +50,22 @@ protected:
                 break;
             case random_double:
                 for(int i = 0; i < nr_doubles; ++i) {
-                    ints[i] = prng_get_random_double();
+                    doubles[i] = prng_get_random_double();
                 };
                 break;
             case random_double_0_1:
                 for(int i = 0; i < nr_doubles; ++i) {
-                    ints[i] = prng_get_random_double_0_1();
+                    doubles[i] = prng_get_random_double_0_1();
                 };
                 break;
             case random_double_normal:
                 for(int i = 0; i < nr_doubles; ++i) {
-                    ints[i] = prng_get_random_double_normal();
+                    doubles[i] = prng_get_random_double_normal();
                 };
                 break;
             case random_double_in_range:
                 for(int i = 0; i < nr_doubles; ++i) {
-                    ints[i] = prng_get_random_double_in_range(-63.0, 64.0);
+                    doubles[i] = prng_get_random_double_in_range(-63.0, 64.0);
                 };
                 break;
             default:
