@@ -12,5 +12,12 @@ uint32_t sr_random_uint32();
 
 uint64_t sr_random_uint64();
 
+// Chunked random values
+void sr_init_chunked(void *seed);
+
+uint32_t sr_rand_chunked();
+
+void sr_refill_chunk();
+
 
 #endif // HEADER_PRNG_SHIFTREG_H

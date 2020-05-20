@@ -3,6 +3,9 @@
 #include <time.h>
 #include "shiftreg.h"
 
+uint32_t *chunk;
+int chunk_ptr;
+
 static uint32_t state_32 = 1;
 static uint64_t state_64 = 1;
 
@@ -43,4 +46,31 @@ inline uint32_t sr_random_uint32() {
 
 inline uint64_t sr_random_uint64() {
     return xorshift64();
+}
+
+inline void sr_refill_chunk() {
+    for(int i = 0; i < rand_chunk_size; ++i) {
+        chunk[i] = sr_random_uint32();
+    }
+}
+
+void sr_init_chunked(void *seed) {
+    if (seed != NULL) {
+        uint32_t seed_32 = *((uint32_t*) seed);
+        state_32 = seed_32;
+    } else { 
+        srand((unsigned) time(seed));
+        state_32 = rand();
+    }
+    chunk = (uint32_t*) malloc(rand_chunk_size*sizeof(uint32_t));
+    chunk_ptr = -1;
+}
+
+uint32_t sr_rand_chunked() {
+    if (chunk_ptr >= rand_chunk_size-1){
+        sr_refill_chunk();
+        chunk_ptr = -1;
+    }
+    chunk_ptr++;
+    return chunk[chunk_ptr];
 }
