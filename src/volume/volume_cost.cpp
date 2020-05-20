@@ -14,6 +14,27 @@ void squaredNorm_cost_ref(const int n) {
    pc_stack().log(2*n, n*sizeof(FT), "squaredNorm");
 }
 
+void Random_int_cost_ref(void* o){
+    // 1 read (status)
+    // 1 write (status)
+    // 3 shifts
+    // 1 bit-wise and
+    // 3 bit-wise xor
+    pc_stack().log(7, 2, "random int");
+}
+
+void Random_double_cost_ref(void* o){
+
+    {// frame for random int
+        PC_Frame<random_int_cost_f> frame(NULL);
+        frame.costf()();
+    }
+
+    // 1 div
+    // 1 mult
+    pc_stack().log(2, 0, "random double");
+}
+
 void Ball_intersectCoord_cost_ref(const int n) {
 
    // frame for squaredNorm

@@ -7,6 +7,11 @@
 typedef void (*xyz_cost_f) (const int);
 void xyz_f1_cost(const int n);
 
+// ----------------------------------------------- random
+typedef void (*random_int_cost_f)();
+void Random_int_cost_ref();
+void Random_double_cost_ref();
+
 // ----------------------------------------------- linalg
 typedef void (*dotProduct_cost_f)(const int);
 void dotProduct_cost_ref(const int n);
