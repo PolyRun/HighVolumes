@@ -8,6 +8,7 @@ add_subdirectory(preprocess)
 add_subdirectory(matrix)
 add_subdirectory(polytopeCSC)
 add_subdirectory(jit)
+add_subdirectory(random)
 
 
 file(COPY test.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
