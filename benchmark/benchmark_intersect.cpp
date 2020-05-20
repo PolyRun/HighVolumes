@@ -17,10 +17,10 @@ class Benchmark_intersect : public Benchmark_base {
 	    }
 
 	    switch(polytopeType) {
-            case 0: // column major
-                solved_body->polytopeTranspose();
+            case 0: // row major
                 break;
-            case 1: // row major
+            case 1: // column major
+                solved_body->polytopeTranspose();
                 break;
             case 2: // CSC format
                 solved_body->polytopeCSC();

@@ -179,7 +179,7 @@ void PolytopeT_intersectCoord_cost_ref(const void* o) {
    pc_stack().log(0,0, "Note: early 'continue' can speed up things!");
    pc_stack().log(m*n*2,m*n*2*sizeof(FT), "dotProduct implemented locally because column-format");
 
-   // read m + m (all of b, ai[d])
+   // read m + m (all of b, col d of A)
    // 2*m compares with +-FT_EPS and m ifs
    // add m
    // div m
@@ -225,23 +225,28 @@ void PolytopeT_intersectCoord_cached_b_cost_ref(const void* o) {
    const int n = p->n;
    const int m = p->m;
 
-   // read 3*m (A, b, cache)
+   // read 3*m (A, b, cache) -> 2*m, we cache b - Aix!
    // 2*m compares with +-FT_EPS and m ifs
    // add 1 * m -> MB: no more adds, that's why we store b-Aix
    // div 1 * m 
    // m compares with 0.0 and m ifs -> as above, only 1m
    // m compares, either t00>t or t11<t
-   pc_stack().log(5*m, 3*m*sizeof(FT), "read cache, calculate");
-   pc_stack().log(0,0, "TODO - update after impl!");
+   pc_stack().log(5*m, 2*m*sizeof(FT), "read cache, calculate");
+   pc_stack().log(0,0, "TODO - update after impl!"); // MB: what is this for?
 }
 
 void PolytopeT_intersectCoord_cached_b_cost_vec(const void* o) {
 
    const PolytopeT *poly = (PolytopeT*) o;
-   const int dims = poly->n;
-   const int constraints = poly->m;
+   const int n = poly->n;
+   const int m = poly->m;
 
-   pc_stack().log(0, 0, "TODO");
+   // MB:
+   // read 2m double (cache and col d of A)
+   // m divs
+   // m+3 max
+   // m+3 min
+   pc_stack().log(3*m + 6, 2*m*sizeof(FT), "read cache, calculate");
    
 }
 
