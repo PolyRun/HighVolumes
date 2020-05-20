@@ -19,5 +19,12 @@ uint32_t sr_rand_chunked();
 
 void sr_refill_chunk();
 
+// Vectorized random values
+void sr_init_vec(void *seed);
+
+uint32_t sr_rand_vec();
+
+void sr_refill_vec();
+
 
 #endif // HEADER_PRNG_SHIFTREG_H

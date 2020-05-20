@@ -12,6 +12,13 @@ set(PRNG_HEADER_FILES
 )
 add_library(prng ${PRNG_SOURCE_FILES} ${PRNG_HEADER_FILES})
 
+set_target_properties(prng PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+   COMPILE_FLAGS "-march=native -mavx -mfma -ffast-math -O3"
+)
+
 
 # ----------------------- jit
 set(JIT_SOURCE_FILES

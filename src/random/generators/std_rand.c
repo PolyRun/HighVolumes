@@ -22,6 +22,7 @@ inline void refill_chunk() {
 void std_init_chunked(void *seed) {
     srand((unsigned) time(seed));
     chunk = (uint32_t*) malloc(rand_chunk_size*sizeof(uint32_t));
+    refill_chunk();
     chunk_ptr = -1;
 }
 

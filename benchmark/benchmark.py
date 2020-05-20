@@ -27,8 +27,8 @@ intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.
 mbintersectbodies = ["cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40", "cube_rot_r1.0_60", "cube_rot_r1.0_100"]
 mbintersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40', "cube_rot_r1.0_60": '60', "cube_rot_r1.0_100": '100'}
 
-intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20",  "ball_r1.0_40"]
-intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40'}
+intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20", "ball_r1.0_40", "ball_r1.0_60", "ball_r1.0_100", "ball_r1.0_150", "ball_r1.0_200"]
+intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40', "ball_r1.0_60": '60', "ball_r1.0_100": '100', "ball_r1.0_150": '150', "ball_r1.0_200": '200'}
 
 
 intersectSparseDims = [4,5,10,20,40,60,100,150,200]
@@ -127,7 +127,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord_fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=c", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u2"],
+          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord_fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=c", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u4","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2_u2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2_u4"],
           "run_configs": ["r=100000,intersect=intersectCoord"],
           "input_configs": [("generator", intersectEbodies)]
        }
@@ -400,6 +400,49 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
+   {"name": "T_intersect_only",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_vectorized",                          
+          ],
+          "run_configs": ["r=100000,polytopeType=1,intersect=intersectCoord_only"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "T_intersect_update",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_vectorized",                          
+          ],
+          "run_configs": ["r=100000,polytopeType=1,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
    
    {"name": "csc_cache_update",
     "executable": "benchmark_intersect",
@@ -425,8 +468,8 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=mt_rand"],
-          "run_configs": ["r=10000,d=16384,i=16384,rand_chunk_size=512"],
+          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=sr_rand_vec", "rand_f=mt_rand"],
+          "run_configs": ["r=100000,d=16384,i=16384,rand_chunk_size=512"],
           "input_configs": [("type", randValTypes)]
        }
     ],

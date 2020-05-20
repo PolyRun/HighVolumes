@@ -60,8 +60,8 @@ public:
       
       // PolytopeT
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_b_vec, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_b_cost_vec,"PolytopeT_intersectCoord_cached_b_vec"));
-      pc_stack().add((void*)PolytopeT_intersectCoord_cached_b_vec2, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_b_cost_vec,"PolytopeT_intersectCoord_cached_b_vec"));
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_b_vec_inl, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_b_cost_vec,"PolytopeT_intersectCoord_cached_b_vec"));
+      pc_stack().add((void*)PolytopeT_intersectCoord_cached_b_vec2, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_b_cost_vec,"PolytopeT_intersectCoord_cached_b_vec2"));
       pc_stack().add((void*)PolytopeT_intersectCoord_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cost_ref,"PolytopeT_intersectCoord_ref"));
       pc_stack().add((void*)PolytopeT_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(PolytopeT_intersect_cost_ref,"PolytopeT_intersect_ref"));
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_cached_ref"));
@@ -70,7 +70,7 @@ public:
       pc_stack().add((void*)PolytopeT_intersectCoord_vectorized, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_vectorized"));
       pc_stack().add((void*)PolytopeT_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_cost_ref,"PolytopeT_cacheUpdateCoord_ref"));
       pc_stack().add((void*)PolytopeT_cacheUpdateCoord_b_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_b_cost_ref,"PolytopeT_cacheUpdateCoord_b_ref"));
-      pc_stack().add((void*)PolytopeT_cacheUpdateCoord_b_vec, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_b_cost_ref,"PolytopeT_cacheUpdateCoord_b_ref"));
+      pc_stack().add((void*)PolytopeT_cacheUpdateCoord_b_vec, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_b_cost_ref,"PolytopeT_cacheUpdateCoord_b_vec"));
       pc_stack().add((void*)PolytopeT_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset_cost_ref,"PolytopeT_cacheReset_ref"));
       pc_stack().add((void*)PolytopeT_cacheReset_b_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset_b_cost_ref,"PolytopeT_cacheReset_b_ref"));
  
@@ -87,9 +87,7 @@ public:
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_fma, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_fma"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u2, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u2"));
-      //pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u4, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u4"));
-      //pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u8, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u8"));
-      //pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u10, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u10"));
+      pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec_u4, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec_u4"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec2, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec2"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec2_u2, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec2_u2"));
       pc_stack().add((void*)Ellipsoid_cacheUpdateCoord_vec2_u4, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(Ellipsoid_cacheUpdateCoord_cost_ref,"Ellipsoid_cacheUpdateCoord_vec2_u4"));
@@ -211,9 +209,7 @@ public:
 						     {"fma",           {Ellipsoid_cacheUpdateCoord_fma, "cacheUpdateCoord (fma)"}},
 						     {"vec",           {Ellipsoid_cacheUpdateCoord_vec, "cacheUpdateCoord (vec)"}},
 						     {"vec_u2",           {Ellipsoid_cacheUpdateCoord_vec_u2, "cacheUpdateCoord (vec_u2)"}},
-						     //{"vec_u4",           {Ellipsoid_cacheUpdateCoord_vec_u4, "cacheUpdateCoord (vec_u4)"}},
-						     //{"vec_u8",           {Ellipsoid_cacheUpdateCoord_vec_u8, "cacheUpdateCoord (vec_u8)"}},
-						     //{"vec_u10",           {Ellipsoid_cacheUpdateCoord_vec_u10, "cacheUpdateCoord (vec_u10)"}},
+						     {"vec_u4",           {Ellipsoid_cacheUpdateCoord_vec_u4, "cacheUpdateCoord (vec_u4)"}},
 						     {"vec2",           {Ellipsoid_cacheUpdateCoord_vec2, "cacheUpdateCoord (vec2)"}},
 						     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
 						     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
@@ -223,6 +219,7 @@ public:
                        {"std_rand_chunked",{{std_init_chunked, std_rand_chunked}, "standard rand (chunked)"}},
 						     {"sr_rand",{{sr_init, sr_random_uint32}, "shift register rand"}},
                        {"sr_rand_chunked",{{sr_init_chunked, sr_rand_chunked}, "shift register rand (chunked)"}},
+                       {"sr_rand_vec",{{sr_init_vec, sr_rand_vec}, "shift register rand (vec)"}},
 						     {"mt_rand",{{mt_init, mt_rand}, "mersenne twister rand"}}
                      }));
 
