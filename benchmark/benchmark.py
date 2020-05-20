@@ -23,8 +23,12 @@ for index, item in enumerate(dotProduct):
 intersectbodies = [ "cube_rot_r1.0_3", "cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40", "cube_rot_r1.0_60", "cube_rot_r1.0_100"]
 intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40', "cube_rot_r1.0_60": '60', "cube_rot_r1.0_100": '100'}
 
-intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20",  "ball_r1.0_40"]
-intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40'}
+
+mbintersectbodies = ["cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40", "cube_rot_r1.0_60", "cube_rot_r1.0_100"]
+mbintersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40', "cube_rot_r1.0_60": '60', "cube_rot_r1.0_100": '100'}
+
+intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20", "ball_r1.0_40", "ball_r1.0_60", "ball_r1.0_100", "ball_r1.0_150", "ball_r1.0_200"]
+intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40', "ball_r1.0_60": '60', "ball_r1.0_100": '100', "ball_r1.0_150": '150', "ball_r1.0_200": '200'}
 
 
 intersectSparseDims = [4,5,10,20,40,60,100,150,200]
@@ -45,6 +49,10 @@ jitTest = [str(i) for i in jitTest]
 
 randValTypes = ["random_int", "random_int_in_range", "random_double", "random_double_0_1", "random_double_normal", "random_double_in_range"]
 randValTypes_ = {"random_int": '0', "random_int_in_range": '1', "random_double": '2', "random_double_0_1": '3', "random_double_normal": '4', "random_double_in_range": '5'}
+
+rd_0_1 = ["ref","fast"]
+for index, item in enumerate(rd_0_1):
+   rd_0_1[index] = "rd_0_1="+item
 
 # --- Benchmarks
 '''
@@ -124,7 +132,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord_fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=c", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u2"],
+          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord_fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=c", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u4","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2_u2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2_u4"],
           "run_configs": ["r=100000,intersect=intersectCoord"],
           "input_configs": [("generator", intersectEbodies)]
        }
@@ -184,7 +192,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
           "run_configs": ["r=100000,polytopeType=3,intersect=intersectCoord_only"],
           "input_configs": [("generator", intersectSparse4Bodies)]
        },
@@ -200,7 +208,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
           "run_configs": ["r=200000,polytopeType=3,intersect=intersectCoord_only"],
           "input_configs": [("generator", cubeRotBodies)]
        },
@@ -216,7 +224,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
           "run_configs": ["r=100000,polytopeType=3,intersect=cacheUpdateCoord"],
           "input_configs": [("generator", intersectSparse4Bodies)]
        },
@@ -232,7 +240,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data"],
+          "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
           "run_configs": ["r=200000,polytopeType=3,intersect=cacheUpdateCoord"],
           "input_configs": [("generator", cubeRotBodies)]
        },
@@ -348,23 +356,23 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
    
-   {"name": "csc_intersect_7",
+   {"name": "csc_intersect_9_sparse_bodies_all_cache",
     "executable": "benchmark_intersect",
     "config": [
        {
           "const_configs": [],
           "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
-                          "PolytopeCSC_intersectCoord=ref",
+                          #"PolytopeCSC_intersectCoord=ref",
                           "PolytopeCSC_intersectCoord=cached_b_vec",
                           "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
                           "PolytopeCSC_intersectCoord=cached_ref",
-                          #"PolytopeCSC_intersectCoord=cached_b_vec_nogather",
-                          #"PolytopeCSC_intersectCoord=cached_b_vec_nan",
-                          #"PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nogather",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
                           #"PolytopeCSC_intersectCoord=cached_b_vec_inl",
                           #"PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
           ],
-          "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
           "input_configs": [("generator", intersectSparseBodies)]
        },
     ],
@@ -374,6 +382,119 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
+   
+   {"name": "csc_intersect_9_dense_bodies_all_cache",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
+                          #"PolytopeCSC_intersectCoord=ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nogather",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   
+   {"name": "csc_readtest_sparse",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_vec_onlyread",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   
+   {"name": "T_intersect_vecs",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": [#"PolytopeT_intersectCoord=ref",
+                          #"PolytopeT_intersectCoord=cached_ref",
+                          #"PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          "PolytopeT_intersectCoord=cached_b_vec_inl",
+                          #"PolytopeT_intersectCoord=cached_vectorized",                          
+          ],
+          "run_configs": ["r=100000,polytopeType=1,intersect=intersectCoord_only"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "T_intersect_only",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_vectorized",                          
+          ],
+          "run_configs": ["r=100000,polytopeType=1,intersect=intersectCoord_only"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "T_intersect_update",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_vectorized",                          
+          ],
+          "run_configs": ["r=100000,polytopeType=1,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
    
    {"name": "csc_cache_update",
     "executable": "benchmark_intersect",
@@ -399,14 +520,30 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=mt_rand"],
-          "run_configs": ["r=1000,d=16384,i=16384,rand_chunk_size=512"],
-          "input_configs": [("type", randValTypes)]
+          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=sr_rand_vec", "rand_f=mt_rand"],
+          "run_configs": ["r=10000,d=16384,i=16384,rand_chunk_size=512"],
+          "input_configs": [("rand_val_t", randValTypes)]
        }
     ],
-    "xoption": ("type", randValTypes_),
+    "xoption": ("rand_val_t", randValTypes_),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["rand value type", "rand value type", "rand value type"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "get_rd_0_1",
+    "executable": "benchmark_randomness",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": rd_0_1,
+          "run_configs": ["r=10000,rand_val_t=random_double_0_1"],
+          "input_configs": [("d", [2**i for i in range(10,16)])],
+       }
+    ],
+    "xoption": ("d", {str(2**i): str(2**i) for i in range(10,16)}),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["#doubles", "#doubles", "#doubles"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 

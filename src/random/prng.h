@@ -13,6 +13,12 @@ typedef uint32_t(*rand_f_t)();
 extern rand_init_f_t rand_init_f;
 extern rand_f_t rand_f;
 
+// Function(s) that return desired random numbers
+typedef double(*rd_0_1_f_t)();
+
+extern rd_0_1_f_t prng_get_random_double_0_1;
+
+// Size for chunk that is precomputed by generator
 extern int rand_chunk_size;
 
 /**
@@ -28,7 +34,7 @@ double prng_get_random_double();
 /**
  * \brief Returns a new random double in range [0,1]
  **/
-double prng_get_random_double_0_1();
+double prng_get_random_double_0_1_ref();
 double prng_fast_32_get_random_double_0_1();
 //double prng_fast_64_get_random_double_0_1();
 

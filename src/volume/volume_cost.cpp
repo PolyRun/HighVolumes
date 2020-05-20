@@ -14,6 +14,27 @@ void squaredNorm_cost_ref(const int n) {
    pc_stack().log(2*n, n*sizeof(FT), "squaredNorm");
 }
 
+void Random_int_cost_ref(void* o){
+    // 1 read (status)
+    // 1 write (status)
+    // 3 shifts
+    // 1 bit-wise and
+    // 3 bit-wise xor
+    pc_stack().log(7, 2, "random int");
+}
+
+void Random_double_cost_ref(void* o){
+
+    {// frame for random int
+        PC_Frame<random_int_cost_f> frame(NULL);
+        frame.costf()();
+    }
+
+    // 1 div
+    // 1 mult
+    pc_stack().log(2, 0, "random double");
+}
+
 void Ball_intersectCoord_cost_ref(const int n) {
 
    // frame for squaredNorm
@@ -179,7 +200,7 @@ void PolytopeT_intersectCoord_cost_ref(const void* o) {
    pc_stack().log(0,0, "Note: early 'continue' can speed up things!");
    pc_stack().log(m*n*2,m*n*2*sizeof(FT), "dotProduct implemented locally because column-format");
 
-   // read m + m (all of b, ai[d])
+   // read m + m (all of b, col d of A)
    // 2*m compares with +-FT_EPS and m ifs
    // add m
    // div m
@@ -225,41 +246,28 @@ void PolytopeT_intersectCoord_cached_b_cost_ref(const void* o) {
    const int n = p->n;
    const int m = p->m;
 
-   // read 3*m (A, b, cache)
+   // read 3*m (A, b, cache) -> 2*m, we cache b - Aix!
    // 2*m compares with +-FT_EPS and m ifs
    // add 1 * m -> MB: no more adds, that's why we store b-Aix
    // div 1 * m 
    // m compares with 0.0 and m ifs -> as above, only 1m
    // m compares, either t00>t or t11<t
-   pc_stack().log(5*m, 3*m*sizeof(FT), "read cache, calculate");
-   pc_stack().log(0,0, "TODO - update after impl!");
+   pc_stack().log(5*m, 2*m*sizeof(FT), "read cache, calculate");
+   pc_stack().log(0,0, "TODO - update after impl!"); // MB: what is this for?
 }
 
 void PolytopeT_intersectCoord_cached_b_cost_vec(const void* o) {
 
    const PolytopeT *poly = (PolytopeT*) o;
-   const int dims = poly->n;
-   const int constraints = poly->m;
+   const int n = poly->n;
+   const int m = poly->m;
 
-   int vectorized_loop_iterations = constraints / 4;
-   int remaining_loop_iterations = constraints - (constraints / 4);
-
-   // div, 2 * cmp, 2 * blendv, max, min = 7 flops
-   // 2 loads of 4 doubles each = 8 doubles = 64 bytes
-   pc_stack().log(7 * vectorized_loop_iterations,
-                  64 * vectorized_loop_iterations,
-                  "Vectorized loop iterations intersectCoord_cached_b_vec");
-
-   // This is a constant size operations, so it's ok if we ignore it for now
-   // But note that the code gets lowered to vector instructions
-   // Check the true number of flops that the compiler produces
-   pc_stack().log(0, 0, "TODO: max of t0_vec_0 and min of t1_vec_0");
-
-   // div, cmp, cmp (either t0 < t or t1 > t)
-   // 2 loads of 1 double each = 2 doubles = 16 bytes
-   pc_stack().log(3 * remaining_loop_iterations,
-                  16 * remaining_loop_iterations,
-                  "Remaining non-vect. loop iterations");
+   // MB:
+   // read 2m double (cache and col d of A)
+   // m divs
+   // m+3 max
+   // m+3 min
+   pc_stack().log(5*m + 6, 2*m*sizeof(FT), "read cache, calculate");
    
 }
 
@@ -523,7 +531,8 @@ void PolytopeCSC_intersectCoord_cached_cost_vec(const void *o){
     // read #non-zeros in col * (2 doubles (for A and b_Aix) + 1 int (row_idx))
     // divs #non-zeros in col
     // min and max each #non-zeros in col
-    pc_stack().log(3*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
+    // comparison #non-zeros in col
+    pc_stack().log(4*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
 
 }
 

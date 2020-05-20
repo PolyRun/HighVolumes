@@ -13,6 +13,8 @@ void PolytopeCSC_intersectCoord_cached_vec_inline(const void* o, const FT* x, co
 void PolytopeCSC_intersectCoord_cached_vec_inline_2accs(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
 
 
+void PolytopeCSC_intersectCoord_cached_vec_onlyread(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
+
 #endif // HEADER_POLYTOPECSC_INTERSECTCOORD_H
 
 

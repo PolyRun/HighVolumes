@@ -22,6 +22,8 @@ PolytopeT* PolytopeT_new(int n, int m) {
    o->line = ceil_cache(m,sizeof(FT)); // make sure next is also 32 alligned
    int size_A = o->line*n;
    o->A = (FT*)(aligned_alloc(32, (size_A+o->line)*sizeof(FT))); // align this to 32
+   // MB: test setting invalid elements to 0 for vectorization
+   memset(o->A, 0, size_A);
    o->b = o->A + size_A;
    for(int i=0;i<size_A+o->line;i++) {o->A[i]=0;}
    return o;

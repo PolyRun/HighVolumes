@@ -73,7 +73,7 @@ void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int
 
    for(int i=0; i<m; i++) {
       //const FT* ai = PolytopeT_get_Ai(p,i);
-      const FT b = PolytopeT_get_b(p, i);
+      //const FT b = PolytopeT_get_b(p, i); MB: don't need this anymore!
       const FT dai = PolytopeT_get_a(p,i,d); // dot product with unit vector dim d
       
       if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
@@ -109,7 +109,7 @@ void PolytopeT_intersectCoord_cached_b_vec(const void *p, const FT *x, const int
    __m256d ft_pos_vec = _mm256_set1_pd(FT_EPS);
 
    int i = 0;
-   for (; i < constraints - 4; i += 4) {
+   for (; i < constraints - 3; i += 4) {
 
       __m256d b_sub_Aix_vec_0 = _mm256_load_pd(b_sub_Aix_slice + i);
       __m256d Aid_vec_0 = _mm256_load_pd(Aid_slice + i);
@@ -155,6 +155,127 @@ void PolytopeT_intersectCoord_cached_b_vec(const void *p, const FT *x, const int
 
    *t0_out = t0;
    *t1_out = t1;
+}
+
+
+/*
+ NOTE: this implementation assumes that the invalid elements of A are set to 0
+ as it doesn't outperform cached_b_vec it can just be deleted if this assumption should pose a problem at some point...
+ */
+void PolytopeT_intersectCoord_cached_b_vec2(const void *p, const FT *x, const int d,
+                                           FT *t0, FT *t1, void *cache) {
+
+   const PolytopeT *poly = (PolytopeT*) p;
+   const int n = poly->n;
+   // now m is divisible by 4
+   // moreover, we don't care about divisions by 0 as they give +-inf which doesn't affect our max/min computation
+   // also invalid elements should be set to 0 by initialization and are then never touched again, right?
+   const int m = poly->line / sizeof(FT);
+
+   FT *b_Aix = (FT*) cache;
+   FT *Aid = poly->A + (poly->line * d);
+
+   __m256d t0_vec_0 = _mm256_set1_pd(-FT_MAX);
+   __m256d t1_vec_0 = _mm256_set1_pd(FT_MAX);
+   __m256d zeros = _mm256_set1_pd(0.0);
+
+   for (int i = 0; i < m - 3; i += 4) {
+
+      __m256d b_sub_Aix_v = _mm256_load_pd(b_Aix + i);
+      __m256d Aid_v = _mm256_load_pd(Aid + i);
+
+      __m256d t = _mm256_div_pd(b_sub_Aix_v, Aid_v);
+
+      __m256d n_mask = _mm256_cmp_pd(t, zeros, _CMP_LT_OS);
+      __m256d p_mask = _mm256_cmp_pd(t, zeros, _CMP_GE_OS);
+
+      __m256d tmp_t0 = _mm256_blendv_pd(t0_vec_0, t, n_mask);
+      __m256d tmp_t1 = _mm256_blendv_pd(t1_vec_0, t, p_mask);
+
+      t0_vec_0 = _mm256_max_pd(t0_vec_0, tmp_t0);
+      t1_vec_0 = _mm256_min_pd(t1_vec_0, tmp_t1);
+   }
+   
+   FT t0t0t0 = (t0_vec_0[1] > t0_vec_0[0]) ? t0_vec_0[1] : t0_vec_0[0];
+   FT t0t0 = (t0_vec_0[2] > t0t0t0) ? t0_vec_0[2] : t0t0t0;
+   *t0 = (t0_vec_0[3] > t0t0) ? t0_vec_0[3] : t0t0;
+
+   FT t1t1t1 = (t1_vec_0[1] < t1_vec_0[0]) ? t1_vec_0[1] : t1_vec_0[0];
+   FT t1t1 = (t1_vec_0[2] < t1t1t1) ? t1_vec_0[2] : t1t1t1;
+   *t1 = (t1_vec_0[3] < t1t1) ? t1_vec_0[3] : t1t1;
+}
+
+
+static inline void loop(const FT *b_Aix, const FT *Aid, const int i, const __m256d zeros, __m256d *t0_vec, __m256d *t1_vec){
+    __m256d b_sub_Aix_v = _mm256_load_pd(b_Aix + i);
+    __m256d Aid_v = _mm256_load_pd(Aid + i);
+
+    __m256d t = _mm256_div_pd(b_sub_Aix_v, Aid_v);
+
+    __m256d n_mask = _mm256_cmp_pd(t, zeros, _CMP_LT_OS);
+    __m256d p_mask = _mm256_cmp_pd(t, zeros, _CMP_GE_OS);
+
+    __m256d tmp_t0 = _mm256_blendv_pd(*t0_vec, t, n_mask);
+    __m256d tmp_t1 = _mm256_blendv_pd(*t1_vec, t, p_mask);
+
+    *t0_vec = _mm256_max_pd(*t0_vec, tmp_t0);
+    *t1_vec = _mm256_min_pd(*t1_vec, tmp_t1);
+
+}
+
+
+void PolytopeT_intersectCoord_cached_b_vec_inl(const void *p, const FT *x, const int d,
+                                           FT *t0, FT *t1, void *cache) {
+
+   const PolytopeT *poly = (PolytopeT*) p;
+   const int n = poly->n;
+   // now m is divisible by 4
+   // moreover, we don't care about divisions by 0 as they give +-inf which doesn't affect our max/min computation
+   // also invalid elements should be set to 0 by initialization and are then never touched again, right?
+   const int m = poly->line / sizeof(FT);
+
+   FT *b_Aix = (FT*) cache;
+   FT *Aid = poly->A + (poly->line * d);
+
+   __m256d t0_vec_0 = _mm256_set1_pd(-FT_MAX);
+   __m256d t1_vec_0 = _mm256_set1_pd(FT_MAX);
+   __m256d t0_vec_1 = _mm256_set1_pd(-FT_MAX);
+   __m256d t1_vec_1 = _mm256_set1_pd(FT_MAX);
+   __m256d t0_vec_2 = _mm256_set1_pd(-FT_MAX);
+   __m256d t1_vec_2 = _mm256_set1_pd(FT_MAX);
+   __m256d t0_vec_3 = _mm256_set1_pd(-FT_MAX);
+   __m256d t1_vec_3 = _mm256_set1_pd(FT_MAX);
+   __m256d zeros = _mm256_set1_pd(0.0);
+
+   int i = 0;
+   for (; i < m - 15; i += 16) {
+
+       loop(b_Aix, Aid, i, zeros, &t0_vec_0, &t1_vec_0);
+       loop(b_Aix, Aid, i+4, zeros, &t0_vec_1, &t1_vec_1);
+       loop(b_Aix, Aid, i+8, zeros, &t0_vec_2, &t1_vec_2);
+       loop(b_Aix, Aid, i+12, zeros, &t0_vec_3, &t1_vec_3);
+       
+   }
+   for (; i < m-3; i+=4){
+       loop(b_Aix, Aid, i, zeros, &t0_vec_0, &t1_vec_0);
+   }
+
+   
+   __m256d t00 = _mm256_max_pd(t0_vec_0, t0_vec_1);
+   __m256d t01 = _mm256_max_pd(t0_vec_2, t0_vec_3);
+   __m256d t000 = _mm256_max_pd(t00, t01);
+   __m256d t10 = _mm256_min_pd(t1_vec_0, t1_vec_1);
+   __m256d t11 = _mm256_min_pd(t1_vec_2, t1_vec_3);
+   __m256d t111 = _mm256_min_pd(t10, t11);
+   
+   
+   FT t0t0t0 = (t000[1] > t000[0]) ? t000[1] : t000[0];
+   FT t0t0 = (t000[2] > t0t0t0) ? t000[2] : t0t0t0;
+   *t0 = (t000[3] > t0t0) ? t000[3] : t0t0;
+
+   FT t1t1t1 = (t111[1] < t111[0]) ? t111[1] : t111[0];
+   FT t1t1 = (t111[2] < t1t1t1) ? t111[2] : t1t1t1;
+   *t1 = (t111[3] < t1t1) ? t111[3] : t1t1;
 }
 
 void PolytopeT_cacheReset_b_ref(const void* o, const FT* x, void* cache) {

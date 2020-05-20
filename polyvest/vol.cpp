@@ -355,8 +355,10 @@ double Polyvest_p::EstimateVol(int coef = 1600){
     memset(volK, 0, l * sizeof(long));
 	
     x.zeros();
+    int steps = 0;
     for (k = l - 2; k >= 0; k--){
         for (i = volK[k + 1]; i < stepsz; i++){
+            steps++;
             double m = walk(k);
             if (m < r2[0]) volK[0]++;
             else if (m < r2[k])
@@ -370,7 +372,8 @@ double Polyvest_p::EstimateVol(int coef = 1600){
             x = x / pow((double)2, (double)1 / n);
         }else alpha[k] = 1;
     }
-
+    cout << "Polyvest did " << steps << " steps\n";
+    cout << "There are " << l << " shells\n";
     vol = uballVol(n) * determinant;
 
     for (i = 0; alpha[i] > 1 && i < l - 1; i++){

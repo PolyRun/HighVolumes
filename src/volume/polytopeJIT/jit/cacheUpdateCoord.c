@@ -162,7 +162,8 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
          Pjit_cacheUpdateCoord_init_double(); // go broadcast xmm to xmm
 	 break;
       }
-      case pjit_quad_data: {
+      case pjit_quad_data:
+      case pjit_quad_data_acc: {
          Pjit_cacheUpdateCoord_init_quad(); // go broadcast xmm to ymm
          break;
       }
@@ -218,7 +219,8 @@ void PolytopeJIT_generate_cacheUpdateCoord_ref(const Polytope *p, PolytopeJIT *o
             Pjit_cacheUpdateCoord_body_double(p,i,&t16);
             break;
          }
-	 case pjit_quad_data: {
+	 case pjit_quad_data:
+	 case pjit_quad_data_acc: {
             Pjit_cacheUpdateCoord_body_quad(p,i,&t32);
             break;
          }
