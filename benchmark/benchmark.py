@@ -399,6 +399,49 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
+   {"name": "T_intersect_only",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_vectorized",                          
+          ],
+          "run_configs": ["r=100000,polytopeType=1,intersect=intersectCoord_only"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "T_intersect_update",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_vectorized",                          
+          ],
+          "run_configs": ["r=100000,polytopeType=1,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
    
    {"name": "csc_cache_update",
     "executable": "benchmark_intersect",
