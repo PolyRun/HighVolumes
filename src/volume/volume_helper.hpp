@@ -220,6 +220,7 @@ public:
                        {"std_rand",{{std_init, std_rand}, "standard rand"}},
                        {"std_rand_chunked",{{std_init_chunked, std_rand_chunked}, "standard rand (chunked)"}},
 						     {"sr_rand",{{sr_init, sr_random_uint32}, "shift register rand"}},
+                       {"sr_rand_chunked",{{sr_init_chunked, sr_rand_chunked}, "shift register rand (chunked)"}},
 						     {"mt_rand",{{mt_init, mt_rand}, "mersenne twister rand"}}
                      }));
 

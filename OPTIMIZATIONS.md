@@ -91,7 +91,7 @@
   
 * Randomness - very costly for intersect/sparse bodies
   
-  ![generator_comparison](./optimizations/randomness_runtime_mean_std_stc_c_st_mt.png)
+  ![generator_comparison](./optimizations/randomness_runtime_mean_comparison.png)
   
   * Precompute values
     * No benefit for std_rand

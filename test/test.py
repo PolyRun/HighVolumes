@@ -8,6 +8,8 @@ from threading import Timer
 
 # --------------------------------- ADD YOUR TEST HERE
 TESTS = [
+         {"name": "random/test_random",
+          "timeout": 10},
          {"name": "jit/test_jit",
           "timeout": 10},
          {"name": "volume/test_volume_basics",
