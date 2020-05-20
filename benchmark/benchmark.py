@@ -377,19 +377,20 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
-   {"name": "T_intersect",
+   {"name": "T_intersect_vecs",
     "executable": "benchmark_intersect",
     "config": [
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeT_intersectCoord=ref",
-                          "PolytopeT_intersectCoord=cached_ref",
-                          "PolytopeT_intersectCoord=cached_b_ref",
+          "fun_configs": [#"PolytopeT_intersectCoord=ref",
+                          #"PolytopeT_intersectCoord=cached_ref",
+                          #"PolytopeT_intersectCoord=cached_b_ref",
                           "PolytopeT_intersectCoord=cached_b_vec",
                           "PolytopeT_intersectCoord=cached_b_vec2",
+                          "PolytopeT_intersectCoord=cached_b_vec_inl",
                           #"PolytopeT_intersectCoord=cached_vectorized",                          
           ],
-          "run_configs": ["r=100000,polytopeType=1,intersect=intersectCoord"],
+          "run_configs": ["r=100000,polytopeType=1,intersect=intersectCoord_only"],
           "input_configs": [("generator", mbintersectbodies)]
        },
     ],

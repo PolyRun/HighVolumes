@@ -267,7 +267,7 @@ void PolytopeT_intersectCoord_cached_b_cost_vec(const void* o) {
    // m divs
    // m+3 max
    // m+3 min
-   pc_stack().log(3*m + 6, 2*m*sizeof(FT), "read cache, calculate");
+   pc_stack().log(5*m + 6, 2*m*sizeof(FT), "read cache, calculate");
    
 }
 
@@ -469,7 +469,8 @@ void PolytopeCSC_intersectCoord_cached_cost_vec(const void *o){
     // read #non-zeros in col * (2 doubles (for A and b_Aix) + 1 int (row_idx))
     // divs #non-zeros in col
     // min and max each #non-zeros in col
-    pc_stack().log(3*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
+    // comparison #non-zeros in col
+    pc_stack().log(4*nz/n, (2 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord_withb CSC");
 
 }
 
