@@ -94,14 +94,23 @@
   ![generator_comparison](./optimizations/randomness_runtime_mean_comparison.png)
   
   * Precompute values
+    
     * No benefit for std_rand
+    
   * Use a mersenne twister
     * Vectorize it
     * Will it be usefull if shift register is uniform enough?
+    
   * Use a shift register
     * Vectorize it
     * Is the distribution uniform enough?
+    
+  * Improve functions that compute e.g. doubles in range from random int
+  
+    ![random_double_0_1_comparison](./optimizations/get_random_double_0_1_runtime_mean_comparison.png)
+  
   * Use hardware randomness (int _rdrand64_step) - Has a gap of 250 on haswell -> Not competitive
+  
   * Better randomness could have a positive effect on convergence
 
 # Big picture

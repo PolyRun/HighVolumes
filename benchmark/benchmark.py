@@ -50,6 +50,10 @@ jitTest = [str(i) for i in jitTest]
 randValTypes = ["random_int", "random_int_in_range", "random_double", "random_double_0_1", "random_double_normal", "random_double_in_range"]
 randValTypes_ = {"random_int": '0', "random_int_in_range": '1', "random_double": '2', "random_double_0_1": '3', "random_double_normal": '4', "random_double_in_range": '5'}
 
+rd_0_1 = ["ref","fast"]
+for index, item in enumerate(rd_0_1):
+   rd_0_1[index] = "rd_0_1="+item
+
 # --- Benchmarks
 '''
     name:          name of the benchmark, has to be unique
@@ -523,6 +527,22 @@ BENCHMARKS = [
     "xoption": ("type", randValTypes_),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["rand value type", "rand value type", "rand value type"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "get_rd_0_1",
+    "executable": "benchmark_randomness",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": rd_0_1,
+          "run_configs": ["r=1000000"],
+          "input_configs": [("d", [2**i for i in range(10,16)])],
+       }
+    ],
+    "xoption": ("d", {str(2**i): str(2**i) for i in range(10,16)}),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["#doubles", "#doubles", "#doubles"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
