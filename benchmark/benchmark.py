@@ -96,9 +96,9 @@ BENCHMARKS = [
        }
     ],
     "xoption": ("n", {str(2**i): str(2**i) for i in range(0,7)}),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["n", "n", "n"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "intersect_polytope",
@@ -125,9 +125,9 @@ BENCHMARKS = [
        #}
     ],
     "xoption": ("generator", intersectdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "intersect_ellipsoid",
@@ -135,15 +135,15 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref", "Ellipsoid_intersectCoord=cached_reord_fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=c", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=fma", "Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u4","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2_u2","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec2_u4"],
+          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u4"],
           "run_configs": ["r=100000,intersect=intersectCoord"],
           "input_configs": [("generator", intersectEbodies)]
        }
     ],
     "xoption": ("generator", intersectEdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "sparse_polytope_volume",
@@ -163,9 +163,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "sparse_polytope_intersect",
@@ -185,9 +185,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparse4Dims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "sparse_polytopeJIT_intersect",
@@ -201,9 +201,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparse4Dims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "dense_polytopeJIT_intersect",
@@ -217,9 +217,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", cubeRotDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "sparse_polytopeJIT_update",
@@ -233,9 +233,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparse4Dims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "dense_polytopeJIT_update",
@@ -249,9 +249,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", cubeRotDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "jit_test",
@@ -265,9 +265,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("n", jitTestDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["n", "n", "n"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "jit_test_3",
@@ -289,9 +289,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("n", jitTestDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["n", "n", "n"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "jit_test_4",
@@ -313,9 +313,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("n", {k:int(v)/2 for (k,v) in jitTestDims.items()}),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["n", "n", "n"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
 
@@ -354,9 +354,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", cubeRotDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
    
    {"name": "T_intersect_vecs",
@@ -377,9 +377,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", mbintersectdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
 
@@ -402,9 +402,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", mbintersectdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    
@@ -425,9 +425,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", mbintersectdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "T_intersect_update",
@@ -447,9 +447,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", mbintersectdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    ####################################################################################################
@@ -470,9 +470,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    
@@ -490,9 +490,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "csc_cache_update_4var",
@@ -666,9 +666,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    ####################################################################################################
@@ -686,9 +686,9 @@ BENCHMARKS = [
        }
     ],
     "xoption": ("rand_val_t", randValTypes_),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["rand value type", "rand value type", "rand value type"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["rand value type", "rand value type", "rand value type", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "get_rd_0_1",
@@ -702,9 +702,9 @@ BENCHMARKS = [
        }
     ],
     "xoption": ("d", {str(2**i): str(2**i) for i in range(10,16)}),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["#doubles", "#doubles", "#doubles"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["#doubles", "#doubles", "#doubles", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
 ]
