@@ -5,6 +5,8 @@ import pprint
 
 SAVEEPS = True
 SAVEPNG = True
+PEAK_PERFORMANCE = 16
+
 
 def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     if plot_name == None:
@@ -143,4 +145,39 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
         plt.savefig(path+"/plots/"+plot_name+"io_mean.png", bbox_inches = "tight")
 
     plt.clf()
+
+    # Roofline plot
+    plt.title("Roofline measurements")
+    plt.xlabel("Operational Intensity [Flops/Byte]")
+    plt.ylabel("Performance [Flops/Cycle]")
+
+    i = 0
+    for name in time_function_names:
+        time_function_performance = []
+        time_function_intensity = []
+        for index, item in enumerate(time_function_heights[name]):
+            time_function_performance.append(x_flops[name][index]/item)
+            time_function_intensity.append(x_flops[name][index]/x_bytes[name][index])
+        print("Performance:", time_function_performance)
+        print("O-Intensity_", time_function_intensity)
+        plt.plot(time_function_intensity, time_function_performance, label=name)
+        i += 1
+		
+		
+    plt.hlines([PEAK_PERFORMANCE], 0, 1, colors='k', linestyles='dashed')
+    plt.xscale('log')
+    plt.yscale('log')
+	
+    plt.xlim((0.05,0.4))
+    plt.ylim((0.05,20))
+	
+    plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
+
+    if SAVEEPS:
+        plt.savefig(path+"/plots/"+plot_name+"roofline.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
+    if SAVEPNG:
+        plt.savefig(path+"/plots/"+plot_name+"roofline.png", bbox_inches = "tight")
+
+    plt.clf()
+
 
