@@ -106,6 +106,7 @@ class Benchmark_test2 : public Benchmark_base {
 	    }
             
 	    jit_vmaxpd_ymm(4,0,0);
+	    jit_emit_vzeroupper();
 	    
 	    jit_emit_return();
             bytes_op = jit_head() - (uint8_t*)func;
