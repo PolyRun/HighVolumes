@@ -102,4 +102,34 @@ Thus we have two factors to the faster performance for this function: simpler op
 
 ## Performance for Sparse Bodies
 
+We have a 4var-body. These have at most 4 variables per constraint. Further we have m=10n constraints. This means there are about 4*10 = 40 non-zero entries per column.
 
+Hence, we expect the flops to be constant, as we increase n. Though the performance will deteriorate for multiple reasons.
+
+### intersectCoord
+
+Given the 40 non-zero entries, we have about 80 flops.
+The instruciton mix would allow us to schedule 8 each cycle, and we have a base latency of 5 for mul + 3 for min/max.
+Unfortunately, this is dominated by other overhead costs, such as the jump to the correct column-kernel, the base latency is closer to 100 cycles.
+
+Hence, we only acheive 0.6 flops/cycles and 6 bytes/cycle for small n, which makes exactly this 10x factor difference of the base latency.
+
+At low dimensions, the matrix is quite dense, but with higher dimensions it becomes sparser. Hence, the data access pattern becomes more random and the performance deteriorates towards 1 byte a cycle and 0.2 flops/cycle. This is the same tendency as in out jit_test4, though even a bit worse. This could be explained by the fact that the instruction cache cannot fit the kernels any more, and we have even more kernel functions.
+
+Note: the vectorized versions have no benefit in the very sparse cases, as there is not much locality left to exploit. Only for small n can we see a minor advantage for vectorized implementations.
+
+[Download io eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/sparse_4var/sparse_polytopeJIT_intersect_io_mean.eps?inline=false)
+
+[Download performance eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/sparse_4var/sparse_polytopeJIT_intersect_performance_mean.eps?inline=false)
+
+[Download runtime eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/sparse_4var/sparse_polytopeJIT_intersect_runtime_mean.eps?inline=false)
+
+### cacheUpdateCoord
+
+The pattern is the same as in intersectCoord. This confirms that the performance is latency bound.
+
+[Download io eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/sparse_4var/sparse_polytopeJIT_update_io_mean.eps?inline=false)
+
+[Download performance eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/sparse_4var/sparse_polytopeJIT_update_performance_mean.eps?inline=false)
+
+[Download runtime eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/sparse_4var/sparse_polytopeJIT_update_runtime_mean.eps?inline=false)
