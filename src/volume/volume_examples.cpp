@@ -4,7 +4,7 @@
 
 Solved_Body_Generator::Solved_Body_Generator() {
     // cube
-    std::vector<int> cube_n = {3,10,20,40,60,100};
+    std::vector<int> cube_n = {3,10,20,40,60,80,100};
     for(int n : cube_n) {
        std::string nstr = std::to_string(n);
        add("cube_r1.0_"+nstr, "basic "+nstr+"-dim cube, centered, side=2 [normalized]", [n]() {
