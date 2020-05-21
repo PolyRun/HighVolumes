@@ -31,6 +31,9 @@ intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20", "ball_r1.0_4
 intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40', "ball_r1.0_60": '60', "ball_r1.0_100": '100', "ball_r1.0_150": '150', "ball_r1.0_200": '200'}
 
 
+crossBodies = ['cross_rn_{}'.format(i) for i in range(3,14,2)]
+crossDims = {'cross_rn_{}'.format(i): i for i in range(3,14,2)}
+
 intersectSparseDims = [4,5,10,20,40,60,100,150,200]
 intersectSparseDims = {"2var_"+str(i):str(i) for i in intersectSparseDims}
 intersectSparseBodies = [ name for (name,i) in intersectSparseDims.items()]
@@ -356,79 +359,6 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
    
-   {"name": "csc_intersect_9_sparse_bodies_all_cache",
-    "executable": "benchmark_intersect",
-    "config": [
-       {
-          "const_configs": [],
-          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
-                          #"PolytopeCSC_intersectCoord=ref",
-                          "PolytopeCSC_intersectCoord=cached_b_vec",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
-                          "PolytopeCSC_intersectCoord=cached_ref",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_nogather",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_nan",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
-                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl",
-                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
-          ],
-          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
-          "input_configs": [("generator", intersectSparseBodies)]
-       },
-    ],
-    "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
-   },
-
-   
-   {"name": "csc_intersect_9_dense_bodies_all_cache",
-    "executable": "benchmark_intersect",
-    "config": [
-       {
-          "const_configs": [],
-          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
-                          #"PolytopeCSC_intersectCoord=ref",
-                          "PolytopeCSC_intersectCoord=cached_b_vec",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
-                          "PolytopeCSC_intersectCoord=cached_ref",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_nogather",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_nan",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
-                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl",
-                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
-          ],
-          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
-          "input_configs": [("generator", mbintersectbodies)]
-       },
-    ],
-    "xoption": ("generator", mbintersectdims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
-   },
-
-   
-   {"name": "csc_readtest_sparse",
-    "executable": "benchmark_intersect",
-    "config": [
-       {
-          "const_configs": [],
-          "fun_configs": ["PolytopeCSC_intersectCoord=cached_vec_onlyread",
-                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
-          ],
-          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
-          "input_configs": [("generator", intersectSparseBodies)]
-       },
-    ],
-    "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
-   },
-
-   
    {"name": "T_intersect_vecs",
     "executable": "benchmark_intersect",
     "config": [
@@ -452,6 +382,32 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
 
+
+   
+   {"name": "test_eps_2",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": [#"PolytopeT_intersectCoord=ref",
+                          #"PolytopeT_intersectCoord=cached_ref",
+                          #"PolytopeT_intersectCoord=cached_b_ref",
+                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          "PolytopeT_intersectCoord=cached_b_vec_inl",
+                          #"PolytopeT_intersectCoord=cached_vectorized",                          
+          ],
+          "run_configs": ["r=1,polytopeType=1,intersect=intersectCoord_only"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   
    {"name": "T_intersect_only",
     "executable": "benchmark_intersect",
     "config": [
@@ -495,15 +451,19 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
-   
-   {"name": "csc_cache_update",
+
+   ####################################################################################################
+   # CSC start
+   ####################################################################################################
+
+   {"name": "csc_cache_update_cube_rot",
     "executable": "benchmark_intersect",
     "config": [
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
-                          "PolytopeCSC_intersectCoord=ref",
-                          "PolytopeCSC_intersectCoord=cached_b_vec",
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref", # withb, withb
+                          "PolytopeCSC_intersectCoord=cached_b_vec", # fma, fma
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan", # vec, vec
           ],
           "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
           "input_configs": [("generator", intersectbodies)]
@@ -514,6 +474,206 @@ BENCHMARKS = [
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
    },
+
+   
+   {"name": "csc_cache_update_2var",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref", # withb, withb
+                          "PolytopeCSC_intersectCoord=cached_b_vec", # fma, fma
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan", # vec, vec
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "csc_cache_update_4var",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref", # withb, withb
+                          "PolytopeCSC_intersectCoord=cached_b_vec", # fma, fma
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan", # vec, vec
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", intersectSparse4Bodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparse4Dims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "csc_cache_update_cross",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref", # withb, withb
+                          "PolytopeCSC_intersectCoord=cached_b_vec", # fma, fma
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan", # vec, vec
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", crossBodies)]
+       },
+    ],
+    "xoption": ("generator", crossDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+      
+   {"name": "csc_intersect_only_2var",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
+                          "PolytopeCSC_intersectCoord=ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nogather",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_inl",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "csc_intersect_only_cross",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
+                          "PolytopeCSC_intersectCoord=ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nogather",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_inl",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "input_configs": [("generator", crossBodies)]
+       },
+    ],
+    "xoption": ("generator", crossDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+
+   {"name": "csc_intersect_only_2var_cacheb_new",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_vec_nan", #same as nogather
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nogather",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_nan", #same as nogather
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl", #same as vec
+                          #"PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs", #same as vec
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "csc_intersect_only_cross_cacheb",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_b_ref",
+                          "PolytopeCSC_intersectCoord=cached_b_vec",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nogather",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_inl",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_inl_2accs",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "input_configs": [("generator", crossBodies)]
+       },
+    ],
+    "xoption": ("generator", crossDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+   
+   {"name": "csc_readtest_sparse",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_vec_onlyread",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "input_configs": [("generator", intersectSparseBodies)]
+       },
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   {"name": "csc_readtest_dense",
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": ["PolytopeCSC_intersectCoord=cached_vec_onlyread",
+                          "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv",
+          ],
+          "run_configs": ["r=100000,polytopeType=2,intersect=intersectCoord_only"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+    ],
+    "xoption": ("generator", intersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
+    "xlabel": ["dim", "dim", "dim"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+   },
+
+   ####################################################################################################
+   # CSC END
+   ####################################################################################################
 
    {"name": "randomness",
     "executable": "benchmark_randomness",

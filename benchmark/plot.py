@@ -3,7 +3,8 @@ import numpy as np
 import re
 import pprint
 
-SAVEEPS = False
+SAVEEPS = True
+SAVEPNG = True
 
 def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     if plot_name == None:
@@ -76,7 +77,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
 
     if SAVEEPS:
         plt.savefig(path+"/plots/"+plot_name+"runtime_mean.eps", bbox_inches = "tight", format = 'eps', dpi = 1200)
-    else:
+    if SAVEPNG:
         plt.savefig(path+"/plots/"+plot_name+"runtime_mean.png", bbox_inches = "tight")
 
     plt.clf()
@@ -107,7 +108,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
 
     if SAVEEPS:
         plt.savefig(path+"/plots/"+plot_name+"performance_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
-    else:
+    if SAVEPNG:
         plt.savefig(path+"/plots/"+plot_name+"performance_mean.png", bbox_inches = "tight")
 
     plt.clf()
@@ -138,7 +139,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
 
     if SAVEEPS:
         plt.savefig(path+"/plots/"+plot_name+"io_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
-    else:
+    if SAVEPNG:
         plt.savefig(path+"/plots/"+plot_name+"io_mean.png", bbox_inches = "tight")
 
     plt.clf()
