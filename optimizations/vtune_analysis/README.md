@@ -24,7 +24,7 @@ I assume the 23% "unknown stack frames" are mostly due to the JIT code that cann
 -b "generator=cube_rot_r1.0_100,polytopeOptimize=true,polytopeType=2,r=1" -c "step_size=1000" -f "PolytopeCSC_intersectCoord=cached_b_vec_nan_inv,rand_f=sr_rand"
 
 ## 7 PolytopeT
--b "generator=cube_rot_r1.0_100,polytopeOptimize=true,polytopeType=0,r=1" -c "step_size=1000" -f "PolytopeT_intersectCoord=cached_b_vec,rand_f=sr_rand"
+-b "generator=cube_rot_r1.0_100,polytopeOptimize=true,polytopeType=1,r=1" -c "step_size=1000" -f "PolytopeT_intersectCoord=cached_b_vec,rand_f=sr_rand"
 
 ## 8 Ellipsoid
 TODO
