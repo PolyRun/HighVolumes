@@ -287,6 +287,47 @@ void PolytopeCSC_cacheReset_fma(const void *o, const FT *x, void *cache){
 }
 
 
+
+void PolytopeCSC_cacheReset_vec(const void *o, const FT *x, void *cache){
+
+    // set cache[i] = b[i] - Ai*x
+    PolytopeCSC *p = (PolytopeCSC *) o;
+    FT *c = (FT *) cache; //(FT *) cache;
+
+    int i = 0;
+    for (; i < p->m - 3; i += 4){
+        __m256d bi = _mm256_load_pd(&p->b[i]);
+        _mm256_store_pd(&c[i], bi);
+    }
+    for (; i < p->m; i++){
+        c[i] = p->b[i];
+    }
+
+    for (int d = 0; d < p->n; d++){
+        __m256d xd = _mm256_set1_pd(-x[d]);
+
+        for (int j = p->col_start[d]; j < p->col_start[d+1] - 7; j+=4){
+            __m256d crj = _mm256_set_pd(c[p->row_idx[j+3]], c[p->row_idx[j+2]], c[p->row_idx[j+1]], c[p->row_idx[j]]);
+            __m256d Aj = _mm256_load_pd(&p->A[j]);
+            __m256d crj_upd = _mm256_fmadd_pd(xd, Aj, crj);
+            // we allow updating
+            c[p->row_idx[j]] = crj_upd[0];
+            c[p->row_idx[j+1]] = crj_upd[1];
+            c[p->row_idx[j+2]] = crj_upd[2];
+            c[p->row_idx[j+3]] = crj_upd[3];
+        }
+        __m128d xds = _mm_set_sd(-x[d]);
+        for (int j = p->col_start[d+1]-4; j < p->col_start[d+1] && p->row_idx[j] > -1; j++){
+            __m128d crj = _mm_load_sd(&c[p->row_idx[j]]);
+            __m128d Aj = _mm_load_sd(&p->A[j]);
+            __m128d crj_upd = _mm_fmadd_sd(xds, Aj, crj);
+            _mm_store_sd(&c[p->row_idx[j]], crj_upd);
+        }
+        
+    }
+}
+
+
 void PolytopeCSC_cacheUpdateCoord_ref(const void *o, const int d, const FT dx, void *cache) {
 
     const PolytopeCSC *p = (PolytopeCSC *) o;

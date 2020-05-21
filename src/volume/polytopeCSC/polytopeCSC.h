@@ -50,6 +50,7 @@ int PolytopeCSC_cacheAlloc_ref(const void *o);
 void PolytopeCSC_cacheReset_ref(const void *o, const FT *x, void *cache);
 void PolytopeCSC_cacheReset_withb(const void *o, const FT *x, void *cache);
 void PolytopeCSC_cacheReset_fma(const void *o, const FT *x, void *cache);
+void PolytopeCSC_cacheReset_vec(const void *o, const FT *x, void *cache);
 void PolytopeCSC_cacheUpdateCoord_ref(const void *o, const int d, const FT dx, void *cache);
 void PolytopeCSC_cacheUpdateCoord_withb(const void *o, const int d, const FT dx, void *cache);
 void PolytopeCSC_cacheUpdateCoord_fma(const void *o, const int d, const FT dx, void *cache);
