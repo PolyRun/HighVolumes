@@ -39,7 +39,7 @@ intersectSparse4Dims = [4,5,10,20,40,60,100,150,200]
 intersectSparse4Dims = {"4var_"+str(i):str(i) for i in intersectSparse4Dims}
 intersectSparse4Bodies = [ name for (name,i) in intersectSparse4Dims.items()]
 
-cubeRotDims = [3,10,20,40,60,100]
+cubeRotDims = [3,10,20,40,60,80,100]
 cubeRotDims = {"cube_rot_r1.0_"+str(i):str(i) for i in cubeRotDims}
 cubeRotBodies = [ name for (name,i) in cubeRotDims.items()]
 
@@ -209,7 +209,7 @@ BENCHMARKS = [
        {
           "const_configs": [],
           "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
-          "run_configs": ["r=200000,polytopeType=3,intersect=intersectCoord_only"],
+          "run_configs": ["r=100000,polytopeType=3,intersect=intersectCoord_only"],
           "input_configs": [("generator", cubeRotBodies)]
        },
     ],
@@ -225,7 +225,7 @@ BENCHMARKS = [
        {
           "const_configs": [],
           "fun_configs": ["PolytopeJIT_gen=single_rax","PolytopeJIT_gen=single_data","PolytopeJIT_gen=single_data_acc","PolytopeJIT_gen=double_data","PolytopeJIT_gen=double_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data,polytopeOptimize=true","PolytopeJIT_gen=quad_data","PolytopeJIT_gen=quad_data_acc,polytopeOptimize=true"],
-          "run_configs": ["r=100000,polytopeType=3,intersect=cacheUpdateCoord"],
+          "run_configs": ["r=200000,polytopeType=3,intersect=cacheUpdateCoord"],
           "input_configs": [("generator", intersectSparse4Bodies)]
        },
     ],
@@ -257,7 +257,7 @@ BENCHMARKS = [
        {
           "const_configs": [],
           "fun_configs": [],
-          "run_configs": ["r=100000,experiment=test","r=100000,experiment=test2"],
+          "run_configs": ["r=200000,experiment=test","r=100000,experiment=test2"],
           "input_configs": [("n", jitTest)]
        },
     ],
