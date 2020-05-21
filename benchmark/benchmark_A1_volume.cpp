@@ -18,10 +18,10 @@ class Benchmark_A1 : public Benchmark_base {
 	    }
 
 	    switch(polytopeType) {
-            case 0: // column major
+            case 1: // column major
                 solved_body->polytopeTranspose();
                 break;
-            case 1: // row major
+            case 0: // row major
                 break;
             case 2: // CSC format
                 solved_body->polytopeCSC();
@@ -151,8 +151,8 @@ int main(int argc, char *argv[]){
     int polytopeType = 0;
     cliFun.add(new CLIF_Option<int>(&polytopeType,'b',"polytopeType","0",
                                     {
-                                     {"0",{0, "PolytopeT format / columns"}},
-                                     {"1",{1, "Polytope format / rows"}},
+                                     {"0",{0, "Polytope format / rows"}},
+                                     {"1",{1, "PolytopeT format / columns"}},
                                      {"2",{2, "PolytopeCSC format"}},
                                      {"3",{3, "PolytopeJIT format"}},
                                      {"4",{4, "Polyvest: alternative lib, only for single body polytopes - will preprocess first!"}},
