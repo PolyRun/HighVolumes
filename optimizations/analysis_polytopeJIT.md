@@ -1,5 +1,7 @@
 #Analysis PolytopeJIT
 
+Note: all of these measurements were taken on a machine that had some noise in the performance due to other applications running (eg browser). I tried to fix the situation, but we intend to run the benchmarks again on a different machine for the presentation and report.
+
 ## jit_test
 
 We run ymm vectorized mul and max operation.
@@ -47,6 +49,39 @@ This is probably due to instruction cache limits. Or jump prediction issues, whe
 
 Note: this case is supposed to model our sparse body access pattern.
 
-## Performance for Dense bodies:
+## Performance for Dense bodies
+
+### intersectCoord
+
+For each position, we read Ainv and the cache entry.
+We mul and max/min. Thus, we have 2 flops and 16 bytes data.
+
+For single value access (single=1 double), we have the rax or data way. Rax means it was read from the instruction, as an 64 bit integer payload and loaded through rax to xmm registers (there is no direct way to load instruction payloads into xmm/ymm registers). The Rax option turns out to be slower. It bloats the instruction bytes, and does not utilize the separation of instruction and data cache.
+
+The acc option is to use multiple accumulators. If we only have one for min and one for max, we can only use 2 out of three slots for max/min (3 lat, 1 gap). This option did not really lead to speedup. Maybe the data layout does not allow it, or maybe the instructions come in too slow to be handled more efficiently, we are not sure.
+
+As soon as we use xmm or ymm registers, we use blocking. This means we allow one register only to hold negative or positive values, potentially having to run a block twice, once for positive values with min, once with negatives and max.
+
+Using xmm or even ymm registers gives some speedup, though not exactly linear. This is probably due to the fact that we cannot guarantee that adjacent values have the same sign, but it happens sometimes, so some speedup.
+
+We also tried reordering the constraints to have better locality in the data pattern, so rearrange to have more values with the same sign close to each other in a column. This is a best effort algorithm where we do not know how good it really is. Unfortunately, we cannot see a signifficant difference.
+
+[Download io eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/dense_cubeRot/dense_polytopeJIT_intersect_io_mean.eps?inline=false)
+
+[Download performance eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/dense_cubeRot/dense_polytopeJIT_intersect_performance_mean.eps?inline=false)
+
+[Download runtime eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/dense_cubeRot/dense_polytopeJIT_intersect_runtime_mean.eps?inline=false)
+
+Explanation for Performance Roof:
+
+* As n is small, the latency dominates.
+* For large n, throughput dominates.
+  * This is then limited by the instruction cache and op decoding/scheduling (not sure how much).
+  * From the measurements in jit_test, we know that we most likely will not get over 20 bytes/cycle for n=100 or smaller.   
+  * Further, some blocks have to be done twice, as they contain both positive and negative values. Hence, we might expect about 10 bytes/cycle.
+  * We also get to about 1 flop/cycle, where according to jit_test we could have at most a bit over 2 flops/cycle.
+  * This has to be compared to the theoretical 8 flops/cycle the instruction mix of mul and max/min would allow.
+
+### cacheUpdateCoord
 
 
