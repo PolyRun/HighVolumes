@@ -509,9 +509,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparse4Dims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "csc_cache_update_cross",
@@ -528,9 +528,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", crossDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
       
@@ -555,9 +555,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "csc_intersect_only_cross",
@@ -581,9 +581,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", crossDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
 
@@ -606,9 +606,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "csc_intersect_only_cross_cacheb",
@@ -630,9 +630,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", crossDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
    
    {"name": "csc_readtest_sparse",
@@ -648,9 +648,9 @@ BENCHMARKS = [
        },
     ],
     "xoption": ("generator", intersectSparseDims),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
-    "xlabel": ["dim", "dim", "dim"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
    {"name": "csc_readtest_dense",
