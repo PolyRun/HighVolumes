@@ -109,16 +109,17 @@ BENCHMARKS = [
        },
        {
           "const_configs": [],
-          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=cached_b_vec"],
           "run_configs": ["intersect=intersectCoord,polytopeTranspose=true"],
           "input_configs": [("generator", intersectbodies)]
        },
-       {
-          "const_configs": [],
-          "fun_configs": [],
-          "run_configs": ["intersect=intersect,polytopeTranspose=false", "intersect=intersect,polytopeTranspose=true"],
-          "input_configs": [("generator", intersectbodies)]
-       }
+       #{
+       #   "const_configs": [],
+       #   "fun_configs": [],
+       #   "run_configs": ["intersect=intersect,polytopeTranspose=false", "intersect=intersect,polytopeTranspose=true"],
+       #   "input_configs": [("generator", intersectbodies)]
+       #}
     ],
     "xoption": ("generator", intersectdims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],

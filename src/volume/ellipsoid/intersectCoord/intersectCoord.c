@@ -89,8 +89,9 @@ void Ellipsoid_intersectCoord_cached_reord3(const void* o, const FT* x, const in
  * *t0      | tmp-sqrtD*aInv |    30    |    34    |    35    |     40
  * *t1      | tmp+sqrtD*aInv |    30    |    34    |    35    |     40
  * 
- * 12 flops in 34(40) cycles
- * 
+ * 11 flops in 34(40) cycles
+ * do not count sqrtD*aInv twice!
+ *
  * with cacheUpdate:
  * n=100:
  * 217 flops in 150 cycles -> 1.44 flops per cycle (measured: 1.65 - would be 248 flops or 131 cycles)

@@ -170,7 +170,7 @@ void Ellipsoid_intersect_ref(const void* o, const FT* x, const FT* d, FT* t0, FT
 void Ellipsoid_intersectCoord_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
    Ellipsoid* e = (Ellipsoid*)o;
    const int n = e->n;
-   FT* Az_c = (FT*)cache;
+   //FT* Az_c = (FT*)cache;
 
    FT* Ad = Ellipsoid_get_Ai(e,d);
    FT a = Ad[d];

@@ -312,7 +312,7 @@ void PolytopeT_cacheReset_b_vec(const void *p, const FT *x, void *cache) {
       cache_slice[i] = b_slice[i];
    }
 
-   // Accessing row-major
+   // Accessing row-major (i.e. memory-aligned since the polytope is transposed)
    int j;
    for (j = 0; j < dims; j++) {
 
