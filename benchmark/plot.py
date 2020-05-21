@@ -3,6 +3,7 @@ import numpy as np
 import re
 import pprint
 
+SAVEEPS = False
 
 def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     if plot_name == None:
@@ -73,7 +74,10 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
 
-    plt.savefig(path+"/plots/"+plot_name+"runtime_mean.eps", bbox_inches = "tight", format = 'eps', dpi = 1200)
+    if SAVEEPS:
+        plt.savefig(path+"/plots/"+plot_name+"runtime_mean.eps", bbox_inches = "tight", format = 'eps', dpi = 1200)
+    else:
+        plt.savefig(path+"/plots/"+plot_name+"runtime_mean.png", bbox_inches = "tight")
 
     plt.clf()
 
@@ -91,8 +95,8 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
         time_function_performance_ci_high = []
         for index, item in enumerate(time_function_heights[name]):
             time_function_performance.append(x_flops[name][index]/item)
-            time_function_performance_ci_low.append(time_function_ci_low[name][index]/item)
-            time_function_performance_ci_high.append(time_function_ci_high[name][index]/item)
+            time_function_performance_ci_low.append(x_flops[name][index]/item - x_flops[name][index]/(time_function_heights[name][index] - time_function_ci_low[name][index]))
+            time_function_performance_ci_high.append(x_flops[name][index] / (time_function_heights[name][index] + time_function_ci_high[name][index]) - x_flops[name][index]/item)
         #plt.plot(x_ticks, time_function_performance, label=name)
         plt.errorbar(x_ticks, time_function_performance, label=name, yerr=[time_function_performance_ci_low, time_function_performance_ci_high], capsize=4)
         i += 1
@@ -101,7 +105,10 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
 
-    plt.savefig(path+"/plots/"+plot_name+"performance_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
+    if SAVEEPS:
+        plt.savefig(path+"/plots/"+plot_name+"performance_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
+    else:
+        plt.savefig(path+"/plots/"+plot_name+"performance_mean.png", bbox_inches = "tight")
 
     plt.clf()
 
@@ -118,9 +125,9 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
         time_function_bytes_ci_low = []
         time_function_bytes_ci_high = []
         for index, item in enumerate(time_function_heights[name]):
-            time_function_bytes.append(x_bytes[name][index]/item)
-            time_function_bytes_ci_low.append(time_function_ci_low[name][index]/item)
-            time_function_bytes_ci_high.append(time_function_ci_high[name][index]/item)
+            time_function_bytes.append(x_bytes[name][index]/item)            
+            time_function_bytes_ci_low.append(x_bytes[name][index]/item - x_bytes[name][index]/(time_function_heights[name][index] - time_function_ci_low[name][index]))
+            time_function_bytes_ci_high.append(x_bytes[name][index]/(time_function_heights[name][index] + time_function_ci_high[name][index]) - x_bytes[name][index]/item)
         #plt.plot(x_ticks, time_function_bytes, label=name)
         plt.errorbar(x_ticks, time_function_bytes, label=name, yerr=[time_function_bytes_ci_low, time_function_bytes_ci_high], capsize=4)
         i += 1
@@ -129,7 +136,10 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
 
-    plt.savefig(path+"/plots/"+plot_name+"io_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
+    if SAVEEPS:
+        plt.savefig(path+"/plots/"+plot_name+"io_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
+    else:
+        plt.savefig(path+"/plots/"+plot_name+"io_mean.png", bbox_inches = "tight")
 
     plt.clf()
 
