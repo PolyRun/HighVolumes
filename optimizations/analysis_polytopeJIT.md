@@ -51,6 +51,8 @@ Note: this case is supposed to model our sparse body access pattern.
 
 ## Performance for Dense bodies
 
+We take an n-dimensional hypercube, and rotate it in space to get a dense body (the constraint matrix is dense).
+
 ### intersectCoord
 
 For each position, we read Ainv and the cache entry.
@@ -83,5 +85,21 @@ Explanation for Performance Roof:
   * This has to be compared to the theoretical 8 flops/cycle the instruction mix of mul and max/min would allow.
 
 ### cacheUpdateCoord
+
+Here, we read/write the cache, updating the dot-product in one dimension. This is a simple fmadd, and 3 doubles io.
+
+This operation is still memory bound, though now we have removed the restriction of min/max gaps as in the intersectCoord. Thus, we also only need to look at each block exactly once.
+
+This should make it signifficantly simpler from an op scheduling perspective.
+
+Thus we have two factors to the faster performance for this function: simpler op scheduling and handling each block exactly once.
+
+[Download io eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/dense_cubeRot/dense_polytopeJIT_update_io_mean.eps?inline=false)
+
+[Download performance eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/dense_cubeRot/dense_polytopeJIT_update_performance_mean.eps?inline=false)
+
+[Download runtime eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/dense_cubeRot/dense_polytopeJIT_update_runtime_mean.eps?inline=false)
+
+## Performance for Sparse Bodies
 
 
