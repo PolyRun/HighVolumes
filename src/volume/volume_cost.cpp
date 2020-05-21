@@ -591,7 +591,7 @@ void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** ty
    {
       PC_Frame_Base loop("loop",ws);
 
-      pc_stack().log(0,n*sizeof(FT), "n random doubles - TODO");
+      pc_stack().log(0,2*n*sizeof(FT), "n random doubles - TODO");
       
       {// frame for Ball_intersect
          PC_Frame<Ball_intersect_cost_f> frame((void*) Ball_intersect);
@@ -603,10 +603,11 @@ void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** ty
          PC_Frame<intersect_cost_f> frame((void*) type[c]->intersect);
          frame.costf()(body[c]);
       }
+      pc_stack().log(2*bcount,0,"Update min/max intersection point for last body.");
 
       pc_stack().log(0,0, "random double - TODO");
       
-      pc_stack().log(2*n, 3*n*sizeof(FT)," x += d*t");
+      pc_stack().log(2*n, 2*n*sizeof(FT)," x += d*t");// don't recount d here
    }
 
 }
@@ -632,11 +633,12 @@ void walkCoord_cost_ref(const int n, int bcount, const void** body, const Body_T
          PC_Frame<intersectCoord_cost_f> frame((void*) type[c]->intersectCoord);
          frame.costf()(body[c]);
       }
+      pc_stack().log(2*bcount,0,"Update min/max intersection point for last body.");
 
       pc_stack().log(0, 0, "random double - TODO");
 
       // Reading and writing x[dd] with one add in between
-      pc_stack().log(1, 2, "x[dd] += t;");
+      pc_stack().log(1, 2*sizeof(FT), "x[dd] += t;");
       
       // body intersectCoord
       for(int c = 0; c < bcount; c++) {
