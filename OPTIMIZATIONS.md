@@ -8,6 +8,8 @@
 
 [Analysis Ellipsoid](./optimizations/analysis_ellipsoid.md)
 
+[VTune Analysis](./optimizations/vtune_analysis)
+
 ## Most important points
 
 * What we already did:
