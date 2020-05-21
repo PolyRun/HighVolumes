@@ -69,7 +69,11 @@ class Benchmark_intersect : public Benchmark_base {
 		   PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersect);
                    frame.costf()(solved_body->body[0]);
                 }
-                pc_stack().log(0,0, "random double - TODO");
+                //pc_stack().log(0,0, "random double - TODO");
+                {// frame for random double_in_range
+                    PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double_in_range);
+                    frame.costf()(NULL);
+                }        
                 pc_stack().log(2*n, 3*n*sizeof(FT)," x += d*t");
 	    }
             pc_stack().print();
@@ -102,7 +106,11 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
 		}
 
                 if(intersectCoord_update) {
-		   pc_stack().log(0, 0, "random double - TODO");
+		   //pc_stack().log(0, 0, "random double - TODO");
+                {// frame for random double_in_range
+                    PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double_in_range);
+                    frame.costf()(NULL);
+                } 
 	           // Reading and writing x[dd] with one add in between
                    pc_stack().log(1, 2, "x[dd] += t;");
                    
