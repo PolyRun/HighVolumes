@@ -8,9 +8,16 @@ typedef void (*xyz_cost_f) (const int);
 void xyz_f1_cost(const int n);
 
 // ----------------------------------------------- random
-typedef void (*random_int_cost_f)();
-void Random_int_cost_ref();
-void Random_double_cost_ref();
+typedef void (*random_int_cost_f)(const void* o);
+typedef void (*random_int_in_range_cost_f)(const void* o);
+typedef void (*random_double_in_range_cost_f)(const void* o);
+typedef void (*random_double_0_1_cost_f)(const void* o);
+typedef void (*random_double_normal_cost_f)(const void* o);
+void Random_int_cost_ref(const void * o);
+void Random_int_in_range_cost_ref(const void * o);
+void Random_double_in_range_cost_ref(const void * o);
+void Random_double_0_1_cost_ref(const void * o);
+void Random_double_normal_cost_ref(const void * o);
 
 // ----------------------------------------------- linalg
 typedef void (*dotProduct_cost_f)(const int);

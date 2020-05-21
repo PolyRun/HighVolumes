@@ -14,25 +14,62 @@ void squaredNorm_cost_ref(const int n) {
    pc_stack().log(2*n, n*sizeof(FT), "squaredNorm");
 }
 
-void Random_int_cost_ref(void* o){
+void Random_int_cost_ref(const void* o){
     // 1 read (status)
     // 1 write (status)
     // 3 shifts
     // 1 bit-wise and
     // 3 bit-wise xor
-    pc_stack().log(7, 2, "random int");
+    pc_stack().log(7, 2*sizeof(int), "random int");
 }
 
-void Random_double_cost_ref(void* o){
+void Random_int_in_range_cost_ref(const void* o){
 
     {// frame for random int
-        PC_Frame<random_int_cost_f> frame(NULL);
-        frame.costf()();
+        PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int);
+        frame.costf()((NULL));
+    }
+
+    // 1 mod
+    // 3 add
+    pc_stack().log(4, 0, "random int_in_range");
+}
+
+void Random_double_in_range_cost_ref(const void* o){
+
+    {// frame for random int
+        PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int);
+        frame.costf()((NULL));
     }
 
     // 1 div
-    // 1 mult
-    pc_stack().log(2, 0, "random double");
+    // 3 mul
+    // 2 add
+    pc_stack().log(5, 0, "random double_in_range");
+}
+
+void Random_double_0_1_cost_ref(const void* o){
+
+    {// frame for random int
+        PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int);
+        frame.costf()((NULL));
+    }
+
+    // 1 div
+    pc_stack().log(1, 0, "random double_0_1");
+}
+
+void Random_double_normal_cost_ref(const void* o){
+
+    {// frame for random double_0_1
+        PC_Frame<random_double_0_1_cost_f> frame((void*) prng_get_random_double_0_1,2); // 2 random doubles_0_1
+        frame.costf()(NULL);
+    }
+
+    // 3 functions (log, sqrt, log)
+    // 4 mul
+
+    pc_stack().log(7, 0, "random double_normal");
 }
 
 void Ball_intersectCoord_cost_ref(const int n) {
@@ -591,7 +628,11 @@ void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** ty
    {
       PC_Frame_Base loop("loop",ws);
 
-      pc_stack().log(0,2*n*sizeof(FT), "n random doubles - TODO");
+      pc_stack().log(0,2*n*sizeof(FT), "rw n random doubles");
+      {// frame for random double_normal
+         PC_Frame<random_double_normal_cost_f> frame((void*) prng_get_random_double_normal,n);
+         frame.costf()(NULL);
+      }
       
       {// frame for Ball_intersect
          PC_Frame<Ball_intersect_cost_f> frame((void*) Ball_intersect);
@@ -605,7 +646,10 @@ void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** ty
       }
       pc_stack().log(2*bcount,0,"Update min/max intersection point for last body.");
 
-      pc_stack().log(0,0, "random double - TODO");
+      {// frame for random double_in_range
+         PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double_in_range);
+         frame.costf()(NULL);
+      }
       
       pc_stack().log(2*n, 2*n*sizeof(FT)," x += d*t");// don't recount d here
    }
@@ -620,7 +664,10 @@ void walkCoord_cost_ref(const int n, int bcount, const void** body, const Body_T
    {
       PC_Frame_Base loop("loop", ws);
 
-      pc_stack().log(0, 0, "random int - TODO");
+      {// frame for random int_in_range
+        PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int_in_range);
+        frame.costf()((NULL));
+    }
       
       // frame for Ball_intersectCoord
       {
@@ -635,7 +682,10 @@ void walkCoord_cost_ref(const int n, int bcount, const void** body, const Body_T
       }
       pc_stack().log(2*bcount,0,"Update min/max intersection point for last body.");
 
-      pc_stack().log(0, 0, "random double - TODO");
+      {// frame for random double_in_range
+         PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double_in_range);
+         frame.costf()(NULL);
+      }
 
       // Reading and writing x[dd] with one add in between
       pc_stack().log(1, 2*sizeof(FT), "x[dd] += t;");

@@ -1,5 +1,13 @@
 # Optimizations
 
+[Analysis Polytope and PolytopeT](./optimizations/analysis_polytope.md)
+
+[Analysis PolytopeCSC](./optimizations/analysis_polytopeCSC.md)
+
+[Analysis PolytopeJIT](./optimizations/analysis_polytopeJIT.md)
+
+[Analysis Ellipsoid](./optimizations/analysis_ellipsoid.md)
+
 ## Most important points
 
 * What we already did:

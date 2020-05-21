@@ -139,6 +139,14 @@ public:
       pc_stack().add((void*)volume_ref, new PC_Cost_Wrapper<volume_cost_f>(volume_cost_ref,"volume_ref"));
       pc_stack().add((void*)walk_ref, new PC_Cost_Wrapper<walk_cost_f>(walk_cost_ref,"walk_ref"));
       pc_stack().add((void*)walkCoord_ref, new PC_Cost_Wrapper<walk_cost_f>(walkCoord_cost_ref,"walkCoord_ref"));
+
+      // Randomness
+      pc_stack().add((void *)prng_get_random_int, new PC_Cost_Wrapper<random_int_cost_f>(Random_int_cost_ref, "Random int"));
+      pc_stack().add((void *)prng_get_random_int_in_range, new PC_Cost_Wrapper<random_int_in_range_cost_f>(Random_int_in_range_cost_ref, "Random int_in_range"));
+      pc_stack().add((void *)prng_get_random_double_in_range, new PC_Cost_Wrapper<random_double_in_range_cost_f>(Random_double_in_range_cost_ref, "Random double_in_range"));
+      pc_stack().add((void *)prng_get_random_double_0_1, new PC_Cost_Wrapper<random_double_0_1_cost_f>(Random_double_0_1_cost_ref, "Random double_0_1"));
+      pc_stack().add((void *)prng_get_random_double_normal, new PC_Cost_Wrapper<random_double_normal_cost_f>(Random_double_normal_cost_ref, "Random double_normal"));
+      
       
 
       // please add your functions below.
