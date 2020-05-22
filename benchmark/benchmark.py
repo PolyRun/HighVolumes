@@ -104,18 +104,18 @@ BENCHMARKS = [
    {"name": "intersect_polytope",
     "executable": "benchmark_intersect",
     "config": [       
-       {
-          "const_configs": [],
-          "fun_configs": ["Polytope_intersectCoord=cached_ref", "Polytope_intersectCoord=ref"],
-          "run_configs": ["intersect=intersectCoord,polytopeTranspose=false"],
-          "input_configs": [("generator", intersectbodies)]
-       },
+       #{
+       #   "const_configs": [],
+       #   "fun_configs": ["Polytope_intersectCoord=cached_ref", "Polytope_intersectCoord=ref"],
+       #   "run_configs": ["intersect=intersectCoord,polytopeTranspose=false"],
+       #   "input_configs": [("generator", intersectbodies)]
+       #},
        {
           "const_configs": [],
           #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
-          "fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=cached_b_vec"],
-          "run_configs": ["intersect=intersectCoord,polytopeTranspose=true"],
-          "input_configs": [("generator", intersectbodies)]
+          "fun_configs": ["PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          "run_configs": ["intersect=intersectCoord,polytopeType=1"],
+          "input_configs": [("generator", crossBodies)]
        },
        #{
        #   "const_configs": [],
@@ -124,7 +124,7 @@ BENCHMARKS = [
        #   "input_configs": [("generator", intersectbodies)]
        #}
     ],
-    "xoption": ("generator", intersectdims),
+    "xoption": ("generator", crossDims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison"],
     "xlabel": ["dim", "dim", "dim"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)"]
