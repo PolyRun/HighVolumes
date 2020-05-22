@@ -37,16 +37,17 @@ class Benchmark_base {
          * \brief Actuall performs the benchmark
          **/
         virtual void run_benchmark() {
-            #pragma omp parallel
-	    {
-	       int tid = omp_get_thread_num();
-	       #pragma omp barrier
-	       if(tid == 0) {
-	          int nthreads = omp_get_num_threads();
-		  printf("There are %d threads, running on tid %d.\n",nthreads,tid);
-		  run_benchmark_go();
-	       }
-	    }
+            run_benchmark_go();
+	    //#pragma omp parallel
+	    //{
+	    //   int tid = omp_get_thread_num();
+	    //   #pragma omp barrier
+	    //   if(tid == 0) {
+	    //      int nthreads = omp_get_num_threads();
+	    //      printf("There are %d threads, running on tid %d.\n",nthreads,tid);
+	    //      run_benchmark_go();
+	    //   }
+	    //}
 	}
 	void run_benchmark_go() {
 	    double min_time = std::numeric_limits<double>::max();

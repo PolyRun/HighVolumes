@@ -254,16 +254,41 @@ BENCHMARKS = [
    },
 
    # TODO: Jonathan: fix/use/ or delete
-   {"name": "intersect_polytope_jonathan",
+   {"name": "polytopeT_intersectCoord",
     "executable": "benchmark_intersect",
     "config": [       
        {
           "const_configs": [],
           #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
-          "fun_configs": ["PolytopeT_intersectCoord=ref",
+          "fun_configs": [#"PolytopeT_intersectCoord=ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
-                          "PolytopeT_intersectCoord=cached_b_vec"],
-          "run_configs": ["intersect=intersectCoord,polytopeType=1"],
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          "PolytopeT_intersectCoord=cached_b_vec_inl"],
+          "run_configs": ["intersect=intersectCoord_only,polytopeType=1,r=100000"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [20.0/27],
+    "mem_roofs": []
+   },
+
+   {"name": "polytopeT_cacheUpdate",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          "fun_configs": [#"PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec2",
+                          "PolytopeT_intersectCoord=cached_b_vec_inl"],
+          "run_configs": ["intersect=cacheUpdateCoord,polytopeType=1,r=100000"],
           "input_configs": [("generator", mbintersectbodies)]
        },
     ],
@@ -972,7 +997,7 @@ pushConfig("update","cross",crossPBodies,crossPDims,10000*rFactor,1600)
 pushConfig("volume","cubeRot",cubeRotBodies,cubeRotDims,1,400*sFactor)
 pushConfig("volume","2var",intersectSparseBodies,intersectSparseDims,1,400*sFactor)
 pushConfig("volume","4var",intersectSparse4Bodies,intersectSparse4Dims,1,400*sFactor)
-pushConfig("volume","cross",crossPBodies,crossPDims,1,400*sFactor)
+pushConfig("volume","cross",crossPBodies,crossPDims,1,800*sFactor)
 
 
 BENCHMARKS += csc_jit_bm
