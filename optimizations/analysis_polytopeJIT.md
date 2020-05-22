@@ -1,4 +1,4 @@
-#Analysis PolytopeJIT
+# Analysis PolytopeJIT
 
 Note: all of these measurements were taken on a machine that had some noise in the performance due to other applications running (eg browser). I tried to fix the situation, but we intend to run the benchmarks again on a different machine for the presentation and report.
 
@@ -48,6 +48,7 @@ This is probably due to instruction cache limits. Or jump prediction issues, whe
 [Download jit_test4 runtime eps](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team014/-/raw/master/optimizations/analysis_polytopeJIT/jit_benchmark/02_ymm_kernels/jit_test_4_runtime_mean.eps?inline=false)
 
 Note: this case is supposed to model our sparse body access pattern.
+It shows that we are mainly latency bound for sparse bodies (runtime is the same for xmm and ymm, despite factor 2 work).
 
 ## Performance for Dense bodies
 
@@ -80,7 +81,7 @@ Explanation for Performance Roof:
 * For large n, throughput dominates.
   * This is then limited by the instruction cache and op decoding/scheduling (not sure how much).
   * From the measurements in jit_test, we know that we most likely will not get over 20 bytes/cycle for n=100 or smaller.   
-  * Further, some blocks have to be done twice, as they contain both positive and negative values. Hence, we might expect about 10 bytes/cycle.
+  * Further, some blocks have to be done twice, as they contain both positive and negative values. Hence, we might expect about 10 bytes/cycle. Though we expect it to only be loaded once mem -> cache... so maybe this arguemnt is not so strong.
   * We also get to about 1 flop/cycle, where according to jit_test we could have at most a bit over 2 flops/cycle.
   * This has to be compared to the theoretical 8 flops/cycle the instruction mix of mul and max/min would allow.
 
@@ -114,7 +115,7 @@ Unfortunately, this is dominated by other overhead costs, such as the jump to th
 
 Hence, we only acheive 0.6 flops/cycles and 6 bytes/cycle for small n, which makes exactly this 10x factor difference of the base latency.
 
-At low dimensions, the matrix is quite dense, but with higher dimensions it becomes sparser. Hence, the data access pattern becomes more random and the performance deteriorates towards 1 byte a cycle and 0.2 flops/cycle. This is the same tendency as in out jit_test4, though even a bit worse. This could be explained by the fact that the instruction cache cannot fit the kernels any more, and we have even more kernel functions.
+At low dimensions, the matrix is quite dense, but with higher dimensions it becomes sparser. Hence, the data access pattern becomes more random and the performance deteriorates towards 1 byte a cycle and 0.2 flops/cycle. This is the same tendency as in out jit_test3, though even a bit worse. This could be explained by the fact that the instruction cache cannot fit the kernels any more, and we have even more kernel functions.
 
 Note: the vectorized versions have no benefit in the very sparse cases, as there is not much locality left to exploit. Only for small n can we see a minor advantage for vectorized implementations.
 
