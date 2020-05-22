@@ -707,6 +707,41 @@ BENCHMARKS = [
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
+   {"name": "compare_polytope_intersect",
+    "executable": "benchmark_intersect",
+    "config": [ 
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["r=100,polytopeType=0"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["r=100,polytopeType=1"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["r=100,polytopeType=2"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["r=100,polytopeType=3"],
+          "input_configs": [("generator", intersectbodies)]
+       },
+    ],
+    "xoption": ("generator", intersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   },
+
+
 ]
 
 
