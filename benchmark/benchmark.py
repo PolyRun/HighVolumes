@@ -260,12 +260,14 @@ BENCHMARKS = [
        {
           "const_configs": [],
           #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
-          "fun_configs": ["PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          "fun_configs": ["PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec"],
           "run_configs": ["intersect=intersectCoord,polytopeType=1"],
-          "input_configs": [("generator", crossBodies)]
+          "input_configs": [("generator", mbintersectbodies)]
        },
     ],
-    "xoption": ("generator", crossDims),
+    "xoption": ("generator", mbintersectdims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
     "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
@@ -967,19 +969,10 @@ pushConfig("update","2var",intersectSparseBodies,intersectSparseDims,3000*rFacto
 pushConfig("update","4var",intersectSparse4Bodies,intersectSparse4Dims,2000*rFactor,1600)
 pushConfig("update","cross",crossPBodies,crossPDims,10000*rFactor,1600)
 
-pushConfig("volume","cubeRot",cubeRotBodies,cubeRotDims,1,100*sFactor)
-pushConfig("volume","2var",intersectSparseBodies,intersectSparseDims,1,100*sFactor)
-pushConfig("volume","4var",intersectSparse4Bodies,intersectSparse4Dims,1,100*sFactor)
-pushConfig("volume","cross",crossPBodies,crossPDims,1,100*sFactor)
-
-
-   # Listing what to plot:
-   # - On different bodies compare bodies. For intersect with update. And for volume (incl polyvest) - random versions?. Only best functions.
-   #   -> also roofline.
-   #   -> Runtime: PolytopeT (base-cached-b, vectorized, [inv], random, [squaredNorm-cached]) vs CSC (optimized) vs JIT (optimized) vs Polyvest
-   # - Detail analysis CSC, JIT. Diffent levels of sparsity 2var, 4var. 2var preprocessed? cross, cubeRot. - take sizes where you see performance decreasing.
-   #   - separate intersect_only, cacheUpdateCoord. JIT will be better because different load instructions/patterns.
-   # - CSC/JIT benchmark-tests? CSC extra function. JIT tests??? JIT test1/2 -> loadsd to get roof.
+pushConfig("volume","cubeRot",cubeRotBodies,cubeRotDims,1,400*sFactor)
+pushConfig("volume","2var",intersectSparseBodies,intersectSparseDims,1,400*sFactor)
+pushConfig("volume","4var",intersectSparse4Bodies,intersectSparse4Dims,1,400*sFactor)
+pushConfig("volume","cross",crossPBodies,crossPDims,1,400*sFactor)
 
 
 BENCHMARKS += csc_jit_bm
