@@ -2,15 +2,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 import pprint
+import os
 
 
 SAVEEPS = True
 SAVEPNG = True
-PEAK_PERFORMANCE = 20
-MEMORY_BANDWIDTH = 32
+PEAK_PERFORMANCE = 16
+MEMORY_BANDWIDTH = 12
+
+#				 [Runt , Perf , I/O  , Roofl
+ADD_PERF_ROOFS = [False, False, False, True]
+ADD_MEM_ROOFS  = [False, False, False, False]
+
+# Determines if PEAK_PERFORMANCE and MEMORY_BANDWIDTH are included into plots
+# ADD_X_ROOFS has to be set to true to show any roof
+MACHINE_ROOFS  = [False, False, False, True]
+
+ROOFLINE_LOG = False
 
 
-def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
+def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roofs, mem_roofs):
     if plot_name == None:
         plot_name = "plot"
     plot_name = plot_name + "_"
@@ -71,10 +82,12 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
         #plt.plot(x_ticks, time_function_heights[name], label=name)
         pprint.pprint(x_ticks)
         pprint.pprint(time_function_heights[name])
-        assert(len(x_ticks) == len(time_function_heights[name]) and "maybe you used 'generator' in some parameter? or some configs identical?")
-        plt.errorbar(x_ticks, time_function_heights[name], label=name, yerr=[time_function_ci_low[name], time_function_ci_high[name]], capsize=4)
+        x_ticks_tmp = [tick for tick,val in zip(x_ticks, time_function_heights[name])]
+        pprint.pprint(x_ticks_tmp)
+        assert(len(x_ticks_tmp) == len(time_function_heights[name]) and "maybe you used 'generator' in some parameter? or some configs identical?")
+        plt.errorbar(x_ticks_tmp, time_function_heights[name], label=name, yerr=[time_function_ci_low[name], time_function_ci_high[name]], capsize=4)
         i += 1
-	
+
     plt.ylim(bottom=0)
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
@@ -95,6 +108,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
 
     i = 0
     for name in time_function_names:
+        x_ticks_tmp = [tick for tick,val in zip(x_ticks, time_function_heights[name])]
         time_function_performance = []
         time_function_performance_ci_low = []
         time_function_performance_ci_high = []
@@ -103,9 +117,17 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
             time_function_performance_ci_low.append(x_flops[name][index]/item - x_flops[name][index]/(time_function_heights[name][index] - time_function_ci_low[name][index]))
             time_function_performance_ci_high.append(x_flops[name][index] / (time_function_heights[name][index] + time_function_ci_high[name][index]) - x_flops[name][index]/item)
         #plt.plot(x_ticks, time_function_performance, label=name)
-        plt.errorbar(x_ticks, time_function_performance, label=name, yerr=[time_function_performance_ci_low, time_function_performance_ci_high], capsize=4)
+        plt.errorbar(x_ticks_tmp, time_function_performance, label=name, yerr=[time_function_performance_ci_low, time_function_performance_ci_high], capsize=4)
         i += 1
-	
+
+    if ADD_PERF_ROOFS[1]:
+        if MACHINE_ROOFS[1]:
+            perf_roofs.append(PEAK_PERFORMANCE)
+        for r in perf_roofs:
+            plt.axhline(r, linestyle='--', color='#808080')
+        if MACHINE_ROOFS[1]:
+            perf_roofs.pop()
+			
     plt.ylim(bottom=0)
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
@@ -126,6 +148,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
 
     i = 0
     for name in time_function_names:
+        x_ticks_tmp = [tick for tick,val in zip(x_ticks, time_function_heights[name])]
         time_function_bytes = []
         time_function_bytes_ci_low = []
         time_function_bytes_ci_high = []
@@ -134,9 +157,17 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
             time_function_bytes_ci_low.append(x_bytes[name][index]/item - x_bytes[name][index]/(time_function_heights[name][index] - time_function_ci_low[name][index]))
             time_function_bytes_ci_high.append(x_bytes[name][index]/(time_function_heights[name][index] + time_function_ci_high[name][index]) - x_bytes[name][index]/item)
         #plt.plot(x_ticks, time_function_bytes, label=name)
-        plt.errorbar(x_ticks, time_function_bytes, label=name, yerr=[time_function_bytes_ci_low, time_function_bytes_ci_high], capsize=4)
+        plt.errorbar(x_ticks_tmp, time_function_bytes, label=name, yerr=[time_function_bytes_ci_low, time_function_bytes_ci_high], capsize=4)
         i += 1
-	
+
+    if ADD_MEM_ROOFS[2]:
+        if MACHINE_ROOFS[2]:
+            mem_roofs.append(MEMORY_BANDWIDTH)
+        for r in mem_roofs:
+            plt.axhline(r, linestyle='--', color='#808080')
+        if MACHINE_ROOFS[2]:
+            mem_roofs.pop()
+
     plt.ylim(bottom=0)
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
@@ -156,44 +187,69 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     plt.xlabel("Operational Intensity [Flops/Byte]")
     plt.ylabel("Performance [Flops/Cycle]")
 	
-    max_intensity = 0;
+    max_intensity = 0
+    min_intensity = 1024
+    min_performance = PEAK_PERFORMANCE+1
 
     i = 0
+    f = None
+    if ROOFLINE_LOG:
+        f = open(path+"/plots/"+plot_name+"roofline.out", "w")
+
     for name in time_function_names:
         time_function_performance = []
         time_function_intensity = []
+        if x_flops[name][0] == 0 or x_bytes[name][0] == 0:
+            continue
         for index, item in enumerate(time_function_heights[name]):
             time_function_performance.append(x_flops[name][index]/item)
             time_function_intensity.append(x_flops[name][index]/x_bytes[name][index])
             max_intensity = max(max_intensity, x_flops[name][index]/x_bytes[name][index])
-        #print("Performance:", time_function_performance)
-        #print("O-Intensity:", time_function_intensity)
-        plt.plot(time_function_intensity, time_function_performance, label=name)
+            min_intensity = min(min_intensity, x_flops[name][index]/x_bytes[name][index])
+            min_performance = min(min_performance, x_flops[name][index]/item)
+        if ROOFLINE_LOG:
+            print("{}:".format(name))
+            print("Performance: ", time_function_performance)
+            print("O-Intensity: ", time_function_intensity)
+            f.write("{}:\n".format(name))
+            f.write("Performance: "+ str(time_function_performance) + "\n")
+            f.write("O-Intensity: "+ str(time_function_intensity) + "\n")
+        plt.plot(time_function_intensity, time_function_performance, label=name, marker=".")
         i += 1
 
-    LEFT_BOUND = 0.05
-    LOWER_BOUND = 0.05
-    right_add = 0.1
+    if ROOFLINE_LOG:
+        f.close()
 
-    ridge_point_intensity = PEAK_PERFORMANCE / MEMORY_BANDWIDTH
+    right_add = 0.5*max_intensity
+    left_sub = 0.5*min_intensity
+    bottom_sub = 0.5*min_performance
+    right_bound= max_intensity+right_add
+    left_bound = min_intensity-left_sub
+    bottom_bound = min_performance-bottom_sub
 
-    mem_bound_left_x = LEFT_BOUND
-    mem_bound_left_y = PEAK_PERFORMANCE*(mem_bound_left_x/ridge_point_intensity)
-    mem_bound_right_x = max_intensity + right_add
-    mem_bound_right_y = PEAK_PERFORMANCE*(mem_bound_right_x/ridge_point_intensity)
-	
-    # Draw Memory bound until max_intensity (+right_add)
-    plt.plot([mem_bound_left_x, mem_bound_right_x], [mem_bound_left_y, mem_bound_right_y], linestyle='--', alpha=0.5, color='black')
-    # Draw Memory bound until ridge point
-    #plt.plot([mem_bound_left_x, ridge_point_intensity], [mem_bound_left_y, PEAK_PERFORMANCE], linestyle='--', alpha=0.5, color='black')
-		
-    plt.axhline(PEAK_PERFORMANCE, linestyle='--', alpha=0.5, color='black')
+    if ADD_PERF_ROOFS[3]:
+        if MACHINE_ROOFS[3]:
+            perf_roofs.append(PEAK_PERFORMANCE)
+            mem_roofs.append(MEMORY_BANDWIDTH)
+        for r in perf_roofs:
+            plt.axhline(r, linestyle='--', color='#808080')
+        for r in mem_roofs:
+            ridge_point_intensity = PEAK_PERFORMANCE / r
+            mem_bound_left_x = left_bound
+            mem_bound_left_y = PEAK_PERFORMANCE*(mem_bound_left_x/ridge_point_intensity)
+            mem_bound_right_x = max_intensity + right_add
+            mem_bound_right_y = PEAK_PERFORMANCE*(mem_bound_right_x/ridge_point_intensity)
+            plt.plot([mem_bound_left_x, mem_bound_right_x], [mem_bound_left_y, mem_bound_right_y], linestyle='--', color='#808080')
+        if MACHINE_ROOFS[3]:
+            perf_roofs.pop()
+            mem_roofs.pop()
+
 
     plt.xscale('log')
     plt.yscale('log')
 	
-    plt.xlim((LEFT_BOUND, max_intensity + right_add))
-    plt.ylim((LOWER_BOUND, 2*PEAK_PERFORMANCE))
+    plt.xlim((left_bound, right_bound))
+    plt.ylim((bottom_bound, 2*PEAK_PERFORMANCE))
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
 
