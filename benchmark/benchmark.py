@@ -972,7 +972,7 @@ pushConfig("update","cross",crossPBodies,crossPDims,10000*rFactor,1600)
 pushConfig("volume","cubeRot",cubeRotBodies,cubeRotDims,1,400*sFactor)
 pushConfig("volume","2var",intersectSparseBodies,intersectSparseDims,1,400*sFactor)
 pushConfig("volume","4var",intersectSparse4Bodies,intersectSparse4Dims,1,400*sFactor)
-pushConfig("volume","cross",crossPBodies,crossPDims,1,400*sFactor)
+pushConfig("volume","cross",crossPBodies,crossPDims,1,800*sFactor)
 
 
 BENCHMARKS += csc_jit_bm
