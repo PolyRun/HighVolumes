@@ -681,13 +681,13 @@ BENCHMARKS = [
        {
           "const_configs": [],
           "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=sr_rand_vec", "rand_f=mt_rand"],
-          "run_configs": ["r=10000,d=16384,i=16384,rand_chunk_size=512"],
-          "input_configs": [("rand_val_t", randValTypes)]
+          "run_configs": ["r=1000,rand_val_t=random_int"],
+          "input_configs": [("i", [2**i for i in range(14,20)])]
        }
     ],
-    "xoption": ("rand_val_t", randValTypes_),
+    "xoption": ("i", {str(2**i): str(2**i) for i in range(14,20)}),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
-    "xlabel": ["rand value type", "rand value type", "rand value type", "Operational Intensity [Flops/Byte]"],
+    "xlabel": ["#random ints", "#random ints", "#random ints", "Operational Intensity [Flops/Byte]"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
 
@@ -697,8 +697,8 @@ BENCHMARKS = [
        {
           "const_configs": [],
           "fun_configs": rd_0_1,
-          "run_configs": ["r=10000,rand_val_t=random_double_0_1"],
-          "input_configs": [("d", [2**i for i in range(10,16)])],
+          "run_configs": ["r=1000,rand_val_t=random_double_0_1"],
+          "input_configs": [("i", [2**i for i in range(10,16)])],
        }
     ],
     "xoption": ("d", {str(2**i): str(2**i) for i in range(10,16)}),
