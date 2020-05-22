@@ -21,13 +21,10 @@ MACHINE_ROOFS  = [False, False, False, True]
 ROOFLINE_LOG = False
 
 
-def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
+def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roofs, mem_roofs):
     if plot_name == None:
         plot_name = "plot"
     plot_name = plot_name + "_"
-
-    perf_roofs = [4, 10]
-    mem_roofs  = [8,10, 14]
    
     x_values = []
     x_flops = {}
