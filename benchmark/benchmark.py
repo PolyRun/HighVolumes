@@ -50,6 +50,10 @@ jitTest = [4*i for i in range(1,20)]
 jitTestDims = {str(i):str(4*i) for i in jitTest}
 jitTest = [str(i) for i in jitTest]
 
+jitTest12 = [4*i for i in range(1,20)]
+jitTest12Dims = {str(i):str(4*i) for i in jitTest12}
+jitTest12 = [str(i) for i in jitTest12]
+
 randValTypes = ["random_int", "random_int_in_range", "random_double", "random_double_0_1", "random_double_normal", "random_double_in_range"]
 randValTypes_ = {"random_int": '0', "random_int_in_range": '1', "random_double": '2', "random_double_0_1": '3', "random_double_normal": '4', "random_double_in_range": '5'}
 
@@ -275,21 +279,21 @@ BENCHMARKS = [
    # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    #},
 
-   #{"name": "jit_test",
-   # "executable": "benchmark_jit",
-   # "config": [       
-   #    {
-   #       "const_configs": [],
-   #       "fun_configs": [],
-   #       "run_configs": ["r=200000,experiment=test","r=100000,experiment=test2"],
-   #       "input_configs": [("n", jitTest)]
-   #    },
-   # ],
-   # "xoption": ("n", jitTestDims),
-   # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
-   # "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
-   #},
+   {"name": "jit_test12",
+    "executable": "benchmark_jit",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": ["r=200000,experiment=test","r=100000,experiment=test2","r=200000,experiment=testa","r=100000,experiment=test2a"],
+          "input_configs": [("n", jitTest12)]
+       },
+    ],
+    "xoption": ("n", jitTest12Dims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   },
 
    #{"name": "jit_test_3",
    # "executable": "benchmark_jit",

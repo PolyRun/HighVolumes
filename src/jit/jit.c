@@ -418,7 +418,23 @@ void jit_storeu_ymm(int src, jit_Register reg, uint32_t idx) {
    jit_push((const uint8_t*)&idx,4);
 }
 
-
+void jit_load_sd(jit_Register reg, uint32_t idx, int dst) {
+   uint8_t b2 = 0xfb;
+   if(dst >= 8) {b2-=0x80;}
+   uint8_t b4 = (dst%8)*8;
+   switch(reg) {
+      case jit_rax: {b4+=0x80;break;}
+      case jit_rcx: {b4+=0x81;break;}
+      case jit_rdx: {b4+=0x82;break;}
+      case jit_rbx: {b4+=0x83;break;}
+      case jit_rsi: {b4+=0x86;break;}
+      case jit_rdi: {b4+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   // c5 fb 10 80 00 01 00 	vmovsd 0x100(%rax),%xmm0
+   { uint8_t instr[] = {0xc5,b2,0x10,b4}; jit_push(instr,4); }
+   jit_push((const uint8_t*)&idx,4);
+}
 
 void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst) {
    uint8_t b2 = 0xf9;

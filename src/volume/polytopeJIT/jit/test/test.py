@@ -123,6 +123,14 @@ for i in range(16):
         print("vbroadcastsd %xmm{},%ymm{}".format(i,j))
 
 
+for i in range(16):
+    print("vmovsd 0x100(%rax),%xmm{}".format(i));
+    print("vmovsd 0x100(%rbx),%xmm{}".format(i));
+    print("vmovsd 0x100(%rcx),%xmm{}".format(i));
+    print("vmovsd 0x100(%rdx),%xmm{}".format(i));
+    print("vmovsd 0x100(%rdi),%xmm{}".format(i));
+    print("vmovsd 0x100(%rsi),%xmm{}".format(i));
+
 
 
 
