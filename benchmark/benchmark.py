@@ -78,11 +78,11 @@ csc_jit_dims_cross_rot = {'cross_rot_rn_{}'.format(i): str(i) for i in range(3,1
 csc_jit_bodies_cross_rot = [name for name in csc_jit_dims_cross_rot.keys()]
 
 csc_jit_bodies = [
-   #("2var", csc_jit_bodies_2var, csc_jit_dims_2var),
-   #("4var", csc_jit_bodies_4var, csc_jit_dims_4var),
-   ("2var_pre", csc_jit_bodies_2var_pre, csc_jit_dims_2var_pre),
-   #("cube_rot", csc_jit_bodies_cube_rot, csc_jit_dims_cube_rot),
-   #("cross", csc_jit_bodies_cross_rot, csc_jit_dims_cross_rot)
+   ("2var", csc_jit_bodies_2var, csc_jit_dims_2var),
+   ("4var", csc_jit_bodies_4var, csc_jit_dims_4var),
+   #("2var_pre", csc_jit_bodies_2var_pre, csc_jit_dims_2var_pre),
+   ("cube_rot", csc_jit_bodies_cube_rot, csc_jit_dims_cube_rot),
+   ("cross", csc_jit_bodies_cross_rot, csc_jit_dims_cross_rot)
 ]
 
 intersects_funs = [
@@ -144,7 +144,7 @@ intersects_funs = [
 
 
 csc_jit_bm = [
-   {"name": 'csc_jit_only_cross_cacheb_{}_{}'.format(name,intersect),
+   {"name": 'csc_jit_only_cacheb_{}_{}'.format(name,intersect),
     "executable": "benchmark_intersect",
     "config": [
        {

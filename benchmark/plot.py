@@ -8,15 +8,16 @@ import os
 SAVEEPS = True
 SAVEPNG = True
 PEAK_PERFORMANCE = 16
-MEMORY_BANDWIDTH = 12
+MEMORY_BANDWIDTH = 96
+STREAM_BANDWIDTH = 12
 
-#				 [Runt , Perf , I/O  , Roofl
+#		 [Runt , Perf , I/O  , Roofl
 ADD_PERF_ROOFS = [False, False, False, True]
-ADD_MEM_ROOFS  = [False, False, False, False]
+ADD_MEM_ROOFS  = [False, False, False, True]
 
 # Determines if PEAK_PERFORMANCE and MEMORY_BANDWIDTH are included into plots
 # ADD_X_ROOFS has to be set to true to show any roof
-MACHINE_ROOFS  = [False, False, False, True]
+MACHINE_ROOFS  = [False, False, False, False]
 
 ROOFLINE_LOG = False
 
@@ -25,6 +26,8 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
     if plot_name == None:
         plot_name = "plot"
     plot_name = plot_name + "_"
+    perf_roofs += [PEAK_PERFORMANCE,]
+    mem_roofs += [MEMORY_BANDWIDTH, STREAM_BANDWIDTH, ]
    
     x_values = []
     x_flops = {}
