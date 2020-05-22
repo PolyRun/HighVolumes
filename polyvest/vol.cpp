@@ -387,6 +387,92 @@ double Polyvest_p::EstimateVol(int coef = 1600){
 }
 
 
+void polytope::Preprocess_raw(){
+
+    checkHPs();
+
+    double c1 = (2 * pow(n, 2) + pow(1 - n / beta_r, 2)) * (1 - 1.0 / pow(beta_r, 2)) / (2 * pow(n, 2) - 2);
+    //double c1 = pow(n, 2) * (1 - 1.0 / pow(beta_r, 2)) / (pow(n, 2) - 1);
+    double c2 = (1 - n / beta_r) / (n + 1);
+    double c3 = beta_r * beta_r;
+    double c4 = 2 * c2 / (1 - 1.0 / beta_r);
+
+    //init E(R2I, 0), T = R2I, ori = 0.
+    mat T;
+    vec ori(n);
+    double R2;
+    genInitE(R2, ori);
+    T.eye(n, n);
+    T = R2 * T;
+
+    vec distance = zeros<vec>(m);
+    vec tm = zeros<vec>(m);
+
+    int counter = 0;
+    while (++counter > 0){
+        int i;
+		
+        //check if ori in polytope
+        distance = b - A * ori;
+        for (i = 0; i < m; i++) {
+            if (distance(i) < 0){
+                tm(i) = as_scalar(A.row(i) * T * A.row(i).t());
+                break;
+            }
+        }
+        
+        if (i == m){
+            //check if small ellipsoid contained in polytope
+            for (i = 0; i < m; i++){
+                tm(i) = as_scalar(A.row(i) * T * A.row(i).t());
+                if (c3 * distance(i) * distance(i) - tm(i) < 0){
+                    break;
+                }
+            }
+        }
+		
+        //terminate if E satisfies two criterions
+        if (i == m) break;
+		
+        vec t = T * A.row(i).t() / sqrt(tm(i));
+        ori = ori - t * c2;
+        T = c1 * (T - c4 * t * t.t());
+    }
+	
+    if (!msg_off){ 
+        cout << "R^2: " << R2 << endl << "Origin: " << endl;
+        ori.print();
+    }
+	
+    //apply affine transformation
+    //mat Trans = chol(T);
+	
+    mat Trans;
+    try{
+        Trans = chol(T);
+    }catch (const std::runtime_error& ex){
+        cout << "The input polytope is degenerated or non-existed and the volume is 0." << endl;
+        exit(1);		
+    }
+	
+    cout << Trans << endl;
+    b = beta_r * (b - A * ori);
+    A = A * Trans.t();
+
+    if (!msg_off) cout << "The number of iterations: " << counter << endl;
+
+    rowvec exp(n);
+    exp.ones();
+    for (int i = 0; i < n; i++){
+        B[i] = b / A.col(i);
+        Ai[i] = A / (A.col(i) * exp);
+    }
+	
+    determinant = det(Trans) / pow(beta_r, n);
+}
+
+
+
 /**
    - generate one random point on layer k, i.e. for comparing K_k with K_{k-1}
    - coordinate walk! they choose direction dir as randi!!   
