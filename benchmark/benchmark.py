@@ -101,6 +101,14 @@ BENCHMARKS = [
    # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    #},
    
+   # Listing what to plot:
+   # - On different bodies compare bodies. For intersect with update. And for volume (incl polyvest) - random versions?. Only best functions.
+   #   -> also roofline.
+   #   -> Runtime: PolytopeT (base-cached-b, vectorized, [inv], random, [squaredNorm-cached]) vs CSC (optimized) vs JIT (optimized) vs Polyvest
+   # - Detail analysis CSC, JIT. Diffent levels of sparsity 2var, 4var. 2var preprocessed? cross, cubeRot. - take sizes where you see performance decreasing.
+   #   - separate intersect_only, cacheUpdateCoord. JIT will be better because different load instructions/patterns.
+   # - CSC/JIT benchmark-tests? CSC extra function. JIT tests??? JIT test1/2 -> loadsd to get roof.
+
    # TODO:
    # choose best of PolytopeT, CSC, JIT, all cached with b.
    # Check crossBodies dimensions
