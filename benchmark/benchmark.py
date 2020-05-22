@@ -10,7 +10,7 @@ import re
 from threading import Timer
 from plot import plot
 
-BENCH_MAX_TIME = 2 #seconds
+BENCH_MAX_TIME = 10 #seconds
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
@@ -80,9 +80,9 @@ csc_jit_bodies_cross_rot = [name for name in csc_jit_dims_cross_rot.keys()]
 csc_jit_bodies = [
    #("2var", csc_jit_bodies_2var, csc_jit_dims_2var),
    #("4var", csc_jit_bodies_4var, csc_jit_dims_4var),
-   #("2var_pre", csc_jit_bodies_2var_pre, csc_jit_dims_2var_pre),
-   ("cube_rot", csc_jit_bodies_cube_rot, csc_jit_dims_cube_rot),
-   ("cross", csc_jit_bodies_cross_rot, csc_jit_dims_cross_rot)
+   ("2var_pre", csc_jit_bodies_2var_pre, csc_jit_dims_2var_pre),
+   #("cube_rot", csc_jit_bodies_cube_rot, csc_jit_dims_cube_rot),
+   #("cross", csc_jit_bodies_cross_rot, csc_jit_dims_cross_rot)
 ]
 
 intersects_funs = [
@@ -1087,11 +1087,21 @@ def get_label(xoption, benchmark_string):
 expects a list of strings as created by get_configs
 this allows concatenating benchmarks -> get_configs creates product of config options, concatenating benchmark strings creates sum of config options
 """
-def run_benchmark(bname, bexe, config_strings):
+def run_benchmark(bname, bexe, config_strings, xoption):
    results = []
+   failed = set()
+   global is_timeout
 
    for constconf,runconf,inputconf in config_strings:
+      r = re.compile('{}=[^,]*'.format(xoption[0]))
+      is_timeout = False
+
+      
       config_string = '{} "{}" {} "{}" {} "{}"'.format(constconf[0], constconf[1], runconf[0], runconf[1], inputconf[0], inputconf[1])
+      
+      if ''.join(r.split(config_string)) in failed:
+         continue
+      
       config_string_printable = (
          config_string
          .replace(" ", "_")
@@ -1100,9 +1110,7 @@ def run_benchmark(bname, bexe, config_strings):
 
       print('# Running Benchmark \n{} {}\n'.format(sys.path[0]+"/"+bexe, config_string));
       myenv = os.environ;
-
-      is_timeout = False
-
+      
       proc = subprocess.Popen(
          [sys.path[0]+"/"+bexe,
           constconf[0],
@@ -1117,11 +1125,13 @@ def run_benchmark(bname, bexe, config_strings):
       );
 
       def timeOut():
+         global is_timeout
+         print(is_timeout)
+         is_timeout = True
          print("timeout - kill process!")
          proc.kill()
          outloc = proc.stdout.read().split(b'\n')
          pprint.pprint(outloc)
-         is_timeout = True
          
       timer = Timer(BENCH_MAX_TIME, timeOut)
 
@@ -1136,8 +1146,12 @@ def run_benchmark(bname, bexe, config_strings):
 
         
       if is_timeout:
-         results.append((config_string, None))
+         failed.add(''.join(r.split(config_string)))
+         print("failed string")
+         pprint.pprint(failed)
+         #results.append((config_string, None))
       else:
+         print("we are here")
          f = open(sys.path[0]+ "/out/" + bname + config_string_printable + ".out", "w")
          f.write(config_string + "\n")
          for line in proc.stdout:
@@ -1160,7 +1174,8 @@ for benchmark in DO_BENCHMARKS:
    
    result = run_benchmark(bname,
                           bexe,
-                          get_configs(benchmark)
+                          get_configs(benchmark),
+                          benchmark["xoption"]
    )
    # get x-axis labels and add them to data 
    result = list(map(lambda res: (*res, get_label(benchmark["xoption"], res[0])), result))
