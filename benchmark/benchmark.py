@@ -53,6 +53,105 @@ jitTest = [str(i) for i in jitTest]
 randValTypes = ["random_int", "random_int_in_range", "random_double", "random_double_0_1", "random_double_normal", "random_double_in_range"]
 randValTypes_ = {"random_int": '0', "random_int_in_range": '1', "random_double": '2', "random_double_0_1": '3', "random_double_normal": '4', "random_double_in_range": '5'}
 
+# maybe add larger ones later
+csc_jit_dims_2var = {'2var_{}'.format(i): str(i) for i in [4,5,10,20,40,60,100]} #,150,200]}
+csc_jit_bodies_2var = [name for name in csc_jit_dims_2var.keys()]
+csc_jit_dims_4var = {'4var_{}'.format(i): str(i) for i in [4,5,10,20,40,60,100]} #,150,200]}
+csc_jit_bodies_4var = [name for name in csc_jit_dims_4var.keys()]
+csc_jit_dims_2var_pre = {'2var_TSP_{}'.format(i): str(i) for i in [4,5,10,20,30,40,50,60,100]} #,150,200]}
+csc_jit_bodies_2var_pre = [name for name in csc_jit_dims_2var_pre.keys()]
+csc_jit_dims_cube_rot = {'cube_rot_r1.0_{}'.format(i): str(i) for i in [3,10,20,40,60,80,100]}
+csc_jit_bodies_cube_rot = [name for name in csc_jit_dims_cube_rot.keys()]
+csc_jit_dims_cross_rot = {'cross_rot_rn_{}'.format(i): str(i) for i in range(3,14,2)}
+csc_jit_bodies_cross_rot = [name for name in csc_jit_dims_cross_rot.keys()]
+
+csc_jit_bodies = [
+   #("2var", csc_jit_bodies_2var, csc_jit_dims_2var),
+   #("4var", csc_jit_bodies_4var, csc_jit_dims_4var),
+   #("2var_pre", csc_jit_bodies_2var_pre, csc_jit_dims_2var_pre),
+   ("cube_rot", csc_jit_bodies_cube_rot, csc_jit_dims_cube_rot),
+   ("cross", csc_jit_bodies_cross_rot, csc_jit_dims_cross_rot)
+]
+
+intersects_funs = [
+   ("cacheUpdateCoord",
+    [
+       (
+          ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
+           [
+              "cached_b_ref",
+              "cached_b_vec",
+              "cached_b_vec_vec_nan"
+           ]
+          ],
+          2
+       ),
+       (
+          ['PolytopeJIT_gen={}'.format(fun) for fun in
+           [
+              "single_rax",
+              "single_data",
+              "double_data",
+              "quad_data"
+           ]       
+          ],
+          3
+       )
+    ]
+   ),
+   ("intersectCoord_only",
+    [
+       (
+          ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
+           [
+              "cached_b_ref",
+              "cached_b_vec",
+              "cached_b_vec_nogather",
+              "cached_b_vec_nan_inv",
+              "cached_vec_onlyread"
+           ]
+          ],
+          2
+       ),
+       (
+          ['PolytopeJIT_gen={}'.format(fun) for fun in
+           [
+              "single_rax",
+              "single_data",
+              "double_data",
+              "quad_data"
+           ]
+          ],
+          3
+       )
+    ]
+   )
+]
+   # - Detail analysis CSC, JIT. Diffent levels of sparsity 2var, 4var. 2var preprocessed? cross, cubeRot. - take sizes where you see performance decreasing.
+   #   - separate intersect_only, cacheUpdateCoord. JIT will be better because different load instructions/patterns.
+
+
+csc_jit_bm = [
+   {"name": 'csc_jit_only_cross_cacheb_{}_{}'.format(name,intersect),
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": funs,
+          "run_configs": ['r=100000,polytopeType={},intersect={}'.format(bodytype,intersect)],
+          "input_configs": [("generator", bodies)]
+       }
+       for funs, bodytype in fconf
+    ],
+    "xoption": ("generator", dims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   }
+   for name, bodies, dims in csc_jit_bodies for intersect,fconf in intersects_funs
+]
+
+
 rd_0_1 = ["ref","fast"]
 for index, item in enumerate(rd_0_1):
    rd_0_1[index] = "rd_0_1="+item
@@ -85,6 +184,8 @@ for index, item in enumerate(rd_0_1):
          ylabel:        Labels the y-axis of the plots
 '''
 BENCHMARKS = [
+
+   
    #{"name": "benchmark_dotProduct",
    # "executable": "benchmark_dotProduct",
    # "config": [
@@ -880,7 +981,18 @@ BENCHMARKS = [
    # #},
 
 
-]
+   # Listing what to plot:
+   # - On different bodies compare bodies. For intersect with update. And for volume (incl polyvest) - random versions?. Only best functions.
+   #   -> also roofline.
+   #   -> Runtime: PolytopeT (base-cached-b, vectorized, [inv], random, [squaredNorm-cached]) vs CSC (optimized) vs JIT (optimized) vs Polyvest
+   # - Detail analysis CSC, JIT. Diffent levels of sparsity 2var, 4var. 2var preprocessed? cross, cubeRot. - take sizes where you see performance decreasing.
+   #   - separate intersect_only, cacheUpdateCoord. JIT will be better because different load instructions/patterns.
+   # - CSC/JIT benchmark-tests? CSC extra function. JIT tests??? JIT test1/2 -> loadsd to get roof.
+
+
+] + csc_jit_bm
+
+BENCHMARKS = csc_jit_bm
 
 
 assert(len(set(map(lambda t: t["name"], BENCHMARKS))) == len(BENCHMARKS) and "benchmarks don't have unique names!")

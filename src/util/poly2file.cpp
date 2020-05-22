@@ -16,17 +16,30 @@ int main(int argc, char **argv){
     cliFun.add(new CLIF_OptionNumber<int>(&e,'x',"e","5", 1, 1000));
 
     
+    std::string generator = "";
+    auto &gen_map = solved_body_generator()->gen_map();
+    cliFun.add(new CLIF_Option<std::string>(&generator,'b',"generator","", gen_map));
+    
+    
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
     
-    std::vector<double> ell(n, 1);
-    ell[0] = e;
-
-    
     Polytope *P;
-    make_random_poly(ell, m, &P);
+    
+    if (generator.compare("") != 0){
+        Solved_Body *sb = solved_body_generator()->get(generator,false);
+        P = (Polytope *) sb->body[0];
+        PolytopeCSC *Pcsc = Polytope_to_PolytopeCSC(P);
+        cout << "elems: " << P->n * P->m << " nonzeros: " << nonzerosCSC(Pcsc) << " fraction: " << (double) nonzerosCSC(Pcsc)/(P->n * P->m) << "\n";
+    }
+    else {
+        std::vector<double> ell(n, 1);
+        ell[0] = e;
+        make_random_poly(ell, m, &P);     
+
+    }
     
 
     /*
@@ -35,6 +48,7 @@ int main(int argc, char **argv){
     */    
     //Polytope_print(P);
     // print to vinci format
+
     std::cout << "random\nH-representation\nbegin\n"
               << P->m << " " << P->n+1 << " real\n";
     for (int i = 0; i < P->m; i++){

@@ -19,6 +19,19 @@ Body_T PolytopeCSC_T = {
 
 
 
+// NOTE: the actual #flops & #bytes depends on direction d
+// here we return the values corresponding to the average of non-zeros per column as we expect the average to hold on average ^^
+int nonzerosCSC(const PolytopeCSC *p){
+
+    // compute average non-zeros
+    int nz = 0;
+    for (int i = 0; i < p->col_start[p->n]; i++){
+        if (p->row_idx[i] > -1){
+            nz++;
+        }
+    }
+    return nz;
+}
 
 void PolytopeCSC_print(const void* o) {
    const PolytopeCSC *p = (PolytopeCSC *)o;
