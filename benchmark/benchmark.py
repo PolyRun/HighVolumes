@@ -235,23 +235,23 @@ BENCHMARKS = [
    # do same for sparse bodies (2var)
    # do same for cubeRot
    # all of these also with cacheUpdateCoord
-   {"name": "intersectB_polytope_cross",
-    "executable": "benchmark_intersect",
-    "config": [       
-       {
-          "const_configs": [],
-          "fun_configs": ["PolytopeT_intersectCoord=cached_b_vec"],
-          "run_configs": ["intersect=intersectCoord_only,polytopeType=1,r=10000000","intersect=intersectCoord_only,polytopeType=1"],
-          "input_configs": [("generator", crossBodies2)]
-       },
-    ],
-    "xoption": ("generator", crossDims2),
-    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
-    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
-    "perf_roofs": [],
-    "mem_roofs": []
-   },
+   #{"name": "intersectB_polytope_cross",
+   # "executable": "benchmark_intersect",
+   # "config": [       
+   #    {
+   #       "const_configs": [],
+   #       "fun_configs": ["PolytopeT_intersectCoord=cached_b_vec"],
+   #       "run_configs": ["intersect=intersectCoord_only,polytopeType=1,r=10000000","intersect=intersectCoord_only,polytopeType=1"],
+   #       "input_configs": [("generator", crossBodies2)]
+   #    },
+   # ],
+   # "xoption": ("generator", crossDims2),
+   # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+   # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
+   #},
 
    # TODO: Jonathan: fix/use/ or delete
    {"name": "polytopeT_intersectCoord",
