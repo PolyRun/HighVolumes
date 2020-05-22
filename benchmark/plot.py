@@ -3,9 +3,11 @@ import numpy as np
 import re
 import pprint
 
+
 SAVEEPS = True
 SAVEPNG = True
-PEAK_PERFORMANCE = 16
+PEAK_PERFORMANCE = 20
+MEMORY_BANDWIDTH = 32
 
 
 def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
@@ -147,9 +149,14 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     plt.clf()
 
     # Roofline plot
+    plt.title(title[3])
+    plt.xlabel(x_label[3])
+    plt.ylabel(y_label[3])
     plt.title("Roofline measurements")
     plt.xlabel("Operational Intensity [Flops/Byte]")
     plt.ylabel("Performance [Flops/Cycle]")
+	
+    max_intensity = 0;
 
     i = 0
     for name in time_function_names:
@@ -158,18 +165,35 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
         for index, item in enumerate(time_function_heights[name]):
             time_function_performance.append(x_flops[name][index]/item)
             time_function_intensity.append(x_flops[name][index]/x_bytes[name][index])
-        print("Performance:", time_function_performance)
-        print("O-Intensity_", time_function_intensity)
+            max_intensity = max(max_intensity, x_flops[name][index]/x_bytes[name][index])
+        #print("Performance:", time_function_performance)
+        #print("O-Intensity:", time_function_intensity)
         plt.plot(time_function_intensity, time_function_performance, label=name)
         i += 1
+
+    LEFT_BOUND = 0.05
+    LOWER_BOUND = 0.05
+    right_add = 0.1
+
+    ridge_point_intensity = PEAK_PERFORMANCE / MEMORY_BANDWIDTH
+
+    mem_bound_left_x = LEFT_BOUND
+    mem_bound_left_y = PEAK_PERFORMANCE*(mem_bound_left_x/ridge_point_intensity)
+    mem_bound_right_x = max_intensity + right_add
+    mem_bound_right_y = PEAK_PERFORMANCE*(mem_bound_right_x/ridge_point_intensity)
+	
+    # Draw Memory bound until max_intensity (+right_add)
+    plt.plot([mem_bound_left_x, mem_bound_right_x], [mem_bound_left_y, mem_bound_right_y], linestyle='--', alpha=0.5, color='black')
+    # Draw Memory bound until ridge point
+    #plt.plot([mem_bound_left_x, ridge_point_intensity], [mem_bound_left_y, PEAK_PERFORMANCE], linestyle='--', alpha=0.5, color='black')
 		
-		
-    plt.hlines([PEAK_PERFORMANCE], 0, 1, colors='k', linestyles='dashed')
+    plt.axhline(PEAK_PERFORMANCE, linestyle='--', alpha=0.5, color='black')
+
     plt.xscale('log')
     plt.yscale('log')
 	
-    plt.xlim((0.05,0.4))
-    plt.ylim((0.05,20))
+    plt.xlim((LEFT_BOUND, max_intensity + right_add))
+    plt.ylim((LOWER_BOUND, 2*PEAK_PERFORMANCE))
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
 

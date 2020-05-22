@@ -18,10 +18,10 @@ class Benchmark_A1 : public Benchmark_base {
 	    }
 
 	    switch(polytopeType) {
-            case 0: // column major
+            case 1: // column major
                 solved_body->polytopeTranspose();
                 break;
-            case 1: // row major
+            case 0: // row major
                 break;
             case 2: // CSC format
                 solved_body->polytopeCSC();
