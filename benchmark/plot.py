@@ -18,7 +18,7 @@ ADD_MEM_ROOFS  = [False, False, False, False]
 # ADD_X_ROOFS has to be set to true to show any roof
 MACHINE_ROOFS  = [False, False, False, True]
 
-ROOFLINE_LOG = True
+ROOFLINE_LOG = False
 
 
 def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
@@ -194,6 +194,7 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
     f = None
     if ROOFLINE_LOG:
         f = open(path+"/plots/"+plot_name+"roofline.out", "w")
+
     for name in time_function_names:
         time_function_performance = []
         time_function_intensity = []
@@ -210,8 +211,9 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label):
             f.write("{}:\n".format(name))
             f.write("Performance: "+ str(time_function_performance) + "\n")
             f.write("O-Intensity: "+ str(time_function_intensity) + "\n")
-        plt.plot(time_function_intensity, time_function_performance, label=name)
+        plt.plot(time_function_intensity, time_function_performance, label=name, marker=".")
         i += 1
+
     if ROOFLINE_LOG:
         f.close()
 
