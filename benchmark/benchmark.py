@@ -279,6 +279,7 @@ BENCHMARKS = [
    # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    #},
 
+   # determine basic read roof line
    {"name": "jit_test12",
     "executable": "benchmark_jit",
     "config": [       
@@ -294,31 +295,33 @@ BENCHMARKS = [
     "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
    },
+   
+   # determine basic latency for kernel functions
+   {"name": "jit_test_3",
+    "executable": "benchmark_jit",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": [],
+          "run_configs": [
+              "r=100000,experiment=test3,m=1,w=1",
+              "r=100000,experiment=test3,m=10,w=2",
+              "r=100000,experiment=test3,m=100,w=3",
+              "r=100000,experiment=test3,m=100,w=2",
+              "r=100000,experiment=test3,m=100,w=1",
+              "r=100000,experiment=test3,m=10,w=3",
+              "r=100000,experiment=test3,m=1,w=3",
+              ],
+          "input_configs": [("n", jitTest)]
+       },
+    ],
+    "xoption": ("n", jitTestDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   },
 
-   #{"name": "jit_test_3",
-   # "executable": "benchmark_jit",
-   # "config": [       
-   #    {
-   #       "const_configs": [],
-   #       "fun_configs": [],
-   #       "run_configs": [
-   #           "r=100000,experiment=test3,m=1,w=1",
-   #           "r=100000,experiment=test3,m=10,w=2",
-   #           "r=100000,experiment=test3,m=100,w=3",
-   #           "r=100000,experiment=test3,m=100,w=2",
-   #           "r=100000,experiment=test3,m=100,w=1",
-   #           "r=100000,experiment=test3,m=10,w=3",
-   #           "r=100000,experiment=test3,m=1,w=3",
-   #           ],
-   #       "input_configs": [("n", jitTest)]
-   #    },
-   # ],
-   # "xoption": ("n", jitTestDims),
-   # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
-   # "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
-   #},
-
+   # same as jit_test_3, just with xmm instead of ymm registers
    #{"name": "jit_test_4",
    # "executable": "benchmark_jit",
    # "config": [       
