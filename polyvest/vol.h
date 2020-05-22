@@ -43,6 +43,7 @@ public:
 	void 	vecb(double val, int i){	b(i) = val; }
 	double 	vecb(int i){ return b(i); }
 	void 	genInitE(double &R2, vec &Ori);
+	void 	Preprocess_hacked();
 	void 	Preprocess();
 	double 	EstimateVol(int coef);
 	double 	Volume() const { return vol; }

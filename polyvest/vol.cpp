@@ -172,7 +172,7 @@ void Polyvest_p::genInitE(double &R2, vec &Ori){
    - transform body given the axes-lengths of ellipsoid
    - store determinant of transformation for volume scaling
 **/
-void Polyvest_p::Preprocess(){
+void Polyvest_p::Preprocess_hacked(){
 
     std::cout << std::fixed << setprecision(FLOATWIDTH);
     
@@ -299,8 +299,8 @@ void Polyvest_p::Preprocess(){
     }
 
     
-    b = beta_r * (b - A * ori);
-    A = A * Trans.t();
+    //b = beta_r * (b - A * ori);
+    //A = A * Trans.t();
 
 
     rowvec exp(n);
@@ -310,7 +310,7 @@ void Polyvest_p::Preprocess(){
         Ai[i] = A / (A.col(i) * exp);
     }
 	
-    determinant = det(Trans) / pow(beta_r, n);
+    determinant = 1;//det(Trans) / pow(beta_r, n);
 
 
 #ifdef DEBUG_MSG
@@ -338,7 +338,6 @@ void Polyvest_p::Preprocess(){
                   << "^^^^^^^^^^^^^^^^^ END POLYVEST" << std::endl;
 #endif
 
-    
 }
 
 
@@ -386,8 +385,8 @@ double Polyvest_p::EstimateVol(int coef = 1600){
     return vol;
 }
 
-
-void polytope::Preprocess_raw(){
+// Original
+void Polyvest_p::Preprocess(){
 
     checkHPs();
 

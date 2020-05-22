@@ -476,7 +476,9 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
          type[c]->cacheReset(body[c],x,cache[c]);
       }
    }
+   
 
+   //printf("There are %ld steps\n",pc_volume_steps);
    return volume;
 }
 
