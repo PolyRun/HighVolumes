@@ -91,6 +91,9 @@ for index, item in enumerate(rd_0_1):
          title:         Titles of the plots
          xlabel:        Labels the x-axis of the plots
          ylabel:        Labels the y-axis of the plots
+		 perf_roofs:    Performance roofs that should be included int plots w/o machine roof
+		 mem_roofs:    Memory roofs that should be included int plots w/o machine roof
+		 
 '''
 BENCHMARKS = [
    #{"name": "benchmark_dotProduct",
@@ -106,7 +109,9 @@ BENCHMARKS = [
    # "xoption": ("n", {str(2**i): str(2**i) for i in range(0,7)}),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
    
    # Listing what to plot:
@@ -136,7 +141,9 @@ BENCHMARKS = [
     "xoption": ("generator", crossDims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
     "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
    },
 
    # TODO: Jonathan: fix/use/ or delete
@@ -154,7 +161,9 @@ BENCHMARKS = [
     "xoption": ("generator", crossDims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
     "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
    },
 
    # TODO later
@@ -171,7 +180,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectEdims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
    
    # TODO: check if the next 4 benchmarks are ok - BM for sparse bodies.
@@ -194,7 +205,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparseDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "sparse_polytope_intersect",
@@ -216,7 +229,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparse4Dims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "sparse_polytopeJIT_intersect",
@@ -232,7 +247,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparse4Dims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "dense_polytopeJIT_intersect",
@@ -248,7 +265,9 @@ BENCHMARKS = [
    # "xoption": ("generator", cubeRotDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "sparse_polytopeJIT_update",
@@ -264,7 +283,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparse4Dims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "dense_polytopeJIT_update",
@@ -280,7 +301,9 @@ BENCHMARKS = [
    # "xoption": ("generator", cubeRotDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    # determine basic read roof line
@@ -297,7 +320,9 @@ BENCHMARKS = [
     "xoption": ("n", jitTest12Dims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
     "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
    },
    
    # determine basic latency for kernel functions
@@ -323,7 +348,9 @@ BENCHMARKS = [
     "xoption": ("n", jitTestDims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
     "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
-    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
    },
 
    # same as jit_test_3, just with xmm instead of ymm registers
@@ -348,9 +375,10 @@ BENCHMARKS = [
    # "xoption": ("n", {k:int(v)/2 for (k,v) in jitTestDims.items()}),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["n", "n", "n", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
-
 
    # TODO: remove?
    #{"name": "T_intersect_vecs",
@@ -373,7 +401,9 @@ BENCHMARKS = [
    # "xoption": ("generator", mbintersectdims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
 
@@ -398,7 +428,9 @@ BENCHMARKS = [
    # "xoption": ("generator", mbintersectdims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    
@@ -422,7 +454,9 @@ BENCHMARKS = [
    # "xoption": ("generator", mbintersectdims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    # TODO: delete
@@ -445,7 +479,9 @@ BENCHMARKS = [
    # "xoption": ("generator", mbintersectdims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    ####################################################################################################
@@ -470,7 +506,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectdims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #
@@ -490,7 +528,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparseDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "csc_cache_update_4var",
@@ -509,7 +549,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparse4Dims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "csc_cache_update_cross",
@@ -528,7 +570,9 @@ BENCHMARKS = [
    # "xoption": ("generator", crossDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #   
@@ -555,7 +599,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparseDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "csc_intersect_only_cross",
@@ -581,7 +627,9 @@ BENCHMARKS = [
    # "xoption": ("generator", crossDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
 
@@ -606,7 +654,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparseDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "csc_intersect_only_cross_cacheb",
@@ -630,7 +680,9 @@ BENCHMARKS = [
    # "xoption": ("generator", crossDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
    #
    #{"name": "csc_readtest_sparse",
@@ -648,7 +700,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectSparseDims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    #{"name": "csc_readtest_dense",
@@ -666,7 +720,9 @@ BENCHMARKS = [
    # "xoption": ("generator", intersectdims),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    ####################################################################################################
@@ -687,7 +743,9 @@ BENCHMARKS = [
    # "xoption": ("i", {str(2**i): str(2**i) for i in range(14,20)}),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["#random ints", "#random ints", "#random ints", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
    # TODO use later?
@@ -704,7 +762,9 @@ BENCHMARKS = [
    # "xoption": ("d", {str(2**i): str(2**i) for i in range(10,16)}),
    # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
    # "xlabel": ["#doubles", "#doubles", "#doubles", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"]
+   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+   # "perf_roofs": [],
+   # "mem_roofs": []
    #},
 
 ]
@@ -939,4 +999,4 @@ for benchmark in DO_BENCHMARKS:
    # get x-axis labels and add them to data 
    result = list(map(lambda res: (*res, get_label(benchmark["xoption"], res[0])), result))
    pprint.pprint(result)
-   plot(sys.path[0], bname, result, benchmark["xoption"][0], benchmark["title"], benchmark["xlabel"], benchmark["ylabel"])
+   plot(sys.path[0], bname, result, benchmark["xoption"][0], benchmark["title"], benchmark["xlabel"], benchmark["ylabel"], benchmark["perf_roofs"], benchmark["mem_roofs"])
