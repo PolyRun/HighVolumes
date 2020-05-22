@@ -377,7 +377,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
            Solved_Body* b1 = generate_kvariable_polytope(n,2,1.0,10*n);//k=2, r=1.0
            
 	   std::cout << "\n# Generator: b1:\n";
-	   b1->print();
+	   //b1->print();
 
 	   FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
 	   
@@ -385,13 +385,13 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   Solved_Body* b2 = b1->translate(a);
 	   
 	   std::cout << "\n# Generator: b2 - translated:\n";
-	   b2->print();
+	   //b2->print();
 
 	   for(int i=0;i<n;i++) {a[i]=prng_get_random_double_in_range(0.1,10);}
 	   Solved_Body* b3 = b2->scaleAxis(a);
 	   
 	   std::cout << "\n# Generator: b3 - scaleAxis:\n";
-	   b3->print();
+	   //b3->print();
 	   
 	   Solved_Body* sb = b3->preprocess();
            
