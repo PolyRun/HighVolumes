@@ -11,6 +11,7 @@ class Benchmark_A1 : public Benchmark_base {
     protected:
         void initialize () {
             std::cout << "initializing A1 data..." << std::endl;
+        prng_init();
        
        	    solved_body = solved_body_generator()->get(generator,false);
 	    if(polytopeOptimize) {

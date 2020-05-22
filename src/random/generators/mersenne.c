@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
+#include <stdio.h>
 #include "mersenne.h"
 
 /*
@@ -24,6 +25,7 @@ static int      idx = N+1;   /* Auslese-Index; idx >= N: neuer Vektor muss berec
  */
 
 static void mersenne_twister_vector_init (uint32_t* const p, const int len, void *seed_) {
+    printf("mt_rand init\n");
     const uint32_t  mult = 1812433253ul;
     uint32_t seed = 5489ul;
     if (seed_ != NULL) {
