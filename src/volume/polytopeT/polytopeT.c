@@ -39,7 +39,11 @@ void PolytopeT_fix_inv(const void* o) {
    for(int i=0; i<m; i++) {
       for(int j=0; j<n; j++) {
          FT aij = PolytopeT_get_a(p,i,j);
-         PolytopeT_set_aInv(p, i,j, 1.0/aij);
+         if(aij == 0) {
+	    PolytopeT_set_aInv(p, i,j, 0.0/0.0); // nan
+	 } else {
+	    PolytopeT_set_aInv(p, i,j, 1.0/aij);
+	 }
       }
    }
 }

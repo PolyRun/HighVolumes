@@ -98,29 +98,32 @@ void PolytopeT_intersectCoord_cached_b_inv_ref(const void* o, const FT* x, const
    const int m = p->m;
    FT* cc = (FT*)cache;
    
-   FT t00 = -FT_MAX;// tmp variables for t0, t1
-   FT t11 = FT_MAX;
+   __m128d zeros = _mm_set_sd(0.0);
+
+   __m128d vt00 = _mm_set_sd(-FT_MAX);
+   __m128d vt11 = _mm_set_sd(FT_MAX);
 
    for(int i=0; i<m; i++) {
-      //const FT* ai = PolytopeT_get_Ai(p,i);
-      //const FT b = PolytopeT_get_b(p, i); MB: don't need this anymore!
-      const FT dai = PolytopeT_get_a(p,i,d); // dot product with unit vector dim d
       const FT Ainv = PolytopeT_get_aInv(p,i,d); // dot product with unit vector dim d
       
-      if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
-      
-      FT t = cc[i] * Ainv; // cc[i] = (bi - aix)
-      
-      if(dai < 0.0) {
-         t00 = (t00>t)?t00:t; // max
-      } else {
-         t11 = (t11<t)?t11:t; // min
-      }
+      __m128d vAinv = _mm_set_sd(Ainv);
+      __m128d vCache = _mm_set_sd(cc[i]);
+      __m128d mask1 = _mm_cmp_sd(vAinv, zeros, _CMP_LT_OS); // towards max
+      __m128d mask2 = _mm_cmp_sd(vAinv, zeros, _CMP_GT_OS); // towards min
+      __m128d vt = _mm_mul_sd(vAinv,vCache);
+      __m128d t00_tmp = _mm_blendv_pd(vt00, vt, mask1); // towards max
+      __m128d t11_tmp = _mm_blendv_pd(vt11, vt, mask2); // towards min
+      //printf("vAinv %lf %lf %lf \n",vAinv[0],mask1[0],mask2[0]);
+      //printf("  %lf %lf %lf\n",vt[0],t00_tmp[0],t11_tmp[0]);
+      vt00 = _mm_max_sd(vt00,t00_tmp);
+      vt11 = _mm_min_sd(vt11,t11_tmp);
+
    }
+   //printf("res: %lf %lf \n",vt00[0],vt11[0]);
    
    // return:
-   *t0 = t00;
-   *t1 = t11;
+   *t0 = vt00[0];
+   *t1 = vt11[0];
 }
 
 
