@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <time.h>
 #include "std_rand.h"
+#include <stdio.h>
 
 uint32_t *chunk;
 int chunk_ptr;
 
 void std_init(void *seed){
+    printf("std_rand init\n");
     srand((unsigned) time(seed));
 }
 
@@ -20,6 +22,7 @@ inline void refill_chunk() {
 }
 
 void std_init_chunked(void *seed) {
+    printf("std_rand_chunked init\n");
     srand((unsigned) time(seed));
     chunk = (uint32_t*) malloc(rand_chunk_size*sizeof(uint32_t));
     refill_chunk();

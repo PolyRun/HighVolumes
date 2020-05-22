@@ -10,6 +10,7 @@ class Benchmark_intersect : public Benchmark_base {
     protected:
         void initialize () {
             std::cout << "initializing intersect data..." << std::endl;
+        prng_init();
 	   
             solved_body = solved_body_generator()->get(generator,false);
 	    if(polytopeOptimize) {
