@@ -21,14 +21,28 @@ PolytopeT* PolytopeT_new(int n, int m) {
    o->m = m;
    o->line = ceil_cache(m,sizeof(FT)); // make sure next is also 32 alligned
    int size_A = o->line*n;
-   o->A = (FT*)(aligned_alloc(32, (size_A+o->line)*sizeof(FT))); // align this to 32
+   o->A = (FT*)(aligned_alloc(32, (2*size_A+o->line)*sizeof(FT))); // align this to 32
    // MB: test setting invalid elements to 0 for vectorization
-   memset(o->A, 0, size_A);
-   o->b = o->A + size_A;
+   memset(o->A, 0, size_A*sizeof(FT));
    for(int i=0;i<size_A+o->line;i++) {o->A[i]=0;}
+   o->b = o->A + size_A;
+   o->Ainv = o->b + o->line;
+   memset(o->Ainv, 0, size_A*sizeof(FT));
+   for(int i=0;i<size_A;i++) {o->Ainv[i]=0;}
    return o;
 }
 
+void PolytopeT_fix_inv(const void* o) {
+   PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   for(int i=0; i<m; i++) {
+      for(int j=0; j<n; j++) {
+         FT aij = PolytopeT_get_a(p,i,j);
+         PolytopeT_set_aInv(p, i,j, 1.0/aij);
+      }
+   }
+}
 
 void PolytopeT_free(const void* o) {
    PolytopeT* p = (PolytopeT*)o;
@@ -45,6 +59,7 @@ void* PolytopeT_clone(const void* o) {
    for(int i=0; i<m; i++) {
       for(int j=0; j<n; j++) {
          PolytopeT_set_a(p, i,j, PolytopeT_get_a(old,i,j));
+         PolytopeT_set_aInv(p, i,j, PolytopeT_get_aInv(old,i,j));
       }
       PolytopeT_set_b(p, i, PolytopeT_get_b(old,i));
    }
@@ -57,6 +72,13 @@ void PolytopeT_print(const void* o) {
    for(int i=0; i<p->m; i++) {
       for(int j=0; j<p->n; j++) {
          printf(" %.3f",PolytopeT_get_a(p,i,j));
+      }
+      printf(" | %.3f\n",PolytopeT_get_b(p,i));
+   }
+   printf("  - inv:\n");
+   for(int i=0; i<p->m; i++) {
+      for(int j=0; j<p->n; j++) {
+         printf(" %.3f",PolytopeT_get_aInv(p,i,j));
       }
       printf(" | %.3f\n",PolytopeT_get_b(p,i));
    }

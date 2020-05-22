@@ -22,10 +22,14 @@ typedef struct PolytopeT {
    int line; // size of one column plus buffer for allignment
    int n; // dimensions
    int m; // constraints
+
+   FT* Ainv; // same structure, just inverse values
+   // what if Aij = 0???
 } PolytopeT;
 
 
 PolytopeT* PolytopeT_new(int n, int m);
+void PolytopeT_fix_inv(const void* o);
 
 void PolytopeT_free(const void* o);
 void* PolytopeT_clone(const void* o);
@@ -50,6 +54,13 @@ static inline void PolytopeT_set_a(PolytopeT* p, int i, int x, FT a) __attribute
 static inline void PolytopeT_set_a(PolytopeT* p, int i, int x, FT a) {
    p->A[i + (p->line) * x] = a;
 }
+
+static inline void PolytopeT_set_aInv(PolytopeT* p, int i, int x, FT ainv) __attribute__((always_inline));
+static inline void PolytopeT_set_aInv(PolytopeT* p, int i, int x, FT ainv) {
+   p->Ainv[i + (p->line) * x] = ainv;
+}
+
+
 static inline void PolytopeT_set_b(PolytopeT* p, int i, FT b) __attribute__((always_inline));
 static inline void PolytopeT_set_b(PolytopeT* p, int i, FT b) {
    p->b[i] = b;
@@ -59,6 +70,13 @@ static inline FT PolytopeT_get_a(const PolytopeT* p, int i, int x) __attribute__
 static inline FT PolytopeT_get_a(const PolytopeT* p, int i, int x) {
    return p->A[i + (p->line) * x];
 }
+
+static inline FT PolytopeT_get_aInv(const PolytopeT* p, int i, int x) __attribute__((always_inline));
+static inline FT PolytopeT_get_aInv(const PolytopeT* p, int i, int x) {
+   return p->Ainv[i + (p->line) * x];
+}
+
+
 static inline FT PolytopeT_get_b(const PolytopeT* p, int i) __attribute__((always_inline));
 static inline FT PolytopeT_get_b(const PolytopeT* p, int i) {
    return p->b[i];

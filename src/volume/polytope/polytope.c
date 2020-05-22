@@ -57,10 +57,12 @@ PolytopeT* Polytope_to_PolytopeT(const Polytope* p){
    PolytopeT* pt = PolytopeT_new(n,m);
    for(int i=0; i<m; i++) {
       for(int j=0; j<n; j++) {
-         PolytopeT_set_a(pt, i,j, Polytope_get_a(p,i,j));
+         FT aij = Polytope_get_a(p,i,j);
+	 PolytopeT_set_a(pt, i,j, aij);
       }
       PolytopeT_set_b(pt, i, Polytope_get_b(p,i));
    }
+   PolytopeT_fix_inv(pt);
    return pt;
 }
 

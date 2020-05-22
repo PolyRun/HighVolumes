@@ -92,6 +92,38 @@ void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int
    *t1 = t11;
 }
 
+void PolytopeT_intersectCoord_cached_b_inv_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   FT* cc = (FT*)cache;
+   
+   FT t00 = -FT_MAX;// tmp variables for t0, t1
+   FT t11 = FT_MAX;
+
+   for(int i=0; i<m; i++) {
+      //const FT* ai = PolytopeT_get_Ai(p,i);
+      //const FT b = PolytopeT_get_b(p, i); MB: don't need this anymore!
+      const FT dai = PolytopeT_get_a(p,i,d); // dot product with unit vector dim d
+      const FT Ainv = PolytopeT_get_aInv(p,i,d); // dot product with unit vector dim d
+      
+      if(dai <= FT_EPS && -dai <= FT_EPS) {continue;} // orthogonal
+      
+      FT t = cc[i] * Ainv; // cc[i] = (bi - aix)
+      
+      if(dai < 0.0) {
+         t00 = (t00>t)?t00:t; // max
+      } else {
+         t11 = (t11<t)?t11:t; // min
+      }
+   }
+   
+   // return:
+   *t0 = t00;
+   *t1 = t11;
+}
+
+
 void PolytopeT_intersectCoord_cached_b_vec(const void *p, const FT *x, const int d,
                                            FT *t0_out, FT *t1_out, void *cache) {
 
