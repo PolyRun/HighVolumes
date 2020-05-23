@@ -264,8 +264,9 @@ FT read_vinci(string filename, Polytope **P, FT *vol){
             return 0;
         }
     }
-    
-    return 1;
+
+    *vol = 0;
+    return 0;
     
 }
 

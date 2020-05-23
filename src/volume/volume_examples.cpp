@@ -352,6 +352,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
                                            "rand_5_30_20.ine",
                                            "rand_7_30_20.ine",
                                            "rand_8_30_20.ine",
+
     };
     for(auto f : vinci_list) {
         std::string pname = "vinci_"+f;
@@ -401,6 +402,33 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   free(a);
            return sb;
        });
+       std::vector<std::string> TSP_precomputed = {"2var_TSP_100.ine",
+                                                   "2var_TSP_200.ine",
+                                                   "2var_TSP_40.ine",
+                                                   "2var_TSP_10.ine",
+                                                   "2var_TSP_20.ine",
+                                                   "2var_TSP_50.ine",
+                                                   "2var_TSP_150.ine",
+                                                   "2var_TSP_30.ine",
+                                                   "2var_TSP_60.ine",};
+       
+       for(auto f : TSP_precomputed) {
+           std::string pname = "vinci_"+f;
+           add(pname, "precomputed 2var_TSP, read from file.",[f]() {
+                                                                    if(const char* env_p = std::getenv("POLYVEST_PATH")) {
+                                                                        std::string path = env_p;
+                                                                        std::string fpath = path+f;
+                                                                        //
+                                                                        Solved_Body *sb = generate_read_vinci_polytope(fpath);
+                                                                        sb->is_normalized = true;
+                                                                        return sb;
+                                                                    } else {
+                                                                        std::cout << "ERROR: POLYVEST_PATH not set!\n" << std::endl;
+                                                                        std::cout << "try: export POLYVEST_PATH='../polyvest/examples/'\n";
+                                                                        std::exit(0);
+                                                                    }
+                                                                });
+       }
        add("2var_"+nstr, "2-variable polytope, 10n constraints,"+nstr+"-dim [normalized]", [n]() {
            Solved_Body* sb = generate_kvariable_polytope(n,2,1.0,10*n);//k=2, r=1.0
            sb->is_normalized = true;

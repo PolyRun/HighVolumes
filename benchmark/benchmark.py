@@ -77,10 +77,14 @@ csc_jit_bodies_cube_rot = [name for name in csc_jit_dims_cube_rot.keys()]
 csc_jit_dims_cross_rot = {'cross_rot_rn_{}'.format(i): str(i) for i in range(3,14,2)}
 csc_jit_bodies_cross_rot = [name for name in csc_jit_dims_cross_rot.keys()]
 
+csc_jit_dims_2var_vinci = {'vinci_2var_TSP_{}.ine'.format(i): str(i) for i in [10,20,30,40,50,60,100,150,200]}
+csc_jit_bodies_2var_vinci = [name for name in csc_jit_dims_2var_vinci.keys()]
+
+
 csc_jit_bodies = [
    ("2var", csc_jit_bodies_2var, csc_jit_dims_2var),
    ("4var", csc_jit_bodies_4var, csc_jit_dims_4var),
-   #("2var_pre", csc_jit_bodies_2var_pre, csc_jit_dims_2var_pre),
+   ("2var_vinci", csc_jit_bodies_2var_vinci, csc_jit_dims_2var_vinci),
    ("cube_rot", csc_jit_bodies_cube_rot, csc_jit_dims_cube_rot),
    ("cross", csc_jit_bodies_cross_rot, csc_jit_dims_cross_rot)
 ]
