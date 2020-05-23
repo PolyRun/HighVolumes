@@ -264,11 +264,16 @@ BENCHMARKS = [
        {
           "const_configs": [],
           #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
-          "fun_configs": [#"PolytopeT_intersectCoord=ref",
+          "fun_configs": [
+                          "PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
-                          "PolytopeT_intersectCoord=cached_b_vec",
-                          "PolytopeT_intersectCoord=cached_b_vec2",
-                          "PolytopeT_intersectCoord=cached_b_vec_inl"],
+                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_b_vec_inl"
+                          "PolytopeT_intersectCoord=cached_b_inv_ref",
+                          "PolytopeT_intersectCoord=cached_b_inv_vec",
+                          ],
           "run_configs": ["intersect=intersectCoord_only,polytopeType=1,r=100000"],
           "input_configs": [("generator", mbintersectbodies)]
        },
@@ -281,17 +286,50 @@ BENCHMARKS = [
     "mem_roofs": []
    },
 
-   {"name": "polytopeT_cacheUpdate",
+   {"name": "polytopeT_intersectCoord_nobase",
     "executable": "benchmark_intersect",
     "config": [       
        {
           "const_configs": [],
           #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
-          "fun_configs": [#"PolytopeT_intersectCoord=ref",
+          "fun_configs": [
+                          #"PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
-                          "PolytopeT_intersectCoord=cached_b_vec",
-                          "PolytopeT_intersectCoord=cached_b_vec2",
-                          "PolytopeT_intersectCoord=cached_b_vec_inl"],
+                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_b_vec_inl"
+                          "PolytopeT_intersectCoord=cached_b_inv_ref",
+                          "PolytopeT_intersectCoord=cached_b_inv_vec",
+                          ],
+          "run_configs": ["intersect=intersectCoord_only,polytopeType=1,r=100000"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [20.0/27],
+    "mem_roofs": []
+   },
+
+   {"name": "polytopeT_update",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          "fun_configs": [
+                          "PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_b_vec_inl"
+                          "PolytopeT_intersectCoord=cached_b_inv_ref",
+                          "PolytopeT_intersectCoord=cached_b_inv_vec",
+                          ],
           "run_configs": ["intersect=cacheUpdateCoord,polytopeType=1,r=100000"],
           "input_configs": [("generator", mbintersectbodies)]
        },
@@ -300,9 +338,38 @@ BENCHMARKS = [
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
     "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
-    "perf_roofs": [],
+    "perf_roofs": [20.0/27],
     "mem_roofs": []
    },
+
+   {"name": "polytopeT_update_nobase",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          "fun_configs": [
+                          #"PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_b_vec_inl"
+                          "PolytopeT_intersectCoord=cached_b_inv_ref",
+                          "PolytopeT_intersectCoord=cached_b_inv_vec",
+                          ],
+          "run_configs": ["intersect=cacheUpdateCoord,polytopeType=1,r=100000"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [20.0/27],
+    "mem_roofs": []
+   },
+
 
    # TODO later
    #{"name": "intersect_ellipsoid",
