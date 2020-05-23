@@ -27,7 +27,7 @@ PolytopeT* PolytopeT_new_box(int n, FT r) {
          PolytopeT_set_a(p, i+n, x, (x==i)?-1:0);
       }
    }
-
+   PolytopeT_fix_inv(p);
    return p;
 }
 
