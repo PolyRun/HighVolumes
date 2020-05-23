@@ -96,14 +96,6 @@ intersects_funs = [
    ("cacheUpdateCoord",
     [
        (
-          ['PolytopeT_intersectCoord={}'.format(fun) for fun in
-           [
-              "cached_b_inv_vec"
-           ]
-          ],
-          1
-       ),
-       (
           ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
            [
               "cached_b_ref",
@@ -118,7 +110,7 @@ intersects_funs = [
            [
               #"single_rax",
               "single_data",
-              #"double_data",
+              "double_data",
               "quad_data"
            ]       
           ],
@@ -129,21 +121,13 @@ intersects_funs = [
    ("intersectCoord_only",
     [
        (
-          ['PolytopeT_intersectCoord={}'.format(fun) for fun in
-           [
-              "cached_b_inv_vec"
-           ]
-          ],
-          1
-       ),
-       (
           ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
            [
-              "cached_b_ref",
+              #"cached_b_ref",
               "cached_b_vec",
               "cached_b_vec_nogather",
               "cached_b_vec_nan_inv",
-              "cached_vec_onlyread"
+              #"cached_vec_onlyread"
            ]
           ],
           2
@@ -174,7 +158,7 @@ csc_jit_bm = [
        {
           "const_configs": [],
           "fun_configs": funs,
-          "run_configs": ['r=1000,polytopeType={},intersect={},polytopeOptimize=true'.format(bodytype,intersect)],
+          "run_configs": ['r=100000,polytopeType={},intersect={},polytopeOptimize=true'.format(bodytype,intersect)],
           "input_configs": [("generator", bodies)]
        }
        for funs, bodytype in fconf
