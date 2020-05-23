@@ -27,7 +27,7 @@ PolytopeT* PolytopeT_new_box(int n, FT r) {
          PolytopeT_set_a(p, i+n, x, (x==i)?-1:0);
       }
    }
-
+   PolytopeT_fix_inv(p);
    return p;
 }
 
@@ -264,8 +264,9 @@ FT read_vinci(string filename, Polytope **P, FT *vol){
             return 0;
         }
     }
-    
-    return 1;
+
+    *vol = 0;
+    return 0;
     
 }
 

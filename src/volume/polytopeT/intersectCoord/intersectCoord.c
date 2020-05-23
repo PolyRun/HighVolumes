@@ -92,6 +92,97 @@ void PolytopeT_intersectCoord_cached_b_ref(const void* o, const FT* x, const int
    *t1 = t11;
 }
 
+void PolytopeT_intersectCoord_cached_b_inv_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   FT* cc = (FT*)cache;
+   
+   __m128d zeros = _mm_set_sd(0.0);
+
+   __m128d vt00 = _mm_set_sd(-FT_MAX);
+   __m128d vt11 = _mm_set_sd(FT_MAX);
+
+   for(int i=0; i<m; i++) {
+      const FT Ainv = PolytopeT_get_aInv(p,i,d); // dot product with unit vector dim d
+      
+      __m128d vAinv = _mm_set_sd(Ainv);
+      __m128d vCache = _mm_set_sd(cc[i]);
+      __m128d mask1 = _mm_cmp_sd(vAinv, zeros, _CMP_LT_OS); // towards max
+      __m128d mask2 = _mm_cmp_sd(vAinv, zeros, _CMP_GT_OS); // towards min
+      __m128d vt = _mm_mul_sd(vAinv,vCache);
+      __m128d t00_tmp = _mm_blendv_pd(vt00, vt, mask1); // towards max
+      __m128d t11_tmp = _mm_blendv_pd(vt11, vt, mask2); // towards min
+      //printf("vAinv %lf %lf %lf \n",vAinv[0],mask1[0],mask2[0]);
+      //printf("  %lf %lf %lf\n",vt[0],t00_tmp[0],t11_tmp[0]);
+      vt00 = _mm_max_sd(vt00,t00_tmp);
+      vt11 = _mm_min_sd(vt11,t11_tmp);
+
+   }
+   //printf("res: %lf %lf \n",vt00[0],vt11[0]);
+   
+   // return:
+   *t0 = vt00[0];
+   *t1 = vt11[0];
+}
+
+void PolytopeT_intersectCoord_cached_b_inv_vec(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   FT* cc = (FT*)cache;
+   
+   //PolytopeT_print(p);
+
+   FT *Ainv_slice = p->Ainv + (p->line * d);
+   
+   __m256d zeros = _mm256_set1_pd(0.0);
+
+   __m256d vt00 = _mm256_set1_pd(-FT_MAX);
+   __m256d vt11 = _mm256_set1_pd(FT_MAX);
+   
+   for(int i=0; i<m; i+=4) {
+      const FT Ainv = PolytopeT_get_aInv(p,i,d); // dot product with unit vector dim d
+      
+      __m256d vAinv = _mm256_load_pd(Ainv_slice + i);
+      __m256d vCache = _mm256_load_pd(cc + i);
+      __m256d mask1 = _mm256_cmp_pd(vAinv, zeros, _CMP_LT_OS); // towards max
+      __m256d mask2 = _mm256_cmp_pd(vAinv, zeros, _CMP_GT_OS); // towards min
+      __m256d vt = _mm256_mul_pd(vAinv,vCache);
+      __m256d t00_tmp = _mm256_blendv_pd(vt00, vt, mask1); // towards max
+      __m256d t11_tmp = _mm256_blendv_pd(vt11, vt, mask2); // towards min
+      vt00 = _mm256_max_pd(vt00,t00_tmp);
+      vt11 = _mm256_min_pd(vt11,t11_tmp);
+      //printf("--0  : %lf %lf \n",vAinv[0], vCache[0]);
+      //printf("--1  : %lf %lf \n",vAinv[1], vCache[1]);
+      //printf("--2  : %lf %lf \n",vAinv[2], vCache[2]);
+      //printf("--3  : %lf %lf \n",vAinv[3], vCache[3]);
+   }
+   //printf("res: %lf %lf \n",vt00[0],vt11[0]);
+   
+   FT t0_a = vt00[0];
+   FT t0_b = (vt00[1] > t0_a) ? vt00[1] : t0_a;
+   FT t0_c = (vt00[2] > t0_b) ? vt00[2] : t0_b;
+   FT t0_d = (vt00[3] > t0_c) ? vt00[3] : t0_c;
+
+   FT t1_a = vt11[0];
+   FT t1_b = (vt11[1] < t1_a) ? vt11[1] : t1_a;
+   FT t1_c = (vt11[2] < t1_b) ? vt11[2] : t1_b;
+   FT t1_d = (vt11[3] < t1_c) ? vt11[3] : t1_c;
+   
+   //printf("res: %lf %lf \n",t0_d, t1_d);
+   //printf("0  : %lf %lf \n",vt00[0], vt11[0]);
+   //printf("1  : %lf %lf \n",vt00[1], vt11[1]);
+   //printf("2  : %lf %lf \n",vt00[2], vt11[2]);
+   //printf("3  : %lf %lf \n",vt00[3], vt11[3]);
+
+   // return:
+   *t0 = t0_d;
+   *t1 = t1_d;
+}
+
+
+
 void PolytopeT_intersectCoord_cached_b_vec(const void *p, const FT *x, const int d,
                                            FT *t0_out, FT *t1_out, void *cache) {
 
