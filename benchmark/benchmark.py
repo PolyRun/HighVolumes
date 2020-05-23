@@ -10,7 +10,7 @@ import re
 from threading import Timer
 from plot import plot
 
-BENCH_MAX_TIME = 10 #seconds
+BENCH_MAX_TIME = 60 #seconds
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
@@ -1018,6 +1018,20 @@ pushConfig("volume","cubeRot",cubeRotBodies,cubeRotDims,1,400*sFactor)
 pushConfig("volume","2var",intersectSparseBodies,intersectSparseDims,1,400*sFactor)
 pushConfig("volume","4var",intersectSparse4Bodies,intersectSparse4Dims,1,400*sFactor)
 pushConfig("volume","cross",crossPBodies,crossPDims,1,800*sFactor)
+
+
+# polytopeT development plot (all body types?) cross_13 performance breaks down?! let's hope
+# - PolytopeT ref implementation
+# - cached impl
+# - cached with b
+# - cached withb inverse
+# - cached with b inverse and vectorized
+
+# sparsity plots:
+# 1) super sparse body (2var) -> runtime comparison with polytopeT best version, show speedup
+
+# 2) semi-sparse (2var_TSP?) -> csc, jit, polytopeT, show breakdown of JIT
+# - large semi-sparse: first jit best, then at certain dim performance degration and csc scales better and polytopeT is slower
 
 
 BENCHMARKS += csc_jit_bm
