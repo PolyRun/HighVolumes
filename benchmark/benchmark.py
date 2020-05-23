@@ -118,7 +118,7 @@ intersects_funs = [
            [
               #"single_rax",
               "single_data",
-              #"double_data",
+              "double_data",
               "quad_data"
            ]       
           ],
@@ -174,7 +174,7 @@ csc_jit_bm = [
        {
           "const_configs": [],
           "fun_configs": funs,
-          "run_configs": ['r=1000,polytopeType={},intersect={},polytopeOptimize=true'.format(bodytype,intersect)],
+          "run_configs": ['r=100000,polytopeType={},intersect={},polytopeOptimize=true'.format(bodytype,intersect)],
           "input_configs": [("generator", bodies)]
        }
        for funs, bodytype in fconf
