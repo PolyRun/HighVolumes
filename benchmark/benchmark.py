@@ -284,11 +284,16 @@ BENCHMARKS = [
        {
           "const_configs": [],
           #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
-          "fun_configs": [#"PolytopeT_intersectCoord=ref",
+          "fun_configs": [
+                          "PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
                           "PolytopeT_intersectCoord=cached_b_vec",
-                          "PolytopeT_intersectCoord=cached_b_vec2",
-                          "PolytopeT_intersectCoord=cached_b_vec_inl"],
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_b_vec_inl"
+                          "PolytopeT_intersectCoord=cached_b_inv_ref",
+                          "PolytopeT_intersectCoord=cached_b_inv_vec",
+                          ],
           "run_configs": ["intersect=intersectCoord_only,polytopeType=1,r=100000"],
           "input_configs": [("generator", mbintersectbodies)]
        },
@@ -301,17 +306,50 @@ BENCHMARKS = [
     "mem_roofs": []
    },
 
-   {"name": "polytopeT_cacheUpdate",
+   {"name": "polytopeT_intersectCoord_nobase",
     "executable": "benchmark_intersect",
     "config": [       
        {
           "const_configs": [],
           #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
-          "fun_configs": [#"PolytopeT_intersectCoord=ref",
+          "fun_configs": [
+                          #"PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
                           "PolytopeT_intersectCoord=cached_b_vec",
-                          "PolytopeT_intersectCoord=cached_b_vec2",
-                          "PolytopeT_intersectCoord=cached_b_vec_inl"],
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_b_vec_inl"
+                          "PolytopeT_intersectCoord=cached_b_inv_ref",
+                          "PolytopeT_intersectCoord=cached_b_inv_vec",
+                          ],
+          "run_configs": ["intersect=intersectCoord_only,polytopeType=1,r=100000"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [20.0/27],
+    "mem_roofs": []
+   },
+
+   {"name": "polytopeT_update",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          "fun_configs": [
+                          "PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_b_vec_inl"
+                          "PolytopeT_intersectCoord=cached_b_inv_ref",
+                          "PolytopeT_intersectCoord=cached_b_inv_vec",
+                          ],
           "run_configs": ["intersect=cacheUpdateCoord,polytopeType=1,r=100000"],
           "input_configs": [("generator", mbintersectbodies)]
        },
@@ -320,9 +358,38 @@ BENCHMARKS = [
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
     "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
-    "perf_roofs": [],
+    "perf_roofs": [20.0/27],
     "mem_roofs": []
    },
+
+   {"name": "polytopeT_update_nobase",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          #"fun_configs": ["PolytopeT_intersectCoord=cached_nc1", "PolytopeT_intersectCoord=ref", "PolytopeT_intersectCoord=cached_b_vec"],
+          "fun_configs": [
+                          #"PolytopeT_intersectCoord=ref",
+                          "PolytopeT_intersectCoord=cached_ref",
+                          "PolytopeT_intersectCoord=cached_b_ref",
+                          "PolytopeT_intersectCoord=cached_b_vec",
+                          #"PolytopeT_intersectCoord=cached_b_vec2",
+                          #"PolytopeT_intersectCoord=cached_b_vec_inl"
+                          "PolytopeT_intersectCoord=cached_b_inv_ref",
+                          "PolytopeT_intersectCoord=cached_b_inv_vec",
+                          ],
+          "run_configs": ["intersect=cacheUpdateCoord,polytopeType=1,r=100000"],
+          "input_configs": [("generator", mbintersectbodies)]
+       },
+    ],
+    "xoption": ("generator", mbintersectdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [20.0/27],
+    "mem_roofs": []
+   },
+
 
    # TODO later
    #{"name": "intersect_ellipsoid",
@@ -944,30 +1011,30 @@ def pushConfig(func,bodyname,bodies,dims,r,step_size):
            }[func]
 
    config = [ 
-       {
-          "const_configs": ["step_size="+str(step_size)],
-          "fun_configs": [
-              "PolytopeT_intersectCoord=cached_b_ref"
-              ],
-          "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
-          "input_configs": [("generator", bodies)]
-       },
-       {
-          "const_configs": ["step_size="+str(step_size)],
-          "fun_configs": [
-              "PolytopeT_intersectCoord=cached_b_vec"
-              ],
-          "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
-          "input_configs": [("generator", bodies)]
-       },
-       {
-          "const_configs": ["step_size="+str(step_size)],
-          "fun_configs": [
-              "PolytopeT_intersectCoord=cached_b_inv_ref"
-              ],
-          "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
-          "input_configs": [("generator", bodies)]
-       },
+       #{
+       #   "const_configs": ["step_size="+str(step_size)],
+       #   "fun_configs": [
+       #       "PolytopeT_intersectCoord=cached_b_ref"
+       #       ],
+       #   "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+       #   "input_configs": [("generator", bodies)]
+       #},
+       #{
+       #   "const_configs": ["step_size="+str(step_size)],
+       #   "fun_configs": [
+       #       "PolytopeT_intersectCoord=cached_b_vec"
+       #       ],
+       #   "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+       #   "input_configs": [("generator", bodies)]
+       #},
+       #{
+       #   "const_configs": ["step_size="+str(step_size)],
+       #   "fun_configs": [
+       #       "PolytopeT_intersectCoord=cached_b_inv_ref"
+       #       ],
+       #   "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+       #   "input_configs": [("generator", bodies)]
+       #},
        {
           "const_configs": ["step_size="+str(step_size)],
           "fun_configs": [
@@ -995,7 +1062,7 @@ def pushConfig(func,bodyname,bodies,dims,r,step_size):
        {
           "const_configs": ["step_size="+str(step_size)],
           "fun_configs": [],
-          "fun_configs": ["PolytopeJIT_intersectCoord=quad_data_acc"],
+          "fun_configs": ["PolytopeJIT_intersectCoord=quad_data"], # acc?
           "run_configs": ["r="+str(r)+",polytopeType=3"+runConf],
           "input_configs": [("generator", bodies)]
        }
@@ -1037,7 +1104,7 @@ pushConfig("update","cross",crossPBodies,crossPDims,10000*rFactor,1600)
 pushConfig("volume","cubeRot",cubeRotBodies,cubeRotDims,1,400*sFactor)
 pushConfig("volume","2var",intersectSparseBodies,intersectSparseDims,1,400*sFactor)
 pushConfig("volume","4var",intersectSparse4Bodies,intersectSparse4Dims,1,400*sFactor)
-pushConfig("volume","cross",crossPBodies,crossPDims,1,800*sFactor)
+pushConfig("volume","cross",crossPBodies,crossPDims,1,400*sFactor)
 
 
 # polytopeT development plot (all body types?) cross_13 performance breaks down?! let's hope
