@@ -142,7 +142,6 @@ void PolytopeT_intersectCoord_cached_b_inv_vec(const void* o, const FT* x, const
    __m256d vt11 = _mm256_set1_pd(FT_MAX);
    
    for(int i=0; i<m; i+=4) {
-      const FT Ainv = PolytopeT_get_aInv(p,i,d); // dot product with unit vector dim d
       
       __m256d vAinv = _mm256_load_pd(Ainv_slice + i);
       __m256d vCache = _mm256_load_pd(cc + i);
@@ -179,6 +178,63 @@ void PolytopeT_intersectCoord_cached_b_inv_vec(const void* o, const FT* x, const
    // return:
    *t0 = t0_d;
    *t1 = t1_d;
+}
+
+
+static inline void inv_loop(const FT *Ainv_slice, const FT *cc, const int i, const __m256d zeros, __m256d *vt00, __m256d *vt11){
+          
+    __m256d vAinv = _mm256_load_pd(Ainv_slice + i);
+    __m256d vCache = _mm256_load_pd(cc + i);
+    __m256d mask1 = _mm256_cmp_pd(vAinv, zeros, _CMP_LT_OS); // towards max
+    __m256d mask2 = _mm256_cmp_pd(vAinv, zeros, _CMP_GT_OS); // towards min
+    __m256d vt = _mm256_mul_pd(vAinv,vCache);
+    __m256d t00_tmp = _mm256_blendv_pd(*vt00, vt, mask1); // towards max
+    __m256d t11_tmp = _mm256_blendv_pd(*vt11, vt, mask2); // towards min
+    *vt00 = _mm256_max_pd(*vt00,t00_tmp);
+    *vt11 = _mm256_min_pd(*vt11,t11_tmp);
+
+}
+
+
+void PolytopeT_intersectCoord_cached_b_inv_vec_inl(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   FT* cc = (FT*)cache;
+   
+   //PolytopeT_print(p);
+
+   FT *Ainv_slice = p->Ainv + (p->line * d);
+   
+   __m256d zeros = _mm256_set1_pd(0.0);
+
+   __m256d vt001 = _mm256_set1_pd(-FT_MAX);
+   __m256d vt111 = _mm256_set1_pd(FT_MAX);
+   __m256d vt002 = _mm256_set1_pd(-FT_MAX);
+   __m256d vt112 = _mm256_set1_pd(FT_MAX);
+
+   int i = 0;
+   for(; i<m-7; i+=8) {
+       inv_loop(Ainv_slice, cc, i, zeros, &vt001, &vt111);
+       inv_loop(Ainv_slice, cc, i+4, zeros, &vt002, &vt112);
+   }
+   for (; i < m; i+=4){
+       inv_loop(Ainv_slice, cc, i, zeros, &vt001, &vt111);
+   }
+   __m256d vt00 = _mm256_max_pd(vt001, vt002);
+   __m256d vt11 = _mm256_min_pd(vt111, vt112);
+   //printf("res: %lf %lf \n",vt00[0],vt11[0]);
+   
+   FT t0_a = vt00[0];
+   FT t0_b = (vt00[1] > t0_a) ? vt00[1] : t0_a;
+   FT t0_c = (vt00[2] > t0_b) ? vt00[2] : t0_b;
+   *t0 = (vt00[3] > t0_c) ? vt00[3] : t0_c;
+
+   FT t1_a = vt11[0];
+   FT t1_b = (vt11[1] < t1_a) ? vt11[1] : t1_a;
+   FT t1_c = (vt11[2] < t1_b) ? vt11[2] : t1_b;
+   *t1 = (vt11[3] < t1_c) ? vt11[3] : t1_c;
+   
 }
 
 

@@ -80,23 +80,34 @@ csc_jit_bodies_cross_rot = [name for name in csc_jit_dims_cross_rot.keys()]
 csc_jit_dims_2var_vinci = {'vinci_2var_TSP_{}.ine'.format(i): str(i) for i in [10,20,30,40,50,60,100,150,200]}
 csc_jit_bodies_2var_vinci = [name for name in csc_jit_dims_2var_vinci.keys()]
 
+csc_jit_dims_dens = {'dens_{}'.format(i): str(int(1.55 ** i)) for i in range(1,11)}
+csc_jit_bodies_dens = [name for name in csc_jit_dims_dens.keys()]
 
 csc_jit_bodies = [
    ("2var", csc_jit_bodies_2var, csc_jit_dims_2var),
    ("4var", csc_jit_bodies_4var, csc_jit_dims_4var),
    ("2var_vinci", csc_jit_bodies_2var_vinci, csc_jit_dims_2var_vinci),
    ("cube_rot", csc_jit_bodies_cube_rot, csc_jit_dims_cube_rot),
-   ("cross", csc_jit_bodies_cross_rot, csc_jit_dims_cross_rot)
+   ("cross", csc_jit_bodies_cross_rot, csc_jit_dims_cross_rot),
+   ("dens", csc_jit_bodies_dens, csc_jit_dims_dens),
 ]
 
 intersects_funs = [
    ("cacheUpdateCoord",
     [
        (
+          ['PolytopeT_intersectCoord={}'.format(fun) for fun in
+           [
+              "cached_b_inv_vec"
+           ]
+          ],
+          1
+       ),
+       (
           ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
            [
               "cached_b_ref",
-              "cached_b_vec",
+              #"cached_b_vec",
               "cached_b_vec_vec_nan"
            ]
           ],
@@ -105,9 +116,9 @@ intersects_funs = [
        (
           ['PolytopeJIT_gen={}'.format(fun) for fun in
            [
-              "single_rax",
+              #"single_rax",
               "single_data",
-              "double_data",
+              #"double_data",
               "quad_data"
            ]       
           ],
@@ -117,6 +128,14 @@ intersects_funs = [
    ),
    ("intersectCoord_only",
     [
+       (
+          ['PolytopeT_intersectCoord={}'.format(fun) for fun in
+           [
+              "cached_b_inv_vec"
+           ]
+          ],
+          1
+       ),
        (
           ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
            [
@@ -132,10 +151,11 @@ intersects_funs = [
        (
           ['PolytopeJIT_gen={}'.format(fun) for fun in
            [
-              "single_rax",
+              #"single_rax",
               "single_data",
               "double_data",
-              "quad_data"
+              "quad_data",
+              #"quad_data_acc"
            ]
           ],
           3
@@ -154,7 +174,7 @@ csc_jit_bm = [
        {
           "const_configs": [],
           "fun_configs": funs,
-          "run_configs": ['r=100000,polytopeType={},intersect={}'.format(bodytype,intersect)],
+          "run_configs": ['r=1000,polytopeType={},intersect={},polytopeOptimize=true'.format(bodytype,intersect)],
           "input_configs": [("generator", bodies)]
        }
        for funs, bodytype in fconf

@@ -25,6 +25,7 @@ int main(int argc, char **argv){
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
 
+    prng_init();
     
     Polytope *P;
     

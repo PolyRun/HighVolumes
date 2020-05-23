@@ -7,6 +7,9 @@ import os
 
 SAVEEPS = True
 SAVEPNG = True
+
+PLOT_ERRORBARS = False
+
 PEAK_PERFORMANCE = 16
 MEMORY_BANDWIDTH = 96
 STREAM_BANDWIDTH = 12
@@ -88,8 +91,18 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
         x_ticks_tmp = [tick for tick,val in zip(x_ticks, time_function_heights[name])]
         pprint.pprint(x_ticks_tmp)
         assert(len(x_ticks_tmp) == len(time_function_heights[name]) and "maybe you used 'generator' in some parameter? or some configs identical?")
-        plt.errorbar(x_ticks_tmp, time_function_heights[name], label=name, yerr=[time_function_ci_low[name], time_function_ci_high[name]], capsize=4)
+        plt.errorbar(
+            x_ticks_tmp,
+            time_function_heights[name],
+            label=name,
+            yerr= [time_function_ci_low[name], time_function_ci_high[name]] if PLOT_ERRORBARS else [
+                [0 for i in time_function_ci_low[name]],[0 for i in time_function_ci_high[name]]],
+            capsize=4
+        )
         i += 1
+
+    if "XLOG" in os.environ and os.environ["XLOG"] == 'On':
+        plt.xscale('log')
 
     plt.ylim(bottom=0)
 	
@@ -117,8 +130,17 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
         time_function_performance_ci_high = []
         for index, item in enumerate(time_function_heights[name]):
             time_function_performance.append(x_flops[name][index]/item)
-            time_function_performance_ci_low.append(x_flops[name][index]/item - x_flops[name][index]/(time_function_heights[name][index] - time_function_ci_low[name][index]))
-            time_function_performance_ci_high.append(x_flops[name][index] / (time_function_heights[name][index] + time_function_ci_high[name][index]) - x_flops[name][index]/item)
+            
+            time_function_performance_ci_low.append(
+                x_flops[name][index]/item - x_flops[name][index]/(time_function_heights[name][index] - time_function_ci_low[name][index])
+                if PLOT_ERRORBARS
+                else 0
+            )
+            time_function_performance_ci_high.append(
+                x_flops[name][index] / (time_function_heights[name][index] + time_function_ci_high[name][index]) - x_flops[name][index]/item
+                if PLOT_ERRORBARS
+                else 0
+            )
         #plt.plot(x_ticks, time_function_performance, label=name)
         plt.errorbar(x_ticks_tmp, time_function_performance, label=name, yerr=[time_function_performance_ci_low, time_function_performance_ci_high], capsize=4)
         i += 1
@@ -134,6 +156,9 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
     plt.ylim(bottom=0)
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
+
+    if "XLOG" in os.environ and os.environ["XLOG"] == 'On':
+        plt.xscale('log')
 
     if SAVEEPS:
         plt.savefig(path+"/plots/"+plot_name+"performance_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
@@ -157,8 +182,16 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
         time_function_bytes_ci_high = []
         for index, item in enumerate(time_function_heights[name]):
             time_function_bytes.append(x_bytes[name][index]/item)            
-            time_function_bytes_ci_low.append(x_bytes[name][index]/item - x_bytes[name][index]/(time_function_heights[name][index] - time_function_ci_low[name][index]))
-            time_function_bytes_ci_high.append(x_bytes[name][index]/(time_function_heights[name][index] + time_function_ci_high[name][index]) - x_bytes[name][index]/item)
+            time_function_bytes_ci_low.append(
+                x_bytes[name][index]/item - x_bytes[name][index]/(time_function_heights[name][index] - time_function_ci_low[name][index])
+                if PLOT_ERRORBARS
+                else 0
+            )
+            time_function_bytes_ci_high.append(
+                x_bytes[name][index]/(time_function_heights[name][index] + time_function_ci_high[name][index]) - x_bytes[name][index]/item
+                if PLOT_ERRORBARS
+                else 0
+            )
         #plt.plot(x_ticks, time_function_bytes, label=name)
         plt.errorbar(x_ticks_tmp, time_function_bytes, label=name, yerr=[time_function_bytes_ci_low, time_function_bytes_ci_high], capsize=4)
         i += 1
@@ -174,6 +207,10 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
     plt.ylim(bottom=0)
 	
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
+
+
+    if "XLOG" in os.environ and os.environ["XLOG"] == 'On':
+        plt.xscale('log')    
 
     if SAVEEPS:
         plt.savefig(path+"/plots/"+plot_name+"io_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)

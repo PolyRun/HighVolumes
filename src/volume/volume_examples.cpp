@@ -444,7 +444,25 @@ Solved_Body_Generator::Solved_Body_Generator() {
            sb->is_normalized = true;
            return sb;
        });
-    }    
+    }
+
+    // control density
+    std::vector<int> dens = {1,2,3,4,5,6,7,8,9,10};
+    for (auto f : dens){
+        std::string nstr = std::to_string(f);
+        int density = (int) pow(1.55,f);
+        add("dens_"+nstr,
+            "100-dim polytope with density " + std::to_string(density) + " [normalized]",
+            [density]()
+            {
+                Solved_Body* sb = generate_kvariable_polytope(100,density,1.0,1000);//k=2, r=1.0
+                sb->is_normalized = true;
+                return sb;
+            }
+            );
+    }
+
+    
 }
 
 Solved_Body*
@@ -780,7 +798,7 @@ void choosek(const int n, const int k, std::vector<int> &choice) {
 }
 
 Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r, const int num_constraints) {
-    assert(k>=2);
+    //assert(k>=2);
     assert(num_constraints >= 2*dims);
     Polytope *p = Polytope_new(dims, num_constraints);
     

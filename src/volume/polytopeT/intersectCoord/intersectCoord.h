@@ -19,6 +19,7 @@ void PolytopeT_intersectCoord_vectorized(const void *p, const FT* x, const int d
 
 void PolytopeT_intersectCoord_cached_b_inv_ref(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
 void PolytopeT_intersectCoord_cached_b_inv_vec(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
+void PolytopeT_intersectCoord_cached_b_inv_vec_inl(const void* o, const FT* x, const int d, FT* t0, FT* t1, void* cache);
 
 void PolytopeT_cacheReset_b_ref(const void* o, const FT* x, void* cache);
 void PolytopeT_cacheReset_b_vec(const void *p, const FT *x, void *cache);
