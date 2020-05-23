@@ -939,6 +939,22 @@ def pushConfig(func,bodyname,bodies,dims,r,step_size):
        {
           "const_configs": ["step_size="+str(step_size)],
           "fun_configs": [
+              "PolytopeT_intersectCoord=cached_b_inv_ref"
+              ],
+          "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+          "input_configs": [("generator", bodies)]
+       },
+       {
+          "const_configs": ["step_size="+str(step_size)],
+          "fun_configs": [
+              "PolytopeT_intersectCoord=cached_b_inv_vec"
+              ],
+          "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+          "input_configs": [("generator", bodies)]
+       },
+       {
+          "const_configs": ["step_size="+str(step_size)],
+          "fun_configs": [
               "PolytopeT_intersectCoord=cached_b_vec,rand_f=std_rand"
               ],
           "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],

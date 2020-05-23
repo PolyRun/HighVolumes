@@ -72,6 +72,7 @@ public:
       pc_stack().add((void*)PolytopeT_intersectCoord_vectorized, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_cost_ref,"PolytopeT_intersectCoord_vectorized"));
       
       pc_stack().add((void*)PolytopeT_intersectCoord_cached_b_inv_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_b_cost_ref,"PolytopeT_intersectCoord_cached_b_inv_ref"));
+      pc_stack().add((void*)PolytopeT_intersectCoord_cached_b_inv_vec, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord_cached_b_cost_ref,"PolytopeT_intersectCoord_cached_b_inv_vec"));
       
       pc_stack().add((void*)PolytopeT_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_cost_ref,"PolytopeT_cacheUpdateCoord_ref"));
       pc_stack().add((void*)PolytopeT_cacheUpdateCoord_b_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord_b_cost_ref,"PolytopeT_cacheUpdateCoord_b_ref"));
@@ -194,6 +195,7 @@ public:
                         {"cached_b_ref",        {{PolytopeT_intersectCoord_cached_b_ref, {PolytopeT_cacheReset_b_ref,PolytopeT_cacheUpdateCoord_b_ref}}, "with cache, b in cache (ref)"}},
                         {"cached_vectorized", {{PolytopeT_intersectCoord_vectorized, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache and vectorized"}},
                         {"cached_b_inv_ref", {{PolytopeT_intersectCoord_cached_b_inv_ref, {PolytopeT_cacheReset_b_ref,PolytopeT_cacheUpdateCoord_b_ref}}, "with cache b, and inv used for intersect (ref)"}},
+                        {"cached_b_inv_vec", {{PolytopeT_intersectCoord_cached_b_inv_vec, {PolytopeT_cacheReset_b_vec,PolytopeT_cacheUpdateCoord_b_vec}}, "with cache b, and inv used for intersect, vectorized"}},
 		       	}));
 
       add(new CLIF_TrippleOption<intersectCoord_f_t, cacheReset_f_t, cacheUpdateCoord_f_t>
