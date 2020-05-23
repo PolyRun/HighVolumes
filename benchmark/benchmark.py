@@ -268,7 +268,7 @@ BENCHMARKS = [
                           "PolytopeT_intersectCoord=ref",
                           "PolytopeT_intersectCoord=cached_ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
-                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec",
                           #"PolytopeT_intersectCoord=cached_b_vec2",
                           #"PolytopeT_intersectCoord=cached_b_vec_inl"
                           "PolytopeT_intersectCoord=cached_b_inv_ref",
@@ -296,7 +296,7 @@ BENCHMARKS = [
                           #"PolytopeT_intersectCoord=ref",
                           "PolytopeT_intersectCoord=cached_ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
-                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec",
                           #"PolytopeT_intersectCoord=cached_b_vec2",
                           #"PolytopeT_intersectCoord=cached_b_vec_inl"
                           "PolytopeT_intersectCoord=cached_b_inv_ref",
@@ -324,7 +324,7 @@ BENCHMARKS = [
                           "PolytopeT_intersectCoord=ref",
                           "PolytopeT_intersectCoord=cached_ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
-                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec",
                           #"PolytopeT_intersectCoord=cached_b_vec2",
                           #"PolytopeT_intersectCoord=cached_b_vec_inl"
                           "PolytopeT_intersectCoord=cached_b_inv_ref",
@@ -352,7 +352,7 @@ BENCHMARKS = [
                           #"PolytopeT_intersectCoord=ref",
                           "PolytopeT_intersectCoord=cached_ref",
                           "PolytopeT_intersectCoord=cached_b_ref",
-                          #"PolytopeT_intersectCoord=cached_b_vec",
+                          "PolytopeT_intersectCoord=cached_b_vec",
                           #"PolytopeT_intersectCoord=cached_b_vec2",
                           #"PolytopeT_intersectCoord=cached_b_vec_inl"
                           "PolytopeT_intersectCoord=cached_b_inv_ref",
@@ -991,30 +991,30 @@ def pushConfig(func,bodyname,bodies,dims,r,step_size):
            }[func]
 
    config = [ 
-       {
-          "const_configs": ["step_size="+str(step_size)],
-          "fun_configs": [
-              "PolytopeT_intersectCoord=cached_b_ref"
-              ],
-          "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
-          "input_configs": [("generator", bodies)]
-       },
-       {
-          "const_configs": ["step_size="+str(step_size)],
-          "fun_configs": [
-              "PolytopeT_intersectCoord=cached_b_vec"
-              ],
-          "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
-          "input_configs": [("generator", bodies)]
-       },
-       {
-          "const_configs": ["step_size="+str(step_size)],
-          "fun_configs": [
-              "PolytopeT_intersectCoord=cached_b_inv_ref"
-              ],
-          "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
-          "input_configs": [("generator", bodies)]
-       },
+       #{
+       #   "const_configs": ["step_size="+str(step_size)],
+       #   "fun_configs": [
+       #       "PolytopeT_intersectCoord=cached_b_ref"
+       #       ],
+       #   "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+       #   "input_configs": [("generator", bodies)]
+       #},
+       #{
+       #   "const_configs": ["step_size="+str(step_size)],
+       #   "fun_configs": [
+       #       "PolytopeT_intersectCoord=cached_b_vec"
+       #       ],
+       #   "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+       #   "input_configs": [("generator", bodies)]
+       #},
+       #{
+       #   "const_configs": ["step_size="+str(step_size)],
+       #   "fun_configs": [
+       #       "PolytopeT_intersectCoord=cached_b_inv_ref"
+       #       ],
+       #   "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+       #   "input_configs": [("generator", bodies)]
+       #},
        {
           "const_configs": ["step_size="+str(step_size)],
           "fun_configs": [
@@ -1042,7 +1042,7 @@ def pushConfig(func,bodyname,bodies,dims,r,step_size):
        {
           "const_configs": ["step_size="+str(step_size)],
           "fun_configs": [],
-          "fun_configs": ["PolytopeJIT_intersectCoord=quad_data_acc"],
+          "fun_configs": ["PolytopeJIT_intersectCoord=quad_data"], # acc?
           "run_configs": ["r="+str(r)+",polytopeType=3"+runConf],
           "input_configs": [("generator", bodies)]
        }
@@ -1084,7 +1084,7 @@ pushConfig("update","cross",crossPBodies,crossPDims,10000*rFactor,1600)
 pushConfig("volume","cubeRot",cubeRotBodies,cubeRotDims,1,400*sFactor)
 pushConfig("volume","2var",intersectSparseBodies,intersectSparseDims,1,400*sFactor)
 pushConfig("volume","4var",intersectSparse4Bodies,intersectSparse4Dims,1,400*sFactor)
-pushConfig("volume","cross",crossPBodies,crossPDims,1,800*sFactor)
+pushConfig("volume","cross",crossPBodies,crossPDims,1,400*sFactor)
 
 
 # polytopeT development plot (all body types?) cross_13 performance breaks down?! let's hope
