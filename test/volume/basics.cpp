@@ -385,6 +385,10 @@ int main(int argc, char** argv) {
        PolytopeCSC_T.cacheUpdateCoord = it.second.first.second.second;
        
        std::cout << "Test PolytopeCSC for intersectCoord " << it.first << " - " << it.second.second << std::endl;
+       if(it.first == "cached_vec_onlyread") {
+	  std::cout << "This function is excempt from tests, continue.\n";
+          continue;
+       }
 
        // Generate new polytope box, n dim, 2 radius
        for(int n=4;n<20;n++) {
