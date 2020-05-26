@@ -176,6 +176,13 @@ public:
       add(new CLIF_Option<squaredNorm_f_t>(&squaredNorm,'f',"squaredNorm","ref", {
 						     {"ref", {squaredNorm_ref, "ref"}} }));
 
+      add(new CLIF_TrippleOption<squaredNorm_cached_f_t,squaredNorm_cached_reset_f_t,squaredNorm_cached_update_f_t>(
+		 &squaredNorm_cached,&squaredNorm_cached_reset,&squaredNorm_cached_update,
+		 'f',"squaredNorm_cached","ref", {
+                        {"no",        {{squaredNorm_cached_ref,  {squaredNorm_cached_reset_ref, squaredNorm_cached_update_ref }}, "no cacheing (pre-ref)"}},
+                        {"ref",       {{squaredNorm_cached_refc, {squaredNorm_cached_reset_refc,squaredNorm_cached_update_refc}}, "cacheing (ref)"}},
+		       	}));
+
       add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walkCoord_ref", {
                                                      {"walk_ref",{walk_ref, "random direction walk (ref)"}},
 						     {"walkCoord_ref",{walkCoord_ref, "coordinate walk (ref)"}} }));

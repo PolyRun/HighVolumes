@@ -39,4 +39,23 @@ FT Ball_volume(const int n, const FT r);
 // given n elements of b bytes, want to get smallest multiple of 32 bytes that fits this.
 int ceil_cache(const int n, const int b);
 
+// --------------- cached squaredNorm:
+typedef FT (*squaredNorm_cached_f_t)(const FT* v, const int n, const FT* cache);
+extern squaredNorm_cached_f_t squaredNorm_cached;
+typedef void (*squaredNorm_cached_reset_f_t)(const FT* v, const int n, FT* cache);
+extern squaredNorm_cached_reset_f_t squaredNorm_cached_reset;
+typedef void (*squaredNorm_cached_update_f_t)(const FT* v, const int d, const FT dx, const int n, FT* cache);
+extern squaredNorm_cached_update_f_t squaredNorm_cached_update;
+// Update is called after v[d] += dx;
+
+FT squaredNorm_cached_ref(const FT* v, const int n, const FT* cache);
+void squaredNorm_cached_reset_ref(const FT* v, const int n, FT* cache);
+void squaredNorm_cached_update_ref(const FT* v, const int d, const FT dx, const int n, FT* cache);
+
+FT squaredNorm_cached_refc(const FT* v, const int n, const FT* cache);
+void squaredNorm_cached_reset_refc(const FT* v, const int n, FT* cache);
+void squaredNorm_cached_update_refc(const FT* v, const int d, const FT dx, const int n, FT* cache);
+
+
+
 #endif

@@ -309,7 +309,39 @@ int main(int argc, char** argv) {
          free(v);
       }
    }
- 
+
+   // --------------------------------- cached squaredNorm:
+   auto oS = dynamic_cast<CLIF_TrippleOption<squaredNorm_cached_f_t,squaredNorm_cached_reset_f_t,squaredNorm_cached_update_f_t>*>(cliFun.getOption("squaredNorm_cached"));
+   for(auto it : oS->fmap) {
+      squaredNorm_cached             = it.second.first.first;
+      squaredNorm_cached_reset       = it.second.first.second.first;
+      squaredNorm_cached_update      = it.second.first.second.second;
+      std::cout << "test: squaredNorm_cached " << it.first << " - " << it.second.second << std::endl;
+      
+      int n = 101;
+
+      FT* v = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT* c = (FT*)(aligned_alloc(32, 1*sizeof(FT)));
+      
+      for(int t=0;t<100;t++) {
+         for(int i=0;i<n;i++) {v[i] = prng_get_random_double_in_range(-1,1);}
+
+	 squaredNorm_cached_reset(v,n,c);
+	 for(int tt=0;tt<200;tt++) {
+	    FT ref = squaredNorm(v,n);
+	    FT res = squaredNorm_cached(v,n,c);
+	    assert(abs(ref-res) < 0.000001);
+	    int d = prng_get_random_int_in_range(0,n-1);
+	    FT ttt = prng_get_random_double_in_range(-1,1);
+	    v[d] += ttt;
+            squaredNorm_cached_update(v,d,ttt,n,c);
+	 }
+      }
+      
+      free(c);
+      free(v);
+   }
+
    // --------------------------------- Polytope:
    auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));
    for(auto it : o->fmap) {

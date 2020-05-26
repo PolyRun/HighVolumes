@@ -61,3 +61,35 @@ FT Ball_volume(const int n, const FT r) {
 int ceil_cache(const int n, const int b) {
    return (n*b + 31) / 32 * 32;
 }
+
+
+squaredNorm_cached_f_t squaredNorm_cached = squaredNorm_cached_ref;
+squaredNorm_cached_reset_f_t squaredNorm_cached_reset = squaredNorm_cached_reset_ref;
+squaredNorm_cached_update_f_t squaredNorm_cached_update = squaredNorm_cached_update_ref;
+
+
+FT squaredNorm_cached_ref(const FT* v, const int n, const FT* cache) {
+   // not cached
+   return squaredNorm(v,n);
+}
+void squaredNorm_cached_reset_ref(const FT* v, const int n, FT* cache) {
+   // not cached
+}
+void squaredNorm_cached_update_ref(const FT* v, const int d, const FT dx, const int n, FT* cache) {
+   // not cached
+}
+
+FT squaredNorm_cached_refc(const FT* v, const int n, const FT* cache) {
+   return *cache;
+}
+void squaredNorm_cached_reset_refc(const FT* v, const int n, FT* cache) {
+   *cache = squaredNorm(v,n);
+}
+void squaredNorm_cached_update_refc(const FT* v, const int d, const FT dx, const int n, FT* cache) {
+   FT c = *cache;
+   FT x = v[d];
+   FT y = x - dx;
+   *cache = c - y*y + x*x; // subtract old square, add new square
+}
+
+
