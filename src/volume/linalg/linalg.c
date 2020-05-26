@@ -92,4 +92,24 @@ void squaredNorm_cached_update_refc(const FT* v, const int d, const FT dx, const
    *cache = c - y*y + x*x; // subtract old square, add new square
 }
 
+Ball_intersectCoord_cached_f_t Ball_intersectCoord_cached = Ball_intersectCoord_cached_ref;
+
+FTpair Ball_intersectCoord_cached_ref(const int n, const FT r, const FT* x,const int d, FT* cache) {
+   FT x2 = squaredNorm_cached(x,n,cache);
+   const FT d2 = 1.0;
+   FT xd = x[d]; // dot product with unit vector dim d
+
+   const FT a = d2;
+   const FT ainv = 1.0 / a;
+   FT b = 2.0*xd;
+   FT c = x2 - r*r;
+
+   FT detSqrt = sqrt(b*b - 4.0*a*c);
+   
+   FTpair tp;
+   tp.t1 = (-b + detSqrt) * 0.5 * ainv;
+   tp.t0 = (-b - detSqrt) * 0.5 * ainv;
+   return tp;
+}
+
 

@@ -342,6 +342,30 @@ int main(int argc, char** argv) {
       free(v);
    }
 
+   // -------- Ball intersectCoord (cached):
+   {
+      int n=101;
+      FT* v = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT* c = (FT*)(aligned_alloc(32, 1*sizeof(FT)));
+      
+      for(int i=0;i<n;i++) {v[i] = 0;}
+      squaredNorm_cached_reset(v,n,c);
+      FT r = 3.456;
+      for(int tt=0;tt<100;tt++){
+	 int d = prng_get_random_int_in_range(0,n-1);
+         FT t0,t1;
+	 Ball_intersectCoord(n,r,v,d,&t0,&t1);
+         FTpair tp = Ball_intersectCoord_cached(n,r,v,d,c);
+	 assert( abs(t0 - tp.t0) < 0.00001 );
+	 assert( abs(t1 - tp.t1) < 0.00001 );
+	 FT ttt = prng_get_random_double_in_range(t0,t1);
+	 v[d] += ttt;
+         squaredNorm_cached_update(v,d,ttt,n,c);
+      }
+      free(c);
+      free(v);
+   }
+
    // --------------------------------- Polytope:
    auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));
    for(auto it : o->fmap) {

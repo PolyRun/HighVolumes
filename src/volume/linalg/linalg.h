@@ -56,6 +56,14 @@ FT squaredNorm_cached_refc(const FT* v, const int n, const FT* cache);
 void squaredNorm_cached_reset_refc(const FT* v, const int n, FT* cache);
 void squaredNorm_cached_update_refc(const FT* v, const int d, const FT dx, const int n, FT* cache);
 
+typedef struct FTpair {
+   double t0,t1;
+} FTpair;
 
+// This function must also reset/update the squaredNorm_cached function, which this intersectCoord depends on
+typedef FTpair (*Ball_intersectCoord_cached_f_t)(const int n, const FT r, const FT* x, const int d, FT* cache);
+extern Ball_intersectCoord_cached_f_t Ball_intersectCoord_cached;
+
+FTpair Ball_intersectCoord_cached_ref(const int n, const FT r, const FT* x,const int d, FT* cache);
 
 #endif
