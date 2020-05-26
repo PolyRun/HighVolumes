@@ -76,6 +76,10 @@ extern size_t pc_volume_steps;
 
 FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
 
+// based on intersectCoord, and ball intersect cached - find corresponding walk_f
+FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
+void walkCoord_coord_single(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
+
 
 // ---------- proof of concept:
 

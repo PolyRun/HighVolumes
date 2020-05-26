@@ -30,6 +30,9 @@ void Ball_intersectCoord_cost_ref(const int n);
 typedef void (*Ball_intersect_cost_f)(const int);
 void Ball_intersect_cost_ref(const int n);
 
+typedef void (*Ball_intersectCoord_cached_cost_f)(const int);
+void Ball_intersectCoord_cached_cost_ref(const int n);
+
 // ----------------------------------------------- Body
 typedef void (*intersect_cost_f)(const void*);
 typedef void (*intersectCoord_cost_f)(const void*);
@@ -93,10 +96,12 @@ void PolytopeJIT_cacheReset_cost_ref(const void* o);
 
 typedef void (*volume_cost_f)(const int, const int, const void**,const Body_T**);
 void volume_cost_ref(const int n, const int bcount, const void** body, const Body_T** type);
+void volume_coord_single_cost_ref(const int n, const int bcount, const void** body, const Body_T** type);
 
 typedef void (*walk_cost_f)(const int, int bcount, const void**, const Body_T**);
 void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** type);
 void walkCoord_cost_ref(const int n, int bcount, const void** body, const Body_T** type);
+void walkCoord_coord_single_cost_ref(const int n, int bcount, const void** body, const Body_T** type);
 
 
 #endif // HEADER_VOLUME_COST_HPP

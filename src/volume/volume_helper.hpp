@@ -50,6 +50,7 @@ public:
       
       pc_stack().add((void*)Ball_intersect_ref, new PC_Cost_Wrapper<Ball_intersect_cost_f>(Ball_intersect_cost_ref,"Ball_intersect_ref"));
       pc_stack().add((void*)Ball_intersectCoord_ref, new PC_Cost_Wrapper<Ball_intersectCoord_cost_f>(Ball_intersectCoord_cost_ref,"Ball_intersectCoord_ref"));
+      pc_stack().add((void*)Ball_intersectCoord_cached_ref, new PC_Cost_Wrapper<Ball_intersectCoord_cached_cost_f>(Ball_intersectCoord_cached_cost_ref,"Ball_intersectCoord_cached_ref"));
       
       // Polytope
       pc_stack().add((void*)Polytope_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(Polytope_intersect_cost_ref,"Polytope_intersect_ref"));
@@ -142,8 +143,10 @@ public:
       
       // volume
       pc_stack().add((void*)volume_ref, new PC_Cost_Wrapper<volume_cost_f>(volume_cost_ref,"volume_ref"));
+      pc_stack().add((void*)volume_coord_single, new PC_Cost_Wrapper<volume_cost_f>(volume_coord_single_cost_ref,"volume_coord_single"));
       pc_stack().add((void*)walk_ref, new PC_Cost_Wrapper<walk_cost_f>(walk_cost_ref,"walk_ref"));
       pc_stack().add((void*)walkCoord_ref, new PC_Cost_Wrapper<walk_cost_f>(walkCoord_cost_ref,"walkCoord_ref"));
+      pc_stack().add((void*)walkCoord_coord_single, new PC_Cost_Wrapper<walk_cost_f>(walkCoord_coord_single_cost_ref,"walkCoord_coord_single"));
 
       // Randomness
       pc_stack().add((void *)prng_get_random_int, new PC_Cost_Wrapper<random_int_cost_f>(Random_int_cost_ref, "Random int"));
@@ -183,9 +186,17 @@ public:
                         {"ref",       {{squaredNorm_cached_refc, {squaredNorm_cached_reset_refc,squaredNorm_cached_update_refc}}, "cacheing (ref)"}},
 		       	}));
 
-      add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walkCoord_ref", {
-                                                     {"walk_ref",{walk_ref, "random direction walk (ref)"}},
-						     {"walkCoord_ref",{walkCoord_ref, "coordinate walk (ref)"}} }));
+
+//      add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walkCoord_ref", {
+//                                                     {"walk_ref",{walk_ref, "random direction walk (ref)"}},
+//						     {"walkCoord_ref",{walkCoord_ref, "coordinate walk (ref)"}} }));
+
+      add(new CLIF_DoubleOption<walk_f_t,volume_f_t>(&walk_f,&volume,'f',"walk_f","walkCoord_ref", {
+                                                     {"walk_ref",          {{walk_ref,               volume_ref},          "random direction walk (ref)"}},
+						     {"walkCoord_ref",     {{walkCoord_ref,          volume_ref},          "coordinate walk (ref)"}},
+						     {"walkCoord_single",  {{walkCoord_coord_single, volume_coord_single}, "coordinate walk, cached squaredNorm"}},
+						     }));
+
 
       add(new CLIF_Option<intersectCoord_f_t>(&Polytope_T.intersectCoord,'f',"Polytope_intersectCoord","cached_ref", {
                                                      {"ref",        {Polytope_intersectCoord_ref, "no cache (ref)"}},

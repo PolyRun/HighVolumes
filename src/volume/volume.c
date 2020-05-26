@@ -346,6 +346,36 @@ void walkCoord_ref(const int n, const FT rk, int bcount, const void** body, cons
    }
 }
 
+void walkCoord_coord_single(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache) {
+   const int ws = walk_size; // number of steps for walk
+   
+   for(int w=0;w<ws;w++) { // take some random steps for x
+      int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
+      
+      // ensure do not walk outside of outer ball:
+      FTpair tp = Ball_intersectCoord_cached(n, rk, x, dd, (FT*)cache[bcount]);
+      FT t0 = tp.t0;
+      FT t1 = tp.t1;
+      
+      for(int c=0;c<bcount;c++) {
+         FT bt0, bt1;
+         type[c]->intersectCoord(body[c], x, dd, &bt0, &bt1, cache[c]);
+         t0 = (t0>bt0)?t0:bt0; // max
+         t1 = (t1<bt1)?t1:bt1; // min
+      }
+   
+      FT t = prng_get_random_double_in_range(t0,t1);
+      x[dd] += t;
+      squaredNorm_cached_update(x,dd,t,n,(FT*)cache[bcount]);
+      for(int c=0;c<bcount;c++) {
+         type[c]->cacheUpdateCoord(body[c], dd, t, cache[c]);
+      }
+
+   }
+}
+
+
+
 FT* volume_x_ptr = NULL;
 FT* volume_d_ptr = NULL;
 void* volume_cache_ptr = NULL;
@@ -471,6 +501,107 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
 
       // x = stepFac * x   -> guarantee that in next smaller ball
       for(int j=0;j<n;j++) {x[j] *= stepFac;}
+      // may have to set to zero if initializing simpler for that
+      for(int c=0;c<bcount;c++) {
+         type[c]->cacheReset(body[c],x,cache[c]);
+      }
+   }
+   
+
+   //printf("There are %ld steps\n",pc_volume_steps);
+   return volume;
+}
+
+
+FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
+   
+   // init x:
+   FT* x = volume_x_ptr;// sample point x
+   assert(x);
+   for(int j=0;j<n;j++) {x[j]=0.0;}// origin
+
+   FT* d = volume_d_ptr; // vector for random direction
+   assert(d);
+
+   // set up cache:
+   int cache_size = 0;
+   void* cache[bcount+1]; // +1 for ball intersect
+   
+   void* cache_base = volume_cache_ptr; // align this to 32
+   cache_size = 0;
+   for(int c=0;c<bcount;c++) {
+      cache[c] = cache_base + cache_size;
+      cache_size += ceil_cache(type[c]->cacheAlloc(body[c]), 1);
+      // round up for allignment
+      type[c]->cacheReset(body[c],x,cache[c]);
+   }
+   cache[bcount] = cache_base + cache_size;// cache for ball intersect
+   squaredNorm_cached_reset(x,n,(FT*)cache[bcount]);
+
+   
+   const int l = ceil(n*log(r1/r0) / log(2.0));
+   pc_volume_l = l; // performance_counter
+   pc_volume_steps = 0; // performance_counter
+   //printf("steps: %d\n",l);
+   int t[l+1];// counts how many were thrown into Bi
+   for(int i=0;i<=l;i++){t[i]=0;}
+   
+   // volume up to current step
+   // start with B(0,r0)
+   // multiply with estimated factor each round
+   FT volume = Ball_volume(n, r0);
+   
+   // Idea:
+   //   last round must end in rk = r0/stepFac
+   //   first round must start with rk >= r1
+   const FT stepFac = pow(2,-1.0/(FT)n);
+   
+   FT rk = r0*pow(stepFac,-l);
+   int count = 0;
+   for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
+      //FT kk = log(rk/r0)/(-log(stepFac));
+      //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
+
+      //{
+      //   FT rtest = (rk*rk)*0.99;
+      //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
+      //   printf("m: %f\n",m);
+      //}
+      //{
+      //   FT rtest = (r0*r0)*0.99;
+      //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
+      //   printf("m: %f\n",m);
+      //}
+      for(int i=count; i<step_size*l; i++) { // sample required amount of points
+         pc_volume_steps++; // performance_counter
+         walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
+        
+         // find right Bm:
+         const FT x2 = squaredNorm_cached(x,n,(FT*)cache[bcount]);
+	 // normalized radius
+         const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));
+         const int mm = ceil(mmm);
+	 const int m = (mm>0)?mm:0; // find index of balls
+
+	 //printf("k %d  m %d\n",k,m);
+         assert(m <= k);
+         t[m]++;
+      }
+
+      // update count:
+      count = 0;
+      for(int i=0;i<k;i++){count+=t[i];}
+      // all that fell into lower balls
+
+      FT ak = (FT)(step_size*l) / (FT)count;
+      volume *= ak;
+
+      //printf("count: %d, volume: %f\n",count,volume);
+
+      // x = stepFac * x   -> guarantee that in next smaller ball
+      for(int j=0;j<n;j++) {x[j] *= stepFac;}
+      squaredNorm_cached_reset(x,n,(FT*)cache[bcount]);
+      
       // may have to set to zero if initializing simpler for that
       for(int c=0;c<bcount;c++) {
          type[c]->cacheReset(body[c],x,cache[c]);

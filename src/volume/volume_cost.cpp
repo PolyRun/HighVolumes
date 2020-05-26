@@ -88,6 +88,16 @@ void Ball_intersectCoord_cost_ref(const int n) {
    pc_stack().log(15,sizeof(FT), "quad. eq.");
 }
 
+void Ball_intersectCoord_cached_cost_ref(const int n) {
+   // read cache
+   // read 1
+   // div 1
+   // add 4
+   // mul 9
+   // sqrt 1
+   pc_stack().log(15,2*sizeof(FT), "quad. eq.");
+}
+
 void Ball_intersect_cost_ref(const int n) {
 
    // frame for squaredNorm
@@ -606,6 +616,52 @@ void volume_cost_ref(const int n, const int bcount, const void** body, const Bod
 
 }
 
+void volume_coord_single_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
+
+   pc_stack().log(0, 2*n*sizeof(FT), "init_x");
+   
+   pc_stack().log(0, 0, "cacheAlloc");
+   
+   pc_stack().log(0, 0, "Ball_volume - TODO");
+   
+   // number of sampling layers (steps)
+   size_t l = pc_volume_l; // get from last execution
+   size_t s = pc_volume_steps;
+
+   // frame for steps loop
+   {
+      PC_Frame_Base loop("steps",s);
+      {
+         PC_Frame<walk_cost_f> frame((void*) walk_f);
+         frame.costf()(n, bcount, body, type);
+      }
+
+      pc_stack().log(0, sizeof(FT), "read out cached squaredNorm");
+      
+      // log 2
+      // div 2
+      // mul 2
+      // ceil
+      // comp
+      pc_stack().log(8, 0, "find layer: logs!");
+   }
+   
+   // rest of ops:
+   // div 1 * l
+   // mul 1 * l
+   // read n * l and write n * l  (reset x)
+   // mul n * l
+   pc_stack().log(2*l + n*l, 2*n*l*sizeof(FT), "end of layer");
+
+   // body intersect
+   for (int c = 0; c < bcount; c++) {
+      // per layer
+      PC_Frame<cacheReset_cost_f> frame((void*) type[c]->cacheReset, l+1);// +1 for init
+      frame.costf()(body[c]);
+   }
+
+}
+
 void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
 
    int ws = walk_size;
@@ -675,6 +731,51 @@ void walkCoord_cost_ref(const int n, int bcount, const void** body, const Body_T
 
       // Reading and writing x[dd] with one add in between
       pc_stack().log(1, 2*sizeof(FT), "x[dd] += t;");
+      
+      // body intersectCoord
+      for(int c = 0; c < bcount; c++) {
+         PC_Frame<cacheUpdateCoord_cost_f> frame((void*) type[c]->cacheUpdateCoord);
+         frame.costf()(body[c]);
+      }
+   }
+   
+}
+
+void walkCoord_coord_single_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
+
+   int ws = walk_size;
+
+   // frame for walk_size loop
+   {
+      PC_Frame_Base loop("loop", ws);
+
+      {// frame for random int_in_range
+        PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int_in_range);
+        frame.costf()((NULL));
+    }
+      
+      // frame for Ball_intersectCoord
+      {
+         PC_Frame<Ball_intersectCoord_cached_cost_f> frame((void*) Ball_intersectCoord_cached);
+         frame.costf()(n);
+      }
+      
+      // body intersectCoord
+      for (int c = 0; c < bcount; c++) {
+         PC_Frame<intersectCoord_cost_f> frame((void*) type[c]->intersectCoord);
+         frame.costf()(body[c]);
+      }
+      pc_stack().log(2*bcount,0,"Update min/max intersection point for last body.");
+
+      {// frame for random double_in_range
+         PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double_in_range);
+         frame.costf()(NULL);
+      }
+
+      // Reading and writing x[dd] with one add in between
+      pc_stack().log(1, 2*sizeof(FT), "x[dd] += t;");
+      
+      pc_stack().log(5, 2*sizeof(FT), "update squaredNorm for x");
       
       // body intersectCoord
       for(int c = 0; c < bcount; c++) {
