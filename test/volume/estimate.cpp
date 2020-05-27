@@ -75,10 +75,11 @@ int main(int argc, char** argv) {
    
    // -------------------------------- start tests
 
-   auto o = dynamic_cast<CLIF_Option<walk_f_t>*>(cliFun.getOption("walk_f"));
+   auto o = dynamic_cast<CLIF_DoubleOption<walk_f_t,volume_f_t>*>(cliFun.getOption("walk_f"));
    for(auto it : o->fmap) {
       std::cout << "## run walk_f: " << it.first << " - " << it.second.second << std::endl;
-      walk_f = it.second.first; // test for all walk functions
+      walk_f = it.second.first.first; // test for all walk functions
+      volume = it.second.first.second; // test for all walk functions
       test();
       std::cout << "## done." << std::endl;
    }

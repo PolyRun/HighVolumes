@@ -13,7 +13,10 @@ glp_prob* get_lp(const int n, const int m) {
     return lp; 
 }
 
-glp_prob* Polytope_get_lp(const Polytope* P) {
+typedef glp_prob* (*X_get_lp_f_t) (const void*);
+
+glp_prob* Polytope_get_lp(const void* o) {
+    Polytope* P = (Polytope*)o;
     glp_prob* lp = get_lp(P->n,P->m);
     const int n = P->n;
     const int m = P->m;
@@ -44,7 +47,8 @@ glp_prob* Polytope_get_lp(const Polytope* P) {
     return lp;
 }
 
-glp_prob* PolytopeT_get_lp(const PolytopeT* P) {
+glp_prob* PolytopeT_get_lp(const void* o) {
+    PolytopeT* P = (PolytopeT*)o;
     glp_prob* lp = get_lp(P->n,P->m);
     const int n = P->n;
     const int m = P->m;
@@ -76,7 +80,8 @@ glp_prob* PolytopeT_get_lp(const PolytopeT* P) {
 }
 
 
-glp_prob* PolytopeCSC_get_lp(const PolytopeCSC* P) {
+glp_prob* PolytopeCSC_get_lp(const void* o) {
+    const PolytopeCSC* P = (const PolytopeCSC*)o;
     glp_prob* lp = get_lp(P->n,P->m);
     const int n = P->n;
     const int m = P->m;
@@ -109,7 +114,10 @@ glp_prob* PolytopeCSC_get_lp(const PolytopeCSC* P) {
 
 
 
-void LP_to_boundingSphere(const int n, glp_prob* lp, FT *R2, FT *Ori) {
+void LP_to_boundingSphere(const int n, X_get_lp_f_t x_get_lp, const void* o, FT *R2, FT *Ori) {
+    // generate lp:
+    glp_prob* lp = x_get_lp(o);
+
     //disable msg output
     glp_smcp parm;
     glp_init_smcp(&parm);
@@ -147,36 +155,21 @@ void LP_to_boundingSphere(const int n, glp_prob* lp, FT *R2, FT *Ori) {
         Ori[i] /= (2 * n);
     }
 	
+    glp_delete_prob(lp);
 }
 
 void Polytope_bounding_ref(const void *B, FT *R2, FT *Ori){
     const Polytope *P = (Polytope *) B;
-
-    glp_prob* lp = Polytope_get_lp(P);
-    //*Ori = (FT *) calloc(P->n, sizeof(FT));
-    LP_to_boundingSphere(P->n, lp, R2, Ori);
-
-    glp_delete_prob(lp);
+    LP_to_boundingSphere(P->n, &Polytope_get_lp, P, R2, Ori);
 }
 
 void PolytopeT_bounding_ref(const void *B, FT *R2, FT *Ori){
     const PolytopeT *P = (PolytopeT *) B;
-
-    glp_prob* lp = PolytopeT_get_lp(P);
-    //*Ori = (FT *) calloc(P->n, sizeof(FT));
-    LP_to_boundingSphere(P->n, lp, R2, Ori);
-
-    glp_delete_prob(lp);
+    LP_to_boundingSphere(P->n, &PolytopeT_get_lp, P, R2, Ori);
 }
 
-
-
 void PolytopeCSC_bounding_ref(const void *o, FT *r, FT *ori){
-
     const PolytopeCSC *P = (PolytopeCSC *) o;
-    glp_prob *lp = PolytopeCSC_get_lp(P);
-    LP_to_boundingSphere(P->n, lp, r, ori);
-    glp_delete_prob(lp);
-    
+    LP_to_boundingSphere(P->n, &PolytopeCSC_get_lp, P, r, ori);
 }
 

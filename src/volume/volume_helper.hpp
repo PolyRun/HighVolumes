@@ -187,10 +187,6 @@ public:
 		       	}));
 
 
-//      add(new CLIF_Option<walk_f_t>(&walk_f,'f',"walk_f","walkCoord_ref", {
-//                                                     {"walk_ref",{walk_ref, "random direction walk (ref)"}},
-//						     {"walkCoord_ref",{walkCoord_ref, "coordinate walk (ref)"}} }));
-
       add(new CLIF_DoubleOption<walk_f_t,volume_f_t>(&walk_f,&volume,'f',"walk_f","walkCoord_ref", {
                                                      {"walk_ref",          {{walk_ref,               volume_ref},          "random direction walk (ref)"}},
 						     {"walkCoord_ref",     {{walkCoord_ref,          volume_ref},          "coordinate walk (ref)"}},
