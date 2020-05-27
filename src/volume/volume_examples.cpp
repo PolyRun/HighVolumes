@@ -402,6 +402,35 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   free(a);
            return sb;
        });
+       add("xvar_TSR_"+nstr, "2-variable-polytope, translated, axisScaled, rotated, 10n constraints, "+nstr+"-dim [for preprocessing test]", [n]() {
+           Solved_Body* b1 = generate_kvariable_polytope(n,2,1.0,10*n);//k=2, r=1.0
+           
+	   std::cout << "\n# Generator: b1:\n";
+	   //b1->print();
+
+	   FT* a = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+	   
+	   for(int i=0;i<n;i++) {a[i]=prng_get_random_double_in_range(-10,10);}
+	   Solved_Body* b2 = b1->translate(a);
+	   
+	   std::cout << "\n# Generator: b2 - translated:\n";
+	   //b2->print();
+
+	   for(int i=0;i<n;i++) {a[i]=prng_get_random_double_in_range(0.1,10);}
+	   Solved_Body* b3 = b2->scaleAxis(a);
+	   
+	   std::cout << "\n# Generator: b3 - scaleAxis:\n";
+	   //b3->print();
+	   
+	   Solved_Body* sb = b3->rotate();
+           
+	   delete b1;
+	   delete b2;
+	   delete b3;
+	   free(a);
+           return sb;
+       });
+ 
        std::vector<std::string> TSP_precomputed = {"2var_TSP_100.ine",
                                                    "2var_TSP_200.ine",
                                                    "2var_TSP_40.ine",

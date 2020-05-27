@@ -437,6 +437,7 @@ void Polyvest_p::Preprocess(){
         ori = ori - t * c2;
         T = c1 * (T - c4 * t * t.t());
     }
+    cout << "Steps: " << counter << "\n";
 	
     if (!msg_off){ 
         cout << "R^2: " << R2 << endl << "Origin: " << endl;

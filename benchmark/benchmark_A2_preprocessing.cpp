@@ -102,7 +102,9 @@ class Benchmark_Polyvest_Prep : public Benchmark_base {
             polyvest_convert(P, Q);
 	}
         void reset () {
-            //polyvest_convert(P, Q);
+            delete Q;
+            Q = new vol::Polyvest_p(P->m, P->n);
+	    polyvest_convert(P, Q);
 	}
         double run () {
             Q->Preprocess();
