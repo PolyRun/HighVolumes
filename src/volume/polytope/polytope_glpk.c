@@ -1,6 +1,6 @@
 #include "polytope.h"
 #include <glpk.h>
-
+#include <omp.h>
 
 glp_prob* get_lp(const int n, const int m) {
     //init GLPK
@@ -115,47 +115,67 @@ glp_prob* PolytopeCSC_get_lp(const void* o) {
 
 
 void LP_to_boundingSphere(const int n, X_get_lp_f_t x_get_lp, const void* o, FT *R2, FT *Ori) {
-    // generate lp:
-    glp_prob* lp = x_get_lp(o);
-
-    //disable msg output
-    glp_smcp parm;
-    glp_init_smcp(&parm);
-    parm.msg_lev = GLP_MSG_ERR;
-
     *R2 = 0;
     for (int j = 0; j < n; j++) {Ori[j] = 0;}
-    
-    //get max/min bounds in each of the n dimensions
-    for (int i = 0; i < n; i++){
-        FT max, min;
-        for (int j = 0; j < n; j++) {
-            glp_set_obj_coef(lp, j + 1, 0);
-        }
+ 
+    #pragma omp parallel
+    {
+       int tid = omp_get_thread_num();
+       printf("Hello from %d\n",tid);
+       
+       FT R2_local = 0;
+       FT Ori_local[n];
+       for(int i=0;i<n;i++) {Ori_local[i]=0;}
+       
+       // generate lp:
+       glp_prob* lp = x_get_lp(o);
 
-        // max bound
-        glp_set_obj_coef(lp, i + 1, 1);
-        glp_simplex(lp, &parm);
-        max = glp_get_obj_val(lp);
-        for (int j = 0; j < n; j++) {
-            Ori[j] += glp_get_col_prim(lp, j + 1);
-        }
+       //disable msg output
+       glp_smcp parm;
+       glp_init_smcp(&parm);
+       parm.msg_lev = GLP_MSG_ERR;
 
-        // min bound
-        glp_set_obj_coef(lp, i + 1, -1);
-        glp_simplex(lp, &parm);
-        min = -glp_get_obj_val(lp);
-        for (int j = 0; j < n; j++)
-            Ori[j] += glp_get_col_prim(lp, j + 1);
+       //get max/min bounds in each of the n dimensions
+       #pragma omp for schedule(dynamic)
+       for (int i = 0; i < n; i++){
+	   printf(" - thread %d does simplex for dimension %d.\n",tid,i);
+           FT max, min;
+           for (int j = 0; j < n; j++) {
+               glp_set_obj_coef(lp, j + 1, 0);
+           }
 
-        // note: sqrt(R2) will be diameter of bounding box 
-        *R2 += (max - min) * (max - min);
+           // max bound
+           glp_set_obj_coef(lp, i + 1, 1);
+           glp_simplex(lp, &parm);
+           max = glp_get_obj_val(lp);
+           for (int j = 0; j < n; j++) {
+               Ori[j] += glp_get_col_prim(lp, j + 1);
+           }
+
+           // min bound
+           glp_set_obj_coef(lp, i + 1, -1);
+           glp_simplex(lp, &parm);
+           min = -glp_get_obj_val(lp);
+           for (int j = 0; j < n; j++)
+               Ori_local[j] += glp_get_col_prim(lp, j + 1);
+
+           // note: sqrt(R2) will be diameter of bounding box 
+           R2_local += (max - min) * (max - min);
+       }
+       glp_delete_prob(lp);
+       
+       // write back:
+       #pragma omp critical
+       {
+          *R2 += R2_local;
+	  for(int i=0;i<n;i++) {Ori[i] += Ori_local[i];}
+       } 
     }
+   
     for (int i = 0; i < n; i++){
         Ori[i] /= (2 * n);
     }
 	
-    glp_delete_prob(lp);
 }
 
 void Polytope_bounding_ref(const void *B, FT *R2, FT *Ori){

@@ -2,6 +2,7 @@
 
 cmake_minimum_required(VERSION 3.6)
 
+find_package(OpenMP)
 
 # ----------------------- prng
 set(PRNG_SOURCE_FILES
@@ -51,7 +52,7 @@ add_subdirectory(volume/polytopeT)
 add_subdirectory(volume/polytopeCSC)
 add_subdirectory(volume/polytopeJIT)
 
-target_link_libraries(volume PRIVATE glpk prng jit)
+target_link_libraries(volume PRIVATE glpk prng jit OpenMP::OpenMP_CXX)
 
 set_target_properties(volume PROPERTIES
    CXX_STANDARD 11
