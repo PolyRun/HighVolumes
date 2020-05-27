@@ -370,6 +370,24 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	});
     }
 
+    for(int n=3;n<=20;n++) {
+	std::string nstr = std::to_string(n);
+        std::string pname = "birk_"+nstr;
+	add(pname, "One of birk polytopes, from volumeEsti, read from file.",[nstr]() {
+	    if(const char* env_p = std::getenv("POLYVEST_PATH")) {
+	        std::string path = env_p;
+	        std::string fpath = path+"/birk/birk"+nstr+".ine";
+                //
+                return generate_read_vinci_polytope(fpath);
+            } else {
+	        std::cout << "ERROR: POLYVEST_PATH not set!\n" << std::endl;
+		std::cout << "try: export POLYVEST_PATH='../polyvest/examples/'\n";
+		std::exit(0);
+	    }
+	});
+    }
+
+
     // kvariable
     std::vector<int> kvar_n = {4,5,10,20,30,40,50,60,100,150,200};
     for(int n : kvar_n) {

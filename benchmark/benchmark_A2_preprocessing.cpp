@@ -55,6 +55,14 @@ class Benchmark_A2 : public Benchmark_base {
 	    return 0;
 	}
 	void finalize() {
+	    // print:
+	    if(printBody) {
+               for(int c=0;c<solved_body->bcount;c++) {
+	          solved_body->type[c]->print(body_out[c]);
+	       }
+	    }
+
+	    // pc:
 	    pc_stack().reset();
             //{
             //   PC_Frame<volume_cost_f> frame((void*)volume);
