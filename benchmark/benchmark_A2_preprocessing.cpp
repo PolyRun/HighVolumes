@@ -100,11 +100,13 @@ class Benchmark_Polyvest_Prep : public Benchmark_base {
     
             Q = new vol::Polyvest_p(m, n);
             polyvest_convert(P, Q);
+	    Q->check_planes_off = true;
 	}
         void reset () {
             delete Q;
             Q = new vol::Polyvest_p(P->m, P->n);
 	    polyvest_convert(P, Q);
+	    Q->check_planes_off = true;
 	}
         double run () {
             Q->Preprocess();

@@ -396,6 +396,7 @@ void Polyvest_p::Preprocess(){
     double c3 = beta_r * beta_r;
     double c4 = 2 * c2 / (1 - 1.0 / beta_r);
 
+    cout << "find init ellipsoid...\n";
     //init E(R2I, 0), T = R2I, ori = 0.
     mat T;
     vec ori(n);
@@ -406,6 +407,8 @@ void Polyvest_p::Preprocess(){
 
     vec distance = zeros<vec>(m);
     vec tm = zeros<vec>(m);
+    
+    cout << "start stepping...\n";
 
     int counter = 0;
     while (++counter > 0){

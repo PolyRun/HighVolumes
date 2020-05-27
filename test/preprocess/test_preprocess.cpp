@@ -19,7 +19,7 @@ void test_preprocess_against_polyvest(Polytope *P){
     //Q.A.print();
     //Q.b.print();
 
-
+    Q.check_planes_off = true;
     Q.Preprocess();
 
     Polytope *R;

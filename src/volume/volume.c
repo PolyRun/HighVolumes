@@ -109,6 +109,12 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 
    FT c; // plane for oracle: normal*x <= x
    FT* v = (FT*)aligned_alloc(32, n*sizeof(FT)); // align this to 32
+   
+   // check if need inverse of boundary ellipsoid matrix:
+   bool trackInverse = false;
+   for(int c=0;c<bcount;c++) {
+      if(type[c] == &Ellipsoid_T) {trackInverse=true;}
+   }
 
    int step = 0;
    while(true) {
@@ -148,59 +154,61 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
 	    Ti[j] = zs * (Ti[j] - fac2*Tv[i]*Tv[j]);
 	 }
       }
-
-      // update A:
-      // above, we made a rank-1 update for T.
-      // We can update A (=T.inverse()) using the Sherman-Morisson formula:
-      // (T + u*vt).inverse() = T.inverse() - T.inverse() * u * vt * T.inverse() / (1 + vt * T.inverse() * u)
-      // A' = (T + u*vt).inverse() = A - A * u * vt * A / (1 + vt * A * u)
-      //
-      // So we will compute:
-      // A' = A + fac2 * A  * Tv * Tvt * A / (1 - fac2 * Tvt * A * Tv)
       
-      FT ATv[n];
-      FT TvtATv = 0;
-      for(int i=0;i<n;i++) {
-         FT* Ai = Ellipsoid_get_Ai(e,i);
-         ATv[i] = 0;
-         for(int j=0;j<n;j++) {// dotProduct
-	    ATv[i] += Ai[j] * Tv[j];
-	 }
-
-	 TvtATv += Tv[i] * ATv[i];
-      }
-      FT div = 1.0 / (1.0 - fac2*TvtATv);
-
-      for(int i=0;i<n;i++) {
-         FT* Ai = Ellipsoid_get_Ai(e,i);
-         for(int j=0;j<n;j++) {
-	    Ai[j] = (Ai[j] + fac2 * ATv[i]*ATv[j] * div) / zs;
-	 }
-      }
-      
-      // testing: do inverse recalculation periodically!
-      if(step % 100 == 0) { // could finetune this!
-         Ellipsoid_A_from_T(e);
-      }
-
-      // debug: test inverse:
-      //Ellipsoid_T.print(e);
-      //printf("\n");
-      for(int i=0;i<n;i++){
-         FT* Ai = Ellipsoid_get_Ai(e,i);
-         for(int j=0;j<n;j++){
-            FT sum = 0;
-            for(int k=0;k<n;k++){
-               FT* Tk = Ellipsoid_get_Ti(e,k);
-               sum += Ai[k] * Tk[j];
+      if(trackInverse) {
+         // update A:
+         // above, we made a rank-1 update for T.
+         // We can update A (=T.inverse()) using the Sherman-Morisson formula:
+         // (T + u*vt).inverse() = T.inverse() - T.inverse() * u * vt * T.inverse() / (1 + vt * T.inverse() * u)
+         // A' = (T + u*vt).inverse() = A - A * u * vt * A / (1 + vt * A * u)
+         //
+         // So we will compute:
+         // A' = A + fac2 * A  * Tv * Tvt * A / (1 - fac2 * Tvt * A * Tv)
+         
+         FT ATv[n];
+         FT TvtATv = 0;
+         for(int i=0;i<n;i++) {
+            FT* Ai = Ellipsoid_get_Ai(e,i);
+            ATv[i] = 0;
+            for(int j=0;j<n;j++) {// dotProduct
+               ATv[i] += Ai[j] * Tv[j];
             }
-            //printf(" %.12f",sum);
-            assert(abs(sum - 1.0*(i==j) < 0.0001));
+
+            TvtATv += Tv[i] * ATv[i];
+         }
+         FT div = 1.0 / (1.0 - fac2*TvtATv);
+
+         for(int i=0;i<n;i++) {
+            FT* Ai = Ellipsoid_get_Ai(e,i);
+            for(int j=0;j<n;j++) {
+               Ai[j] = (Ai[j] + fac2 * ATv[i]*ATv[j] * div) / zs;
+            }
+         }
+         
+         // testing: do inverse recalculation periodically!
+         if(step % 100 == 0) { // could finetune this!
+            Ellipsoid_A_from_T(e);
+         }
+
+         // debug: test inverse:
+         //Ellipsoid_T.print(e);
+         //printf("\n");
+         for(int i=0;i<n;i++){
+            FT* Ai = Ellipsoid_get_Ai(e,i);
+            for(int j=0;j<n;j++){
+               FT sum = 0;
+               for(int k=0;k<n;k++){
+                  FT* Tk = Ellipsoid_get_Ti(e,k);
+                  sum += Ai[k] * Tk[j];
+               }
+               //printf(" %.12f",sum);
+               assert(abs(sum - 1.0*(i==j) < 0.0001));
+            }
+            //printf("\n");
          }
          //printf("\n");
+         //assert(false);
       }
-      //printf("\n");
-      //assert(false);
    }
    Ellipsoid_T.print(e);
    printf("took %d steps.\n",step);
