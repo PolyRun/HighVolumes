@@ -416,7 +416,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
 	   std::cout << "\n# Generator: b2 - translated:\n";
 	   //b2->print();
 
-	   for(int i=0;i<n;i++) {a[i]=prng_get_random_double_in_range(0.1,10);}
+	   for(int i=0;i<n;i++) {a[i]=std::pow(2.0,prng_get_random_double_in_range(-5,5));}
 	   Solved_Body* b3 = b2->scaleAxis(a);
 	   
 	   std::cout << "\n# Generator: b3 - scaleAxis:\n";
