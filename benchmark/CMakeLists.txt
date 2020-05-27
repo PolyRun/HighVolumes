@@ -32,6 +32,19 @@ set_target_properties(benchmark_A1_volume PROPERTIES
    CXX_EXTENSIONS NO
 )
 
+project(benchmark_A2_preprocessing)
+
+add_executable(benchmark_A2_preprocessing benchmark_A2_preprocessing.cpp)
+
+target_link_libraries(benchmark_A2_preprocessing PUBLIC volume_helper polyvest_lib OpenMP::OpenMP_CXX)
+
+set_target_properties(benchmark_A2_preprocessing PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)
+
+
 
 project(benchmark_dotProduct)
 
