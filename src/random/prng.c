@@ -92,6 +92,18 @@ double prng_get_random_double_in_range(double lower_bound, double upper_bound){
     return ((double) rand_f() / (RAND_MAX)) * (upper_bound-lower_bound) + lower_bound;
 }
 
+__m256d prng_get_random_double4_in_range(__m256d lower_bound, __m256d upper_bound){
+   // TODO: proper SIMD!
+   __m256d r;
+   r[0] = prng_get_random_double_in_range(lower_bound[0],upper_bound[0]);
+   r[1] = prng_get_random_double_in_range(lower_bound[1],upper_bound[1]);
+   r[2] = prng_get_random_double_in_range(lower_bound[2],upper_bound[2]);
+   r[3] = prng_get_random_double_in_range(lower_bound[3],upper_bound[3]);
+   return r;
+}
+
+
+
 /**
  * \brief Returns a new random integer
  **/

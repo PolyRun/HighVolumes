@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <immintrin.h>
 extern "C" { // must be included C stlye
 #include "../../src/volume/volume.h"
 }
@@ -241,6 +241,49 @@ void test_box_cutOracle(const int n, Body_T* type, void* box) {
    free(v);
 }
 
+
+void test_4_8_sets() {
+   // --------------------------------- cached squaredNorm:
+   {
+      int n = 101;
+
+      FT* v = (FT*)(aligned_alloc(32, 4*n*sizeof(FT)));
+      FT* c = (FT*)(aligned_alloc(32, 4*sizeof(FT)));
+      
+      __m256d min1 = _mm256_set1_pd(-1);
+      __m256d plus1 = _mm256_set1_pd(1);
+
+      for(int t=0;t<100;t++) {
+         for(int i=0;i<4*n;i++) {v[i] = prng_get_random_double_in_range(-1,1);}
+
+	 squaredNorm_cached4_reset(v,n,c);
+	 for(int tt=0;tt<200;tt++) {
+	    __m256d res = squaredNorm_cached4(v,n,c);
+            for(int j=0;j<4;j++) {
+	       FT rr = 0;
+	       for(int i=0;i<n;i++) {rr+=v[4*i+j]*v[4*i+j];}
+	       assert(abs(res[j]-rr) < 0.000001);
+	    }
+	    int d = prng_get_random_int_in_range(0,n-1);
+	    __m256d ttt = prng_get_random_double4_in_range(min1,plus1);
+	    
+	    //v[d] += ttt;
+	    __m256d vd = _mm256_load_pd(v+4*d);
+	    vd = _mm256_add_pd(vd,ttt);
+	    _mm256_store_pd(v+4*d,vd);
+            
+	    squaredNorm_cached4_update(v,d,ttt,n,c);
+	 }
+      }
+      
+      free(c);
+      free(v);
+   }
+
+ 
+}
+
+
 int main(int argc, char** argv) {
    CLI cli(argc,argv,"test_volume_basics");
    CLIFunctionsVolume cliFun(cli);
@@ -365,6 +408,9 @@ int main(int argc, char** argv) {
       free(c);
       free(v);
    }
+   
+   test_4_8_sets();
+
 
    // --------------------------------- Polytope:
    auto o = dynamic_cast<CLIF_Option<intersectCoord_f_t>*>(cliFun.getOption("Polytope_intersectCoord"));

@@ -1,3 +1,4 @@
+#include <immintrin.h>
 #include "generators/std_rand.h"
 #include "generators/mersenne.h"
 #include "generators/shiftreg.h"
@@ -49,6 +50,9 @@ double prng_get_random_double_normal();
  * \param upper_bound Upper bound on the value of the random double
  **/
 double prng_get_random_double_in_range(double lower_bound, double upper_bound);
+
+// same but for vector
+__m256d prng_get_random_double4_in_range(__m256d lower_bound, __m256d upper_bound);
 
 /**
  * \brief Returns a new random integer

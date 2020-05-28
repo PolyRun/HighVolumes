@@ -113,3 +113,22 @@ FTpair Ball_intersectCoord_cached_ref(const int n, const FT r, const FT* x,const
 }
 
 
+// ----------------------------------4/8 sets:
+
+__m256d squaredNorm_cached4(const FT* v, const int n, const FT* cache) {
+}
+void squaredNorm_cached4_reset(const FT* v, const int n, FT* cache) {
+}
+void squaredNorm_cached4_update(const FT* v, const int d, const __m256d dx, const int n, FT* cache) {
+}
+
+FTset8 squaredNorm_cached8(const FT* v, const int n, const FT* cache) {
+}
+void squaredNorm_cached8_reset(const FT* v, const int n, FT* cache) {
+}
+void squaredNorm_cached8_update(const FT* v, const int d, const FTset8 dx, const int n, FT* cache) {
+}
+
+
+
+

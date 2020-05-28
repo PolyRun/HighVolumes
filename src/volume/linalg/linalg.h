@@ -66,4 +66,24 @@ extern Ball_intersectCoord_cached_f_t Ball_intersectCoord_cached;
 
 FTpair Ball_intersectCoord_cached_ref(const int n, const FT r, const FT* x,const int d, FT* cache);
 
+// ----------------------------- stuff for 4/8 way calculation:
+typedef struct FTpair4 {
+   __m256d low0,hi0;
+} FTpair4;
+typedef struct FTpair8 {
+   __m256d low0,low1,hi0,hi1;
+} FTpair8;
+typedef struct FTset8 {
+   __m256d set0,set1;
+} FTset8;
+
+__m256d squaredNorm_cached4(const FT* v, const int n, const FT* cache);
+void squaredNorm_cached4_reset(const FT* v, const int n, FT* cache);
+void squaredNorm_cached4_update(const FT* v, const int d, const __m256d dx, const int n, FT* cache);
+
+FTset8 squaredNorm_cached8(const FT* v, const int n, const FT* cache);
+void squaredNorm_cached8_reset(const FT* v, const int n, FT* cache);
+void squaredNorm_cached8_update(const FT* v, const int d, const FTset8 dx, const int n, FT* cache);
+
+
 #endif
