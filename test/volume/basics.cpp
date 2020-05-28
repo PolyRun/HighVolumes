@@ -319,6 +319,81 @@ void test_4_8_sets() {
       free(v);
    }
 
+   // -------- Ball intersectCoord (cached):
+   {
+      int n=101;
+      FT* v = (FT*)(aligned_alloc(32, 4*n*sizeof(FT)));
+      FT* vcpy = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT* c = (FT*)(aligned_alloc(32, 4*sizeof(FT)));
+      
+      for(int i=0;i<4*n;i++) {v[i] = 0;}
+      squaredNorm_cached4_reset(v,n,c);
+      FT r = 3.456;
+      for(int tt=0;tt<100;tt++){
+	 int d = prng_get_random_int_in_range(0,n-1);
+         FTpair4 tp = Ball_intersectCoord_cached4(n,r,v,d,c);
+	 for(int j=0;j<4;j++) {
+            FT t0,t1;
+	    for(int i=0;i<n;i++) {vcpy[i] = v[i*4+j];}
+	    Ball_intersectCoord(n,r,vcpy,d,&t0,&t1);
+	    assert( abs(t0 - tp.low0[j]) < 0.00001 );
+	    assert( abs(t1 - tp.hi0[j]) < 0.00001 );
+	 }
+	 __m256d ttt = prng_get_random_double4_in_range(tp.low0,tp.hi0);
+	 
+	 //v[d] += ttt;
+	 __m256d vd = _mm256_load_pd(v+4*d);
+	 vd = _mm256_add_pd(vd,ttt);
+	 _mm256_store_pd(v+4*d,vd);
+         
+	 squaredNorm_cached4_update(v,d,ttt,n,c);
+      }
+      free(c);
+      free(v);
+   }
+   {
+      int n=101;
+      FT* v = (FT*)(aligned_alloc(32, 8*n*sizeof(FT)));
+      FT* vcpy = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+      FT* c = (FT*)(aligned_alloc(32, 8*sizeof(FT)));
+      
+      for(int i=0;i<8*n;i++) {v[i] = 0;}
+      squaredNorm_cached8_reset(v,n,c);
+      FT r = 3.456;
+      for(int tt=0;tt<100;tt++){
+	 int d = prng_get_random_int_in_range(0,n-1);
+         FTpair8 tp = Ball_intersectCoord_cached8(n,r,v,d,c);
+	 for(int j=0;j<4;j++) {
+            FT t0,t1;
+	    for(int i=0;i<n;i++) {vcpy[i] = v[i*8+j];}
+	    Ball_intersectCoord(n,r,vcpy,d,&t0,&t1);
+	    assert( abs(t0 - tp.low0[j]) < 0.00001 );
+	    assert( abs(t1 - tp.hi0[j]) < 0.00001 );
+	 }
+	 for(int j=0;j<4;j++) {
+            FT t0,t1;
+	    for(int i=0;i<n;i++) {vcpy[i] = v[i*8+j+4];}
+	    Ball_intersectCoord(n,r,vcpy,d,&t0,&t1);
+	    assert( abs(t0 - tp.low1[j]) < 0.00001 );
+	    assert( abs(t1 - tp.hi1[j]) < 0.00001 );
+	 }
+	 __m256d ttt0 = prng_get_random_double4_in_range(tp.low0,tp.hi0);
+	 __m256d ttt1 = prng_get_random_double4_in_range(tp.low1,tp.hi1);
+	 
+	 //v[d] += ttt;
+	 __m256d vd0 = _mm256_load_pd(v+8*d);
+	 __m256d vd1 = _mm256_load_pd(v+8*d+4);
+	 vd0 = _mm256_add_pd(vd0,ttt0);
+	 vd1 = _mm256_add_pd(vd1,ttt1);
+	 _mm256_store_pd(v+8*d,  vd0);
+	 _mm256_store_pd(v+8*d+4,vd1);
+         
+	 squaredNorm_cached8_update(v,d,{ttt0,ttt1},n,c);
+      }
+      free(c);
+      free(v);
+   }
+   
 
  
 }

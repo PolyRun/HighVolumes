@@ -85,5 +85,7 @@ FTset8 squaredNorm_cached8(const FT* v, const int n, const FT* cache);
 void squaredNorm_cached8_reset(const FT* v, const int n, FT* cache);
 void squaredNorm_cached8_update(const FT* v, const int d, const FTset8 dx, const int n, FT* cache);
 
+FTpair4 Ball_intersectCoord_cached4(const int n, const FT r, const FT* x,const int d, FT* cache);
+FTpair8 Ball_intersectCoord_cached8(const int n, const FT r, const FT* x,const int d, FT* cache);
 
 #endif

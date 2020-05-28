@@ -181,5 +181,74 @@ void squaredNorm_cached8_update(const FT* v, const int d, const FTset8 dx, const
 }
 
 
+FTpair4 Ball_intersectCoord_cached4(const int n, const FT r, const FT* x,const int d, FT* cache) {
+   //FT x2 = squaredNorm_cached(x,n,cache);
+   __m256d x2 = squaredNorm_cached4(x,n,cache);
+   
+   //FT xd = x[d]; // dot product with unit vector dim d
+   __m256d xd = _mm256_load_pd(x+4*d); // dot product with unit vector dim d
+   
+   __m256d two = _mm256_set1_pd(2.0);
+   __m256d four = _mm256_set1_pd(4.0);
+   __m256d mhalf = _mm256_set1_pd(-0.5);
+   __m256d rr = _mm256_set1_pd(r);
+
+   //FT b = 2.0*xd;
+   __m256d b = _mm256_mul_pd(two,xd);
+   //FT c = x2 - r*r;
+   __m256d c = _mm256_fmsub_pd(rr,rr,x2);// c negative!
+   
+   //FT detSqrt = sqrt(b*b - 4.0*a*c);
+   __m256d tmp = _mm256_mul_pd(four,c);
+   __m256d tmp_ = _mm256_fmadd_pd(b,b,tmp);
+   __m256d detSqrt = _mm256_sqrt_pd(tmp_);
+   
+   //tp.t1 = (-b + detSqrt) * 0.5 * ainv;
+   //tp.t0 = (-b - detSqrt) * 0.5 * ainv;
+   __m256d hi = _mm256_sub_pd(b,detSqrt);
+   __m256d lo = _mm256_add_pd(b,detSqrt);
+   FTpair4 tp;
+   tp.hi0 = _mm256_mul_pd(hi,mhalf);
+   tp.low0  = _mm256_mul_pd(lo,mhalf);
+   return tp;
+}
+FTpair8 Ball_intersectCoord_cached8(const int n, const FT r, const FT* x,const int d, FT* cache) {
+   FTset8 xx22 = squaredNorm_cached8(x,n,cache);
+   __m256d x20 = xx22.set0;
+   __m256d x21 = xx22.set1;
+
+   __m256d xd0 = _mm256_load_pd(x+8*d); // dot product with unit vector dim d
+   __m256d xd1 = _mm256_load_pd(x+8*d+4); // dot product with unit vector dim d
+   
+   __m256d two = _mm256_set1_pd(2.0);
+   __m256d four = _mm256_set1_pd(4.0);
+   __m256d mhalf = _mm256_set1_pd(-0.5);
+   __m256d rr = _mm256_set1_pd(r);
+
+   __m256d b0 = _mm256_mul_pd(two,xd0);
+   __m256d b1 = _mm256_mul_pd(two,xd1);
+   __m256d c0 = _mm256_fmsub_pd(rr,rr,x20);// c negative!
+   __m256d c1 = _mm256_fmsub_pd(rr,rr,x21);// c negative!
+   
+   __m256d tmp0 = _mm256_mul_pd(four,c0);
+   __m256d tmp1 = _mm256_mul_pd(four,c1);
+   __m256d tmp_0 = _mm256_fmadd_pd(b0,b0,tmp0);
+   __m256d tmp_1 = _mm256_fmadd_pd(b1,b1,tmp1);
+   __m256d detSqrt0 = _mm256_sqrt_pd(tmp_0);
+   __m256d detSqrt1 = _mm256_sqrt_pd(tmp_1);
+   
+   __m256d hi0 = _mm256_sub_pd(b0,detSqrt0);
+   __m256d hi1 = _mm256_sub_pd(b1,detSqrt1);
+   __m256d lo0 = _mm256_add_pd(b0,detSqrt0);
+   __m256d lo1 = _mm256_add_pd(b1,detSqrt1);
+   FTpair8 tp;
+   tp.hi0 = _mm256_mul_pd(hi0,mhalf);
+   tp.hi1 = _mm256_mul_pd(hi1,mhalf);
+   tp.low0  = _mm256_mul_pd(lo0,mhalf);
+   tp.low1  = _mm256_mul_pd(lo1,mhalf);
+   return tp;
+}
+
+
 
 
