@@ -279,6 +279,46 @@ void test_4_8_sets() {
       free(c);
       free(v);
    }
+   {
+      int n = 101;
+
+      FT* v = (FT*)(aligned_alloc(32, 8*n*sizeof(FT)));
+      FT* c = (FT*)(aligned_alloc(32, 8*sizeof(FT)));
+      
+      __m256d min1 = _mm256_set1_pd(-1);
+      __m256d plus1 = _mm256_set1_pd(1);
+
+      for(int t=0;t<100;t++) {
+         for(int i=0;i<8*n;i++) {v[i] = prng_get_random_double_in_range(-1,1);}
+
+	 squaredNorm_cached8_reset(v,n,c);
+	 for(int tt=0;tt<200;tt++) {
+	    FTset8 res = squaredNorm_cached8(v,n,c);
+            for(int j=0;j<8;j++) {
+	       FT rr = 0;
+	       for(int i=0;i<n;i++) {rr+=v[8*i+j]*v[8*i+j];}
+	       assert(abs(((double*)&res)[j]-rr) < 0.000001);
+	    }
+	    int d = prng_get_random_int_in_range(0,n-1);
+	    __m256d ttt0 = prng_get_random_double4_in_range(min1,plus1);
+	    __m256d ttt1 = prng_get_random_double4_in_range(min1,plus1);
+	    
+	    //v[d] += ttt;
+	    __m256d vd0 = _mm256_load_pd(v+8*d);
+	    __m256d vd1 = _mm256_load_pd(v+8*d+4);
+	    vd0 = _mm256_add_pd(vd0,ttt0);
+	    vd1 = _mm256_add_pd(vd1,ttt1);
+	    _mm256_store_pd(v+8*d,  vd0);
+	    _mm256_store_pd(v+8*d+4,vd1);
+            
+	    squaredNorm_cached8_update(v,d,{ttt0,ttt1},n,c);
+	 }
+      }
+      
+      free(c);
+      free(v);
+   }
+
 
  
 }
