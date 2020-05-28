@@ -621,7 +621,60 @@ FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, 
    return volume;
 }
 
+VolumeAppInput* VolumeAppInput_new(int n, int bcount) {
+   VolumeAppInput* input = (VolumeAppInput*) malloc(sizeof(VolumeAppInput));
+   // set up body:
+   input->n = n;
+   input->bcount = bcount;
+   input->body = (void**)malloc(bcount * sizeof(void*));
+   input->type = (Body_T**)malloc(bcount * sizeof(Body_T*));
+   
+   // set up config:
+   return input;
+}
 
+void VolumeAppInput_free(VolumeAppInput* input) {
+   free(input->body);
+   free(input->type);
+   free(input);
+}
+
+FT volume_app_ref(const VolumeAppInput* input) {
+   // set up arrays for transformed bodies:
+   void* body_pre[input->bcount];
+   for(int c=0;c<input->bcount;c++) {
+      body_pre[c] = input->type[c]->clone(input->body[c]);
+   }
+
+   // call preprocessing:
+   FT det;
+   preprocess_generic(
+       	    input->n,
+       	    input->bcount,
+       	    (const void**)input->body,
+       	    body_pre,
+       	    (const Body_T**)input->type,
+       	    &det
+       	    );
+   
+   // analysis of preprocessed bodies - change bodyType?
+   if(input->vol_dynamicPolytopeType) {
+      // dynamic
+      printf("Dynamic polytopeBody: \n");
+      // TODO
+   } else {
+      // static
+      printf("Static polytopeBody: \n");
+      // TODO
+   }
+
+   // call volume estimation:
+   FT vol = volume(input->n, 1, 2*input->n, input->bcount, (const void**)body_pre, (const Body_T**)input->type);
+   
+   // return:
+   printf("Volume: %.10e (det: %.10e, vol: %.10e)\n",det*vol,det,vol);
+   return det*vol;
+}
 
 FT xyz_f1(const Polytope* body, const FT r, const int n) {return body->n;}
 FT xyz_f2(const Polytope* body, const FT r, const int n) {return n;}

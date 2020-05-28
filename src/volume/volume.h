@@ -80,6 +80,29 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
 FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
 void walkCoord_coord_single(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
 
+// ---------- Volume App (stitch together preprocessing and volume estimation)
+typedef struct VolumeAppInput {
+   // input body:
+   int n;
+   int bcount;
+   void** body;
+   Body_T** type;
+   // preprocessing config:
+   //
+   // volume estimation config:
+   int vol_polytopeType; // if dynamic off
+   int vol_densePolytopeType; // if dynamic
+   int vol_sparsePolytopeType; // if dynamic
+   bool vol_dynamicPolytopeType;
+   FT vol_dynamicPolytopeType_threashold; // density, if dynamic
+} VolumeAppInput;
+
+// get new default input config. Bodies are all null.
+VolumeAppInput* VolumeAppInput_new(int n, int bcount);
+void VolumeAppInput_free(VolumeAppInput* input);
+
+// run volume app, given a Volume App Input. Returns volume.
+FT volume_app_ref(const VolumeAppInput* input);
 
 // ---------- proof of concept:
 
