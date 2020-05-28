@@ -297,9 +297,25 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    //    scaled by beta
    *det = 1;
    for (int i = 0; i < n; i++){
+      if(volumeVerbose>=2) { printf("det %i %.10e\n",i,*det); }
       *det *= Matrix_get(L,i,i);
    }
-   *det /= pow(beta_r, n);
+   if(volumeVerbose>=2) { printf("det post %.10e\n",*det); }
+   
+   // try to adjust now:
+   FT fac = pow(beta_r, n);
+   if(fac == 1.0/0.0) {
+      if(volumeVerbose>=2) { printf("pow was inf, so do step by step now:\n"); }
+      for(int i=0;i<n;i++) {
+         if(volumeVerbose>=2) { printf("adjust det %i %.10e\n",i,*det); }
+         *det /= beta_r;
+      }
+   } else {
+      *det /= fac;
+   }
+   if(volumeVerbose>=2) { printf("det scaled %.10e\n",*det); }
+   
+   assert(*det > 0 && "no degenerate cases please!");
 
    Matrix_free(L);
    //assert(false && "fixme T");
