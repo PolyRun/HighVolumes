@@ -32,8 +32,13 @@ typedef struct Body_T Body_T;
 //#define PRINT_TMI
 
 
-
-
+// --------------------- Verbose?
+extern int volumeVerbose;
+// 0: nothing
+// 1: important steps
+// 2: less important steps
+// 3: most things
+// 4: all / heavy debug
 
 // --------------------------------------------- Preprocessing
 

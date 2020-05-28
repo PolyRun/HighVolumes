@@ -14,6 +14,7 @@ class Benchmark_App : public Benchmark_base {
         prng_init();
        
        	    solved_body = solved_body_generator()->get(generator,false);
+	    if(printBody) {solved_body->print();}
 
             input = VolumeAppInput_new(solved_body->n, solved_body->bcount);
             

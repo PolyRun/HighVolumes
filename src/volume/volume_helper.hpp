@@ -280,6 +280,16 @@ public:
       add(new CLIF_OptionNumber<int>(&step_size,'c',"step_size","100000", 100, 1e7));
       add(new CLIF_OptionNumber<int>(&walk_size,'c',"walk_size","1", 1, 1e6));
       add(new CLIF_OptionNumber<int>(&rand_chunk_size,'c',"rand_chunk_size","512", 1, 524288)); // Max: 1 page(4096KB) of doubles
+      
+      add(new CLIF_Option<int>(&volumeVerbose,'c',"verbose","0", {
+                       {"0",  {0, "Nothing"}},
+	               {"1",  {1, "important steps"}},
+	               {"2",  {2, "also less important steps"}},
+	               {"3",  {3, "most things"}},
+	               {"4",  {4, "all / heavy debug"}},
+                     }));
+
+
    }
 };
 

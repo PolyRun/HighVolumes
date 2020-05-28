@@ -1,6 +1,6 @@
 #include "volume.h"
 
-
+int volumeVerbose = 0;
 
 // dotProduct:
 dotProduct_f_t dotProduct = dotProduct_ref;
@@ -12,7 +12,7 @@ preprocess_f_t preprocess_generic = preprocess_ref;
 void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det) {
    // 1. init_ellipsoid:
    //     idea: origin at 0, radius determined by min of all bodies
-   printf("init_ellipsoid\n");
+   if(volumeVerbose>0) {printf("init_ellipsoid\n"); }
 
    // compute an enclosing ball for each body and merge them
    // TODO: is it ok if center of enclosing ball is not included in intersection of all bodies? i assume yes, the proof of theorem 3.3.9 in shallow beta-cut papersuggests that we only need that the starting ellipsoid contains all bodies
@@ -67,12 +67,14 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
        }
 
    }
-
-   printf("R2: %f\nOri: ", R2);
-   for (int i = 0; i < n; i++){
-       printf("%f ", ori[i]);
+   
+   if(volumeVerbose>=2) {
+      printf("R2: %f\nOri: ", R2);
+      for (int i = 0; i < n; i++){
+          printf("%f ", ori[i]);
+      }
+      printf("\n");
    }
-   printf("\n");
    
    //FT R2 = 1e4; // TODO - ask sub bodies for radius, take min
    // Note: tests run reliably with 1e3
@@ -93,11 +95,14 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    free(ori);
    free(ori_new);
    free(dir);
-   Ellipsoid_T.print(e);
+
+   if(volumeVerbose>=2) {
+      Ellipsoid_T.print(e);
+   }
    
    
    // 2. Cut steps
-   printf("cut steps\n");
+   if(volumeVerbose>0) {printf("cut steps\n"); }
    
    const FT beta_r = 2*n;
    const FT beta = 1.0/beta_r;
@@ -210,8 +215,9 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
          //assert(false);
       }
    }
-   Ellipsoid_T.print(e);
-   printf("took %d steps.\n",step);
+
+   if(volumeVerbose>=2) { Ellipsoid_T.print(e); }
+   if(volumeVerbose >0) { printf("took %d steps.\n",step); }
 
    // 3. Transformation
    
@@ -262,7 +268,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    // B'' = B' * beta^2 
    // b'' = b' / beta
 
-   printf("Transform\n");
+   if(volumeVerbose>=2) {printf("Transform\n");}
   
    Matrix* L = Matrix_new(n,n);
    int err = cholesky_ellipsoid(e,L);
@@ -270,7 +276,7 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
       printf("The input polytope is degenerate or non-existant and the volume is 0.\n");
       exit(1);		
    }
-   Matrix_print(L);
+   if(volumeVerbose >=2) {Matrix_print(L);}
    
    //printf("\nL:\n");
    //for(int i=0;i<n;i++) {
@@ -391,7 +397,7 @@ FT *dotproduct_store_d = NULL;
 FT *dotproduct_store_x = NULL;
 
 void volume_lib_init(const int max_n, const int max_m, const int max_b) {
-   printf("volume_lib_init...\n");
+   if(volumeVerbose>0) {printf("volume_lib_init...\n");}
 
    volume_x_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
    volume_d_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
@@ -660,11 +666,11 @@ FT volume_app_ref(const VolumeAppInput* input) {
    // analysis of preprocessed bodies - change bodyType?
    if(input->vol_dynamicPolytopeType) {
       // dynamic
-      printf("Dynamic polytopeBody: \n");
+      if(volumeVerbose>0) { printf("Dynamic polytopeBody: \n"); }
       // TODO
    } else {
       // static
-      printf("Static polytopeBody: \n");
+      if(volumeVerbose>0) { printf("Static polytopeBody: \n"); }
       // TODO
    }
 
@@ -672,7 +678,7 @@ FT volume_app_ref(const VolumeAppInput* input) {
    FT vol = volume(input->n, 1, 2*input->n, input->bcount, (const void**)body_pre, (const Body_T**)input->type);
    
    // return:
-   printf("Volume: %.10e (det: %.10e, vol: %.10e)\n",det*vol,det,vol);
+   if(volumeVerbose>0) { printf("Volume: %.10e (det: %.10e, vol: %.10e)\n",det*vol,det,vol); }
    return det*vol;
 }
 

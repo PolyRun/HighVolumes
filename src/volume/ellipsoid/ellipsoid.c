@@ -281,7 +281,7 @@ bool Ellipsoid_shallowCutOracle_ref(const void* o, const Ellipsoid* e, FT* v, FT
    //for(int i=0;i<n;i++) {printf("%.12f ",x0[i]);} printf(" - x0\n");
    //for(int i=0;i<n;i++) {printf("%.12f ",x1[i]);} printf(" - x1\n");
    if(eval0 > beta2 && eval1 > beta2) {
-      printf("no cut found!\n");
+      if(volumeVerbose>=2) { printf("no cut found!\n"); }
       return false; // both local minima too far out
    }
    // choose better x:
@@ -500,12 +500,12 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
       //printf("evalX: %.20f\n",evalX);
       
       if(++count >= 100*n) {
-         printf("Warning: taking too many steps (%d), abort minimization now! (dot: %.12f)\n",count,dot);
+         if(volumeVerbose>0) { printf("Warning: taking too many steps (%d), abort minimization now! (dot: %.12f)\n",count,dot); }
 	 break;
       }
    } while(dot > 0.00000001);
    
-   printf("steps taken: %d, dot %.12f, eval: %.12f\n",count, dot, eval);
+   if(volumeVerbose>=2) { printf("ellipsoid optimization: steps taken: %d, dot %.12f, eval: %.12f\n",count, dot, eval); }
    
    //for(int i=0; i<n; i++) {printf(" %.12f", x[i]);}// debug
    //printf("\n");
@@ -519,7 +519,7 @@ void Ellipsoid_minimize(const Ellipsoid* e, const FT eFac, const Ellipsoid* f, F
 
 void Ellipsoid_A_from_T(Ellipsoid* e) {
    const int n = e->n;
-   printf("redoing A from T:\n");
+   if(volumeVerbose>=2) { printf("redoing A from T:\n"); }
 
    Matrix* L = Matrix_new(n,n);
    Matrix* Linvt = Matrix_new(n,n);

@@ -121,7 +121,7 @@ void LP_to_boundingSphere(const int n, X_get_lp_f_t x_get_lp, const void* o, FT 
     #pragma omp parallel
     {
        int tid = omp_get_thread_num();
-       printf("Hello from %d\n",tid);
+       if(volumeVerbose>=2) {printf("Hello from %d\n",tid); }
        
        FT R2_local = 0;
        FT Ori_local[n];
@@ -138,7 +138,7 @@ void LP_to_boundingSphere(const int n, X_get_lp_f_t x_get_lp, const void* o, FT 
        //get max/min bounds in each of the n dimensions
        #pragma omp for schedule(dynamic)
        for (int i = 0; i < n; i++){
-	   printf(" - thread %d does simplex for dimension %d.\n",tid,i);
+	   if(volumeVerbose>=2) {printf(" - thread %d does simplex for dimension %d.\n",tid,i); }
            FT max, min;
            for (int j = 0; j < n; j++) {
                glp_set_obj_coef(lp, j + 1, 0);
