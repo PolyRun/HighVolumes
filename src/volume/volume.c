@@ -636,6 +636,12 @@ VolumeAppInput* VolumeAppInput_new(int n, int bcount) {
    input->type = (Body_T**)malloc(bcount * sizeof(Body_T*));
    
    // set up config:
+   input->vol_polytopeType = 1; // PolytopeT by default
+   input->vol_densePolytopeType = 1; // PolytopeT for dense dynamic
+   input->vol_sparsePolytopeType = 2; // PolytopeCSC for sparse dynamic
+   input->vol_dynamicPolytopeType = false; // static -> PolytopeT
+   input->vol_dynamicPolytopeType_threashold = 0.5;
+   input->vol_optimizeBody = false;
    return input;
 }
 
@@ -664,18 +670,67 @@ FT volume_app_ref(const VolumeAppInput* input) {
        	    );
    
    // analysis of preprocessed bodies - change bodyType?
+   void* body_vol[input->bcount];
+   Body_T* type_vol[input->bcount];
+   for(int c=0;c<input->bcount;c++) {
+      body_vol[c] = body_pre[c];
+      type_vol[c] = input->type[c];
+   }
+
    if(input->vol_dynamicPolytopeType) {
       // dynamic
       if(volumeVerbose>0) { printf("Dynamic polytopeBody: \n"); }
-      // TODO
+      assert(false);
    } else {
       // static
       if(volumeVerbose>0) { printf("Static polytopeBody: \n"); }
-      // TODO
+      for(int c=0;c<input->bcount;c++) {
+         if(input->type[c] == &Polytope_T) {
+	    //type[c]->cacheReset(body[c],x,cache[c]);
+	    switch(input->vol_polytopeType) {
+            case 0: // row major
+	       break;
+	    case 1: // column major
+	       {
+                  if(volumeVerbose>0) { printf(" - PolytopeT \n"); }
+	          void* tmp = body_vol[c];
+	          body_vol[c] = Polytope_to_PolytopeT(tmp);
+	          type_vol[c] = &PolytopeT_T;
+                  input->type[c]->free(tmp);
+	          break;
+	       }
+            case 2: // CSC format
+       	       {
+                  if(volumeVerbose>0) { printf(" - PolytopeCSC \n"); }
+	          void* tmp = body_vol[c];
+	          body_vol[c] = Polytope_to_PolytopeCSC(tmp);
+	          type_vol[c] = &PolytopeCSC_T;
+                  input->type[c]->free(tmp);
+	          break;
+	       }
+       	    case 3: // JIT format
+       	       {
+                  if(volumeVerbose>0) { printf(" - PolytopeJIT \n"); }
+	          void* tmp = body_vol[c];
+	          body_vol[c] = Polytope_to_PolytopeJIT(tmp);
+	          type_vol[c] = &PolytopeJIT_T;
+                  input->type[c]->free(tmp);
+	          break;
+	       }
+	    default:
+	       printf("ERROR: could not find polytopeType %d!\n",input->vol_polytopeType);
+	       assert(false && "bad polytopeType");
+	    }
+	    if(volumeVerbose>=2) {type_vol[c]->print(body_vol[c]);}
+
+	 } else {
+	    // leave as is.
+	 }
+      }
    }
 
    // call volume estimation:
-   FT vol = volume(input->n, 1, 2*input->n, input->bcount, (const void**)body_pre, (const Body_T**)input->type);
+   FT vol = volume(input->n, 1, 2*input->n, input->bcount, (const void**)body_vol, (const Body_T**)type_vol);
    
    // return:
    if(volumeVerbose>0) { printf("Volume: %.10e (det: %.10e, vol: %.10e)\n",det*vol,det,vol); }

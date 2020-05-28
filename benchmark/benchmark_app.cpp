@@ -18,6 +18,8 @@ class Benchmark_App : public Benchmark_base {
 
             input = VolumeAppInput_new(solved_body->n, solved_body->bcount);
             
+	    input->vol_polytopeType = polytopeType;
+
 	    for(int b=0;b<solved_body->bcount;b++) {
 	       input->body[b] = solved_body->body[b];
 	       input->type[b] = solved_body->type[b];

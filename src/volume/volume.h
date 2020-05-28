@@ -100,6 +100,7 @@ typedef struct VolumeAppInput {
    int vol_sparsePolytopeType; // if dynamic
    bool vol_dynamicPolytopeType;
    FT vol_dynamicPolytopeType_threashold; // density, if dynamic
+   bool vol_optimizeBody; // reorder constraints for better access pattern
 } VolumeAppInput;
 
 // get new default input config. Bodies are all null.
