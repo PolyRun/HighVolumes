@@ -20,6 +20,8 @@ typedef void (*intersect_f_t)(const void*,const FT*,const FT*,FT*,FT*);
 
 // input: body, point x, cooordinate i, cache  -  output t0, t1
 typedef void (*intersectCoord_f_t)(const void*,const FT*,const int,FT*,FT*,void*);
+typedef FTpair4 (*intersectCoord4_f_t)(const void*,const FT*,const int,void*);
+typedef FTpair8 (*intersectCoord8_f_t)(const void*,const FT*,const int,void*);
 
 // input: body - output: number of bites cache required
 typedef int (*cacheAlloc_f_t)(const void*);
@@ -27,9 +29,13 @@ typedef int (*cacheAlloc_f_t)(const void*);
 // input: body, vector x, cache
 // for polytopes: computes all m dotproducts Ai x and stores each in cache[i]
 typedef void (*cacheReset_f_t)(const void*, const FT*, void*);
+typedef void (*cacheReset4_f_t)(const void*, const FT*, void*);
+typedef void (*cacheReset8_f_t)(const void*, const FT*, void*);
 
 // input: body, dim d, dx on that dim, cache
 typedef void (*cacheUpdateCoord_f_t)(const void*, const int, const FT, void*);
+typedef void (*cacheUpdateCoord4_f_t)(const void*, const int, const __m256d, void*);
+typedef void (*cacheUpdateCoord8_f_t)(const void*, const int, const FTset8, void*);
 
 // Separation oracle used for preprocessing:
 //   If body inside E( (2n)^-2 * A, a):
@@ -76,6 +82,13 @@ struct Body_T {
    transform_f_t transform;
    boundingSphere_f_t boundingSphere;
    normal_f_t normal;
+   // 4/8-set:
+   intersectCoord4_f_t intersectCoord4;
+   cacheReset4_f_t cacheReset4;
+   cacheUpdateCoord4_f_t cacheUpdateCoord4;
+   intersectCoord8_f_t intersectCoord8;
+   cacheReset8_f_t cacheReset8;
+   cacheUpdateCoord8_f_t cacheUpdateCoord8;
 };
 
 

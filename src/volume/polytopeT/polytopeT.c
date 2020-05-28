@@ -12,7 +12,13 @@ Body_T PolytopeT_T = {
 	.cacheUpdateCoord = PolytopeT_cacheUpdateCoord_ref,
         .shallowCutOracle = PolytopeT_shallowCutOracle_ref,
 	.transform = PolytopeT_transform_ref,
-        .boundingSphere = PolytopeT_bounding_ref
+        .boundingSphere = PolytopeT_bounding_ref,
+        .intersectCoord4 = PolytopeT_intersectCoord4_ref,
+        .intersectCoord8 = PolytopeT_intersectCoord8_ref,
+	.cacheReset4 = PolytopeT_cacheReset4_ref,
+	.cacheReset8 = PolytopeT_cacheReset8_ref,
+	.cacheUpdateCoord4 = PolytopeT_cacheUpdateCoord4_ref,
+	.cacheUpdateCoord8 = PolytopeT_cacheUpdateCoord8_ref,
 };
 
 PolytopeT* PolytopeT_new(int n, int m) {

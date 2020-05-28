@@ -699,3 +699,31 @@ void PolytopeT_intersectCoord_vectorized(const void *p, const FT* x,
    *t0_out = t0;
    *t1_out = t1;
 }
+
+
+
+FTpair4 PolytopeT_intersectCoord4_ref(const void* o, const FT* x, const int d, void* cache) {
+   //const PolytopeT* p = (PolytopeT*)o;
+   //FT* c = (FT*)cache; // set c[i] = bi - Ai*x
+   //const int n = p->n;
+   //const int m = p->m;
+   //for(int i=0; i<m; i++) {
+   //   FT dot = PolytopeT_get_b(p,i); // watch the b!
+   //   for(int j=0;j<n;j++) {
+   //      dot -= x[j] * PolytopeT_get_a(p,i,j);  // watch the minus!
+   //   }
+   //   c[i] = dot;
+   //}
+}
+FTpair8 PolytopeT_intersectCoord8_ref(const void* o, const FT* x, const int d, void* cache) {
+}
+void PolytopeT_cacheReset4_ref(const void* o, const FT* x, void* cache) {
+}
+void PolytopeT_cacheReset8_ref(const void *p, const FT *x, void *cache) {
+}
+void PolytopeT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache) {
+}
+void PolytopeT_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache) {
+}
+
+

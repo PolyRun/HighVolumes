@@ -29,6 +29,12 @@ void PolytopeT_cacheUpdateCoord_b_vec(const void *p, const int d, const FT dx, v
 
 
 
+FTpair4 PolytopeT_intersectCoord4_ref(const void* o, const FT* x, const int d, void* cache);
+FTpair8 PolytopeT_intersectCoord8_ref(const void* o, const FT* x, const int d, void* cache);
+void PolytopeT_cacheReset4_ref(const void* o, const FT* x, void* cache);
+void PolytopeT_cacheReset8_ref(const void *p, const FT *x, void *cache);
+void PolytopeT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache);
+void PolytopeT_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache);
 
 #endif // HEADER_POLYTOPET_INTERSECTCOORD_H
 
