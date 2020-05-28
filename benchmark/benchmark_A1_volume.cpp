@@ -5,8 +5,8 @@
 
 class Benchmark_A1 : public Benchmark_base {
     public:
-        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody)
-		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeType(polytopeType), polytopeOptimize(polytopeOptimize), printBody(printBody) {}
+        Benchmark_A1(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody, const bool doPreprocess)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeType(polytopeType), polytopeOptimize(polytopeOptimize), printBody(printBody), doPreprocess(doPreprocess) {}
 
     protected:
         void initialize () {
@@ -14,6 +14,15 @@ class Benchmark_A1 : public Benchmark_base {
         prng_init();
        
        	    solved_body = solved_body_generator()->get(generator,false);
+	    
+	    if(doPreprocess) {
+	       std::cout << "Preprocessing as requested...\n";
+	       Solved_Body* tmp = solved_body->preprocess();
+	       delete solved_body;
+	       solved_body = tmp;
+	       std::cout << "Preprocessing done.\n";
+	    }
+
 	    if(polytopeOptimize) {
 	       solved_body->optimize();
 	    }
@@ -61,13 +70,14 @@ class Benchmark_A1 : public Benchmark_base {
 	int polytopeType = 0;
 	bool polytopeOptimize;
 	const bool printBody;
+	const bool doPreprocess;
 };
 
 
 class Benchmark_Polyvest_Vol : public Benchmark_base {
     public:
-        Benchmark_Polyvest_Vol(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody)
-		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeOptimize(polytopeOptimize), printBody(printBody) {}
+        Benchmark_Polyvest_Vol(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody, const bool doPreprocess)
+		: Benchmark_base(name, reps, convergence, warmup_reps, time_ci_alpha_, results_ci_alpha_), generator(generator), polytopeOptimize(polytopeOptimize), printBody(printBody), doPreprocess(doPreprocess) {}
 
     protected:
         void initialize () {
@@ -76,6 +86,14 @@ class Benchmark_Polyvest_Vol : public Benchmark_base {
             solved_body = solved_body_generator()->get(generator,false);
             assert(solved_body->bcount == 1 && "Can maximally have one body for Polyvest.");
             assert(solved_body->type[0] == &Polytope_T && "Can only have polytopes for Polyvest.");
+ 
+	    if(doPreprocess) {
+	       std::cout << "Preprocessing as requested...\n";
+	       Solved_Body* tmp = solved_body->preprocess();
+	       delete solved_body;
+	       solved_body = tmp;
+	       std::cout << "Preprocessing done.\n";
+	    }
 
 	    if(polytopeOptimize) {
 	       solved_body->optimize();
@@ -118,6 +136,7 @@ class Benchmark_Polyvest_Vol : public Benchmark_base {
 	vol::Polyvest_p *Q;
 	bool polytopeOptimize;
 	const bool printBody;
+	const bool doPreprocess;
 };
 
 
@@ -159,15 +178,20 @@ int main(int argc, char *argv[]){
                                      {"4",{4, "Polyvest: alternative lib, only for single body polytopes - will preprocess first!"}},
                                     }));
 
+    bool doPreprocess = false;
+    cliFun.add(new CLIF_Option<bool>(&doPreprocess,'b',"doPreprocess","false", {
+                                                     {"false",{false,"no preprocessing (may assert)."}},
+						     {"true", {true, "Preprocess before running benchmark (could take a while)."}} }));
+
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
     
     if(polytopeType==4) {
-        Benchmark_Polyvest_Vol b("A1_volume", r, true, warmup, generator, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody);
+        Benchmark_Polyvest_Vol b("A1_volume", r, true, warmup, generator, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody, doPreprocess);
         b.run_benchmark();
     } else {
-        Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody);
+        Benchmark_A1 b("A1_volume", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody, doPreprocess);
         b.run_benchmark();
     }
 }
