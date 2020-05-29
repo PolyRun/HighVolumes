@@ -479,6 +479,123 @@ void test_body_intersectCoord4(const int n, Body_T* type, void* body) {
    free(cache);
 }
 void test_body_intersectCoord8(const int n, Body_T* type, void* body) {
+   FT* x = (FT*)(aligned_alloc(32, 8*n*sizeof(FT)));
+   FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   void* cache = aligned_alloc(32, 8*type->cacheAlloc(body));
+   
+   //type->print(body);
+
+   // test cacheReset -> intersectCoord - (use inside to validate)
+   for(int t=0;t<200;t++){
+      for(int i=0;i<8*n;i++) {x[i]=prng_get_random_double_in_range(-0.5/n,0.5/n);}
+      if(t==0) {for(int i=0;i<8*n;i++) {x[i]=0;}}
+      //assert(type->inside(body, x));
+      type->cacheReset8(body,x,cache);
+      for(int d=0;d<n;d++) {
+         FTpair8 tp = type->intersectCoord8(body,x,d,cache);
+	 for(int j=0;j<4;j++) {
+	    assert(0 <= tp.hi0[j]);
+	    assert(tp.low0[j] <= 0);
+	 }
+       	 for(int j=0;j<4;j++) {
+	    assert(0 <= tp.hi1[j]);
+	    assert(tp.low1[j] <= 0);
+	 }
+       	 // check out those boundaries:
+       	 for(int j=0;j<4;j++) {
+       	    for(int i=0;i<n;i++) {x0[i] = x[i*8+j]; x1[i]=x[i*8+j];}
+            x0[d] += tp.low0[j] -0.000001;
+            x1[d] += tp.hi0[j]  +0.000001;
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x0[i]);} printf("\n");
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x1[i]);} printf("\n");
+            assert(!type->inside(body, x0));
+            assert(!type->inside(body, x1));
+            x0[d] += 0.000002;
+            x1[d] -= 0.000002;
+            assert(type->inside(body, x0));
+            assert(type->inside(body, x1));
+	 }
+       	 for(int j=0;j<4;j++) {
+       	    for(int i=0;i<n;i++) {x0[i] = x[i*8+j+4]; x1[i]=x[i*8+j+4];}
+            x0[d] += tp.low1[j] -0.000001;
+            x1[d] += tp.hi1[j]  +0.000001;
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x0[i]);} printf("\n");
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x1[i]);} printf("\n");
+            assert(!type->inside(body, x0));
+            assert(!type->inside(body, x1));
+            x0[d] += 0.000002;
+            x1[d] -= 0.000002;
+            assert(type->inside(body, x0));
+            assert(type->inside(body, x1));
+	 }
+      }
+   }
+
+   // test intersectCoord and cacheUpdateCoord
+   // run sequence of intersect and stepping
+   // see if cache stays coherent to produce good results
+   for(int t=0;t<2;t++){
+      for(int i=0;i<8*n;i++) {x[i]=prng_get_random_double_in_range(-0.5/n,0.5/n);}
+      type->cacheReset8(body,x,cache);
+      
+      for(int tt=0;tt<200;tt++) {
+         int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
+         FTpair8 tp = type->intersectCoord8(body,x,dd,cache);
+	 for(int j=0;j<4;j++) {
+	    assert(0 <= tp.hi0[j]);
+	    assert(tp.low0[j] <= 0);
+	 }
+ 	 for(int j=0;j<4;j++) {
+	    assert(0 <= tp.hi1[j]);
+	    assert(tp.low1[j] <= 0);
+	 }
+	 // check out those boundaries:
+       	 for(int j=0;j<4;j++) {
+       	    for(int i=0;i<n;i++) {x0[i] = x[i*8+j]; x1[i]=x[i*8+j];}
+            x0[dd] += tp.low0[j] -0.000001;
+            x1[dd] += tp.hi0[j]  +0.000001;
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x0[i]);} printf("\n");
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x1[i]);} printf("\n");
+            assert(!type->inside(body, x0));
+            assert(!type->inside(body, x1));
+            x0[dd] += 0.000002;
+            x1[dd] -= 0.000002;
+            assert(type->inside(body, x0));
+            assert(type->inside(body, x1));
+	 }
+       	 for(int j=0;j<4;j++) {
+       	    for(int i=0;i<n;i++) {x0[i] = x[i*8+j+4]; x1[i]=x[i*8+j+4];}
+            x0[dd] += tp.low1[j] -0.000001;
+            x1[dd] += tp.hi1[j]  +0.000001;
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x0[i]);} printf("\n");
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x1[i]);} printf("\n");
+            assert(!type->inside(body, x0));
+            assert(!type->inside(body, x1));
+            x0[dd] += 0.000002;
+            x1[dd] -= 0.000002;
+            assert(type->inside(body, x0));
+            assert(type->inside(body, x1));
+	 }
+         
+         // random walk now:
+         __m256d t0 = prng_get_random_double4_in_range(tp.low0,tp.hi0);
+         __m256d t1 = prng_get_random_double4_in_range(tp.low1,tp.hi1);
+         // x[dd] += t;
+	 __m256d xdd0 = _mm256_load_pd(x+dd*8);
+	 __m256d xdd1 = _mm256_load_pd(x+dd*8+4);
+	 __m256d xdd_t0 = _mm256_add_pd(xdd0,t0);
+	 __m256d xdd_t1 = _mm256_add_pd(xdd1,t1);
+	 _mm256_store_pd(x+dd*8,   xdd_t0);
+	 _mm256_store_pd(x+dd*8+4, xdd_t1);
+         type->cacheUpdateCoord8(body, dd, {t0,t1}, cache);
+      }
+   }
+ 
+   free(x);
+   free(x0);
+   free(x1);
+   free(cache);
 }
 
 
