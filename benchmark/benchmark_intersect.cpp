@@ -162,26 +162,25 @@ class Benchmark_intersectCoord4 : public Benchmark_intersectCoord {
     	void finalize() {
 	    pc_stack().reset();
             {
-		///  if(intersectCoord_intersect){
-		///      PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord4);
-                ///      frame.costf()(solved_body->body[0]);
-		///  }
+		if(intersectCoord_intersect){
+		    PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord4);
+                    frame.costf()(solved_body->body[0]);
+		}
 
-                ///  if(intersectCoord_update) {
-		///     //pc_stack().log(0, 0, "random double - TODO");
-                ///  {// frame for random double_in_range
-                ///      PC_Frame<random_double4_in_range_cost_f> frame((void*) prng_get_random_double4_in_range);
-                ///      frame.costf()(NULL);
-                ///  } 
-	        ///     // Reading and writing x[dd] with one add in between
-                ///     pc_stack().log(4, 8, "x[dd] += t;");
-                ///     
-                ///     // body intersectCoord
-		///     {
-	        ///         PC_Frame<cacheUpdateCoord4_cost_f> frame((void*) solved_body->type[0]->cacheUpdateCoord4);
-                ///         frame.costf()(solved_body->body[0]);
-		///     }
-		///  }
+                if(intersectCoord_update) {
+                   {// frame for random double_in_range
+                       PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double4_in_range);
+                       frame.costf()(NULL);
+                   } 
+	           // Reading and writing x[dd] with one add in between
+                   pc_stack().log(4, 8*sizeof(FT), "x[dd] += t;");
+                   
+                   // body intersectCoord
+		   {
+	               PC_Frame<cacheUpdateCoord_cost_f> frame((void*) solved_body->type[0]->cacheUpdateCoord4);
+                       frame.costf()(solved_body->body[0]);
+		   }
+		}
 	    }
             pc_stack().print();
 	    pc_flops = pc_stack().flops();
@@ -206,6 +205,72 @@ class Benchmark_intersectCoord4 : public Benchmark_intersectCoord {
 	    return 0;
 	}
 };
+
+class Benchmark_intersectCoord8 : public Benchmark_intersectCoord {
+    public:
+        Benchmark_intersectCoord8(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody, const bool intersectCoord_intersect, const bool intersectCoord_update)
+		: Benchmark_intersectCoord(name, reps, convergence, warmup_reps, generator, polytopeType, polytopeOptimize, time_ci_alpha_, results_ci_alpha_, printBody,intersectCoord_intersect,intersectCoord_update) {}
+	void reset () {
+	    int n = solved_body->n;
+            for(int i=0; i<8*n;i++) {
+	        x[i] = prng_get_random_double_0_1()*0.1;
+	        d[i] = prng_get_random_double_normal();
+	    }
+	    solved_body->type[0]->cacheReset8(solved_body->body[0], x, cache);
+	    dd = prng_get_random_int_in_range(0,n-1);
+	}
+    
+    	void finalize() {
+	    pc_stack().reset();
+            {
+		if(intersectCoord_intersect){
+		    PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord8);
+                    frame.costf()(solved_body->body[0]);
+		}
+
+                if(intersectCoord_update) {
+                   {// frame for random double_in_range
+                       PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double4_in_range,2);
+                       frame.costf()(NULL);
+                   } 
+	           // Reading and writing x[dd] with one add in between
+                   pc_stack().log(8, 16*sizeof(FT), "x[dd] += t;");
+                   
+                   // body intersectCoord
+		   {
+	               PC_Frame<cacheUpdateCoord_cost_f> frame((void*) solved_body->type[0]->cacheUpdateCoord8);
+                       frame.costf()(solved_body->body[0]);
+		   }
+		}
+	    }
+            pc_stack().print();
+	    pc_flops = pc_stack().flops();
+	    pc_bytes = pc_stack().bytes();
+	}
+    protected:
+        double run () {
+	    //FT t0=-1, t1=1;
+	    FTpair8 tp;
+	    if(intersectCoord_intersect) {
+	       tp = solved_body->type[0]->intersectCoord8(solved_body->body[0], x, dd, cache);
+	    }
+	    if(intersectCoord_update) {
+	       // step now
+	       __m256d t0 = prng_get_random_double4_in_range(tp.low0,tp.hi0);
+	       __m256d t1 = prng_get_random_double4_in_range(tp.low1,tp.hi1);
+               //x[dd] += t;
+	       __m256d xdd0 = _mm256_load_pd(x+dd*8);
+	       __m256d xdd1 = _mm256_load_pd(x+dd*8+4);
+	       __m256d xdd_t0 = _mm256_add_pd(xdd0,t0);
+	       __m256d xdd_t1 = _mm256_add_pd(xdd1,t1);
+	       _mm256_store_pd(x+dd*8,   xdd_t0);
+	       _mm256_store_pd(x+dd*8+4, xdd_t1);
+               solved_body->type[0]->cacheUpdateCoord8(solved_body->body[0], dd, {t0,t1}, cache);
+	    }
+	    return 0;
+	}
+};
+
 
 
 int main(int argc, char *argv[]){
@@ -290,8 +355,10 @@ int main(int argc, char *argv[]){
               b.run_benchmark();
 	   } break;
 	   case 8:
-	      assert(false && "8");
-	      break;
+	   {
+              Benchmark_intersectCoord8 b("intersectCoord", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody, intersectCoord_intersect, intersectCoord_update);
+              b.run_benchmark();
+	   } break;
 	   default:
 	      assert(false && "not implemented for this intersectSet!");
 	      break;

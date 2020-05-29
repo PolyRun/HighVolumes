@@ -16,6 +16,7 @@ typedef void (*random_double_normal_cost_f)(const void* o);
 void Random_int_cost_ref(const void * o);
 void Random_int_in_range_cost_ref(const void * o);
 void Random_double_in_range_cost_ref(const void * o);
+void Random_double4_in_range_cost_ref(const void * o);
 void Random_double_0_1_cost_ref(const void * o);
 void Random_double_normal_cost_ref(const void * o);
 
@@ -58,6 +59,14 @@ void PolytopeT_cacheUpdateCoord_b_cost_vec(const void* o);
 void PolytopeT_cacheReset_cost_ref(const void* o);
 void PolytopeT_cacheReset_b_cost_ref(const void* o);
 void PolytopeT_cacheReset_b_cost_vec(const void* o);
+
+void PolytopeT_intersectCoord4_cost_ref(const void* o);
+void PolytopeT_intersectCoord8_cost_ref(const void* o);
+void PolytopeT_cacheUpdateCoord4_cost_ref(const void* o);
+void PolytopeT_cacheUpdateCoord8_cost_ref(const void* o);
+void PolytopeT_cacheReset4_cost_ref(const void* o);
+void PolytopeT_cacheReset8_cost_ref(const void* o);
+
 
 // ----------------------------------------------- Ellipsoid
 void Ellipsoid_intersect_cost_ref(const void* o);

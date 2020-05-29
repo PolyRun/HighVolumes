@@ -47,6 +47,20 @@ void Random_double_in_range_cost_ref(const void* o){
     // 2 add
     pc_stack().log(5, 0, "random double_in_range");
 }
+void Random_double4_in_range_cost_ref(const void* o){
+
+    {// frame for random int
+        PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int);
+        frame.costf()((NULL));
+    }
+
+    // 1 div
+    // 3 mul
+    // 2 add
+    //  all times 4
+    pc_stack().log(5*4, 0, "random double4_in_range");
+}
+
 
 void Random_double_0_1_cost_ref(const void* o){
 
@@ -324,6 +338,71 @@ void PolytopeT_cacheReset_b_cost_ref(const void* o) {
 void PolytopeT_cacheReset_b_cost_vec(const void* o) {
    PolytopeT_cacheReset_b_cost_ref(o);
 }
+void PolytopeT_intersectCoord4_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   
+   // read m: Ainv column
+   // read 4*m: cache
+   // cmp: 2*m*4 (non-zero check included)
+   // mul: 4*m
+   // max/min: 2*m*4
+   pc_stack().log(20*m, 5*m*sizeof(FT), "intersect");
+}
+void PolytopeT_intersectCoord8_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   
+   // read m: Ainv column
+   // read 8*m: cache
+   // cmp: 2*m*8 (non-zero check included)
+   // mul: m*8
+   // max/min: 2*m*8
+   pc_stack().log(40*m, 9*m*sizeof(FT), "intersect");
+}
+void PolytopeT_cacheUpdateCoord4_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   // read m: clumn of A
+   // read m*4: cache
+   // write m*4: cache
+   // mul m*4
+   // add m*4
+   pc_stack().log(8*m,9*m*sizeof(FT), "update cached dotProduct");
+}
+void PolytopeT_cacheUpdateCoord8_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   // read m: clumn of A
+   // read m*8: cache
+   // write m*8: cache
+   // mul m*8
+   // add m*8
+   pc_stack().log(16*m,17*m*sizeof(FT), "update cached dotProduct");
+}
+void PolytopeT_cacheReset4_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   // read n*m + 4*n + m + 2*m*4   (A, x, b, rw c)
+   // mul n*m*4
+   // add n*m*4
+   pc_stack().log(8*m*n,(n*m + 4*n + 9*m)*sizeof(FT), "recompute dotproduct with b");
+}
+void PolytopeT_cacheReset8_cost_ref(const void* o) {
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   // read n*m + 8*n + m + 2*m*8   (A, x, b, rw c)
+   // mul n*m*8
+   // add n*m*8
+   pc_stack().log(16*m*n,(n*m + 8*n + 17*m)*sizeof(FT), "recompute dotproduct with b");
+}
+
 
 void Ellipsoid_intersect_cost_ref(const void* o) {
    const Ellipsoid* e = (Ellipsoid*)o;

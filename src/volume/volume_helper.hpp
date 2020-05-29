@@ -83,6 +83,13 @@ public:
       pc_stack().add((void*)PolytopeT_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset_cost_ref,"PolytopeT_cacheReset_ref"));
       pc_stack().add((void*)PolytopeT_cacheReset_b_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset_b_cost_ref,"PolytopeT_cacheReset_b_ref"));
       pc_stack().add((void*)PolytopeT_cacheReset_b_vec, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset_b_cost_vec,"PolytopeT_cacheReset_b_vec"));
+      
+      pc_stack().add((void*)PolytopeT_intersectCoord4_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord4_cost_ref,"PolytopeT_intersectCoord4_ref"));
+      pc_stack().add((void*)PolytopeT_intersectCoord8_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeT_intersectCoord8_cost_ref,"PolytopeT_intersectCoord8_ref"));
+      pc_stack().add((void*)PolytopeT_cacheUpdateCoord4_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord4_cost_ref,"PolytopeT_cacheUpdateCoord4_ref"));
+      pc_stack().add((void*)PolytopeT_cacheUpdateCoord8_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeT_cacheUpdateCoord8_cost_ref,"PolytopeT_cacheUpdateCoord8_ref"));
+      pc_stack().add((void*)PolytopeT_cacheReset4_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset4_cost_ref,"PolytopeT_cacheReset4_ref"));
+      pc_stack().add((void*)PolytopeT_cacheReset8_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeT_cacheReset8_cost_ref,"PolytopeT_cacheReset8_ref"));
  
       // Ellipsoid
       pc_stack().add((void*)Ellipsoid_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(Ellipsoid_intersect_cost_ref,"Ellipsoid_intersect_ref"));
@@ -152,6 +159,7 @@ public:
       pc_stack().add((void *)prng_get_random_int, new PC_Cost_Wrapper<random_int_cost_f>(Random_int_cost_ref, "Random int"));
       pc_stack().add((void *)prng_get_random_int_in_range, new PC_Cost_Wrapper<random_int_in_range_cost_f>(Random_int_in_range_cost_ref, "Random int_in_range"));
       pc_stack().add((void *)prng_get_random_double_in_range, new PC_Cost_Wrapper<random_double_in_range_cost_f>(Random_double_in_range_cost_ref, "Random double_in_range"));
+      pc_stack().add((void *)prng_get_random_double4_in_range, new PC_Cost_Wrapper<random_double_in_range_cost_f>(Random_double4_in_range_cost_ref, "Random double4_in_range"));
       pc_stack().add((void *)prng_get_random_double_0_1, new PC_Cost_Wrapper<random_double_0_1_cost_f>(Random_double_0_1_cost_ref, "Random double_0_1"));
       pc_stack().add((void *)prng_get_random_double_normal, new PC_Cost_Wrapper<random_double_normal_cost_f>(Random_double_normal_cost_ref, "Random double_normal"));
       
