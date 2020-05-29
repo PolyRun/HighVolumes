@@ -82,6 +82,7 @@ set_target_properties(benchmark_intersect PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
+   COMPILE_FLAGS "-march=native"
 )
 
 

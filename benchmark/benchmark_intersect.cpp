@@ -1,4 +1,5 @@
 #include "benchmark.hpp"
+#include <immintrin.h>
 #include "../src/volume/volume_helper.hpp"
 
 
@@ -34,12 +35,12 @@ class Benchmark_intersect : public Benchmark_base {
 	    assert(solved_body->is_normalized);
 	    assert(solved_body->bcount == 1);
 	    
-	    int n = solved_body->n;
-	    x = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
-	    d = (FT*)(aligned_alloc(32, n*sizeof(FT))); // align this to 32
+	    int n = solved_body->n; // allocate more memory for 4/8 sets!
+	    x = (FT*)(aligned_alloc(32, 8*n*sizeof(FT))); // align this to 32
+	    d = (FT*)(aligned_alloc(32, 8*n*sizeof(FT))); // align this to 32
 	    
 	    int cache_size = solved_body->type[0]->cacheAlloc(solved_body->body[0]);
-            cache = aligned_alloc(32, cache_size); // align this to 32
+            cache = aligned_alloc(32, 8*cache_size); // align this to 32
 
 	    reset();
         }
@@ -97,7 +98,6 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
     public:
         Benchmark_intersectCoord(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody, const bool intersectCoord_intersect, const bool intersectCoord_update)
 		: Benchmark_intersect(name, reps, convergence, warmup_reps, generator, polytopeType, polytopeOptimize, time_ci_alpha_, results_ci_alpha_, printBody), intersectCoord_intersect(intersectCoord_intersect), intersectCoord_update(intersectCoord_update) {}
-    
     	void finalize() {
 	    pc_stack().reset();
             {
@@ -144,6 +144,70 @@ class Benchmark_intersectCoord : public Benchmark_intersect {
 	const bool intersectCoord_update;
 };
 
+
+class Benchmark_intersectCoord4 : public Benchmark_intersectCoord {
+    public:
+        Benchmark_intersectCoord4(std::string name, int reps, bool convergence, int warmup_reps, const std::string &generator, const int polytopeType, const bool polytopeOptimize, const double time_ci_alpha_, const double results_ci_alpha_, const bool printBody, const bool intersectCoord_intersect, const bool intersectCoord_update)
+		: Benchmark_intersectCoord(name, reps, convergence, warmup_reps, generator, polytopeType, polytopeOptimize, time_ci_alpha_, results_ci_alpha_, printBody,intersectCoord_intersect,intersectCoord_update) {}
+	void reset () {
+	    int n = solved_body->n;
+            for(int i=0; i<4*n;i++) {
+	        x[i] = prng_get_random_double_0_1()*0.1;
+	        d[i] = prng_get_random_double_normal();
+	    }
+	    solved_body->type[0]->cacheReset4(solved_body->body[0], x, cache);
+	    dd = prng_get_random_int_in_range(0,n-1);
+	}
+    
+    	void finalize() {
+	    pc_stack().reset();
+            {
+		///  if(intersectCoord_intersect){
+		///      PC_Frame<intersect_cost_f> frame((void*)solved_body->type[0]->intersectCoord4);
+                ///      frame.costf()(solved_body->body[0]);
+		///  }
+
+                ///  if(intersectCoord_update) {
+		///     //pc_stack().log(0, 0, "random double - TODO");
+                ///  {// frame for random double_in_range
+                ///      PC_Frame<random_double4_in_range_cost_f> frame((void*) prng_get_random_double4_in_range);
+                ///      frame.costf()(NULL);
+                ///  } 
+	        ///     // Reading and writing x[dd] with one add in between
+                ///     pc_stack().log(4, 8, "x[dd] += t;");
+                ///     
+                ///     // body intersectCoord
+		///     {
+	        ///         PC_Frame<cacheUpdateCoord4_cost_f> frame((void*) solved_body->type[0]->cacheUpdateCoord4);
+                ///         frame.costf()(solved_body->body[0]);
+		///     }
+		///  }
+	    }
+            pc_stack().print();
+	    pc_flops = pc_stack().flops();
+	    pc_bytes = pc_stack().bytes();
+	}
+    protected:
+        double run () {
+	    //FT t0=-1, t1=1;
+	    FTpair4 tp;
+	    if(intersectCoord_intersect) {
+	       tp = solved_body->type[0]->intersectCoord4(solved_body->body[0], x, dd, cache);
+	    }
+	    if(intersectCoord_update) {
+	       // step now
+	       __m256d t = prng_get_random_double4_in_range(tp.low0,tp.hi0);
+               //x[dd] += t;
+	       __m256d xdd = _mm256_load_pd(x+dd*4);
+	       __m256d xdd_t = _mm256_add_pd(xdd,t);
+	       _mm256_store_pd(x+dd*4, xdd_t);
+               solved_body->type[0]->cacheUpdateCoord4(solved_body->body[0], dd, t, cache);
+	    }
+	    return 0;
+	}
+};
+
+
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
     CLIFunctionsVolume cliFun(cli);
@@ -174,7 +238,15 @@ int main(int argc, char *argv[]){
                                                      {"intersectCoord_only", {{true ,{true ,false }},  "coordinate direction intersect only, no update"}},
                                                      {"cacheUpdateCoord", {{true ,{false ,true }},  "coordinate direction cache update, no intersect"}},
     }));
- 
+    
+    int intersectSet = 1;
+    cliFun.add(new CLIF_Option<int>(&intersectSet,'b',"intersectSet","1", {
+                                                     {"1",{1,"single lane x, the conventional impl"}},
+						     {"4", {4, "4-way x"}}, 
+						     {"8", {8, "8-way x"}}, 
+						     }));
+
+
 
     bool polytopeOptimize = false;
     cliFun.add(new CLIF_Option<bool>(&polytopeOptimize,'b',"polytopeOptimize","false", {
@@ -202,10 +274,27 @@ int main(int argc, char *argv[]){
     cliFun.postParse();
     
     if(!intersectCoord) {
+	assert(intersectSet == 1);
         Benchmark_intersect b("intersect", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody);
         b.run_benchmark();
     } else {
-        Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody, intersectCoord_intersect, intersectCoord_update);
-        b.run_benchmark();
+	switch(intersectSet) {
+	   case 1: 
+	   {
+              Benchmark_intersectCoord b("intersectCoord", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody, intersectCoord_intersect, intersectCoord_update);
+              b.run_benchmark();
+	   } break;
+	   case 4:
+	   {
+              Benchmark_intersectCoord4 b("intersectCoord", r, true, warmup, generator, polytopeType, polytopeOptimize, time_ci_alpha, results_ci_alpha, printBody, intersectCoord_intersect, intersectCoord_update);
+              b.run_benchmark();
+	   } break;
+	   case 8:
+	      assert(false && "8");
+	      break;
+	   default:
+	      assert(false && "not implemented for this intersectSet!");
+	      break;
+	}
     }
 }
