@@ -778,7 +778,17 @@ void PolytopeT_cacheReset4_ref(const void* o, const FT* x, void* cache) {
 void PolytopeT_cacheReset8_ref(const void *p, const FT *x, void *cache) {
 }
 void PolytopeT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache) {
-    //
+   const PolytopeT* p = (PolytopeT*)o;
+   const int m = p->m;
+   FT* c = (FT*)cache;
+   for(int i=0; i<m; i++) {
+      //c[i] -= dx * PolytopeT_get_a(p,i,d); // watch the minus !
+      __m256d ci = _mm256_load_pd(c+4*i);
+      __m256d aid = _mm256_broadcast_sd(p->A + p->line*d + i);
+      __m256d tmp = _mm256_mul_pd(dx,aid);
+      __m256d tmp_ = _mm256_sub_pd(ci,tmp);
+      _mm256_store_pd(c+4*i, tmp_);
+   } 
 }
 void PolytopeT_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache) {
 }
