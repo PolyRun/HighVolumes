@@ -703,25 +703,82 @@ void PolytopeT_intersectCoord_vectorized(const void *p, const FT* x,
 
 
 FTpair4 PolytopeT_intersectCoord4_ref(const void* o, const FT* x, const int d, void* cache) {
-   //const PolytopeT* p = (PolytopeT*)o;
-   //FT* c = (FT*)cache; // set c[i] = bi - Ai*x
-   //const int n = p->n;
-   //const int m = p->m;
-   //for(int i=0; i<m; i++) {
-   //   FT dot = PolytopeT_get_b(p,i); // watch the b!
-   //   for(int j=0;j<n;j++) {
-   //      dot -= x[j] * PolytopeT_get_a(p,i,j);  // watch the minus!
-   //   }
-   //   c[i] = dot;
-   //}
+   const PolytopeT* p = (PolytopeT*)o;
+   const int n = p->n;
+   const int m = p->m;
+   FT* cc = (FT*)cache;
+   
+   __m256d zeros = _mm256_set1_pd(0.0);
+
+   __m256d vt00 = _mm256_set1_pd(-FT_MAX);
+   __m256d vt11 = _mm256_set1_pd(FT_MAX);
+
+   for(int i=0; i<m; i++) {
+      // const FT Ainv = PolytopeT_get_aInv(p,i,d); // dot product with unit vector dim d
+      // __m128d vAinv = _mm_set_sd(Ainv);
+      __m256d vAinv = _mm256_broadcast_sd(p->Ainv + p->line*d + i);
+      //// printf("vAinv[%d]: %lf %lf %lf %lf\n",i,vAinv[0],vAinv[1],vAinv[2],vAinv[3]);
+
+      // __m128d vCache = _mm_set_sd(cc[i]);
+      __m256d vCache = _mm256_load_pd(cc+4*i);
+      //// printf("vC[%d]: %lf %lf %lf %lf\n",i,vCache[0],vCache[1],vCache[2],vCache[3]);
+      // __m128d mask1 = _mm_cmp_sd(vAinv, zeros, _CMP_LT_OS); // towards max
+      // __m128d mask2 = _mm_cmp_sd(vAinv, zeros, _CMP_GT_OS); // towards min
+      __m256d mask1 = _mm256_cmp_pd(vAinv, zeros, _CMP_LT_OS);
+      __m256d mask2 = _mm256_cmp_pd(vAinv, zeros, _CMP_GT_OS);
+      // __m128d vt = _mm_mul_sd(vAinv,vCache);
+      __m256d vt = _mm256_mul_pd(vAinv,vCache);
+      //// printf("vt[%d]: %lf %lf %lf %lf\n",i,vt[0],vt[1],vt[2],vt[3]);
+      // __m128d t00_tmp = _mm_blendv_pd(vt00, vt, mask1); // towards max
+      // __m128d t11_tmp = _mm_blendv_pd(vt11, vt, mask2); // towards min
+      __m256d t00_tmp = _mm256_blendv_pd(vt00, vt, mask1);
+      __m256d t11_tmp = _mm256_blendv_pd(vt11, vt, mask2);
+      // vt00 = _mm_max_sd(vt00,t00_tmp);
+      // vt11 = _mm_min_sd(vt11,t11_tmp);
+      vt00 = _mm256_max_pd(vt00,t00_tmp);
+      vt11 = _mm256_min_pd(vt11,t11_tmp);
+      //// printf("vt00[%d]: %lf %lf %lf %lf\n",i,vt00[0],vt00[1],vt00[2],vt00[3]);
+      //// printf("vt11[%d]: %lf %lf %lf %lf\n",i,vt11[0],vt11[1],vt11[2],vt11[3]);
+   }
+   ////printf("res: %lf %lf \n",vt00[0],vt11[0]);
+   //
+   //// return:
+   //*t0 = vt00[0];
+   //*t1 = vt11[0];
+   FTpair4 tp;
+   tp.low0 = vt00;
+   tp.hi0  = vt11;
+   //// printf("tp.lo: %lf %lf %lf %lf\n",tp.low0[0],tp.low0[1],tp.low0[2],tp.low0[3]);
+   //// printf("tp.hi: %lf %lf %lf %lf\n",tp.hi0[0],tp.hi0[1],tp.hi0[2],tp.hi0[3]);
+   return tp;
 }
 FTpair8 PolytopeT_intersectCoord8_ref(const void* o, const FT* x, const int d, void* cache) {
 }
 void PolytopeT_cacheReset4_ref(const void* o, const FT* x, void* cache) {
+   const PolytopeT* p = (PolytopeT*)o;
+   FT* c = (FT*)cache; // set c[i] = bi - Ai*x
+   const int n = p->n;
+   const int m = p->m;
+   const FT* b = p->b;
+   for(int i=0; i<m; i++) {
+      // FT dot = PolytopeT_get_b(p,i); // watch the b!
+      __m256d dot = _mm256_broadcast_sd(b+i);
+      for(int j=0;j<n;j++) {
+         // dot -= x[j] * PolytopeT_get_a(p,i,j);  // watch the minus!
+         __m256d xj = _mm256_load_pd(x+4*j);
+	 __m256d aij = _mm256_broadcast_sd(p->A + p->line*j + i);
+	 __m256d xa = _mm256_mul_pd(xj,aij); // can this be optimized?
+	 dot = _mm256_sub_pd(dot,xa);
+      }
+      // c[i] = dot;
+      _mm256_store_pd(c+4*i, dot);
+      //// printf("c[%d]: %lf %lf %lf %lf\n",i,dot[0],dot[1],dot[2],dot[3]);
+   }
 }
 void PolytopeT_cacheReset8_ref(const void *p, const FT *x, void *cache) {
 }
 void PolytopeT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache) {
+    //
 }
 void PolytopeT_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache) {
 }

@@ -399,13 +399,16 @@ void test_4_8_sets() {
 
 void test_body_intersectCoord4(const int n, Body_T* type, void* body) {
    FT* x = (FT*)(aligned_alloc(32, 4*n*sizeof(FT)));
-   FT* x0 = (FT*)(aligned_alloc(32, 4*n*sizeof(FT)));
-   FT* x1 = (FT*)(aligned_alloc(32, 4*n*sizeof(FT)));
+   FT* x0 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
+   FT* x1 = (FT*)(aligned_alloc(32, n*sizeof(FT)));
    void* cache = aligned_alloc(32, 4*type->cacheAlloc(body));
    
+   //type->print(body);
+
    // test cacheReset -> intersectCoord - (use inside to validate)
    for(int t=0;t<200;t++){
       for(int i=0;i<4*n;i++) {x[i]=prng_get_random_double_in_range(-0.5/n,0.5/n);}
+      if(t==0) {for(int i=0;i<4*n;i++) {x[i]=0;}}
       //assert(type->inside(body, x));
       type->cacheReset4(body,x,cache);
       for(int d=0;d<n;d++) {
@@ -414,21 +417,20 @@ void test_body_intersectCoord4(const int n, Body_T* type, void* body) {
 	    assert(0 <= tp.hi0[j]);
 	    assert(tp.low0[j] <= 0);
 	 }
-	 assert(false && "continue construction here");
-	 //FT t0,t1;
-         //type->intersectCoord(body, x, d, &t0, &t1, cache);
-         //assert(t0<=0 && t1 >=0 && t0 <= t1);
-         //
-         //// check out those boundaries:
-         //for(int i=0;i<n;i++) {x0[i] = x[i]; x1[i]=x[i];}
-         //x0[d] += t0 -0.000001;
-         //x1[d] += t1 +0.000001;
-         //assert(!type->inside(body, x0));
-         //assert(!type->inside(body, x1));
-         //x0[d] += 0.000002;
-         //x1[d] -= 0.000002;
-         //assert(type->inside(body, x0));
-         //assert(type->inside(body, x1));
+         // check out those boundaries:
+       	 for(int j=0;j<4;j++) {
+       	    for(int i=0;i<n;i++) {x0[i] = x[i*4+j]; x1[i]=x[i*4+j];}
+            x0[d] += tp.low0[j] -0.000001;
+            x1[d] += tp.hi0[j]  +0.000001;
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x0[i]);} printf("\n");
+       	    //for(int i=0;i<n;i++) {printf(" %lf",x1[i]);} printf("\n");
+            assert(!type->inside(body, x0));
+            assert(!type->inside(body, x1));
+            x0[d] += 0.000002;
+            x1[d] -= 0.000002;
+            assert(type->inside(body, x0));
+            assert(type->inside(body, x1));
+	 }
       }
    }
 
