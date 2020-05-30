@@ -50,7 +50,7 @@ void Random_double_in_range_cost_ref(const void* o){
 void Random_double4_in_range_cost_ref(const void* o){
 
     {// frame for random int
-        PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int);
+        PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int,4);
         frame.costf()((NULL));
     }
 

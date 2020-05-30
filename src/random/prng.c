@@ -94,12 +94,20 @@ double prng_get_random_double_in_range(double lower_bound, double upper_bound){
 
 __m256d prng_get_random_double4_in_range(__m256d lower_bound, __m256d upper_bound){
    // TODO: proper SIMD!
-   __m256d r;
-   r[0] = prng_get_random_double_in_range(lower_bound[0],upper_bound[0]);
-   r[1] = prng_get_random_double_in_range(lower_bound[1],upper_bound[1]);
-   r[2] = prng_get_random_double_in_range(lower_bound[2],upper_bound[2]);
-   r[3] = prng_get_random_double_in_range(lower_bound[3],upper_bound[3]);
-   return r;
+   __m256d rr = _mm256_set_pd(rand_f(), rand_f(), rand_f(), rand_f());
+   const __m256d rMaxInv = _mm256_set1_pd(1.0/RAND_MAX);
+   __m256d r = _mm256_mul_pd(rr,rMaxInv);
+   __m256d fac = _mm256_sub_pd(upper_bound, lower_bound);
+   __m256d res = _mm256_fmadd_pd(r,fac, lower_bound);
+   _mm256_zeroupper();
+   return res;
+   // --------------first attempt: very slow:
+   //__m256d r;
+   //r[0] = prng_get_random_double_in_range(lower_bound[0],upper_bound[0]);
+   //r[1] = prng_get_random_double_in_range(lower_bound[1],upper_bound[1]);
+   //r[2] = prng_get_random_double_in_range(lower_bound[2],upper_bound[2]);
+   //r[3] = prng_get_random_double_in_range(lower_bound[3],upper_bound[3]);
+   //return r;
 }
 
 
