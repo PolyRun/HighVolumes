@@ -695,7 +695,7 @@ void volume_cost_ref(const int n, const int bcount, const void** body, const Bod
 
 }
 
-void volume_coord_single_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
+void volume_coord_1_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
 
    pc_stack().log(0, 2*n*sizeof(FT), "init_x");
    
@@ -739,6 +739,13 @@ void volume_coord_single_cost_ref(const int n, const int bcount, const void** bo
       frame.costf()(body[c]);
    }
 
+}
+
+void volume_coord_4_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
+    pc_stack().log(0,0,"TODO");
+}
+void volume_coord_8_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
+    pc_stack().log(0,0,"TODO");
 }
 
 void walk_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
@@ -820,7 +827,7 @@ void walkCoord_cost_ref(const int n, int bcount, const void** body, const Body_T
    
 }
 
-void walkCoord_coord_single_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
+void walkCoord_coord_1_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
 
    int ws = walk_size;
 
@@ -865,5 +872,10 @@ void walkCoord_coord_single_cost_ref(const int n, int bcount, const void** body,
    
 }
 
-
+void walkCoord_coord_4_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
+   pc_stack().log(0,0,"TODO");
+}
+void walkCoord_coord_8_cost_ref(const int n, int bcount, const void** body, const Body_T** type) {
+   pc_stack().log(0,0,"TODO");
+}
 

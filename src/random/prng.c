@@ -99,7 +99,6 @@ __m256d prng_get_random_double4_in_range(__m256d lower_bound, __m256d upper_boun
    __m256d r = _mm256_mul_pd(rr,rMaxInv);
    __m256d fac = _mm256_sub_pd(upper_bound, lower_bound);
    __m256d res = _mm256_fmadd_pd(r,fac, lower_bound);
-   _mm256_zeroupper();
    return res;
    // --------------first attempt: very slow:
    //__m256d r;

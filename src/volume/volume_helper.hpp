@@ -150,10 +150,15 @@ public:
       
       // volume
       pc_stack().add((void*)volume_ref, new PC_Cost_Wrapper<volume_cost_f>(volume_cost_ref,"volume_ref"));
-      pc_stack().add((void*)volume_coord_single, new PC_Cost_Wrapper<volume_cost_f>(volume_coord_single_cost_ref,"volume_coord_single"));
+      pc_stack().add((void*)volume_coord_single, new PC_Cost_Wrapper<volume_cost_f>(volume_coord_1_cost_ref,"volume_coord_1"));
+      pc_stack().add((void*)volume_coord_4,      new PC_Cost_Wrapper<volume_cost_f>(volume_coord_4_cost_ref,"volume_coord_4"));
+      pc_stack().add((void*)volume_coord_8,      new PC_Cost_Wrapper<volume_cost_f>(volume_coord_8_cost_ref,"volume_coord_8"));
+      
       pc_stack().add((void*)walk_ref, new PC_Cost_Wrapper<walk_cost_f>(walk_cost_ref,"walk_ref"));
       pc_stack().add((void*)walkCoord_ref, new PC_Cost_Wrapper<walk_cost_f>(walkCoord_cost_ref,"walkCoord_ref"));
-      pc_stack().add((void*)walkCoord_coord_single, new PC_Cost_Wrapper<walk_cost_f>(walkCoord_coord_single_cost_ref,"walkCoord_coord_single"));
+      pc_stack().add((void*)walkCoord_coord_single, new PC_Cost_Wrapper<walk_cost_f>(walkCoord_coord_1_cost_ref,"walkCoord_coord_1"));
+      pc_stack().add((void*)walkCoord_coord_4,      new PC_Cost_Wrapper<walk_cost_f>(walkCoord_coord_4_cost_ref,"walkCoord_coord_4"));
+      pc_stack().add((void*)walkCoord_coord_8,      new PC_Cost_Wrapper<walk_cost_f>(walkCoord_coord_8_cost_ref,"walkCoord_coord_8"));
 
       // Randomness
       pc_stack().add((void *)prng_get_random_int, new PC_Cost_Wrapper<random_int_cost_f>(Random_int_cost_ref, "Random int"));
@@ -198,7 +203,9 @@ public:
       add(new CLIF_DoubleOption<walk_f_t,volume_f_t>(&walk_f,&volume,'f',"walk_f","walkCoord_ref", {
                                                      {"walk_ref",          {{walk_ref,               volume_ref},          "random direction walk (ref)"}},
 						     {"walkCoord_ref",     {{walkCoord_ref,          volume_ref},          "coordinate walk (ref)"}},
-						     {"walkCoord_single",  {{walkCoord_coord_single, volume_coord_single}, "coordinate walk, cached squaredNorm"}},
+						     {"walkCoord_1",       {{walkCoord_coord_single, volume_coord_single}, "coordinate walk, cached squaredNorm"}},
+						     {"walkCoord_4",       {{walkCoord_coord_4,      volume_coord_4},      "coordinate walk, cached squaredNorm, 4-way parallel x"}},
+						     {"walkCoord_8",       {{walkCoord_coord_8,      volume_coord_8},      "coordinate walk, cached squaredNorm, 8-way parallel x"}},
 						     }));
 
 

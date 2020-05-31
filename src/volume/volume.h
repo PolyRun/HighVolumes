@@ -85,6 +85,13 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
 FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
 void walkCoord_coord_single(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
 
+FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
+void walkCoord_coord_4(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
+
+FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
+void walkCoord_coord_8(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
+
+
 // ---------- Volume App (stitch together preprocessing and volume estimation)
 typedef struct VolumeAppInput {
    // input body:

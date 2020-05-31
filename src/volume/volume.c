@@ -405,6 +405,44 @@ void walkCoord_coord_single(const int n, const FT rk, int bcount, const void** b
 }
 
 
+void walkCoord_coord_4(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache) {
+   const int ws = walk_size; // number of steps for walk
+   
+   for(int w=0;w<ws;w++) { // take some random steps for x
+      int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
+      //printf("dd: %d\n",dd);
+
+      // ensure do not walk outside of outer ball:
+      FTpair4 tp = Ball_intersectCoord_cached4(n, rk, x, dd, (FT*)cache[bcount]);
+      __m256d t0 = tp.low0;
+      __m256d t1 = tp.hi0;
+      
+      for(int c=0;c<bcount;c++) {
+         FTpair4 tb = type[c]->intersectCoord4(body[c], x, dd, cache[c]);
+         t0 = _mm256_max_pd(t0,tb.low0);//(t0>bt0)?t0:bt0; // max
+         t1 = _mm256_min_pd(t1,tb.hi0);//(t1<bt1)?t1:bt1; // min
+      }
+   
+      __m256d t = prng_get_random_double4_in_range(t0,t1);
+      //x[dd] += t;
+      __m256d xdd = _mm256_load_pd(x+dd*4);
+      xdd = _mm256_add_pd(xdd, t);
+      _mm256_store_pd(x+dd*4, xdd);
+
+      //printf(":0: %lf %lf %lf %lf\n",t0[0],t0[1],t0[2],t0[3]);
+      //printf(":1: %lf %lf %lf %lf\n",t1[0],t1[1],t1[2],t1[3]);
+
+      squaredNorm_cached4_update(x,dd,t,n,(FT*)cache[bcount]);
+      for(int c=0;c<bcount;c++) {
+         type[c]->cacheUpdateCoord4(body[c], dd, t, cache[c]);
+      }
+   }
+}
+
+void walkCoord_coord_8(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache) {
+   assert(false);
+}
+
 
 FT* volume_x_ptr = NULL;
 FT* volume_d_ptr = NULL;
@@ -415,7 +453,7 @@ FT *dotproduct_store_x = NULL;
 void volume_lib_init(const int max_n, const int max_m, const int max_b) {
    if(volumeVerbose>0) {printf("volume_lib_init...\n");}
 
-   volume_x_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
+   volume_x_ptr = (FT*)(aligned_alloc(32, 8*max_n*sizeof(FT))); // align this to 32
    volume_d_ptr = (FT*)(aligned_alloc(32, max_n*sizeof(FT))); // align this to 32
 
    
@@ -423,7 +461,7 @@ void volume_lib_init(const int max_n, const int max_m, const int max_b) {
    dotproduct_store_x = (FT *) aligned_alloc(32, max_m * sizeof(FT));
    
    int cache_size = 1000*max_n*max_b*sizeof(FT);
-   volume_cache_ptr = (aligned_alloc(32, cache_size*sizeof(FT))); // align this to 32
+   volume_cache_ptr = (aligned_alloc(32, cache_size)); // align this to 32
 }
 
 volume_f_t volume = volume_ref;
@@ -641,6 +679,114 @@ FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, 
 
    //printf("There are %ld steps\n",pc_volume_steps);
    return volume;
+}
+
+
+FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
+   
+   // init x:
+   FT* x = volume_x_ptr;// sample point x
+   assert(x);
+   for(int j=0;j<n*4;j++) {x[j]=0.0;}// origin
+
+   FT* d = volume_d_ptr; // vector for random direction
+   assert(d);
+
+   // set up cache:
+   int cache_size = 0;
+   void* cache[bcount+1]; // +1 for ball intersect
+   
+   void* cache_base = volume_cache_ptr; // align this to 32
+   cache_size = 0;
+   for(int c=0;c<bcount;c++) {
+      cache[c] = cache_base + cache_size;
+      cache_size += 4*ceil_cache(type[c]->cacheAlloc(body[c]), 1);
+      // round up for allignment
+      type[c]->cacheReset4(body[c],x,cache[c]);
+   }
+   cache[bcount] = cache_base + cache_size;// cache for ball intersect
+   squaredNorm_cached4_reset(x,n,(FT*)cache[bcount]);
+
+   
+   const int l = ceil(n*log(r1/r0) / log(2.0));
+   pc_volume_l = l; // performance_counter
+   pc_volume_steps = 0; // performance_counter
+   //printf("steps: %d\n",l);
+   int t[l+1];// counts how many were thrown into Bi
+   for(int i=0;i<=l;i++){t[i]=0;}
+   
+   // volume up to current step
+   // start with B(0,r0)
+   // multiply with estimated factor each round
+   FT volume = Ball_volume(n, r0);
+   
+   // Idea:
+   //   last round must end in rk = r0/stepFac
+   //   first round must start with rk >= r1
+   const FT stepFac = pow(2,-1.0/(FT)n);
+
+   FT rk = r0*pow(stepFac,-l);
+   int count = 0;
+   for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
+      //FT kk = log(rk/r0)/(-log(stepFac));
+      //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
+
+      //{
+      //   FT rtest = (rk*rk)*0.99;
+      //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
+      //   printf("m: %f\n",m);
+      //}
+      //{
+      //   FT rtest = (r0*r0)*0.99;
+      //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
+      //   printf("m: %f\n",m);
+      //}
+      for(int i=count; i<step_size*l; i+=4) { // sample required amount of points
+         pc_volume_steps+=4; // performance_counter
+         walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
+        
+	 __m256d x2 = squaredNorm_cached4(x,n,(FT*)cache[bcount]);
+	 for(int j=0;j<4;j++) {
+	    FT x2_ = x2[j];
+	 
+	    // normalized radius
+            const FT mmm = log(x2_/(r0*r0))*0.5/(-log(stepFac));
+            const int mm = ceil(mmm);
+	    const int m = (mm>0)?mm:0; // find index of balls
+
+	    //printf("k %d  m %d\n",k,m);
+            assert(m <= k);
+            t[m]++;
+	 }
+      }
+
+      // update count:
+      count = 0;
+      for(int i=0;i<k;i++){count+=t[i];}
+      // all that fell into lower balls
+
+      FT ak = (FT)(step_size*l) / (FT)count;
+      volume *= ak;
+
+      //printf("count: %d, volume: %f\n",count,volume);
+
+      // x = stepFac * x   -> guarantee that in next smaller ball
+      for(int j=0;j<4*n;j++) {x[j] *= stepFac;}
+      squaredNorm_cached4_reset(x,n,(FT*)cache[bcount]);
+      
+      // may have to set to zero if initializing simpler for that
+      for(int c=0;c<bcount;c++) {
+         type[c]->cacheReset4(body[c],x,cache[c]);
+      }
+   }
+   
+
+   //printf("There are %ld steps\n",pc_volume_steps);
+   return volume;
+}
+
+FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
+   assert(false);
 }
 
 VolumeAppInput* VolumeAppInput_new(int n, int bcount) {
