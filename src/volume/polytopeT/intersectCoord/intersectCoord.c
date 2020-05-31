@@ -838,33 +838,85 @@ void PolytopeT_cacheReset8_ref(const void *o, const FT *x, void *cache) {
       _mm256_store_pd(c+8*i+4, dot1);
    }
 }
+// void PolytopeT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache) {
+//    const PolytopeT* p = (PolytopeT*)o;
+//    const int m = p->m;
+//    FT* c = (FT*)cache;
+//    FT* offset = p->A + p->line*d;
+//    for(int i=0; i<m; i++) {
+//       //FT* cc0 = c+4*i;
+//       //__m256d ci = _mm256_load_pd(cc0);
+//       __m256d ci = _mm256_load_pd(c);
+//       __m256d aid = _mm256_broadcast_sd(offset + i);
+//       __m256d tmp = _mm256_mul_pd(dx,aid);
+//       __m256d tmp_ = _mm256_sub_pd(ci,tmp);
+//       //_mm256_store_pd(cc0, tmp_);
+//       _mm256_store_pd(c, tmp_);
+//       c +=4;
+//    } 
+// }
 void PolytopeT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache) {
    const PolytopeT* p = (PolytopeT*)o;
    const int m = p->m;
    FT* c = (FT*)cache;
-   for(int i=0; i<m; i++) {
-      //c[i] -= dx * PolytopeT_get_a(p,i,d); // watch the minus !
-      __m256d ci = _mm256_load_pd(c+4*i);
-      __m256d aid = _mm256_broadcast_sd(p->A + p->line*d + i);
+   FT* offset = p->A + p->line*d;
+   int i=0;
+   for(; i<m-3; i+=4) {
+      __m256d ci0 = _mm256_load_pd(c);
+      __m256d ci1 = _mm256_load_pd(c+4);
+      __m256d ci2 = _mm256_load_pd(c+8);
+      __m256d ci3 = _mm256_load_pd(c+12);
+      __m256d aid0 = _mm256_broadcast_sd(offset + i);
+      __m256d aid1 = _mm256_broadcast_sd(offset + i+1);
+      __m256d aid2 = _mm256_broadcast_sd(offset + i+2);
+      __m256d aid3 = _mm256_broadcast_sd(offset + i+3);
+      __m256d tmp0 = _mm256_mul_pd(dx,aid0);
+      __m256d tmp1 = _mm256_mul_pd(dx,aid1);
+      __m256d tmp2 = _mm256_mul_pd(dx,aid2);
+      __m256d tmp3 = _mm256_mul_pd(dx,aid3);
+      __m256d tmp_0 = _mm256_sub_pd(ci0,tmp0);
+      __m256d tmp_1 = _mm256_sub_pd(ci1,tmp1);
+      __m256d tmp_2 = _mm256_sub_pd(ci2,tmp2);
+      __m256d tmp_3 = _mm256_sub_pd(ci3,tmp3);
+      _mm256_store_pd(c, tmp_0);
+      _mm256_store_pd(c+4, tmp_1);
+      _mm256_store_pd(c+8, tmp_2);
+      _mm256_store_pd(c+12, tmp_3);
+      c+=16;
+   } 
+   for(; i<m; i++) {
+      //FT* cc0 = c+4*i;
+      //__m256d ci = _mm256_load_pd(cc0);
+      __m256d ci = _mm256_load_pd(c);
+      __m256d aid = _mm256_broadcast_sd(offset + i);
       __m256d tmp = _mm256_mul_pd(dx,aid);
       __m256d tmp_ = _mm256_sub_pd(ci,tmp);
-      _mm256_store_pd(c+4*i, tmp_);
+      //_mm256_store_pd(cc0, tmp_);
+      _mm256_store_pd(c, tmp_);
+      c +=4;
    } 
 }
 void PolytopeT_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache) {
    const PolytopeT* p = (PolytopeT*)o;
    const int m = p->m;
    FT* c = (FT*)cache;
+   FT* offset = p->A + p->line*d;
+   __m256d dx0 = dx.set0;
+   __m256d dx1 = dx.set1;
    for(int i=0; i<m; i++) {
-      __m256d ci0 = _mm256_load_pd(c+8*i);
-      __m256d ci1 = _mm256_load_pd(c+8*i+4);
-      __m256d aid = _mm256_broadcast_sd(p->A + p->line*d + i);
-      __m256d tmp0 = _mm256_mul_pd(dx.set0,aid);
-      __m256d tmp1 = _mm256_mul_pd(dx.set1,aid);
+      FT* cc0 = c+8*i;
+      FT* cc1 = cc0+4;
+      __m256d ci0 = _mm256_load_pd(cc0);
+      __m256d ci1 = _mm256_load_pd(cc1);
+      __m256d aid = _mm256_broadcast_sd(offset + i);
+      //__m256d tmp0 = _mm256_mul_pd(dx.set0,aid);
+      //__m256d tmp1 = _mm256_mul_pd(dx.set1,aid);
+      __m256d tmp0 = _mm256_mul_pd(dx0,aid);
+      __m256d tmp1 = _mm256_mul_pd(dx1,aid);
       __m256d tmp_0 = _mm256_sub_pd(ci0,tmp0);
       __m256d tmp_1 = _mm256_sub_pd(ci1,tmp1);
-      _mm256_store_pd(c+8*i,   tmp_0);
-      _mm256_store_pd(c+8*i+4, tmp_1);
+      _mm256_store_pd(cc0, tmp_0);
+      _mm256_store_pd(cc1, tmp_1);
    } 
 }
 

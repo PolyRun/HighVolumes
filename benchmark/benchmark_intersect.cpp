@@ -258,7 +258,9 @@ class Benchmark_intersectCoord8 : public Benchmark_intersectCoord {
 	       // step now
 	       __m256d t0 = prng_get_random_double4_in_range(tp.low0,tp.hi0);
 	       __m256d t1 = prng_get_random_double4_in_range(tp.low1,tp.hi1);
-               //x[dd] += t;
+               //__m256d t0 = _mm256_set1_pd(0);
+               //__m256d t1 = _mm256_set1_pd(0);
+	       //x[dd] += t;
 	       __m256d xdd0 = _mm256_load_pd(x+dd*8);
 	       __m256d xdd1 = _mm256_load_pd(x+dd*8+4);
 	       __m256d xdd_t0 = _mm256_add_pd(xdd0,t0);
