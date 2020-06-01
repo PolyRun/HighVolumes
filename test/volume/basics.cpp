@@ -877,7 +877,7 @@ int main(int argc, char** argv) {
          PolytopeCSC *box = Polytope_to_PolytopeCSC(boxx);
 
          test_body_intersectCoord4(n, &PolytopeCSC_T, box);
-         test_body_intersectCoord8(n, &PolytopeCSC_T, box);
+         //test_body_intersectCoord8(n, &PolytopeCSC_T, box);
          
          Polytope_free(boxx);
          PolytopeCSC_free(box);
