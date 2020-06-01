@@ -80,6 +80,8 @@ int main(int argc, char** argv) {
       std::cout << "## run walk_f: " << it.first << " - " << it.second.second << std::endl;
       walk_f = it.second.first.first; // test for all walk functions
       volume = it.second.first.second; // test for all walk functions
+      if(volume == volume_coord_4) {continue;}
+      if(volume == volume_coord_8) {continue;}// these are not implemented everyhwere.
       test();
       std::cout << "## done." << std::endl;
    }
