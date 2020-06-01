@@ -65,4 +65,11 @@ void PolytopeCSC_transform_ref(const void *o_in, void *o_out, const Matrix *L, c
 void PolytopeCSC_bounding_ref(const void *o, FT *r, FT *ori);
 
 
+FTpair4 PolytopeCSC_intersectCoord4_ref(const void* o, const FT* x, const int d, void* cache);
+FTpair8 PolytopeCSC_intersectCoord8_ref(const void* o, const FT* x, const int d, void* cache);
+void PolytopeCSC_cacheReset4_ref(const void* o, const FT* x, void* cache);
+void PolytopeCSC_cacheReset8_ref(const void *p, const FT *x, void *cache);
+void PolytopeCSC_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache);
+void PolytopeCSC_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache);
+
 #endif

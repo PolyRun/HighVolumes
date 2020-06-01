@@ -595,3 +595,25 @@ void PolytopeCSC_intersectCoord_cached_vec_inline_2accs(const void* o, const FT*
     *t1 = (t11[3] < t1_tmptmptmp) ? t11[3] : t1_tmptmptmp;
 
 }
+
+
+FTpair4 PolytopeCSC_intersectCoord4_ref(const void* o, const FT* x, const int d, void* cache) {
+   assert(false && "not impl.");
+}
+FTpair8 PolytopeCSC_intersectCoord8_ref(const void* o, const FT* x, const int d, void* cache) {
+   assert(false && "not impl.");
+}
+void PolytopeCSC_cacheReset4_ref(const void* o, const FT* x, void* cache) {
+   assert(false && "not impl.");
+}
+void PolytopeCSC_cacheReset8_ref(const void *p, const FT *x, void *cache) {
+   assert(false && "not impl.");
+}
+void PolytopeCSC_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache) {
+   assert(false && "not impl.");
+}
+void PolytopeCSC_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache) {
+   assert(false && "not impl.");
+}
+
+
