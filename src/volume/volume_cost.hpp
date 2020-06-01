@@ -35,6 +35,8 @@ void Ball_intersect_cost_ref(const int n);
 
 typedef void (*Ball_intersectCoord_cached_cost_f)(const int);
 void Ball_intersectCoord_cached_cost_ref(const int n);
+void Ball_intersectCoord_cached4_cost_ref(const int n);
+void Ball_intersectCoord_cached8_cost_ref(const int n);
 
 // ----------------------------------------------- Body
 typedef void (*intersect_cost_f)(const void*);

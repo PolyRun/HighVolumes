@@ -799,7 +799,7 @@ FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const
       //   printf("m: %f\n",m);
       //}
       for(int i=count; i<step_size*l; i+=4) { // sample required amount of points
-         pc_volume_steps+=4; // performance_counter
+         pc_volume_steps++; // performance_counter
          walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
         
 	 __m256d x2 = squaredNorm_cached4(x,n,(FT*)cache[bcount]);
@@ -902,7 +902,7 @@ FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const
       //   printf("m: %f\n",m);
       //}
       for(int i=count; i<step_size*l; i+=8) { // sample required amount of points
-         pc_volume_steps+=8; // performance_counter
+         pc_volume_steps++; // performance_counter
          walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
         
 	 FTset8 x2 = squaredNorm_cached8(x,n,(FT*)cache[bcount]);

@@ -50,7 +50,10 @@ public:
       
       pc_stack().add((void*)Ball_intersect_ref, new PC_Cost_Wrapper<Ball_intersect_cost_f>(Ball_intersect_cost_ref,"Ball_intersect_ref"));
       pc_stack().add((void*)Ball_intersectCoord_ref, new PC_Cost_Wrapper<Ball_intersectCoord_cost_f>(Ball_intersectCoord_cost_ref,"Ball_intersectCoord_ref"));
+      
       pc_stack().add((void*)Ball_intersectCoord_cached_ref, new PC_Cost_Wrapper<Ball_intersectCoord_cached_cost_f>(Ball_intersectCoord_cached_cost_ref,"Ball_intersectCoord_cached_ref"));
+      pc_stack().add((void*)Ball_intersectCoord_cached4, new PC_Cost_Wrapper<Ball_intersectCoord_cached_cost_f>(Ball_intersectCoord_cached4_cost_ref,"Ball_intersectCoord_cached4"));
+      pc_stack().add((void*)Ball_intersectCoord_cached8, new PC_Cost_Wrapper<Ball_intersectCoord_cached_cost_f>(Ball_intersectCoord_cached8_cost_ref,"Ball_intersectCoord_cached8"));
       
       // Polytope
       pc_stack().add((void*)Polytope_intersect_ref, new PC_Cost_Wrapper<intersect_cost_f>(Polytope_intersect_cost_ref,"Polytope_intersect_ref"));
