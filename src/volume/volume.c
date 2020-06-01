@@ -442,7 +442,62 @@ void walkCoord_coord_4(const int n, const FT rk, int bcount, const void** body, 
 }
 
 void walkCoord_coord_8(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache) {
-   assert(false);
+   const int ws = walk_size; // number of steps for walk
+   
+   for(int w=0;w<ws;w++) { // take some random steps for x
+      int dd = prng_get_random_int_in_range(0,n-1); // pick random dimension
+      //printf("dd: %d\n",dd);
+
+      // ensure do not walk outside of outer ball:
+      FTpair8 tp = Ball_intersectCoord_cached8(n, rk, x, dd, (FT*)cache[bcount]);
+      __m256d lo0 = tp.low0;
+      __m256d lo1 = tp.low1;
+      __m256d hi0 = tp.hi0;
+      __m256d hi1 = tp.hi1;
+      
+      // printf(":lo0: %lf %lf %lf %lf\n",lo0[0], lo0[1],lo0[2],lo0[3]);
+      // printf(":lo1: %lf %lf %lf %lf\n",lo1[0], lo1[1],lo1[2],lo1[3]);
+      // printf(":hi0: %lf %lf %lf %lf\n",hi0[0], hi0[1],hi0[2],hi0[3]);
+      // printf(":hi1: %lf %lf %lf %lf\n",hi1[0], hi1[1],hi1[2],hi1[3]);
+      
+      for(int c=0;c<bcount;c++) {
+         FTpair8 tb = type[c]->intersectCoord8(body[c], x, dd, cache[c]);
+         lo0 = _mm256_max_pd(lo0,tb.low0);//(t0>bt0)?t0:bt0; // max
+         lo1 = _mm256_max_pd(lo1,tb.low1);//(t0>bt0)?t0:bt0; // max
+         hi0 = _mm256_min_pd(hi0,tb.hi0);//(t1<bt1)?t1:bt1; // min
+         hi1 = _mm256_min_pd(hi1,tb.hi1);//(t1<bt1)?t1:bt1; // min
+      
+         // printf(":lo0: %lf %lf %lf %lf\n",lo0[0], lo0[1],lo0[2],lo0[3]);
+         // printf(":lo1: %lf %lf %lf %lf\n",lo1[0], lo1[1],lo1[2],lo1[3]);
+         // printf(":hi0: %lf %lf %lf %lf\n",hi0[0], hi0[1],hi0[2],hi0[3]);
+         // printf(":hi1: %lf %lf %lf %lf\n",hi1[0], hi1[1],hi1[2],hi1[3]);
+      }
+      
+      __m256d t0 = rand256d_f();
+      __m256d t1 = rand256d_f();
+      // printf(":0: %lf %lf %lf %lf\n",t0[0],t0[1],t0[2],t0[3]);
+      // printf(":1: %lf %lf %lf %lf\n",t1[0],t1[1],t1[2],t1[3]);
+      t0 = _mm256_fmadd_pd(_mm256_sub_pd(hi0,lo0), t0, lo0);
+      t1 = _mm256_fmadd_pd(_mm256_sub_pd(hi1,lo1), t1, lo1);
+
+      //x[dd] += t;
+      __m256d xdd0 = _mm256_load_pd(x+dd*8);
+      __m256d xdd1 = _mm256_load_pd(x+dd*8+4);
+      xdd0 = _mm256_add_pd(xdd0, t0);
+      xdd1 = _mm256_add_pd(xdd1, t1);
+      _mm256_store_pd(x+dd*8,   xdd0);
+      _mm256_store_pd(x+dd*8+4, xdd1);
+
+      // printf(":0: %lf %lf %lf %lf\n",t0[0],t0[1],t0[2],t0[3]);
+      // printf(":1: %lf %lf %lf %lf\n",t1[0],t1[1],t1[2],t1[3]);
+      
+      FTset8 dx = {t0,t1};
+      squaredNorm_cached8_update(x,dd,dx,n,(FT*)cache[bcount]);
+      for(int c=0;c<bcount;c++) {
+         type[c]->cacheUpdateCoord8(body[c], dd, dx, cache[c]);
+      }
+   }
+
 }
 
 
@@ -788,7 +843,119 @@ FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const
 }
 
 FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
-   assert(false);
+   
+   // init x:
+   FT* x = volume_x_ptr;// sample point x
+   assert(x);
+   for(int j=0;j<n*8;j++) {x[j]=0.0;}// origin
+
+   FT* d = volume_d_ptr; // vector for random direction
+   assert(d);
+
+   // set up cache:
+   int cache_size = 0;
+   void* cache[bcount+1]; // +1 for ball intersect
+   
+   void* cache_base = volume_cache_ptr; // align this to 32
+   cache_size = 0;
+   for(int c=0;c<bcount;c++) {
+      cache[c] = cache_base + cache_size;
+      cache_size += 8*ceil_cache(type[c]->cacheAlloc(body[c]), 1);
+      // round up for allignment
+      type[c]->cacheReset8(body[c],x,cache[c]);
+   }
+   cache[bcount] = cache_base + cache_size;// cache for ball intersect
+   squaredNorm_cached8_reset(x,n,(FT*)cache[bcount]);
+
+   
+   const int l = ceil(n*log(r1/r0) / log(2.0));
+   pc_volume_l = l; // performance_counter
+   pc_volume_steps = 0; // performance_counter
+   //printf("steps: %d\n",l);
+   int t[l+1];// counts how many were thrown into Bi
+   for(int i=0;i<=l;i++){t[i]=0;}
+   
+   // volume up to current step
+   // start with B(0,r0)
+   // multiply with estimated factor each round
+   FT volume = Ball_volume(n, r0);
+   
+   // Idea:
+   //   last round must end in rk = r0/stepFac
+   //   first round must start with rk >= r1
+   const FT stepFac = pow(2,-1.0/(FT)n);
+
+   FT rk = r0*pow(stepFac,-l);
+   int count = 0;
+   for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
+      //FT kk = log(rk/r0)/(-log(stepFac));
+      //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
+
+      //{
+      //   FT rtest = (rk*rk)*0.99;
+      //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
+      //   printf("m: %f\n",m);
+      //}
+      //{
+      //   FT rtest = (r0*r0)*0.99;
+      //   FT m = log(rtest/(r0*r0))*0.5/(-log(stepFac));
+      //   printf("m: %f\n",m);
+      //}
+      for(int i=count; i<step_size*l; i+=8) { // sample required amount of points
+         pc_volume_steps+=8; // performance_counter
+         walk_f(n, rk, bcount, body, type, x, d, (void**)(&cache));
+        
+	 FTset8 x2 = squaredNorm_cached8(x,n,(FT*)cache[bcount]);
+	 for(int j=0;j<4;j++) {
+	    FT x2_ = x2.set0[j];
+	 
+	    // normalized radius
+            const FT mmm = log(x2_/(r0*r0))*0.5/(-log(stepFac));
+            const int mm = ceil(mmm);
+	    const int m = (mm>0)?mm:0; // find index of balls
+
+	    //printf("k %d  m %d\n",k,m);
+            assert(m <= k);
+            t[m]++;
+	 }
+      	 for(int j=0;j<4;j++) {
+	    FT x2_ = x2.set1[j];
+	 
+	    // normalized radius
+            const FT mmm = log(x2_/(r0*r0))*0.5/(-log(stepFac));
+            const int mm = ceil(mmm);
+	    const int m = (mm>0)?mm:0; // find index of balls
+
+	    //printf("k %d  m %d\n",k,m);
+            assert(m <= k);
+            t[m]++;
+	 }
+      }
+
+      // update count:
+      count = 0;
+      for(int i=0;i<k;i++){count+=t[i];}
+      // all that fell into lower balls
+
+      FT ak = (FT)(step_size*l) / (FT)count;
+      volume *= ak;
+
+      //printf("count: %d, volume: %f\n",count,volume);
+
+      // x = stepFac * x   -> guarantee that in next smaller ball
+      for(int j=0;j<8*n;j++) {x[j] *= stepFac;}
+      squaredNorm_cached8_reset(x,n,(FT*)cache[bcount]);
+      
+      // may have to set to zero if initializing simpler for that
+      for(int c=0;c<bcount;c++) {
+         type[c]->cacheReset8(body[c],x,cache[c]);
+      }
+   }
+   
+
+   //printf("There are %ld steps\n",pc_volume_steps);
+   return volume;
+
 }
 
 VolumeAppInput* VolumeAppInput_new(int n, int bcount) {
