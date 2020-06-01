@@ -10,9 +10,11 @@
 // Generator for randomness
 typedef void(*rand_init_f_t)(void *seed);
 typedef uint32_t(*rand_f_t)();
+typedef __m256i(*rand256i_f_t)();
 
 extern rand_init_f_t rand_init_f;
 extern rand_f_t rand_f;
+extern rand256i_f_t rand256i_f;
 
 // Function(s) that return desired random numbers
 typedef double(*rd_0_1_f_t)();

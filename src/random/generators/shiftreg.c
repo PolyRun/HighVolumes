@@ -145,3 +145,29 @@ uint32_t sr_rand_vec() {
     chunk_ptr_vec++;
     return chunk_vec[chunk_ptr_vec];
 }
+
+static __m256i sr_state256i = {
+   0xFFF1FFFF1FFFF1FF,
+   0x1FFF1FF1FFF1FFFF,
+   0xF1FFF1FF11FFF1FF,
+   0xFFF11F1FFFF1FF1F,
+};
+
+__m256i sr_rand256i() {
+    const 
+    const int mask = (1UL << 31);
+    const int clear_mask = ~mask;
+    __m256i vmask = _mm256_set1_epi32(clear_mask);
+    
+    __m256i state = sr_state256i;
+    __m256i tmp = _mm256_slli_epi32(state, 13);
+    state = _mm256_xor_si256(state, tmp);
+    tmp = _mm256_srai_epi32(state, 17);
+    state = _mm256_xor_si256(state, tmp);
+    tmp = _mm256_slli_epi32(state, 5);
+    state = _mm256_xor_si256(state, tmp);
+    tmp = _mm256_and_si256(state, vmask);
+    sr_state256i = state;
+    return tmp;
+}
+

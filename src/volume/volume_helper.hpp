@@ -275,13 +275,13 @@ public:
 						     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
 						     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
 
-      add(new CLIF_DoubleOption<rand_init_f_t,rand_f_t>(&rand_init_f, &rand_f,'f',"rand_f","std_rand", {
-                       {"std_rand",{{std_init, std_rand}, "standard rand"}},
-                       {"std_rand_chunked",{{std_init_chunked, std_rand_chunked}, "standard rand (chunked)"}},
-	               {"sr_rand",{{sr_init, sr_random_uint32}, "shift register rand"}},
-                       {"sr_rand_chunked",{{sr_init_chunked, sr_rand_chunked}, "shift register rand (chunked)"}},
-                       {"sr_rand_vec",{{sr_init_vec, sr_rand_vec}, "shift register rand (vec)"}},
-		       {"mt_rand",{{mt_init, mt_rand}, "mersenne twister rand"}}
+      add(new CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256i_f_t>(&rand_init_f, &rand_f, &rand256i_f,'f',"rand_f","std_rand", {
+                       {"std_rand",          {{std_init,          {std_rand,         std_rand256i}}, "standard rand"}},
+                       {"std_rand_chunked",  {{std_init_chunked,  {std_rand_chunked, std_rand256i}}, "standard rand (chunked)"}},
+	               {"sr_rand",           {{sr_init,           {sr_random_uint32, sr_rand256i}},  "shift register rand"}},
+                       {"sr_rand_chunked",   {{sr_init_chunked,   {sr_rand_chunked,  sr_rand256i}},  "shift register rand (chunked)"}},
+                       {"sr_rand_vec",       {{sr_init_vec,       {sr_rand_vec,      sr_rand256i}},  "shift register rand (vec)"}},
+		       {"mt_rand",           {{mt_init,           {mt_rand,          std_rand256i}}, "mersenne twister rand"}} // 256i version missing!
                      }));
 
       add(new CLIF_Option<rd_0_1_f_t>(&prng_get_random_double_0_1,'f',"rd_0_1","ref", {

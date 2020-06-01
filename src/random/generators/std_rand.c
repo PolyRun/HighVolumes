@@ -37,3 +37,16 @@ uint32_t std_rand_chunked() {
     chunk_ptr++;
     return chunk[chunk_ptr];
 }
+
+__m256i std_rand256i() {
+   return _mm256_set_epi32(
+		   rand(),
+		   rand(),
+		   rand(),
+		   rand(),
+		   rand(),
+		   rand(),
+		   rand(),
+		   rand()
+		   );
+}

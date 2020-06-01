@@ -26,10 +26,11 @@ int main(int argc, char *argv[]) {
 
    std::cout << "start test.\n";
 
-   auto o = dynamic_cast<CLIF_DoubleOption<rand_init_f_t,rand_f_t>*>(cliFun.getOption("rand_f"));
+   auto o = dynamic_cast<CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256i_f_t>*>(cliFun.getOption("rand_f"));
    for(auto it : o->fmap) {
-      rand_init_f = it.second.first.first;
-      rand_f      = it.second.first.second;
+      rand_init_f     = it.second.first.first;
+      rand_f          = it.second.first.second.first;
+      rand256i_f      = it.second.first.second.second;
 
       if (!(it.second.second == "standard rand" || it.second.second == "shift register rand")) {
          continue;
@@ -60,7 +61,42 @@ int main(int argc, char *argv[]) {
       }*/
       free(buckets);
    }
+   
 
+   // Test 4-way random gen:
+   for(auto it : o->fmap) {
+      rand_init_f     = it.second.first.first;
+      rand_f          = it.second.first.second.first;
+      rand256i_f      = it.second.first.second.second;
+
+      //if (!(it.second.second == "standard rand" || it.second.second == "shift register rand")) {
+      //   continue;
+      //}
+      rand_init_f(NULL);
+      __m256d lo = _mm256_set_pd(-1,-2,-3,-4);
+      __m256d hi = _mm256_set_pd(1,2,3,4);
+
+      for(int t=0;t<10;t++) {
+         __m256d rd = prng_get_random_double4_in_range(lo,hi);
+         printf("%lf %lf %lf %lf\n",rd[0],rd[1],rd[2],rd[3]);
+      }
+
+      //  const __m256i exp = _mm256_set1_epi64x(1023L << 52);
+      //  const __m256i mask = _mm256_set1_epi64x(0xFFFFFFFF);
+      //  
+      //  __m256i r = rand256i_f();
+      //  printf("%lx %lx %lx %lx\n",r[0],r[1],r[2],r[3]);
+      //  r = _mm256_and_si256(r,mask);
+      //  printf("%lx %lx %lx %lx\n",r[0],r[1],r[2],r[3]);
+      //  r = _mm256_slli_epi64(r,21); // 1 lat, 1 tp
+      //  printf("%lx %lx %lx %lx\n",r[0],r[1],r[2],r[3]);
+      //  r = _mm256_or_si256(r,exp); // 1 lat, 2 or 3 throughput
+      //  printf("%lx %lx %lx %lx\n",r[0],r[1],r[2],r[3]);
+      //  __m256d rd = _mm256_castsi256_pd(r);
+      //  printf("%lf %lf %lf %lf\n",rd[0],rd[1],rd[2],rd[3]);
+      //  // myHack.l = (myHack.l << 21) | (1023L << 52);
+      //  // _mm256_castsi256_pd
+   }
 
    #ifdef NDEBUG
    std::cout<< "WARNING: DEBUG DISABLED!\n";

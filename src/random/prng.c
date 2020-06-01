@@ -6,6 +6,7 @@
 
 rand_init_f_t rand_init_f = std_init;
 rand_f_t rand_f = std_rand;
+rand256i_f_t rand256i_f = std_rand256i;
 
 rd_0_1_f_t prng_get_random_double_0_1 = prng_get_random_double_0_1_ref;
 
@@ -94,12 +95,36 @@ double prng_get_random_double_in_range(double lower_bound, double upper_bound){
 
 __m256d prng_get_random_double4_in_range(__m256d lower_bound, __m256d upper_bound){
    // TODO: proper SIMD!
-   __m256d rr = _mm256_set_pd(rand_f(), rand_f(), rand_f(), rand_f());
    const __m256d rMaxInv = _mm256_set1_pd(1.0/RAND_MAX);
+   __m256i ri = rand256i_f();
+   __m128i rs = _mm256_castsi256_si128(ri);
+   __m256d rr = _mm256_cvtepi32_pd(rs);
+   //return rr;
    __m256d r = _mm256_mul_pd(rr,rMaxInv);
    __m256d fac = _mm256_sub_pd(upper_bound, lower_bound);
    __m256d res = _mm256_fmadd_pd(r,fac, lower_bound);
    return res;
+   
+   // ------------- third try: with bit mangling
+   //const __m256i exp = _mm256_set1_epi64x(1023L << 52);
+   //const __m256i mask = _mm256_set1_epi64x(0xFFFFFFFF);
+   //__m256i r = rand256i_f();
+   //r = _mm256_and_si256(r,mask);
+   //r = _mm256_slli_epi64(r,21); // 1 lat, 1 tp
+   //r = _mm256_or_si256(r,exp); // 1 lat, 2 or 3 throughput
+   //__m256d rd = _mm256_castsi256_pd(r);
+   //// above: value between 1..2
+   //rd = _mm256_sub_pd(rd, _mm256_set1_pd(1));
+   //__m256d fac = _mm256_sub_pd(upper_bound, lower_bound);
+   //return _mm256_fmadd_pd(rd,fac, lower_bound);
+
+   // -------------- second attempt: still very slow.
+   //__m256d rr = _mm256_set_pd(rand_f(), rand_f(), rand_f(), rand_f());
+   //const __m256d rMaxInv = _mm256_set1_pd(1.0/RAND_MAX);
+   //__m256d r = _mm256_mul_pd(rr,rMaxInv);
+   //__m256d fac = _mm256_sub_pd(upper_bound, lower_bound);
+   //__m256d res = _mm256_fmadd_pd(r,fac, lower_bound);
+   //return res;
    // --------------first attempt: very slow:
    //__m256d r;
    //r[0] = prng_get_random_double_in_range(lower_bound[0],upper_bound[0]);
