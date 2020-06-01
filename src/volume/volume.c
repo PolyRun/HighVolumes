@@ -423,7 +423,9 @@ void walkCoord_coord_4(const int n, const FT rk, int bcount, const void** body, 
          t1 = _mm256_min_pd(t1,tb.hi0);//(t1<bt1)?t1:bt1; // min
       }
    
-      __m256d t = rand256d_f(t0,t1);
+      __m256d t = rand256d_f();
+      t = _mm256_fmadd_pd(_mm256_sub_pd(t1,t0), t, t0);
+
       //x[dd] += t;
       __m256d xdd = _mm256_load_pd(x+dd*4);
       xdd = _mm256_add_pd(xdd, t);
