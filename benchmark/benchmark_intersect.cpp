@@ -169,8 +169,8 @@ class Benchmark_intersectCoord4 : public Benchmark_intersectCoord {
 
                 if(intersectCoord_update) {
                    {// frame for random double_in_range
-                       PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double4_in_range);
-                       frame.costf()(NULL);
+                       PC_Frame<rand256d_cost_f_t> frame((void*) rand256d_f);
+                       frame.costf()();
                    } 
 	           // Reading and writing x[dd] with one add in between
                    pc_stack().log(4, 8*sizeof(FT), "x[dd] += t;");
@@ -189,13 +189,18 @@ class Benchmark_intersectCoord4 : public Benchmark_intersectCoord {
     protected:
         double run () {
 	    //FT t0=-1, t1=1;
-	    FTpair4 tp;
+	    __m256d lo = _mm256_set1_pd(0);
+	    __m256d hi = _mm256_set1_pd(0);
 	    if(intersectCoord_intersect) {
-	       tp = solved_body->type[0]->intersectCoord4(solved_body->body[0], x, dd, cache);
+	       FTpair4 tp = solved_body->type[0]->intersectCoord4(solved_body->body[0], x, dd, cache);
+	       lo = tp.low0;
+	       hi = tp.hi0;
 	    }
 	    if(intersectCoord_update) {
 	       // step now
-	       __m256d t = prng_get_random_double4_in_range(tp.low0,tp.hi0);
+	       __m256d t = rand256d_f();
+	       t = _mm256_fmadd_pd(_mm256_sub_pd(hi,lo), t, lo);
+	       
                //x[dd] += t;
 	       __m256d xdd = _mm256_load_pd(x+dd*4);
 	       __m256d xdd_t = _mm256_add_pd(xdd,t);
@@ -230,8 +235,8 @@ class Benchmark_intersectCoord8 : public Benchmark_intersectCoord {
 
                 if(intersectCoord_update) {
                    {// frame for random double_in_range
-                       PC_Frame<random_double_in_range_cost_f> frame((void*) prng_get_random_double4_in_range,2);
-                       frame.costf()(NULL);
+                       PC_Frame<rand256d_cost_f_t> frame((void*) rand256d_f,2);
+                       frame.costf()();
                    } 
 	           // Reading and writing x[dd] with one add in between
                    pc_stack().log(8, 16*sizeof(FT), "x[dd] += t;");
@@ -250,16 +255,23 @@ class Benchmark_intersectCoord8 : public Benchmark_intersectCoord {
     protected:
         double run () {
 	    //FT t0=-1, t1=1;
-	    FTpair8 tp;
+	    __m256d lo0 = _mm256_set1_pd(0);
+	    __m256d lo1 = _mm256_set1_pd(0);
+	    __m256d hi0 = _mm256_set1_pd(0);
+	    __m256d hi1 = _mm256_set1_pd(0);
 	    if(intersectCoord_intersect) {
-	       tp = solved_body->type[0]->intersectCoord8(solved_body->body[0], x, dd, cache);
+	       FTpair8 tp = solved_body->type[0]->intersectCoord8(solved_body->body[0], x, dd, cache);
+	       lo0 = tp.low0;
+	       lo1 = tp.low1;
+	       hi0 = tp.hi0;
+	       hi1 = tp.hi1;
 	    }
 	    if(intersectCoord_update) {
 	       // step now
-	       __m256d t0 = prng_get_random_double4_in_range(tp.low0,tp.hi0);
-	       __m256d t1 = prng_get_random_double4_in_range(tp.low1,tp.hi1);
-               //__m256d t0 = _mm256_set1_pd(0);
-               //__m256d t1 = _mm256_set1_pd(0);
+	       __m256d t0 = rand256d_f();
+	       t0 = _mm256_fmadd_pd(_mm256_sub_pd(hi0,lo0), t0, lo0);
+	       __m256d t1 = rand256d_f();
+	       t1 = _mm256_fmadd_pd(_mm256_sub_pd(hi1,lo1), t1, lo1);
 	       //x[dd] += t;
 	       __m256d xdd0 = _mm256_load_pd(x+dd*8);
 	       __m256d xdd1 = _mm256_load_pd(x+dd*8+4);

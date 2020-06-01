@@ -47,20 +47,19 @@ void Random_double_in_range_cost_ref(const void* o){
     // 2 add
     pc_stack().log(5, 0, "random double_in_range");
 }
-void Random_double4_in_range_cost_ref(const void* o){
-
+void sr_rand256d_cost_ref(){
     {// frame for random int
         PC_Frame<random_int_cost_f> frame((void*) prng_get_random_int,4);
         frame.costf()((NULL));
     }
 
-    // 1 div
-    // 3 mul
-    // 2 add
+    // 1 and
+    // 1 shift
+    // 1 or
+    // 1 sub
     //  all times 4
-    pc_stack().log(5*4, 0, "random double4_in_range");
+    pc_stack().log(4*4, 0, "rand256d");
 }
-
 
 void Random_double_0_1_cost_ref(const void* o){
 

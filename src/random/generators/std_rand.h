@@ -1,8 +1,8 @@
-#include <stdint.h>
-#include <immintrin.h>
 
 #ifndef HEADER_PRNG_STD_H
 #define HEADER_PRNG_STD_H
+#include <stdint.h>
+#include <immintrin.h>
 
 extern int rand_chunk_size;
 
@@ -18,5 +18,5 @@ uint32_t std_rand_chunked();
 void refill_chunk();
 
 __m256i std_rand256i();
-
+__m256d std_rand256d();
 #endif // HEADER_PRNG_STD_H

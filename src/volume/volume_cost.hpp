@@ -16,9 +16,11 @@ typedef void (*random_double_normal_cost_f)(const void* o);
 void Random_int_cost_ref(const void * o);
 void Random_int_in_range_cost_ref(const void * o);
 void Random_double_in_range_cost_ref(const void * o);
-void Random_double4_in_range_cost_ref(const void * o);
 void Random_double_0_1_cost_ref(const void * o);
 void Random_double_normal_cost_ref(const void * o);
+
+typedef void (*rand256d_cost_f_t)();
+void sr_rand256d_cost_ref();
 
 // ----------------------------------------------- linalg
 typedef void (*dotProduct_cost_f)(const int);

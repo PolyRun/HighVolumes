@@ -265,7 +265,8 @@ void test_4_8_sets() {
 	       assert(abs(res[j]-rr) < 0.000001);
 	    }
 	    int d = prng_get_random_int_in_range(0,n-1);
-	    __m256d ttt = prng_get_random_double4_in_range(min1,plus1);
+	    __m256d ttt = rand256d_f();
+	    ttt = _mm256_fmadd_pd(_mm256_sub_pd(plus1,min1), ttt, min1);
 	    
 	    //v[d] += ttt;
 	    __m256d vd = _mm256_load_pd(v+4*d);
@@ -300,8 +301,10 @@ void test_4_8_sets() {
 	       assert(abs(((double*)&res)[j]-rr) < 0.000001);
 	    }
 	    int d = prng_get_random_int_in_range(0,n-1);
-	    __m256d ttt0 = prng_get_random_double4_in_range(min1,plus1);
-	    __m256d ttt1 = prng_get_random_double4_in_range(min1,plus1);
+	    __m256d ttt0 = rand256d_f();
+	    ttt0 = _mm256_fmadd_pd(_mm256_sub_pd(plus1,min1), ttt0, min1);
+	    __m256d ttt1 = rand256d_f();
+	    ttt1 = _mm256_fmadd_pd(_mm256_sub_pd(plus1,min1), ttt1, min1);
 	    
 	    //v[d] += ttt;
 	    __m256d vd0 = _mm256_load_pd(v+8*d);
@@ -339,7 +342,8 @@ void test_4_8_sets() {
 	    assert( abs(t0 - tp.low0[j]) < 0.00001 );
 	    assert( abs(t1 - tp.hi0[j]) < 0.00001 );
 	 }
-	 __m256d ttt = prng_get_random_double4_in_range(tp.low0,tp.hi0);
+	 __m256d ttt = rand256d_f();
+	 ttt = _mm256_fmadd_pd(_mm256_sub_pd(tp.hi0,tp.low0), ttt, tp.low0);
 	 
 	 //v[d] += ttt;
 	 __m256d vd = _mm256_load_pd(v+4*d);
@@ -378,8 +382,10 @@ void test_4_8_sets() {
 	    assert( abs(t0 - tp.low1[j]) < 0.00001 );
 	    assert( abs(t1 - tp.hi1[j]) < 0.00001 );
 	 }
-	 __m256d ttt0 = prng_get_random_double4_in_range(tp.low0,tp.hi0);
-	 __m256d ttt1 = prng_get_random_double4_in_range(tp.low1,tp.hi1);
+	 __m256d ttt0 = rand256d_f();
+	 ttt0 = _mm256_fmadd_pd(_mm256_sub_pd(tp.hi0,tp.low0), ttt0, tp.low0);
+	 __m256d ttt1 = rand256d_f();
+	 ttt1 = _mm256_fmadd_pd(_mm256_sub_pd(tp.hi1,tp.low1), ttt1, tp.low1);
 	 
 	 //v[d] += ttt;
 	 __m256d vd0 = _mm256_load_pd(v+8*d);
@@ -464,7 +470,8 @@ void test_body_intersectCoord4(const int n, Body_T* type, void* body) {
 	 }
          
          // random walk now:
-         __m256d t = prng_get_random_double4_in_range(tp.low0,tp.hi0);
+         __m256d t = rand256d_f();
+	 t = _mm256_fmadd_pd(_mm256_sub_pd(tp.hi0,tp.low0), t, tp.low0);
          // x[dd] += t;
 	 __m256d xdd = _mm256_load_pd(x+dd*4);
 	 __m256d xdd_t = _mm256_add_pd(xdd,t);
@@ -579,8 +586,10 @@ void test_body_intersectCoord8(const int n, Body_T* type, void* body) {
 	 }
          
          // random walk now:
-         __m256d t0 = prng_get_random_double4_in_range(tp.low0,tp.hi0);
-         __m256d t1 = prng_get_random_double4_in_range(tp.low1,tp.hi1);
+         __m256d t0 = rand256d_f();
+	 t0 = _mm256_fmadd_pd(_mm256_sub_pd(tp.hi0,tp.low0), t0, tp.low0);
+         __m256d t1 = rand256d_f();
+	 t1 = _mm256_fmadd_pd(_mm256_sub_pd(tp.hi1,tp.low1), t1, tp.low1);
          // x[dd] += t;
 	 __m256d xdd0 = _mm256_load_pd(x+dd*8);
 	 __m256d xdd1 = _mm256_load_pd(x+dd*8+4);

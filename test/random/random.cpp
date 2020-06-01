@@ -26,11 +26,11 @@ int main(int argc, char *argv[]) {
 
    std::cout << "start test.\n";
 
-   auto o = dynamic_cast<CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256i_f_t>*>(cliFun.getOption("rand_f"));
+   auto o = dynamic_cast<CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256d_f_t>*>(cliFun.getOption("rand_f"));
    for(auto it : o->fmap) {
       rand_init_f     = it.second.first.first;
       rand_f          = it.second.first.second.first;
-      rand256i_f      = it.second.first.second.second;
+      rand256d_f      = it.second.first.second.second;
 
       if (!(it.second.second == "standard rand" || it.second.second == "shift register rand")) {
          continue;
@@ -67,17 +67,15 @@ int main(int argc, char *argv[]) {
    for(auto it : o->fmap) {
       rand_init_f     = it.second.first.first;
       rand_f          = it.second.first.second.first;
-      rand256i_f      = it.second.first.second.second;
+      rand256d_f      = it.second.first.second.second;
 
       //if (!(it.second.second == "standard rand" || it.second.second == "shift register rand")) {
       //   continue;
       //}
       rand_init_f(NULL);
-      __m256d lo = _mm256_set_pd(-1,-2,-3,-4);
-      __m256d hi = _mm256_set_pd(1,2,3,4);
 
       for(int t=0;t<10;t++) {
-         __m256d rd = prng_get_random_double4_in_range(lo,hi);
+         __m256d rd = rand256d_f();
          printf("%lf %lf %lf %lf\n",rd[0],rd[1],rd[2],rd[3]);
       }
 

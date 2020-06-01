@@ -164,9 +164,11 @@ public:
       pc_stack().add((void *)prng_get_random_int, new PC_Cost_Wrapper<random_int_cost_f>(Random_int_cost_ref, "Random int"));
       pc_stack().add((void *)prng_get_random_int_in_range, new PC_Cost_Wrapper<random_int_in_range_cost_f>(Random_int_in_range_cost_ref, "Random int_in_range"));
       pc_stack().add((void *)prng_get_random_double_in_range, new PC_Cost_Wrapper<random_double_in_range_cost_f>(Random_double_in_range_cost_ref, "Random double_in_range"));
-      pc_stack().add((void *)prng_get_random_double4_in_range, new PC_Cost_Wrapper<random_double_in_range_cost_f>(Random_double4_in_range_cost_ref, "Random double4_in_range"));
       pc_stack().add((void *)prng_get_random_double_0_1, new PC_Cost_Wrapper<random_double_0_1_cost_f>(Random_double_0_1_cost_ref, "Random double_0_1"));
       pc_stack().add((void *)prng_get_random_double_normal, new PC_Cost_Wrapper<random_double_normal_cost_f>(Random_double_normal_cost_ref, "Random double_normal"));
+      
+      pc_stack().add((void *)std_rand256d, new PC_Cost_Wrapper<rand256d_cost_f_t>(sr_rand256d_cost_ref, "Random 4 doubles (std)"));
+      pc_stack().add((void *)sr_rand256d, new PC_Cost_Wrapper<rand256d_cost_f_t>(sr_rand256d_cost_ref, "Random 4 doubles (sr)"));
       
       
 
@@ -275,13 +277,13 @@ public:
 						     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
 						     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
 
-      add(new CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256i_f_t>(&rand_init_f, &rand_f, &rand256i_f,'f',"rand_f","std_rand", {
-                       {"std_rand",          {{std_init,          {std_rand,         std_rand256i}}, "standard rand"}},
-                       {"std_rand_chunked",  {{std_init_chunked,  {std_rand_chunked, std_rand256i}}, "standard rand (chunked)"}},
-	               {"sr_rand",           {{sr_init,           {sr_random_uint32, sr_rand256i}},  "shift register rand"}},
-                       {"sr_rand_chunked",   {{sr_init_chunked,   {sr_rand_chunked,  sr_rand256i}},  "shift register rand (chunked)"}},
-                       {"sr_rand_vec",       {{sr_init_vec,       {sr_rand_vec,      sr_rand256i}},  "shift register rand (vec)"}},
-		       {"mt_rand",           {{mt_init,           {mt_rand,          std_rand256i}}, "mersenne twister rand"}} // 256i version missing!
+      add(new CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256d_f_t>(&rand_init_f, &rand_f, &rand256d_f,'f',"rand_f","std_rand", {
+                       {"std_rand",          {{std_init,          {std_rand,         std_rand256d}}, "standard rand"}},
+                       {"std_rand_chunked",  {{std_init_chunked,  {std_rand_chunked, std_rand256d}}, "standard rand (chunked)"}},
+	               {"sr_rand",           {{sr_init,           {sr_random_uint32, sr_rand256d}},  "shift register rand"}},
+                       {"sr_rand_chunked",   {{sr_init_chunked,   {sr_rand_chunked,  sr_rand256d}},  "shift register rand (chunked)"}},
+                       {"sr_rand_vec",       {{sr_init_vec,       {sr_rand_vec,      sr_rand256d}},  "shift register rand (vec)"}},
+		       {"mt_rand",           {{mt_init,           {mt_rand,          std_rand256d}}, "mersenne twister rand"}} // 256i version missing!
                      }));
 
       add(new CLIF_Option<rd_0_1_f_t>(&prng_get_random_double_0_1,'f',"rd_0_1","ref", {

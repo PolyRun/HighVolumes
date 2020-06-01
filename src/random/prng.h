@@ -3,7 +3,6 @@
 #include "generators/mersenne.h"
 #include "generators/shiftreg.h"
 
-
 #ifndef HEADER_PRNG_H
 #define HEADER_PRNG_H
 
@@ -12,9 +11,12 @@ typedef void(*rand_init_f_t)(void *seed);
 typedef uint32_t(*rand_f_t)();
 typedef __m256i(*rand256i_f_t)();
 
+typedef __m256d(*rand256d_f_t)();
+
 extern rand_init_f_t rand_init_f;
 extern rand_f_t rand_f;
 extern rand256i_f_t rand256i_f;
+extern rand256d_f_t rand256d_f;
 
 // Function(s) that return desired random numbers
 typedef double(*rd_0_1_f_t)();
@@ -52,9 +54,6 @@ double prng_get_random_double_normal();
  * \param upper_bound Upper bound on the value of the random double
  **/
 double prng_get_random_double_in_range(double lower_bound, double upper_bound);
-
-// same but for vector
-__m256d prng_get_random_double4_in_range(__m256d lower_bound, __m256d upper_bound);
 
 /**
  * \brief Returns a new random integer

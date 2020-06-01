@@ -154,7 +154,6 @@ static __m256i sr_state256i = {
 };
 
 __m256i sr_rand256i() {
-    const 
     const int mask = (1UL << 31);
     const int clear_mask = ~mask;
     __m256i vmask = _mm256_set1_epi32(clear_mask);
@@ -170,4 +169,44 @@ __m256i sr_rand256i() {
     sr_state256i = state;
     return tmp;
 }
+
+__m256d sr_rand256d() {
+    const int mask = (1UL << 31);
+    const int clear_mask = ~mask;
+    __m256i vmask = _mm256_set1_epi32(clear_mask);
+    
+    __m256i state = sr_state256i;
+    __m256i tmp = _mm256_slli_epi32(state, 13);
+    state = _mm256_xor_si256(state, tmp);
+    tmp = _mm256_srai_epi32(state, 17);
+    state = _mm256_xor_si256(state, tmp);
+    tmp = _mm256_slli_epi32(state, 5);
+    state = _mm256_xor_si256(state, tmp);
+    tmp = _mm256_and_si256(state, vmask);
+    sr_state256i = state;
+
+    const __m256i exp = _mm256_set1_epi64x(1023L << 52);
+    const __m256i mask32 = _mm256_set1_epi64x(0xFFFFFFFF);
+    __m256i r = tmp; //rand256i_f();
+    r = _mm256_and_si256(r,mask32);
+    r = _mm256_slli_epi64(r,21); // 1 lat, 1 tp
+    r = _mm256_or_si256(r,exp); // 1 lat, 2 or 3 throughput
+    __m256d rd = _mm256_castsi256_pd(r);
+    // above: value between 1..2
+    rd = _mm256_sub_pd(rd, _mm256_set1_pd(1));
+    return rd;
+    // __m256d fac = _mm256_sub_pd(hi, lo);
+    // return _mm256_fmadd_pd(rd,fac, lo);
+
+    //const __m256d rMaxInv = _mm256_set1_pd(1.0/RAND_MAX);
+    //__m256i ri = tmp;
+    //__m128i rs = _mm256_castsi256_si128(ri);
+    //__m256d rr = _mm256_cvtepi32_pd(rs);
+    ////return rr;
+    //__m256d r = _mm256_mul_pd(rr,rMaxInv);
+    //__m256d fac = _mm256_sub_pd(hi, lo);
+    //__m256d res = _mm256_fmadd_pd(r,fac, lo);
+    //return res;
+}
+
 

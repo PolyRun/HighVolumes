@@ -27,5 +27,6 @@ uint32_t sr_rand_vec();
 void sr_refill_vec();
 
 __m256i sr_rand256i();
+__m256d sr_rand256d();
 
 #endif // HEADER_PRNG_SHIFTREG_H

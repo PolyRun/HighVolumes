@@ -50,3 +50,12 @@ __m256i std_rand256i() {
 		   rand()
 		   );
 }
+
+__m256d std_rand256d() {
+   __m256d rr = _mm256_set_pd(rand(), rand(), rand(), rand());
+   const __m256d rMaxInv = _mm256_set1_pd(1.0/RAND_MAX);
+   __m256d r = _mm256_mul_pd(rr,rMaxInv);
+   return r;
+}
+
+
