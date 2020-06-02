@@ -3,6 +3,7 @@
 
 #include "intersectCoord/intersectCoord.h"// see variants
 #include "cacheUpdateCoord/cacheUpdateCoord.h"
+#include "cacheReset/cacheReset.h"
 
 #ifndef ELLIPSOID_H
 #define ELLIPSOID_H

@@ -1076,6 +1076,29 @@ int main(int argc, char** argv) {
       }
    }
 
+   // Test Ellipsoid cache reset
+   auto oEr = dynamic_cast<CLIF_Option<cacheReset_f_t>*>(cliFun.getOption("Ellipsoid_cacheReset"));
+   for(auto it : oEr->fmap) {
+      Ellipsoid_T.cacheReset = it.second.first;
+      std::cout << "Test Ellipsoid for cacheReset " << it.first << " - " << it.second.second << std::endl;
+
+      for (int t = 0; t < 100; t++) {
+         // Generate new ellipsoid box, n dim
+         const int n = 20;
+         Ellipsoid* e = Ellipsoid_new_with_T(n); // simple sphere
+         for(int i=0; i<n; i++) {
+            e->a[i] = prng_get_random_double_in_range(-10,10);
+            FT* Ai = Ellipsoid_get_Ai(e,i);
+            Ai[i] = prng_get_random_double_in_range(1.1,2.0);
+            Ellipsoid_set_Ta(e, i, i, Ai[i]);
+         }
+
+         test_ellipsoid_intersectCoord(n, &Ellipsoid_T, e);
+         
+         Ellipsoid_T.free(e);
+      }
+   }
+
    { // test Ellipsoid_project
       Ellipsoid* e = Ellipsoid_new(3); // simple sphere
       e->a[0] = 5.0;
