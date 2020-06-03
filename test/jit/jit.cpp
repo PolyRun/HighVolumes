@@ -763,6 +763,28 @@ int main() {
 	 }
       }
 
+      std::cout << "jit_broadcast_sd_via_data:\n";
+      {
+         for(int i=0;i<16;i++) {
+	       jit_clear();
+               std::cout << "jit_broadcast_sd_via_data " << i << "\n";
+               __m256d (*func2)();
+               func2 = (__m256d (*)()) jit_head();
+	       jit_Table_8* t8 = NULL;// empty list
+	       
+	       t8 = jit_broadcast_sd_via_data(3,i,t8);
+
+               jit_permpd(0b11100100, i,0);
+	       jit_emit_return();
+               
+	       jit_table_8_consume(t8);
+	       __m256d res = func2();
+	       assert(res[0] == 3);
+	       assert(res[1] == 3);
+	       assert(res[2] == 3);
+	       assert(res[3] == 3);
+	 }
+      }
 
 
    }

@@ -151,6 +151,12 @@ jit_Table_8* jit_immediate_8_via_data(const double val, const int xmm, jit_Table
    return jit_Table_8_prepend(t, (uint8_t*)&val, jit_head());
 }
 
+jit_Table_8* jit_broadcast_sd_via_data(const double val, const int ymm, jit_Table_8* t) {
+// ASDF
+   jit_vbroadcastsd_mem(jit_rip, 0xffffffff, ymm);
+   return jit_Table_8_prepend(t, (uint8_t*)&val, jit_head());
+}
+
 void jit_table_8_consume(jit_Table_8* t) {
    if(t==NULL) {return;}
 
@@ -706,6 +712,7 @@ void jit_vbroadcastsd_mem(jit_Register reg, uint32_t idx, int dst) {
       case jit_rbx: {b5+=0x83;break;}
       case jit_rsi: {b5+=0x86;break;}
       case jit_rdi: {b5+=0x87;break;}
+      case jit_rip: {b5+=0x05;break;}
       default: {assert(0 && "reg not handled!");}
    }
    

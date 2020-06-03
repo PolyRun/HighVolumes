@@ -55,6 +55,7 @@ typedef enum jit_Register {
    jit_rcx,// arg 4
    jit_rax,
    jit_rbx,
+   jit_rip,
 } jit_Register;
 
 // -------------------------------------- table 8
@@ -72,6 +73,7 @@ jit_Table_8* jit_Table_8_prepend(jit_Table_8* old, uint8_t* bytes, uint8_t* src)
 // sets op down
 // prepends entry to table
 jit_Table_8* jit_immediate_8_via_data(const double val, const int xmm, jit_Table_8* t);
+jit_Table_8* jit_broadcast_sd_via_data(const double val, const int ymm, jit_Table_8* t);
 
 // consume and free table
 // write table in memory, go set up references to it

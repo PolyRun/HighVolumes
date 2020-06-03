@@ -134,6 +134,7 @@ for i in range(16):
 for i in range(16):
     print("vbroadcastsd 0x100(%rax), %ymm{}".format(i));
     print("vbroadcastsd 0x100(%rbx), %ymm{}".format(i));
+    print("vbroadcastsd 0x100(%rip), %ymm{}".format(i));
 
 
 
