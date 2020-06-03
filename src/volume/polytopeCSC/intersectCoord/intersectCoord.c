@@ -595,3 +595,195 @@ void PolytopeCSC_intersectCoord_cached_vec_inline_2accs(const void* o, const FT*
     *t1 = (t11[3] < t1_tmptmptmp) ? t11[3] : t1_tmptmptmp;
 
 }
+
+
+FTpair4 PolytopeCSC_intersectCoord4_ref(const void* o, const FT* x, const int d, void* cache) {
+   const PolytopeCSC *p = (PolytopeCSC *) o;
+   int n = p->n;
+   FT *b_Aix = (FT *) cache; //(FT *) cache;
+
+   int colstrt = p->col_start[d];
+   FT *Ainv = &p->Ainv[colstrt];
+   int *row = &p->row_idx[colstrt];
+   
+   // elems is a multiple of 4!
+   // thus we need to consider exactly c := |col|/4 vectors
+   int elems = p->col_start[d+1] - colstrt;
+
+   __m256d zeros = _mm256_set1_pd(0.0);
+
+   __m256d t00 = _mm256_set1_pd(-FT_MAX);
+   __m256d t11 = _mm256_set1_pd(FT_MAX);
+
+   for(int i=0;i<elems && row[i]>=0;i++) { // make sure we stop before rows get invalid ;)
+      __m256d b_Aix_vec = _mm256_load_pd(b_Aix + 4*row[i]);
+      //printf(":c: %lf %lf %lf %lf\n",b_Aix_vec[0],b_Aix_vec[1],b_Aix_vec[2],b_Aix_vec[3]);
+      __m256d daiinv = _mm256_broadcast_sd(Ainv + i);
+      //printf(":0_daiinv: %lf %lf %lf %lf\n",daiinv[0],daiinv[1],daiinv[2],daiinv[3]);
+
+      __m256d t = _mm256_mul_pd(b_Aix_vec, daiinv);
+      // <comp>_OS -> signal nans
+      // n_mask[i] is 0xff..ff if t[i] < 0 and 0 else
+      // [add port, gap 1, latency 3]
+      __m256d n_mask = _mm256_cmp_pd(t, zeros, _CMP_LT_OS);
+      //__m256d p_mask = _mm256_cmp_pd(t, zeros, _CMP_GE_OS);
+
+      __m256d t00_tmp = _mm256_blendv_pd(t00, t, n_mask);
+      __m256d t11_tmp = _mm256_blendv_pd(t, t11, n_mask);
+      
+      //printf(":0_tmp: %lf %lf %lf %lf\n",t00_tmp[0],t00_tmp[1],t00_tmp[2],t00_tmp[3]);
+      //printf(":1_tmp: %lf %lf %lf %lf\n",t11_tmp[0],t11_tmp[1],t11_tmp[2],t11_tmp[3]);
+
+      // fill dai with 0 for invalid entries -> t will have inf at those entries -> they are ignored here!
+      // [add port, gap 1, latency 3]
+      t00 = _mm256_max_pd(t00, t00_tmp);
+      // [add port, gap 1, latency 3]
+      t11 = _mm256_min_pd(t11, t11_tmp);
+   }
+   
+   // printf(":0: %lf %lf %lf %lf\n",t00[0],t00[1],t00[2],t00[3]);
+   // printf(":1: %lf %lf %lf %lf\n",t11[0],t11[1],t11[2],t11[3]);
+   FTpair4 tp = {t00,t11};
+   return tp;
+}
+FTpair8 PolytopeCSC_intersectCoord8_ref(const void* o, const FT* x, const int d, void* cache) {
+   const PolytopeCSC *p = (PolytopeCSC *) o;
+   int n = p->n;
+   FT *b_Aix = (FT *) cache; //(FT *) cache;
+
+   int colstrt = p->col_start[d];
+   FT *Ainv = &p->Ainv[colstrt];
+   int *row = &p->row_idx[colstrt];
+   
+   // elems is a multiple of 4!
+   // thus we need to consider exactly c := |col|/4 vectors
+   int elems = p->col_start[d+1] - colstrt;
+
+   __m256d zeros = _mm256_set1_pd(0.0);
+
+   __m256d t00 = _mm256_set1_pd(-FT_MAX);
+   __m256d t01 = _mm256_set1_pd(-FT_MAX);
+   __m256d t10 = _mm256_set1_pd(FT_MAX);
+   __m256d t11 = _mm256_set1_pd(FT_MAX);
+
+   for(int i=0;i<elems && row[i]>=0;i++) { // make sure we stop before rows get invalid ;)
+      __m256d b_Aix_vec0 = _mm256_load_pd(b_Aix + 8*row[i]);
+      __m256d b_Aix_vec1 = _mm256_load_pd(b_Aix + 8*row[i]+4);
+      //printf(":c: %lf %lf %lf %lf\n",b_Aix_vec[0],b_Aix_vec[1],b_Aix_vec[2],b_Aix_vec[3]);
+      __m256d daiinv = _mm256_broadcast_sd(Ainv + i);
+      //printf(":0_daiinv: %lf %lf %lf %lf\n",daiinv[0],daiinv[1],daiinv[2],daiinv[3]);
+
+      __m256d t0 = _mm256_mul_pd(b_Aix_vec0, daiinv);
+      __m256d t1 = _mm256_mul_pd(b_Aix_vec1, daiinv);
+      
+      __m256d n_mask0 = _mm256_cmp_pd(t0, zeros, _CMP_LT_OS);
+      __m256d n_mask1 = _mm256_cmp_pd(t1, zeros, _CMP_LT_OS);
+
+      __m256d t00_tmp = _mm256_blendv_pd(t00, t0, n_mask0);
+      __m256d t01_tmp = _mm256_blendv_pd(t01, t1, n_mask1);
+      __m256d t10_tmp = _mm256_blendv_pd(t0, t10, n_mask0);
+      __m256d t11_tmp = _mm256_blendv_pd(t1, t11, n_mask1);
+      
+      //printf(":0_tmp: %lf %lf %lf %lf\n",t00_tmp[0],t00_tmp[1],t00_tmp[2],t00_tmp[3]);
+      //printf(":1_tmp: %lf %lf %lf %lf\n",t11_tmp[0],t11_tmp[1],t11_tmp[2],t11_tmp[3]);
+
+      t00 = _mm256_max_pd(t00, t00_tmp);
+      t01 = _mm256_max_pd(t01, t01_tmp);
+      t10 = _mm256_min_pd(t10, t10_tmp);
+      t11 = _mm256_min_pd(t11, t11_tmp);
+   }
+   
+   // printf(":0: %lf %lf %lf %lf\n",t00[0],t00[1],t00[2],t00[3]);
+   // printf(":1: %lf %lf %lf %lf\n",t11[0],t11[1],t11[2],t11[3]);
+   FTpair8 tp = {t00,t01,t10,t11};
+   return tp;
+
+}
+void PolytopeCSC_cacheReset4_ref(const void* o, const FT* x, void* cache) {
+   // set cache[i] = b[i] - Ai*x
+   PolytopeCSC *p = (PolytopeCSC *) o;
+   FT *c = (FT *) cache; //(FT *) cache;
+   const FT* b = p->b;
+
+   for (int i = 0; i < p->m; i++){
+       //c[i] = p->b[i];
+       __m256d ci = _mm256_broadcast_sd(b+i);
+       _mm256_store_pd(c+4*i, ci);
+   }
+
+   __m256d zero = _mm256_set1_pd(0.0);
+   for (int i = 0; i < p->n; i++){
+       __m256d xi = _mm256_load_pd(x+4*i);
+       __m256d xi_neg = _mm256_fmsub_pd(zero, zero, xi);
+       for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
+           __m256d crj = _mm256_load_pd(c + 4*p->row_idx[j]);
+           __m256d Aj = _mm256_broadcast_sd(p->A + j);
+           __m256d crj_upd = _mm256_fmadd_pd(Aj, xi_neg, crj);
+           _mm256_store_pd(c + 4*p->row_idx[j], crj_upd);
+       }
+   }
+}
+void PolytopeCSC_cacheReset8_ref(const void *o, const FT *x, void *cache) {
+   PolytopeCSC *p = (PolytopeCSC *) o;
+   FT *c = (FT *) cache; //(FT *) cache;
+   const FT* b = p->b;
+
+   for (int i = 0; i < p->m; i++){
+       //c[i] = p->b[i];
+       __m256d ci = _mm256_broadcast_sd(b+i);
+       _mm256_store_pd(c+8*i, ci);
+       _mm256_store_pd(c+8*i+4, ci);
+   }
+
+   __m256d zero = _mm256_set1_pd(0.0);
+   for (int i = 0; i < p->n; i++){
+       __m256d xi0 = _mm256_load_pd(x+8*i);
+       __m256d xi1 = _mm256_load_pd(x+8*i+4);
+       __m256d xi_neg0 = _mm256_fmsub_pd(zero, zero, xi0);
+       __m256d xi_neg1 = _mm256_fmsub_pd(zero, zero, xi1);
+       for (int j = p->col_start[i]; j < p->col_start[i+1] && p->row_idx[j] > -1; j++){
+           __m256d crj0 = _mm256_load_pd(c + 8*p->row_idx[j]);
+           __m256d crj1 = _mm256_load_pd(c + 8*p->row_idx[j] + 4);
+           __m256d Aj = _mm256_broadcast_sd(p->A + j);
+           __m256d crj_upd0 = _mm256_fmadd_pd(Aj, xi_neg0, crj0);
+           __m256d crj_upd1 = _mm256_fmadd_pd(Aj, xi_neg1, crj1);
+           _mm256_store_pd(c + 8*p->row_idx[j],   crj_upd0);
+           _mm256_store_pd(c + 8*p->row_idx[j]+4, crj_upd1);
+       }
+   }
+}
+void PolytopeCSC_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache) {
+   const PolytopeCSC *p = (PolytopeCSC *) o;
+   FT *c = (FT *) cache; //(FT *) cache;
+   
+   // only update with column d of A
+   for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
+      __m256d cri = _mm256_load_pd(c + 4*p->row_idx[i]);
+      __m256d Ai = _mm256_broadcast_sd(p->A + i);
+      __m256d tmp = _mm256_mul_pd(dx, Ai);
+      __m256d cri_upd = _mm256_sub_pd(cri, tmp);
+      _mm256_store_pd(c + 4*p->row_idx[i], cri_upd);
+   }
+}
+void PolytopeCSC_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache) {
+   const PolytopeCSC *p = (PolytopeCSC *) o;
+   FT *c = (FT *) cache; //(FT *) cache;
+   
+   __m256d dx0 = dx.set0;
+   __m256d dx1 = dx.set1;
+
+   // only update with column d of A
+   for (int i = p->col_start[d]; i < p->col_start[d+1] && p->row_idx[i] > -1; i++){
+      __m256d cri0 = _mm256_load_pd(c + 8*p->row_idx[i]);
+      __m256d cri1 = _mm256_load_pd(c + 8*p->row_idx[i] + 4);
+      __m256d Ai = _mm256_broadcast_sd(p->A + i);
+      __m256d tmp0 = _mm256_mul_pd(dx0, Ai);
+      __m256d tmp1 = _mm256_mul_pd(dx1, Ai);
+      __m256d cri_upd0 = _mm256_sub_pd(cri0, tmp0);
+      __m256d cri_upd1 = _mm256_sub_pd(cri1, tmp1);
+      _mm256_store_pd(c + 8*p->row_idx[i],   cri_upd0);
+      _mm256_store_pd(c + 8*p->row_idx[i]+4, cri_upd1);
+   }
+}
+
+

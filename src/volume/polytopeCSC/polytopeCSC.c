@@ -13,7 +13,13 @@ Body_T PolytopeCSC_T = {
 	.cacheUpdateCoord = PolytopeCSC_cacheUpdateCoord_ref,
         .shallowCutOracle = PolytopeCSC_shallowCutOracle_ref,
 	.transform = PolytopeCSC_transform_ref,
-        .boundingSphere = PolytopeCSC_bounding_ref
+        .boundingSphere = PolytopeCSC_bounding_ref,
+        .intersectCoord4 = PolytopeCSC_intersectCoord4_ref,
+        .intersectCoord8 = PolytopeCSC_intersectCoord8_ref,
+	.cacheReset4 = PolytopeCSC_cacheReset4_ref,
+	.cacheReset8 = PolytopeCSC_cacheReset8_ref,
+	.cacheUpdateCoord4 = PolytopeCSC_cacheUpdateCoord4_ref,
+	.cacheUpdateCoord8 = PolytopeCSC_cacheUpdateCoord8_ref,
 };
 
 

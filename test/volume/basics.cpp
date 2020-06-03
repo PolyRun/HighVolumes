@@ -812,8 +812,6 @@ int main(int argc, char** argv) {
          
          PolytopeT_free(box);
       }
-
-     
    }
 
 
@@ -871,6 +869,22 @@ int main(int argc, char** argv) {
        }
    }
    
+   {// PolytopeCSC - check intersectCoord - cached - set 4/8
+      std::cout << "set 4/8: PolytopeCSC_intersectCoord:\n";
+      for(int n=4;n<20;n++) {
+	 std::cout << "test for n="<<n<<"\n";
+         Polytope* boxx = Polytope_new_box(n,2);
+         PolytopeCSC *box = Polytope_to_PolytopeCSC(boxx);
+
+         test_body_intersectCoord4(n, &PolytopeCSC_T, box);
+         test_body_intersectCoord8(n, &PolytopeCSC_T, box);
+         
+         Polytope_free(boxx);
+         PolytopeCSC_free(box);
+      }
+   }
+
+
    auto oJIT = dynamic_cast<CLIF_Option<PolytopeJIT_Generator>*>(cliFun.getOption("PolytopeJIT_gen"));
    for (auto it : oJIT->fmap){
        // test PolytopeJIT
