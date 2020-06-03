@@ -19,6 +19,8 @@ typedef void (*pjit_intersectCoord_f_t)(const int d, FT* t0, FT* t1, void* cache
 
 // direction d, distance travelled dx, cache
 typedef void (*pjit_cacheUpdateCoord_f_t)(const int d, const FT dx, void* cache);
+typedef void (*pjit_cacheUpdateCoord4_f_t)(const int d, const __m256d dx, void* cache);
+typedef void (*pjit_cacheUpdateCoord8_f_t)(const int d, const __m256d dx0, __m256d dx1, void* cache);
 
 typedef struct PolytopeJIT {
    pjit_inside_f_t inside;
@@ -26,6 +28,13 @@ typedef struct PolytopeJIT {
    pjit_cacheReset_f_t cacheReset;
    pjit_intersectCoord_f_t intersectCoord;
    pjit_cacheUpdateCoord_f_t cacheUpdateCoord;
+
+   pjit_cacheReset_f_t cacheReset4;
+   pjit_cacheReset_f_t cacheReset8;
+   pjit_intersectCoord_f_t intersectCoord4;
+   pjit_intersectCoord_f_t intersectCoord8;
+   pjit_cacheUpdateCoord4_f_t cacheUpdateCoord4;
+   pjit_cacheUpdateCoord8_f_t cacheUpdateCoord8;
 
    int n; // dimensions
    int m; // constraints
@@ -73,5 +82,12 @@ void PolytopeJIT_transform_ref(const void* o_in, void* o_out, const Matrix* L, c
 
 void PolytopeJIT_bounding_ref(const void *B, FT *R2, FT *ori);
 
+
+FTpair4 PolytopeJIT_intersectCoord4_ref(const void* o, const FT* x, const int d, void* cache);
+FTpair8 PolytopeJIT_intersectCoord8_ref(const void* o, const FT* x, const int d, void* cache);
+void PolytopeJIT_cacheReset4_ref(const void* o, const FT* x, void* cache);
+void PolytopeJIT_cacheReset8_ref(const void *p, const FT *x, void *cache);
+void PolytopeJIT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache);
+void PolytopeJIT_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 dx, void* cache);
 
 #endif

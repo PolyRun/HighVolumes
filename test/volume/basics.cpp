@@ -934,7 +934,23 @@ int main(int argc, char** argv) {
          }
       }
    }
-   
+    
+   {// PolytopeJIT - check intersectCoord - cached - set 4/8
+      std::cout << "set 4/8: PolytopeCSC_intersectCoord:\n";
+      for(int n=4;n<20;n++) {
+	 std::cout << "test for n="<<n<<"\n";
+         Polytope* boxx = Polytope_new_box(n,2);
+         PolytopeJIT *box = Polytope_to_PolytopeJIT(boxx);
+
+         test_body_intersectCoord4(n, &PolytopeJIT_T, box);
+         test_body_intersectCoord8(n, &PolytopeJIT_T, box);
+         
+         Polytope_free(boxx);
+         PolytopeJIT_free(box);
+      }
+   }
+
+
 
    // Check ball volume:
    assert(std::abs(Ball_volume(3,1.0) - 4.189) <= 0.01);
