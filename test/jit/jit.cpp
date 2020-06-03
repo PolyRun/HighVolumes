@@ -2,6 +2,8 @@
 #include <string>
 #include <cassert>
 
+#include <immintrin.h>
+
 extern "C" { // must be included C stlye
 #include "../../src/jit/jit.h"
 }
@@ -737,6 +739,27 @@ int main() {
 	       double res = func2();
 	       assert(res == 3);
 	    }
+	 }
+      }
+
+      std::cout << "jit_vbroadcastsd_mem:\n";
+      {
+         for(int i=0;i<16;i++) {
+	       jit_clear();
+               std::cout << "jit_vbroadcastsd_mem " << i <<"\n";
+               __m256d (*func2)(double*);
+               func2 = (__m256d (*)(double*)) jit_head();
+	       
+	       jit_vbroadcastsd_mem(jit_rdi,8,i);
+               jit_permpd(0b11100100, i,0);
+	       jit_emit_return();
+               
+	       double x[2] = {2,3};
+	       __m256d res = func2((double*)x);
+	       assert(res[0] == 3);
+	       assert(res[1] == 3);
+	       assert(res[2] == 3);
+	       assert(res[3] == 3);
 	 }
       }
 

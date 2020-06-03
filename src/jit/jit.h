@@ -152,6 +152,7 @@ void jit_vfmad213pd_mem_xmm(jit_Register reg, uint32_t idx, int src, int dst);
 void jit_vfmad213pd_mem_ymm(jit_Register reg, uint32_t idx, int src, int dst);
 
 void jit_vbroadcastsd_ymm(int src, int dst);
+void jit_vbroadcastsd_mem(jit_Register reg, uint32_t idx, int dst);
 
 void jit_emit_vzeroupper();
 

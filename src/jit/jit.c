@@ -455,6 +455,7 @@ void jit_loadu_xmm(jit_Register reg, uint32_t idx, int dst) {
    jit_push((const uint8_t*)&idx,4);
 }
 
+
 void jit_loadu_ymm(jit_Register reg, uint32_t idx, int dst) {
    uint8_t b2 = 0xfd;
    if(dst >= 8) {b2-=0x80;}
@@ -692,6 +693,25 @@ void jit_vbroadcastsd_ymm(int src, int dst) {
    if(dst>=8) {b2-=0x80;}
    if(src>=8) {b2-=0x20;}
    { uint8_t instr[] = {0xc4,b2,0x7d,0x19,b5}; jit_push(instr,5); }
+}
+
+void jit_vbroadcastsd_mem(jit_Register reg, uint32_t idx, int dst) {
+   uint8_t b2 = 0xe2;
+   uint8_t b5 = (dst%8)*8;
+   if(dst >= 8) {b2-=0x80;}
+   switch(reg) {
+      case jit_rax: {b5+=0x80;break;}
+      case jit_rcx: {b5+=0x81;break;}
+      case jit_rdx: {b5+=0x82;break;}
+      case jit_rbx: {b5+=0x83;break;}
+      case jit_rsi: {b5+=0x86;break;}
+      case jit_rdi: {b5+=0x87;break;}
+      default: {assert(0 && "reg not handled!");}
+   }
+   
+   // c4 e2 7d 19 80 00 01 	vbroadcastsd 0x100(%rax),%ymm0
+   { uint8_t instr[] = {0xc4,b2,0x7d,0x19,b5}; jit_push(instr,5); }
+   jit_push((const uint8_t*)&idx,4);
 }
 
 void jit_emit_vzeroupper() {

@@ -131,8 +131,9 @@ for i in range(16):
     print("vmovsd 0x100(%rdi),%xmm{}".format(i));
     print("vmovsd 0x100(%rsi),%xmm{}".format(i));
 
-
-
+for i in range(16):
+    print("vbroadcastsd 0x100(%rax), %ymm{}".format(i));
+    print("vbroadcastsd 0x100(%rbx), %ymm{}".format(i));
 
 
 
