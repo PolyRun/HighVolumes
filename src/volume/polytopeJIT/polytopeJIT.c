@@ -129,9 +129,9 @@ FTpair4 PolytopeJIT_intersectCoord4_ref(const void* o, const FT* x, const int d,
    const int n = p->n;
    const int m = p->m;
    assert(p->intersectCoord4 && "intersectCoord4 function must be generated PolytopeJIT");
-   //p->intersectCoord(d,t0,t1,cache);
-
+   
    FTpair4 tp = {{0,0,0,0},{0,0,0,0}};
+   p->intersectCoord4(d,&tp.low0,&tp.hi0,cache);
    return tp;
 }
 FTpair8 PolytopeJIT_intersectCoord8_ref(const void* o, const FT* x, const int d, void* cache) {
@@ -139,20 +139,20 @@ FTpair8 PolytopeJIT_intersectCoord8_ref(const void* o, const FT* x, const int d,
    const int n = p->n;
    const int m = p->m;
    assert(p->intersectCoord8 && "intersectCoord8 function must be generated PolytopeJIT");
-   //p->intersectCoord(d,t0,t1,cache);
-
+   
    FTpair8 tp = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+   p->intersectCoord8(d,&tp.low0,&tp.hi0,cache);
    return tp;
 }
 void PolytopeJIT_cacheReset4_ref(const void* o, const FT* x, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
    assert(p->cacheReset4 && "cacheReset4 function must be generated PolytopeJIT");
-   //p->cacheReset(x,cache);
+   p->cacheReset4(x,cache);
 }
 void PolytopeJIT_cacheReset8_ref(const void* o, const FT* x, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
    assert(p->cacheReset8 && "cacheReset8 function must be generated PolytopeJIT");
-   //p->cacheReset(x,cache);
+   p->cacheReset8(x,cache);
 }
 
 void PolytopeJIT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d dx, void* cache) {
@@ -162,7 +162,7 @@ void PolytopeJIT_cacheUpdateCoord4_ref(const void* o, const int d, const __m256d
    //printf("cacheUpdateCoord %d %f\n",d,dx);
    //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}
    //printf(" before\n");
-   //p->cacheUpdateCoord(d,dx,cache);
+   p->cacheUpdateCoord4(d,dx,cache);
    //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}
    //printf(" after\n");
 }
@@ -174,7 +174,7 @@ void PolytopeJIT_cacheUpdateCoord8_ref(const void* o, const int d, const FTset8 
    //printf("cacheUpdateCoord %d %f\n",d,dx);
    //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}
    //printf(" before\n");
-   //p->cacheUpdateCoord(d,dx,cache);
+   p->cacheUpdateCoord8(d,dx.set0,dx.set1,cache);
    //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}
    //printf(" after\n");
 }
