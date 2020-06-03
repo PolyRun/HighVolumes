@@ -6,6 +6,15 @@ int min(int a, int b) {
    return (a<b)?a:b;
 }
 
+
+void PolytopeJIT_generate_intersectCoord4_ref(const Polytope *p, PolytopeJIT *o) {
+   o->intersectCoord4 = (pjit_intersectCoordX_f_t)jit_head();
+
+   // ---- rep ret
+   { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
+}
+
+
 void Pjit_intersectCoord_init_single() {
    double t00 = -FT_MAX;
    double t11 = FT_MAX;
@@ -649,6 +658,10 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    jit_table_32_consume(t32);
 
    //jit_print();
+   
+   // ---------------------------- 4/8-set
+
+   PolytopeJIT_generate_intersectCoord4_ref(p, o);
 }
 
 
