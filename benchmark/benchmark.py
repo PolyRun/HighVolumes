@@ -376,23 +376,60 @@ BENCHMARKS = [
 
 
    # TODO later
-   #{"name": "intersect_ellipsoid",
-   # "executable": "benchmark_intersect",
-   # "config": [       
-   #    {
-   #       "const_configs": [],
-   #       "fun_configs": ["Ellipsoid_intersectCoord=cached_ref","Ellipsoid_intersectCoord=cached_reord_fma,Ellipsoid_cacheUpdateCoord=vec_u4"],
-   #       "run_configs": ["r=100000,intersect=intersectCoord"],
-   #       "input_configs": [("generator", intersectEbodies)]
-   #    }
-   # ],
-   # "xoption": ("generator", intersectEdims),
-   # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
-   # "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
-   # "perf_roofs": [],
-   # "mem_roofs": []
-   #},
+   
+   {"name": "ellipsoid_intersectCoord_only",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["Ellipsoid_intersectCoord=cached_ref","Ellipsoid_intersectCoord=cached_reord","Ellipsoid_intersectCoord=cached_reord2","Ellipsoid_intersectCoord=cached_reord3","Ellipsoid_intersectCoord=cached_reord_fma"],
+          "run_configs": ["r=100000,intersect=intersectCoord_only"],
+          "input_configs": [("generator", intersectEbodies)]
+       }
+    ],
+    "xoption": ("generator", intersectEdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
+   },
+   
+   {"name": "ellipsoid_cacheUpdateCoord",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["Ellipsoid_cacheUpdateCoord=ref","Ellipsoid_cacheUpdateCoord=c","Ellipsoid_cacheUpdateCoord=fma","Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_cacheUpdateCoord=vec_u2"],
+          "run_configs": ["r=100000,intersect=cacheUpdateCoord"],
+          "input_configs": [("generator", intersectEbodies)]
+       }
+    ],
+    "xoption": ("generator", intersectEdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
+   },
+   
+   {"name": "ellipsoid_intersect",
+    "executable": "benchmark_intersect",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["Ellipsoid_cacheUpdateCoord=ref,Ellipsoid_intersectCoord=cached_ref","Ellipsoid_cacheUpdateCoord=fma,Ellipsoid_intersectCoord=cached_reord_fma","Ellipsoid_cacheUpdateCoord=vec_u2,Ellipsoid_intersectCoord=cached_reord_fma"],
+          "run_configs": ["r=100000,intersect=intersectCoord"],
+          "input_configs": [("generator", intersectEbodies)]
+       }
+    ],
+    "xoption": ("generator", intersectEdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
+   },
    
    # TODO: check if the next 4 benchmarks are ok - BM for sparse bodies.
    #{"name": "sparse_polytope_volume",
@@ -939,23 +976,23 @@ BENCHMARKS = [
    ####################################################################################################
 
    # TODO use later?
-   #{"name": "randomness",
-   # "executable": "benchmark_randomness",
-   # "config": [       
-   #    {
-   #       "const_configs": [],
-   #       "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=sr_rand_vec", "rand_f=mt_rand"],
-   #       "run_configs": ["r=1000,rand_val_t=random_int"],
-   #       "input_configs": [("i", [2**i for i in range(14,20)])]
-   #    }
-   # ],
-   # "xoption": ("i", {str(2**i): str(2**i) for i in range(14,20)}),
-   # "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
-   # "xlabel": ["#random ints", "#random ints", "#random ints", "Operational Intensity [Flops/Byte]"],
-   # "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
-   # "perf_roofs": [],
-   # "mem_roofs": []
-   #},
+   {"name": "randomness",
+    "executable": "benchmark_randomness",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["rand_f=std_rand", "rand_f=std_rand_chunked", "rand_f=sr_rand", "rand_f=sr_rand_chunked", "rand_f=sr_rand_vec", "rand_f=mt_rand"],
+          "run_configs": ["r=10000,rand_val_t=random_int"],
+          "input_configs": [("i", [2**i for i in range(10,15)])]
+       }
+    ],
+    "xoption": ("i", {str(2**i): str(2**i) for i in range(10,15)}),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["#random ints", "#random ints", "#random ints", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
+   },
 
    # TODO use later?
    #{"name": "get_rd_0_1",
