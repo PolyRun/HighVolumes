@@ -1089,11 +1089,19 @@ def pushConfig(func,bodyname,bodies,dims,r,step_size):
        {
           "const_configs": ["step_size="+str(step_size)],
           "fun_configs": [
-              "PolytopeT_intersectCoord=cached_b_vec,rand_f=std_rand"
+              "PolytopeT_intersectCoord=cached_b_inv_vec,walk_f=walkCoord_{}".format(i) for i in [1,4,8] # may lead to issues for things other than volume
               ],
           "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
           "input_configs": [("generator", bodies)]
        },
+       #{
+       #   "const_configs": ["step_size="+str(step_size)],
+       #   "fun_configs": [
+       #       "PolytopeT_intersectCoord=cached_b_vec,rand_f=std_rand"
+       #       ],
+       #   "run_configs": ["r="+str(r)+",polytopeType=1"+runConf],
+       #   "input_configs": [("generator", bodies)]
+       #},
        {
           "const_configs": ["step_size="+str(step_size)],
           "fun_configs": [],
