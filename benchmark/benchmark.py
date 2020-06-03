@@ -103,7 +103,17 @@ intersects_funs = [
               "cached_b_vec_vec_nan"
            ]
           ],
-          2
+          2,
+          [""]
+       ),
+       (
+          ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
+           [
+              "cached_b_vec_nan_inv",
+           ]
+          ],
+          2,
+          ["intersectSet={}".format(i) for i in [1,4,8]]
        ),
        (
           ['PolytopeJIT_gen={}'.format(fun) for fun in
@@ -114,7 +124,8 @@ intersects_funs = [
               "quad_data"
            ]       
           ],
-          3
+          3,
+          [""]
        )
     ]
    ),
@@ -130,7 +141,17 @@ intersects_funs = [
               #"cached_vec_onlyread"
            ]
           ],
-          2
+          2,
+          [""]
+       ),
+       (
+          ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
+           [
+              "cached_b_vec_nan_inv",
+           ]
+          ],
+          2,
+          ["intersectSet={}".format(i) for i in [1,4,8]]
        ),
        (
           ['PolytopeJIT_gen={}'.format(fun) for fun in
@@ -142,7 +163,8 @@ intersects_funs = [
               #"quad_data_acc"
            ]
           ],
-          3
+          3,
+          [""]
        )
     ]
    )
@@ -158,10 +180,10 @@ csc_jit_bm = [
        {
           "const_configs": [],
           "fun_configs": funs,
-          "run_configs": ['r=100000,polytopeType={},intersect={},polytopeOptimize=true'.format(bodytype,intersect)],
+          "run_configs": ['r=100000,polytopeType={},intersect={},polytopeOptimize=true,{}'.format(bodytype,intersect,bconf)],
           "input_configs": [("generator", bodies)]
        }
-       for funs, bodytype in fconf
+       for funs, bodytype, bconfs in fconf for bconf in bconfs
     ],
     "xoption": ("generator", dims),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
