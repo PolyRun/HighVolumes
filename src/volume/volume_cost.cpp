@@ -630,22 +630,72 @@ void PolytopeCSC_cacheUpdateCoord_cost_withb(const void *o){
 
 
 void PolytopeCSC_intersectCoord4_cost_ref(const void* o) {
-   pc_stack().log(0,0,"TODO");
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+
+    // read #non-zeros in col * (5 doubles (for A and 4*b_Aix) + 1 int (row_idx))
+    // 4*mul #non-zeros in col
+    // 4*min and 4*max each #non-zeros in col
+    // 4*comparison #non-zeros in col
+    pc_stack().log(16*nz/n, (5 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord4 CSC");
 }
 void PolytopeCSC_intersectCoord8_cost_ref(const void* o) {
-   pc_stack().log(0,0,"TODO");
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+
+    // read #non-zeros in col * (9 doubles (for A and 8*b_Aix) + 1 int (row_idx))
+    // 8*mul #non-zeros in col
+    // 8*min and 8*max each #non-zeros in col
+    // 8*comparison #non-zeros in col
+    pc_stack().log(32*nz/n, (9 * sizeof(FT) + sizeof(int)) * nz/n, "intersectCoord8 CSC");
 }
 void PolytopeCSC_cacheUpdateCoord4_cost_ref(const void* o) {
-   pc_stack().log(0,0,"TODO");
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int nz = nonzerosCSC(p);
+    
+    // read 8+1(read-in and write cache*4, read A) * #non-zeros in col * sizeof(FT) bytes
+    // read #non-zeros int col ints (for row_idx)
+    // 4*mults #non-zeros in col
+    // 4*adds #non-zeros in col
+    pc_stack().log(8 * nz/n, (9 * nz/n) * sizeof(FT) + nz/n * sizeof(int), "cache Update coor4d CSC");
 }
 void PolytopeCSC_cacheUpdateCoord8_cost_ref(const void* o) {
-   pc_stack().log(0,0,"TODO");
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int nz = nonzerosCSC(p);
+    
+    // read 16+1(read-in and write cache*8, read A) * #non-zeros in col * sizeof(FT) bytes
+    // read #non-zeros int col ints (for row_idx)
+    // 8*mults #non-zeros in col
+    // 8*adds #non-zeros in col
+    pc_stack().log(16 * nz/n, (17 * nz/n) * sizeof(FT) + nz/n * sizeof(int), "cache Update coord8 CSC");
 }
 void PolytopeCSC_cacheReset4_cost_ref(const void* o) {
-   pc_stack().log(0,0,"TODO");
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+    // reads (8+1)m (read and write cache*4 and read b) + 4*n (read x) + nz (read A) doubles
+    // read nz ints (row_idx)
+    // 4*adds #non-zeros total
+    // 4*mults #non-zeros total
+    pc_stack().log(8*nz, (9*m + 4*n + nz) * sizeof(FT) + nz * sizeof(int), "cacheReset4");
 }
 void PolytopeCSC_cacheReset8_cost_ref(const void* o) {
-   pc_stack().log(0,0,"TODO");
+    const PolytopeCSC *p = (PolytopeCSC *) o;
+    int n = p->n;
+    int m = p->m;
+    int nz = nonzerosCSC(p);
+    // reads (16+1)m (read and write cache*8 and read b) + 8*n (read x) + nz (read A) doubles
+    // read nz ints (row_idx)
+    // 8*adds #non-zeros total
+    // 8*mults #non-zeros total
+    pc_stack().log(16*nz, (17*m + 8*n + nz) * sizeof(FT) + nz * sizeof(int), "cacheReset4");
 }
 
 
