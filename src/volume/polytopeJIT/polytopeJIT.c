@@ -147,7 +147,14 @@ FTpair8 PolytopeJIT_intersectCoord8_ref(const void* o, const FT* x, const int d,
 void PolytopeJIT_cacheReset4_ref(const void* o, const FT* x, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
    assert(p->cacheReset4 && "cacheReset4 function must be generated PolytopeJIT");
+
+   for(int i=0;i<4*p->m;i++) {printf(" %f",((double*)cache)[i]);}
+   printf(" before\n");
+   
    p->cacheReset4(x,cache);
+   
+   for(int i=0;i<4*p->m;i++) {printf(" %f",((double*)cache)[i]);}
+   printf(" after\n");
 }
 void PolytopeJIT_cacheReset8_ref(const void* o, const FT* x, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
@@ -193,7 +200,7 @@ void PolytopeJIT_cacheReset_ref(const void* o, const FT* x, void* cache) {
 
 void PolytopeJIT_cacheUpdateCoord_ref(const void* o, const int d, const FT dx, void* cache) {
    const PolytopeJIT* p = (PolytopeJIT*)o;
-   assert(p->cacheUpdateCoord && "cacheReset function must be generated PolytopeJIT");
+   assert(p->cacheUpdateCoord && "cacheUpdateCoord function must be generated PolytopeJIT");
    
    //printf("cacheUpdateCoord %d %f\n",d,dx);
    //for(int i=0;i<p->m;i++) {printf(" %f",((double*)cache)[i]);}

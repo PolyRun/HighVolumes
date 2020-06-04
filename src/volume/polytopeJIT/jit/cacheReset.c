@@ -21,32 +21,34 @@ https://www.felixcloutier.com/x86/index.html
 void PolytopeJIT_generate_cacheReset4_ref(const Polytope *p, PolytopeJIT *o) {
    const int n = p->n;
    const int m = p->m;
- 
+
+   Polytope_print(p);
+  
+   // info about calling convention:
+   // x -> %rdi
+   // cache -> %rsi
+
    o->cacheReset4 = (pjit_cacheReset_f_t)jit_head();
+   
+   jit_Table_8* t8 = NULL;
 
-   //for(int i=0;i<m;i++) {
-   //   FT* Ai = Polytope_get_Ai(p,i);
+   for(int i=0;i<m;i++) {
+      FT* Ai = Polytope_get_Ai(p,i);// row
 
-   //   // read bi into xmm0
-   //   //movabs $0xff00ff00ff00ff00,%rax
-   //   {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
-   //   double bi = Polytope_get_b(p,i);
-   //   jit_push((const uint8_t*)&bi,8);
-   //   // c4 e1 f9 6e c0       	vmovq  %rax,%xmm0
-   //   {const uint8_t instr[] = {0xc4,0xe1,0xf9,0x6e,0xc0}; jit_push(instr,5);}
+      // read bi into ymm0
+      double bi = Polytope_get_b(p,i);
+      t8 = jit_broadcast_sd_via_data(bi, 0, t8);
+      
+      for(int j=0;j<n;j++) {
+         FT aij = Ai[j];
+         if(aij != 0.0) {// TODO: check if is 1 or -1???
+	    t8 = jit_broadcast_sd_via_data(-aij, 1, t8);
+            
+            // TODO: could make this FMADD or FMSUB
+	    size_t offset = 4*8*j;
+            jit_vmulpd_mem_ymm(jit_rdi, offset, 1, 1);
 
-   //   for(int j=0;j<n;j++) {
-   //      FT aij = Ai[j];
-   //      if(aij != 0.0) {// TODO: check if is 1 or -1???
-   //         //printf("Ai %d %d %f\n",i,j,aij);
-   //         // load immediate to xmm register
-   //         
-   //         // movabs $0xff00ff00ff00ff00,%rax
-   //         // 48 b8 xxxxxxx 	movabs $0xff00ff00ff00ff00,%rax
-   //         {const uint8_t instr[] = {0x48,0xb8}; jit_push(instr,2); }
-   //         jit_push((const uint8_t*)&aij,8);
-   //         
-   //         // TODO: make fmsub out of this:
+
 
    //         size_t offset = 8*j;
    //         // c4 e1 f9 6e c8       	vmovq  %rax,%xmm1
@@ -63,18 +65,18 @@ void PolytopeJIT_generate_cacheReset4_ref(const Polytope *p, PolytopeJIT *o) {
 
    //         // f2 0f 5c c1   subsd  %xmm1,%xmm0
    //         {const uint8_t instr[] = {0xf2,0x0f,0x5c,0xc1}; jit_push(instr,4); }
-   //      }
-   //   }
-   //   
-   //   // write %xmm0 to (%rsi)
-   //   // c5 f9 d6 86 xx xx xx xx  vmovq  %xmm0,xx(%rsi)
-   //   {const uint8_t instr[] = {0xc5,0xf9,0xd6,0x86}; jit_push(instr,4); }
-   //   uint32_t offset = 8*i;
-   //   jit_push((const uint8_t*)&offset,4);
-   //}
+         }
+      }
+      
+      // write %ymm0 to (%rsi)
+      uint32_t offset = 8*4*i;
+      jit_storeu_ymm(0,jit_rsi,offset); // TODO: use alligned!
+   }
 
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
+
+   jit_table_8_consume(t8);
 }
 
 void PolytopeJIT_generate_cacheReset_ref(const Polytope *p, PolytopeJIT *o) {

@@ -137,4 +137,10 @@ for i in range(16):
     print("vbroadcastsd 0x100(%rip), %ymm{}".format(i));
 
 
+print("########################");
+for i in range(16):
+    for j in range(16):
+        print("vfnmadd231pd 0x100(%rax),%ymm{},%ymm{}".format(i,j))
+
+
 

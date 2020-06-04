@@ -682,7 +682,7 @@ int main() {
                jit_table_32_consume(t32);
 	       double res = func2(x);
 	       for(int k=0;k<16*4;k++) {
-		  assert(x[k]=2+k*3);
+		  assert(x[k]==2+k*3);
 	       }
 	    }
 	 }
@@ -713,7 +713,7 @@ int main() {
                jit_table_16_consume(t16);
 	       double res = func2(x);
 	       for(int k=0;k<16*2;k++) {
-		  assert(x[k]=2+k);
+		  assert(x[k]==2+k);
 	       }
 	    }
 	 }
@@ -786,6 +786,37 @@ int main() {
 	 }
       }
 
+      std::cout << "fnmadd213_ymm:\n";
+      {
+	 double* x = (double*)(aligned_alloc(32, 4*16*sizeof(double))); // align this to 32
+         for(int i=0;i<16;i++) {
+            for(int j=0;j<16;j++) {
+	       if(i==j) {continue;}
+	       jit_clear();
+               std::cout << "fnmadd213 test ymm " << i << " " << j << "\n";
+               double (*func2)(double*);
+               func2 = (double (*)(double*)) jit_head();
+	       jit_Table_32* t32 = NULL;// empty list
+	       
+               for(int k=0;k<16;k++) {
+		  int ii = k*4;
+	          t32 = jit_immediate_32_via_data(ii+0,ii+1,ii+2,ii+3, i, t32);
+	          t32 = jit_immediate_32_via_data(3,3,3,3, j, t32);
+	          jit_vfnmad231pd_mem_ymm(jit_rdi,ii*8,i,j);
+		  jit_storeu_ymm(j,jit_rdi,ii*8);
+	       }
+	       for(int k=0;k<16*4;k++) {x[k]=2.0;}
+
+	       jit_emit_return();
+               jit_table_32_consume(t32);
+	       double res = func2(x);
+	       for(int k=0;k<16*4;k++) {
+		  assert(x[k]==3-k*2);
+	       }
+	    }
+	 }
+      }
+ 
 
    }
    // -------------------------------- end tests

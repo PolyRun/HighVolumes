@@ -628,6 +628,12 @@ void jit_vfmad213pd_mem_ymm(jit_Register reg, uint32_t idx, int src, int dst) {
    jit_fma_mem(reg,idx,src,dst,0xfd,0xa8);
 }
 
+void jit_vfnmad231pd_mem_ymm(jit_Register reg, uint32_t idx, int src, int dst) {
+   // c4 e2 f9 bc 80 00 01 	vfnmadd231pd 0x100(%rax),%xmm0,%xmm0
+   // 	c4 e2 fd bc 80 00 01 	vfnmadd231pd 0x100(%rax),%ymm0,%ymm0
+   jit_fma_mem(reg,idx,src,dst,0xfd,0xbc);
+}
+
 void jit_vmulpd_mem_xmm(jit_Register reg, uint32_t idx, int src2, int dst) {
    // c5 f9 59 80 00 01 00 	vmulpd 0x100(%rax),%xmm0,%xmm0
    jit_vOPpd_mem_xmm(0x59,reg,idx,src2,dst);
