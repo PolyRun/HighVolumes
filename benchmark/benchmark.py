@@ -100,6 +100,89 @@ csc_jit_bodies = [
 
 
 
+intersects_funs = [
+   ("cacheUpdateCoord",
+    [
+       (
+          ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
+           [
+              "cached_b_ref",
+              #"cached_b_vec",
+              "cached_b_vec_vec_nan"
+           ]
+          ],
+          2
+       ),
+       (
+          ['PolytopeJIT_gen={}'.format(fun) for fun in
+           [
+              #"single_rax",
+              "single_data",
+              "double_data",
+              "quad_data"
+           ]       
+          ],
+          3
+       )
+    ]
+   ),
+   ("intersectCoord_only",
+    [
+       (
+          ['PolytopeCSC_intersectCoord={}'.format(fun) for fun in
+           [
+              #"cached_b_ref",
+              "cached_b_vec",
+              "cached_b_vec_nogather",
+              "cached_b_vec_nan_inv",
+              #"cached_vec_onlyread"
+           ]
+          ],
+          2
+       ),
+       (
+          ['PolytopeJIT_gen={}'.format(fun) for fun in
+           [
+              #"single_rax",
+              "single_data",
+              "double_data",
+              "quad_data",
+              #"quad_data_acc"
+           ]
+          ],
+          3
+       )
+    ]
+   )
+]
+   # - Detail analysis CSC, JIT. Diffent levels of sparsity 2var, 4var. 2var preprocessed? cross, cubeRot. - take sizes where you see performance decreasing.
+   #   - separate intersect_only, cacheUpdateCoord. JIT will be better because different load instructions/patterns.
+
+
+csc_jit_bm = [
+   {"name": 'csc_jit_only_cacheb_{}_{}'.format(name,intersect),
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": funs,
+          "run_configs": ['r=100000,polytopeType={},intersect={},polytopeOptimize=true'.format(bodytype,intersect)],
+          "input_configs": [("generator", bodies)]
+       }
+       for funs, bodytype in fconf
+    ],
+    "xoption": ("generator", dims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
+   }
+   for name, bodies, dims in csc_jit_bodies for intersect,fconf in intersects_funs
+]
+
+
+
 rd_0_1 = ["ref","fast"]
 for index, item in enumerate(rd_0_1):
    rd_0_1[index] = "rd_0_1="+item
@@ -769,6 +852,7 @@ BENCHMARKS += allbest_roofline_bm
 BENCHMARKS += density_runtime_bm
 BENCHMARKS += runtime_2var_bm
 BENCHMARKS += polytopeT_bm
+BENCHMARKS += csc_jit_bm
 
 
 assert(len(set(map(lambda t: t["name"], BENCHMARKS))) == len(BENCHMARKS) and "benchmarks don't have unique names!")
