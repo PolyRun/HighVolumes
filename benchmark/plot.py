@@ -8,14 +8,14 @@ import os
 SAVEEPS = True
 SAVEPNG = True
 
-PLOT_ERRORBARS = True
+PLOT_ERRORBARS = False
 
 PEAK_PERFORMANCE = 16
 MEMORY_BANDWIDTH = 96
 STREAM_BANDWIDTH = 12
 
 #		 [Runt , Perf , I/O  , Roofl
-ADD_PERF_ROOFS = [False, False, False, True]
+ADD_PERF_ROOFS = [False, True, False, True]
 ADD_MEM_ROOFS  = [False, False, False, True]
 
 # Determines if PEAK_PERFORMANCE and MEMORY_BANDWIDTH are included into plots
@@ -25,12 +25,48 @@ MACHINE_ROOFS  = [False, False, False, False]
 ROOFLINE_LOG = False
 
 
+def finalize_and_save(plt, name):
+    
+    x1, x2 = plt.xlim()
+    y1, y2 = plt.ylim()
+    if "XLOG" in os.environ and os.environ["XLOG"] == 'On':
+        plt.xscale('log')
+        #assert(x1 > 0 and "cannot set aspect ratio of log axis with left border <= 0")
+        print(str(x1), str(x2))
+        x1, x2 = map(np.log10, plt.xlim())
+
+    plt.ylim(bottom=0)
+	
+    plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
+
+    # show at most 12 xlabels
+    ax = plt.gca()
+    labels = ax.get_xaxis().get_ticklabels()
+    keepith = (len(labels) + 11) // 12
+    for i,label in enumerate(ax.get_xaxis().get_ticklabels()):
+        if i % keepith != 0:
+            label.set_visible(False)
+            
+    #set aspect ratio to 2/3
+    ratio = (3.0*(x2 - x1))/(5.0*(y2 - y1))
+    #print(str(x2-x1), str(y2-y1), str(ratio))
+    ax.set_aspect(ratio)
+
+        
+    if SAVEEPS:
+        plt.savefig(name+".eps", bbox_inches = "tight", format = 'eps', dpi = 1200)
+    if SAVEPNG:
+        plt.savefig(name+".png", bbox_inches = "tight")
+
+    plt.clf()
+
+
 def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roofs, mem_roofs):
     if plot_name == None:
         plot_name = "plot"
     plot_name = plot_name + "_"
-    perf_roofs += [PEAK_PERFORMANCE,]
-    mem_roofs += [MEMORY_BANDWIDTH, STREAM_BANDWIDTH, ]
+    #perf_roofs += [PEAK_PERFORMANCE,]
+    mem_roofs += [STREAM_BANDWIDTH, ] #MEMORY_BANDWIDTH
    
     x_values = []
     x_flops = {}
@@ -73,18 +109,13 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
             x_bytes[time_fun_name].append(bytes)
 
     # Runtime Plot
-    plt.title(title[0])
-    plt.xlabel(x_label[0])
-    plt.ylabel(y_label[0])
+    plt.title(title[0] + '\n' + y_label[0] + " vs. " + x_label[0], loc='left', fontsize=12, pad=6)
 	        
-    x_ticks = []
-    for val in x_values:
-        x_ticks.append(int(val))
-    plt.xticks(x_ticks)
-	
+    x_ticks = [int(val) for val in x_values]
+    plt.xticks(x_ticks, fontsize=12)
+    plt.yticks(None, fontsize=12)
 
-    i = 0
-    for name in time_function_names:
+    for i, name in enumerate(time_function_names):
         #plt.plot(x_ticks, time_function_heights[name], label=name)
         pprint.pprint(x_ticks)
         pprint.pprint(time_function_heights[name])
@@ -99,31 +130,17 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
                 [0 for i in time_function_ci_low[name]],[0 for i in time_function_ci_high[name]]],
             capsize=4
         )
-        i += 1
 
-    if "XLOG" in os.environ and os.environ["XLOG"] == 'On':
-        plt.xscale('log')
+    finalize_and_save(plt, path+"/plots/"+plot_name+"runtime_mean")
 
-    plt.ylim(bottom=0)
-	
-    plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
-
-    if SAVEEPS:
-        plt.savefig(path+"/plots/"+plot_name+"runtime_mean.eps", bbox_inches = "tight", format = 'eps', dpi = 1200)
-    if SAVEPNG:
-        plt.savefig(path+"/plots/"+plot_name+"runtime_mean.png", bbox_inches = "tight")
-
-    plt.clf()
 
     # Performance plot
-    plt.title(title[1])
-    plt.xlabel(x_label[1])
-    plt.ylabel(y_label[1])
+    plt.title(title[1] + '\n' + y_label[1] + " vs. " + x_label[1], loc='left', fontsize=12, pad=6)
 
-    plt.xticks(x_ticks)
+    plt.xticks(x_ticks, fontsize=12)
+    plt.yticks(None, fontsize=12)
 
-    i = 0
-    for name in time_function_names:
+    for i, name in enumerate(time_function_names):
         x_ticks_tmp = [tick for tick,val in zip(x_ticks, time_function_heights[name])]
         time_function_performance = []
         time_function_performance_ci_low = []
@@ -143,7 +160,6 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
             )
         #plt.plot(x_ticks, time_function_performance, label=name)
         plt.errorbar(x_ticks_tmp, time_function_performance, label=name, yerr=[time_function_performance_ci_low, time_function_performance_ci_high], capsize=4)
-        i += 1
 
     if ADD_PERF_ROOFS[1]:
         if MACHINE_ROOFS[1]:
@@ -152,30 +168,17 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
             plt.axhline(r, linestyle='--', color='#808080')
         if MACHINE_ROOFS[1]:
             perf_roofs.pop()
-			
-    plt.ylim(bottom=0)
-	
-    plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
 
-    if "XLOG" in os.environ and os.environ["XLOG"] == 'On':
-        plt.xscale('log')
+    finalize_and_save(plt, path+"/plots/"+plot_name+"performance_mean")
 
-    if SAVEEPS:
-        plt.savefig(path+"/plots/"+plot_name+"performance_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
-    if SAVEPNG:
-        plt.savefig(path+"/plots/"+plot_name+"performance_mean.png", bbox_inches = "tight")
-
-    plt.clf()
 
     # I/O plot
-    plt.title(title[2])
-    plt.xlabel(x_label[2])
-    plt.ylabel(y_label[2])
+    plt.title(title[2] + '\n' + y_label[2] + " vs. " + x_label[2], loc='left', fontsize=12, pad=6)
 
-    plt.xticks(x_ticks)
+    plt.xticks(x_ticks, fontsize=12)
+    plt.yticks(None, fontsize=12)
 
-    i = 0
-    for name in time_function_names:
+    for i, name in enumerate(time_function_names):
         x_ticks_tmp = [tick for tick,val in zip(x_ticks, time_function_heights[name])]
         time_function_bytes = []
         time_function_bytes_ci_low = []
@@ -194,7 +197,6 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
             )
         #plt.plot(x_ticks, time_function_bytes, label=name)
         plt.errorbar(x_ticks_tmp, time_function_bytes, label=name, yerr=[time_function_bytes_ci_low, time_function_bytes_ci_high], capsize=4)
-        i += 1
 
     if ADD_MEM_ROOFS[2]:
         if MACHINE_ROOFS[2]:
@@ -204,28 +206,11 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
         if MACHINE_ROOFS[2]:
             mem_roofs.pop()
 
-    plt.ylim(bottom=0)
-	
-    plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
+    finalize_and_save(plt, path+"/plots/"+plot_name+"io_mean")
 
-
-    if "XLOG" in os.environ and os.environ["XLOG"] == 'On':
-        plt.xscale('log')    
-
-    if SAVEEPS:
-        plt.savefig(path+"/plots/"+plot_name+"io_mean.eps", bbox_inches = "tight", format = 'eps', dpi=1200)
-    if SAVEPNG:
-        plt.savefig(path+"/plots/"+plot_name+"io_mean.png", bbox_inches = "tight")
-
-    plt.clf()
-
+    
     # Roofline plot
-    plt.title(title[3])
-    plt.xlabel(x_label[3])
-    plt.ylabel(y_label[3])
-    plt.title("Roofline measurements")
-    plt.xlabel("Operational Intensity [Flops/Byte]")
-    plt.ylabel("Performance [Flops/Cycle]")
+    plt.title("Roofline measurements \nPerformance [Flops/Cycle] vs. Operational Intensity [Flops/Byte]", loc='left', fontsize=12, pad=6)
 	
     max_intensity = 0
     min_intensity = 1024
@@ -287,10 +272,25 @@ def plot(path, plot_name, dict_list, x_option, title, x_label, y_label, perf_roo
 
     plt.xscale('log')
     plt.yscale('log')
-	
+    plt.xticks(None, fontsize=12)
+    plt.yticks(None, fontsize=12)
+
+    
     plt.xlim((left_bound, right_bound))
-    plt.ylim((bottom_bound, 2*PEAK_PERFORMANCE))
-	
+    
+    plt.ylim((bottom_bound, 1.5*max(perf_roofs + [plt.ylim()[1]])))
+
+    
+    #set aspect ratio to 2/3
+    if (left_bound <= 0 or bottom_bound <= 0):
+        print("cannot set aspect ratio because left_bound or bottom_bound <= 0")
+    else:
+        ax = plt.gca()
+        x1, x2 = map(np.log10, plt.xlim())
+        y1, y2 = map(np.log10, plt.ylim())
+        ratio = (3.0*(x2 - x1))/(5.0*(y2 - y1))
+        ax.set_aspect(ratio)
+    
     plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
 
     if SAVEEPS:

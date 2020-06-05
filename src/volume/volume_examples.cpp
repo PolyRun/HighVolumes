@@ -494,10 +494,10 @@ Solved_Body_Generator::Solved_Body_Generator() {
     }
 
     // control density
-    std::vector<int> dens = {1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> dens = {1,2,3,4,5,6,7,8,9,10,11};
     for (auto f : dens){
         std::string nstr = std::to_string(f);
-        int density = (int) pow(1.55,f);
+        int density = min((int) pow(1.55,f), 100);
         add("dens_"+nstr,
             "100-dim polytope with density " + std::to_string(density) + " [normalized]",
             [density]()
