@@ -90,6 +90,17 @@ Solved_Body_Generator::Solved_Body_Generator() {
        });
     }
 
+    // random - ellipsoids:
+    std::vector<int> ellipsoid_n = {3,10,20,40,60,100,150,200};
+    for(int n : ball_n) {
+       std::string nstr = std::to_string(n);
+       add("ellipsoid_"+nstr, "random ellipsoid, centered, dim-"+nstr+", radius randomized", [n]() {
+           Solved_Body* sb = generate_randomized_ellipsoid(n);
+           sb->is_normalized = true;
+           return sb;
+       });
+    }
+
     // half-ball / ellipsoids
     std::vector<int> half_n = {2,3,4,5,10,20,40,60,100};
     for(int n : half_n) {
@@ -132,7 +143,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
     }
 
     // 2-sphere
-    std::vector<int> twosphere_n = {2,3,4,5,10,20,40,60,100};
+    std::vector<int> twosphere_n = {3,10,20,40,60,100,150,200,250,300};
     for(int n : twosphere_n) {
        std::string nstr = std::to_string(n);
        add("2sphere_preprocessed_"+nstr, "2 spheres, dim-"+nstr+" [normalized]", [n]() {
@@ -931,6 +942,28 @@ Solved_Body* generate_centered_ball(int dims, FT r) {
     }
 
     return generate_ellipsoid(dims, lower_bounds, upper_bounds);
+
+}
+
+Solved_Body* generate_randomized_ellipsoid(int dims) {
+
+    Ellipsoid *ellipsoid = Ellipsoid_new_with_T(dims);
+
+    FT volume = Ball_volume(dims,1.0);// unit ball volume
+
+    for (int i = 0; i < dims; i++) {
+        ellipsoid->a[i] = 0.0;
+        FT* Ai = Ellipsoid_get_Ai(ellipsoid,i);
+        Ai[i] = prng_get_random_double_in_range(1.0,10.0);
+        Ellipsoid_set_Ta(ellipsoid, i, i, Ai[i]);
+    }
+
+    int bcount = 1;
+    Solved_Body *result = new Solved_Body(bcount, dims);
+    result->body[0] = ellipsoid;
+    result->type[0] = &Ellipsoid_T;
+    result->volume = volume;
+    return result;
 
 }
 

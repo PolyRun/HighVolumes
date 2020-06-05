@@ -10,7 +10,7 @@ import re
 from threading import Timer
 from plot import plot
 
-BENCH_MAX_TIME = 60 #seconds
+BENCH_MAX_TIME = 60	 #seconds
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
@@ -29,8 +29,14 @@ intersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_3": '3', "cube_rot_r1.
 mbintersectbodies = ["cube_rot_r1.0_10", "cube_rot_r1.0_20",  "cube_rot_r1.0_40", "cube_rot_r1.0_60", "cube_rot_r1.0_100"]
 mbintersectdims = {"cube_rot_r1.0_10": '10', "cube_rot_r1.0_20": '20', "cube_rot_r1.0_40": '40', "cube_rot_r1.0_60": '60', "cube_rot_r1.0_100": '100'}
 
-intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20", "ball_r1.0_40", "ball_r1.0_60", "ball_r1.0_100", "ball_r1.0_150", "ball_r1.0_200"]
-intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40', "ball_r1.0_60": '60', "ball_r1.0_100": '100', "ball_r1.0_150": '150', "ball_r1.0_200": '200'}
+#intersectEbodies = [ "ball_r1.0_3", "ball_r1.0_10", "ball_r1.0_20", "ball_r1.0_40", "ball_r1.0_60", "ball_r1.0_100", "ball_r1.0_150", "ball_r1.0_200"]
+#intersectEdims = {"ball_r1.0_10": '10', "ball_r1.0_3": '3', "ball_r1.0_20": '20', "ball_r1.0_40": '40', "ball_r1.0_60": '60', "ball_r1.0_100": '100', "ball_r1.0_150": '150', "ball_r1.0_200": '200'}
+
+#intersectEbodies = ["2sphere_preprocessed_3","2sphere_preprocessed_10","2sphere_preprocessed_20","2sphere_preprocessed_40","2sphere_preprocessed_60","2sphere_preprocessed_100","2sphere_preprocessed_150","2sphere_preprocessed_200","2sphere_preprocessed_250","2sphere_preprocessed_300",]
+#intersectEdims = {"2sphere_preprocessed_10": '10', "2sphere_preprocessed_3": '3', "2sphere_preprocessed_20": '20', "2sphere_preprocessed_40": '40', "2sphere_preprocessed_60": '60', "2sphere_preprocessed_100": '100', "2sphere_preprocessed_150": '150', "2sphere_preprocessed_200": '200', "2sphere_preprocessed_250": '250', "2sphere_preprocessed_300": '300'}
+
+intersectEbodies = [ "ellipsoid_3", "ellipsoid_10", "ellipsoid_20", "ellipsoid_40", "ellipsoid_60", "ellipsoid_100", "ellipsoid_150", "ellipsoid_200"]
+intersectEdims = {"ellipsoid_10": '10', "ellipsoid_3": '3', "ellipsoid_20": '20', "ellipsoid_40": '40', "ellipsoid_60": '60', "ellipsoid_100": '100', "ellipsoid_150": '150', "ellipsoid_200": '200'}
 
 
 crossBodies = ['cross_rn_{}'.format(i) for i in range(3,14,2)]
@@ -422,7 +428,7 @@ BENCHMARKS = [
     "config": [       
        {
           "const_configs": [],
-          "fun_configs": ["Ellipsoid_cacheUpdateCoord=ref","Ellipsoid_cacheUpdateCoord=c","Ellipsoid_cacheUpdateCoord=fma","Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_cacheUpdateCoord=vec_u2"],
+          "fun_configs": ["Ellipsoid_cacheUpdateCoord=ref","Ellipsoid_cacheUpdateCoord=fma","Ellipsoid_cacheUpdateCoord=vec","Ellipsoid_cacheUpdateCoord=vec_u2"],
           "run_configs": ["r=100000,intersect=cacheUpdateCoord"],
           "input_configs": [("generator", intersectEbodies)]
        }
@@ -442,6 +448,24 @@ BENCHMARKS = [
           "const_configs": [],
           "fun_configs": ["Ellipsoid_cacheUpdateCoord=ref,Ellipsoid_intersectCoord=cached_ref","Ellipsoid_cacheUpdateCoord=fma,Ellipsoid_intersectCoord=cached_reord_fma","Ellipsoid_cacheUpdateCoord=vec_u2,Ellipsoid_intersectCoord=cached_reord_fma"],
           "run_configs": ["r=100000,intersect=intersectCoord"],
+          "input_configs": [("generator", intersectEbodies)]
+       }
+    ],
+    "xoption": ("generator", intersectEdims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
+   },
+   
+   {"name": "ellipsoid_volume",
+    "executable": "benchmark_A1_volume",
+    "config": [       
+       {
+          "const_configs": [],
+          "fun_configs": ["Ellipsoid_cacheUpdateCoord=ref,Ellipsoid_intersectCoord=cached_ref","Ellipsoid_cacheUpdateCoord=fma,Ellipsoid_intersectCoord=cached_reord_fma","Ellipsoid_cacheUpdateCoord=vec_u2,Ellipsoid_intersectCoord=cached_reord_fma"],
+          "run_configs": ["r=1,intersect=intersectCoord"],
           "input_configs": [("generator", intersectEbodies)]
        }
     ],
