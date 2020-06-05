@@ -991,7 +991,7 @@ def run_benchmark(bname, bexe, config_strings, xoption):
          proc.wait()
       except KeyboardInterrupt:
          print("user interrupt!")
-         sys.exit()
+         sys.exit(1)
       finally:
          timer.cancel()
 
