@@ -570,6 +570,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
+   if(volumeVerbose>0) { printf("Volume_ref: steps: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
    
@@ -586,6 +587,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
+      if(volumeVerbose>0) { printf("step: %d\n",k); }
       //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
@@ -668,6 +670,7 @@ FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, 
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
+   if(volumeVerbose>0) { printf("Volume_coord_1: steps: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
    
@@ -684,6 +687,7 @@ FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, 
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
+      if(volumeVerbose>0) { printf("step: %d\n",k); }
       //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
@@ -769,6 +773,7 @@ FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
+   if(volumeVerbose>0) { printf("Volume_coord_4: steps: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
    
@@ -785,6 +790,7 @@ FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
+      if(volumeVerbose>0) { printf("step: %d\n",k); }
       //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
@@ -872,6 +878,7 @@ FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
+   if(volumeVerbose>0) { printf("Volume_coord_8: steps: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
    
@@ -888,6 +895,7 @@ FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
+      if(volumeVerbose>0) { printf("step: %d\n",k); }
       //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
