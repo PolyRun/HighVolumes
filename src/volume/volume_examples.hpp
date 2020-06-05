@@ -117,6 +117,9 @@ Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r
 // Generates an ellipse with predefined ranges for each axis
 Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds);
 
+// Generates a randomized ellipsoid, volume is not calculated
+Solved_Body* generate_randomized_ellipsoid(int dims);
+
 // A convience function for generate_ellipsoid()
 // where lower and upper bounds are -r and r resp.
 Solved_Body* generate_centered_ball(int dims, FT r);
