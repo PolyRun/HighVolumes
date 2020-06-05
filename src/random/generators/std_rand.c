@@ -3,8 +3,8 @@
 #include "std_rand.h"
 #include <stdio.h>
 
-uint32_t *chunk;
-int chunk_ptr;
+static uint32_t *chunk;
+static int chunk_ptr;
 
 void std_init(void *seed){
     printf("std_rand init\n");

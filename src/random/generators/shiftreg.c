@@ -6,8 +6,8 @@
 
 #include "shiftreg.h"
 
-uint32_t *chunk;
-int chunk_ptr;
+static uint32_t *chunk;
+static int chunk_ptr;
 
 static uint32_t state_32 = 1;
 static uint64_t state_64 = 1;
@@ -83,8 +83,8 @@ uint32_t sr_rand_chunked() {
 
 /* Vectorized */
 
-uint32_t *chunk_vec;
-int chunk_ptr_vec;
+static uint32_t *chunk_vec;
+static int chunk_ptr_vec;
 
 static __m256i state_32_vec;
 static __m256i const_05_vec;
