@@ -7,7 +7,7 @@ import time
 # 1 for our impl,
 # 4 for PolyVest
 
-for i in range(3,16):
+for i in range(3,17):
    print("#-#-#-#-#-#-#-#-#-#-# Running {}".format(i));
    
    # benchmark/benchmark_app
@@ -18,7 +18,7 @@ for i in range(3,16):
    start = time.time()
    proc = subprocess.Popen(
       [sys.path[0]+"/"+"/benchmark_app",
-        '-b', 'generator=birk_{},polytopeType=1,r=1'.format(i),
+        '-b', 'generator=birk_{},polytopeType=4,r=1'.format(i),
         '-c', 'step_size=1600,verbose=1',
         '-f', "rand_f=sr_rand,walk_f=walkCoord_8",
         ],
