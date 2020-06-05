@@ -8,7 +8,10 @@ import os
 SAVEEPS = True
 SAVEPNG = True
 
-PLOT_ERRORBARS = False
+if 'ERRBAR' in os.environ and os.environ['ERRBAR'] == 'On': 
+    PLOT_ERRORBARS = True
+else:
+    PLOT_ERRORBARS = False
 
 PEAK_PERFORMANCE = 16
 MEMORY_BANDWIDTH = 96
