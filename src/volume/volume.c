@@ -587,7 +587,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
-      if(volumeVerbose>0) { printf("step: %d\n",k); }
+      if(volumeVerbose>1) { printf("step: %d\n",k); }
       //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
@@ -687,7 +687,7 @@ FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, 
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
-      if(volumeVerbose>0) { printf("step: %d\n",k); }
+      if(volumeVerbose>1) { printf("step: %d\n",k); }
       //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
@@ -790,7 +790,7 @@ FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
-      if(volumeVerbose>0) { printf("step: %d\n",k); }
+      if(volumeVerbose>1) { printf("step: %d\n",k); }
       //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
@@ -895,7 +895,7 @@ FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
    for(int k=l;k>0;k--,rk*=stepFac) { // for each Bk
-      if(volumeVerbose>0) { printf("step: %d\n",k); }
+      if(volumeVerbose>1) { printf("step: %d\n",k); }
       //FT kk = log(rk/r0)/(-log(stepFac));
       //printf("k: %d rk: %f kk: %f step: %f\n",k,rk,kk,log(stepFac));
 
