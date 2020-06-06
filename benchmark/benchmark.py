@@ -10,7 +10,7 @@ import re
 from threading import Timer
 from plot import plot
 
-BENCH_MAX_TIME = 60	 #seconds
+BENCH_MAX_TIME = 100	 #seconds
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
@@ -694,7 +694,7 @@ intersects_funs = [
        ]
       ],
       3,
-      [""]
+      ["intersectSet=1"]
    )
 ]
 # - Detail analysis CSC, JIT. Diffent levels of sparsity 2var, 4var. 2var preprocessed? cross, cubeRot. - take sizes where you see performance decreasing.
@@ -708,7 +708,7 @@ density_runtime_bm = [
        {
           "const_configs": [],
           "fun_configs": funs,
-          "run_configs": ['r=100,polytopeType={},intersect=intersectCoord_only,polytopeOptimize=true,{}'.format(bodytype,bconf)],
+          "run_configs": ['r=10000,polytopeType={},intersect=intersectCoord_only,polytopeOptimize=true,{}'.format(bodytype,bconf)],
           "input_configs": [("generator", csc_jit_bodies_dens)]
        }
        for funs, bodytype, bconfs in intersects_funs for bconf in bconfs
@@ -830,7 +830,7 @@ allbest_roofline_bm = [
     "executable": "benchmark_A1_volume",
     "config": [
        {
-          "const_configs": ["step_size=100"],
+          "const_configs": ["step_size=500"],
           "fun_configs": funs,
           "run_configs": ['warmup=1,r=1,polytopeType={},polytopeOptimize=true,{}'.format(bodytype,bconf)],
           "input_configs": [("generator", body)]

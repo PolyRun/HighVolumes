@@ -17,6 +17,8 @@ A bit too jittery, should up step_size.
 
 But shows 8-set well. And overheads of sparse bodies. Especially JIT and L1i.
 
+ -> upped step_size to 500
+
 ## 4
 ok, also a bit jittery, right?
 
@@ -26,6 +28,8 @@ do they show what they should, Silvan?
 Measurement mostly stable.
 
 JIT performes worse than on old plot, why? Did we choose the right version?
+
+ -> r=100 maybe was just too low? Upped it to 10000. Was even higher for prev plot.
 
 ## 6
 looks very good
