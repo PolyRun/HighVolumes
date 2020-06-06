@@ -1,0 +1,253 @@
+#-#-#-#-#-#-#-#-#-#-# Running 3
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 58 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 12
+Volume: 1.1253176689e+00 (det: 2.1582549050e-02, vol: 5.2140165013e+01)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '7.45177e+07', 'min': '7.45177e+07', 'max': '7.45177e+07', 'std_dev': '0', 'ci_low': '7.45177e+07', 'ci_high': '7.45177e+07', 'ci_median': '7.45177e+07', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 0.03839755058288574
+#-#-#-#-#-#-#-#-#-#-# Running 4
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 350 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 38
+Volume: 5.9497985710e-02 (det: 4.9081112790e-06, vol: 1.2122379125e+04)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '2.06434e+08', 'min': '2.06434e+08', 'max': '2.06434e+08', 'std_dev': '0', 'ci_low': '2.06434e+08', 'ci_high': '2.06434e+08', 'ci_median': '2.06434e+08', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 0.08649492263793945
+#-#-#-#-#-#-#-#-#-#-# Running 5
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 1101 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 80
+Volume: 1.3718386687e-04 (det: 3.0104599069e-12, vol: 4.5569072869e+07)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '4.33485e+08', 'min': '4.33485e+08', 'max': '4.33485e+08', 'std_dev': '0', 'ci_low': '4.33485e+08', 'ci_high': '4.33485e+08', 'ci_median': '4.33485e+08', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 0.17519760131835938
+#-#-#-#-#-#-#-#-#-#-# Running 6
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 2795 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 142
+Volume: 7.1052872850e-09 (det: 1.5145175703e-21, vol: 4.6914525286e+12)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.19329e+09', 'min': '1.19329e+09', 'max': '1.19329e+09', 'std_dev': '0', 'ci_low': '1.19329e+09', 'ci_high': '1.19329e+09', 'ci_median': '1.19329e+09', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 0.46990966796875
+#-#-#-#-#-#-#-#-#-#-# Running 7
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 5078 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 223
+Volume: 5.4711285445e-15 (det: 7.9037697139e-34, vol: 6.9221760533e+18)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '3.09184e+09', 'min': '3.09184e+09', 'max': '3.09184e+09', 'std_dev': '0', 'ci_low': '3.09184e+09', 'ci_high': '3.09184e+09', 'ci_median': '3.09184e+09', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 1.2046387195587158
+#-#-#-#-#-#-#-#-#-#-# Running 8
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 6085 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 325
+Volume: 4.4840881370e-23 (det: 8.7189434246e-48, vol: 5.1429260618e+24)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '7.04278e+09', 'min': '7.04278e+09', 'max': '7.04278e+09', 'std_dev': '0', 'ci_low': '7.04278e+09', 'ci_high': '7.04278e+09', 'ci_median': '7.04278e+09', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 2.732858419418335
+#-#-#-#-#-#-#-#-#-#-# Running 9
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 12152 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 448
+Volume: 2.6056780244e-33 (det: 3.9721703252e-67, vol: 6.5598345767e+33)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.5687e+10', 'min': '1.5687e+10', 'max': '1.5687e+10', 'std_dev': '0', 'ci_low': '1.5687e+10', 'ci_high': '1.5687e+10', 'ci_median': '1.5687e+10', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 6.069948673248291
+#-#-#-#-#-#-#-#-#-#-# Running 10
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 16626 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 595
+Volume: 7.9655357522e-46 (det: 2.4879179236e-89, vol: 3.2016875142e+43)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '3.1558e+10', 'min': '3.1558e+10', 'max': '3.1558e+10', 'std_dev': '0', 'ci_low': '3.1558e+10', 'ci_high': '3.1558e+10', 'ci_median': '3.1558e+10', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 12.200369596481323
+#-#-#-#-#-#-#-#-#-#-# Running 11
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 20283 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 765
+Volume: 1.3334702703e-60 (det: 5.6475532306e-113, vol: 2.3611468824e+52)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '5.76551e+10', 'min': '5.76551e+10', 'max': '5.76551e+10', 'std_dev': '0', 'ci_low': '5.76551e+10', 'ci_high': '5.76551e+10', 'ci_median': '5.76551e+10', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 22.273322820663452
+#-#-#-#-#-#-#-#-#-#-# Running 12
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 22294 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 959
+Volume: 7.2451750546e-78 (det: 3.2615893490e-142, vol: 2.2213633537e+64)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.02558e+11', 'min': '1.02558e+11', 'max': '1.02558e+11', 'std_dev': '0', 'ci_low': '1.02558e+11', 'ci_high': '1.02558e+11', 'ci_median': '1.02558e+11', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 39.60195302963257
+#-#-#-#-#-#-#-#-#-#-# Running 13
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 26543 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 1177
+Volume: 1.1703246062e-97 (det: 2.0951236451e-174, vol: 5.5859452922e+76)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.74227e+11', 'min': '1.74227e+11', 'max': '1.74227e+11', 'std_dev': '0', 'ci_low': '1.74227e+11', 'ci_high': '1.74227e+11', 'ci_median': '1.74227e+11', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 67.2579665184021
+#-#-#-#-#-#-#-#-#-#-# Running 14
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 40838 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 1420
+Volume: 5.1135917016e-120 (det: 9.9528969751e-212, vol: 5.1377922572e+91)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '2.90607e+11', 'min': '2.90607e+11', 'max': '2.90607e+11', 'std_dev': '0', 'ci_low': '2.90607e+11', 'ci_high': '2.90607e+11', 'ci_median': '2.90607e+11', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 112.14666438102722
+#-#-#-#-#-#-#-#-#-#-# Running 15
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 32792 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 1689
+Volume: 5.1025122950e-145 (det: 5.1307361761e-251, vol: 9.9449905819e+105)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '4.52257e+11', 'min': '4.52257e+11', 'max': '4.52257e+11', 'std_dev': '0', 'ci_low': '4.52257e+11', 'ci_high': '4.52257e+11', 'ci_median': '4.52257e+11', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 174.4803466796875
+#-#-#-#-#-#-#-#-#-#-# Running 16
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 21335 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 1984
+Volume: 8.6023381008e-173 (det: 3.3722670451e-293, vol: 2.5509065521e+120)
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '6.78382e+11', 'min': '6.78382e+11', 'max': '6.78382e+11', 'std_dev': '0', 'ci_low': '6.78382e+11', 'ci_high': '6.78382e+11', 'ci_median': '6.78382e+11', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+double free or corruption (out)
+Time: 261.7965364456177
