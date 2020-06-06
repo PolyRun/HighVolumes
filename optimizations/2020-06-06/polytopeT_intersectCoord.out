@@ -1,0 +1,92 @@
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_10,intersect=intersectCoord_only,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (400 1680)  (400 1680) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (120 160)  (120 160) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'PC_Stack: flops: 520, bytes: 1840\n'
+b'Stack                         split calls flops bytes Flops Bytes tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref 1     1     -     -     -     -     -                                                    \n'
+b"/PolytopeT_intersectCoord_ref -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref -     -     400   1680  400   1680  dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref -     -     120   160   120   160   intersect                                            \n'
+b'Avg flops/cycle: 1.07186 (CI: 1.17117 - 0.818898)\n'
+b'Avg bytes/cycle: 3.79274 (CI: 4.14414 - 2.89764)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '485.137', 'min': '432', 'max': '41530', 'std_dev': '171.858', 'ci_low': '444', 'ci_high': '635', 'ci_median': '480', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 520, 'bytes': 1840}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (1600 6560)  (1600 6560) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (240 320)  (240 320) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'PC_Stack: flops: 1840, bytes: 6880\n'
+b'Stack                         split calls flops bytes Flops Bytes tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref 1     1     -     -     -     -     -                                                    \n'
+b"/PolytopeT_intersectCoord_ref -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref -     -     1600  6560  1600  6560  dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref -     -     240   320   240   320   intersect                                            \n'
+b'Avg flops/cycle: 1.01998 (CI: 1.14428 - 0.882917)\n'
+b'Avg bytes/cycle: 3.81383 (CI: 4.27861 - 3.30134)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '1803.96', 'min': '1488', 'max': '44564', 'std_dev': '237.494', 'ci_low': '1608', 'ci_high': '2084', 'ci_median': '1796', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1840, 'bytes': 6880}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (6400 25920)  (6400 25920) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (480 640)  (480 640) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'PC_Stack: flops: 6880, bytes: 26560\n'
+b'Stack                         split calls flops bytes Flops Bytes tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref 1     1     -     -     -     -     -                                                    \n'
+b"/PolytopeT_intersectCoord_ref -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref -     -     6400  25920 6400  25920 dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref -     -     480   640   480   640   intersect                                            \n'
+b'Avg flops/cycle: 1.02701 (CI: 1.04179 - 1.01535)\n'
+b'Avg bytes/cycle: 3.96474 (CI: 4.0218 - 3.91972)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '6699.05', 'min': '6528', 'max': '34960', 'std_dev': '328.442', 'ci_low': '6604', 'ci_high': '6776', 'ci_median': '6684', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 6880, 'bytes': 26560}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (14400 58080)  (14400 58080) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (720 960)  (720 960) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'PC_Stack: flops: 15120, bytes: 59040\n'
+b'Stack                         split calls flops bytes Flops Bytes tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref 1     1     -     -     -     -     -                                                    \n'
+b"/PolytopeT_intersectCoord_ref -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref -     -     14400 58080 14400 58080 dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref -     -     720   960   720   960   intersect                                            \n'
+b'Avg flops/cycle: 0.984881 (CI: 1.00079 - 0.972472)\n'
+b'Avg bytes/cycle: 3.84572 (CI: 3.90786 - 3.79727)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '15352.1', 'min': '14812', 'max': '46732', 'std_dev': '457.452', 'ci_low': '15108', 'ci_high': '15548', 'ci_median': '15332', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 15120, 'bytes': 59040}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_100,intersect=intersectCoord_only,polytopeType=1,r=100000"
+
+user interrupt!
