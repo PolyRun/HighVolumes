@@ -9,7 +9,7 @@ dotProduct_f_t dotProduct = dotProduct_ref;
 
 preprocess_f_t preprocess_generic = preprocess_ref;
 
-void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det) {
+void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, ArbitraryExpNum *det) {
    // 1. init_ellipsoid:
    //     idea: origin at 0, radius determined by min of all bodies
    if(volumeVerbose>0) {printf("init_ellipsoid\n"); }
@@ -295,27 +295,20 @@ void preprocess_ref(const int n, const int bcount, const void** body_in, void** 
    // calculate determinant:
    //    diagonal of L matrix
    //    scaled by beta
-   *det = 1;
+   ArbitraryExpNum adet = ArbitraryExpNum_new(1);
    for (int i = 0; i < n; i++){
-      if(volumeVerbose>=2) { printf("det %i %.10e\n",i,*det); }
-      *det *= Matrix_get(L,i,i);
+      if(volumeVerbose>=2) { ArbitraryExpNum_print(adet); printf("\n");}
+      adet = ArbitraryExpNum_mul(adet, Matrix_get(L,i,i));
    }
-   if(volumeVerbose>=2) { printf("det post %.10e\n",*det); }
+   if(volumeVerbose>=2) { ArbitraryExpNum_print(adet); printf(" - det post\n");}
    
-   // try to adjust now:
-   FT fac = pow(beta_r, n);
-   if(fac == 1.0/0.0) {
-      if(volumeVerbose>=2) { printf("pow was inf, so do step by step now:\n"); }
-      for(int i=0;i<n;i++) {
-         if(volumeVerbose>=2) { printf("adjust det %i %.10e\n",i,*det); }
-         *det /= beta_r;
-      }
-   } else {
-      *det /= fac;
+   for(int i=0;i<n;i++) {
+      adet = ArbitraryExpNum_mul(adet, 1.0/beta_r);
    }
-   if(volumeVerbose>=2) { printf("det scaled %.10e\n",*det); }
+
+   if(volumeVerbose>=2) { ArbitraryExpNum_print(adet); printf(" - det scaled\n");}
    
-   assert(*det > 0 && "no degenerate cases please!");
+   *det = adet;
 
    Matrix_free(L);
    //assert(false && "fixme T");
@@ -526,7 +519,7 @@ volume_f_t volume = volume_ref;
 size_t pc_volume_l = 0;
 size_t pc_volume_steps = 0;
 
-FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
+ArbitraryExpNum volume_ref(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
    //
    // Ideas:
    //  try unit vector
@@ -577,7 +570,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
    // volume up to current step
    // start with B(0,r0)
    // multiply with estimated factor each round
-   FT volume = Ball_volume(n, r0);
+   ArbitraryExpNum volume = ArbitraryExpNum_new(Ball_volume(n, r0));
    
    // Idea:
    //   last round must end in rk = r0/stepFac
@@ -622,7 +615,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
       // all that fell into lower balls
 
       FT ak = (FT)(step_size*l) / (FT)count;
-      volume *= ak;
+      volume = ArbitraryExpNum_mul(volume, ak);
 
       //printf("count: %d, volume: %f\n",count,volume);
 
@@ -640,7 +633,7 @@ FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const voi
 }
 
 
-FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
+ArbitraryExpNum volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
    
    // init x:
    FT* x = volume_x_ptr;// sample point x
@@ -677,7 +670,7 @@ FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, 
    // volume up to current step
    // start with B(0,r0)
    // multiply with estimated factor each round
-   FT volume = Ball_volume(n, r0);
+   ArbitraryExpNum volume = ArbitraryExpNum_new(Ball_volume(n, r0));
    
    // Idea:
    //   last round must end in rk = r0/stepFac
@@ -723,7 +716,7 @@ FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, 
       // all that fell into lower balls
 
       FT ak = (FT)(step_size*l) / (FT)count;
-      volume *= ak;
+      volume = ArbitraryExpNum_mul(volume, ak);
 
       //printf("count: %d, volume: %f\n",count,volume);
 
@@ -743,7 +736,7 @@ FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, 
 }
 
 
-FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
+ArbitraryExpNum volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
    
    // init x:
    FT* x = volume_x_ptr;// sample point x
@@ -780,7 +773,7 @@ FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const
    // volume up to current step
    // start with B(0,r0)
    // multiply with estimated factor each round
-   FT volume = Ball_volume(n, r0);
+   ArbitraryExpNum volume = ArbitraryExpNum_new(Ball_volume(n, r0));
    
    // Idea:
    //   last round must end in rk = r0/stepFac
@@ -829,7 +822,7 @@ FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const
       // all that fell into lower balls
 
       FT ak = (FT)(step_size*l) / (FT)count;
-      volume *= ak;
+      volume = ArbitraryExpNum_mul(volume, ak);
 
       //printf("count: %d, volume: %f\n",count,volume);
 
@@ -848,7 +841,7 @@ FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const
    return volume;
 }
 
-FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
+ArbitraryExpNum volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type) {
    
    // init x:
    FT* x = volume_x_ptr;// sample point x
@@ -885,7 +878,7 @@ FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const
    // volume up to current step
    // start with B(0,r0)
    // multiply with estimated factor each round
-   FT volume = Ball_volume(n, r0);
+   ArbitraryExpNum volume = ArbitraryExpNum_new(Ball_volume(n, r0));
    
    // Idea:
    //   last round must end in rk = r0/stepFac
@@ -946,7 +939,7 @@ FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const
       // all that fell into lower balls
 
       FT ak = (FT)(step_size*l) / (FT)count;
-      volume *= ak;
+      volume = ArbitraryExpNum_mul(volume, ak);
 
       //printf("count: %d, volume: %f\n",count,volume);
 
@@ -990,7 +983,7 @@ void VolumeAppInput_free(VolumeAppInput* input) {
    free(input);
 }
 
-FT volume_app_ref(const VolumeAppInput* input) {
+ArbitraryExpNum volume_app_ref(const VolumeAppInput* input) {
    // set up arrays for transformed bodies:
    void* body_pre[input->bcount];
    for(int c=0;c<input->bcount;c++) {
@@ -998,7 +991,7 @@ FT volume_app_ref(const VolumeAppInput* input) {
    }
 
    // call preprocessing:
-   FT det;
+   ArbitraryExpNum det;
    preprocess_generic(
        	    input->n,
        	    input->bcount,
@@ -1069,11 +1062,22 @@ FT volume_app_ref(const VolumeAppInput* input) {
    }
 
    // call volume estimation:
-   FT vol = volume(input->n, 1, 2*input->n, input->bcount, (const void**)body_vol, (const Body_T**)type_vol);
+   ArbitraryExpNum vol = volume(input->n, 1, 2*input->n, input->bcount, (const void**)body_vol, (const Body_T**)type_vol);
    
+   // total:
+   ArbitraryExpNum total = ArbitraryExpNum_mul2(vol, det);
+
    // return:
-   if(volumeVerbose>0) { printf("Volume: %.10e (det: %.10e, vol: %.10e)\n",det*vol,det,vol); }
-   return det*vol;
+   if(volumeVerbose>0) { 
+      printf("Volume: ");
+      ArbitraryExpNum_print(total);
+      printf("\nDet: ");
+      ArbitraryExpNum_print(det);
+      printf("\nVol: ");
+      ArbitraryExpNum_print(vol);
+      printf("\n\n");
+   }
+   return total;
 }
 
 FT xyz_f1(const Polytope* body, const FT r, const int n) {return body->n;}

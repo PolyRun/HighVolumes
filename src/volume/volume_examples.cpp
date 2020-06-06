@@ -653,10 +653,10 @@ Solved_Body::translate(const FT* a) {
 Solved_Body*
 Solved_Body::preprocess() {
     Solved_Body* sb = clone();
-    FT proc_det = 1;
+    ArbitraryExpNum proc_det = ArbitraryExpNum_new(1);
     preprocess_generic(n, bcount, (const void**)body, sb->body, (const Body_T**)type, &proc_det);
     sb->is_normalized = true;
-    sb->volume = volume / proc_det;
+    sb->volume = volume / proc_det.num;
     return sb;
 }
 

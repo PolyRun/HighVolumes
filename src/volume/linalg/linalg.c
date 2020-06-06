@@ -249,6 +249,37 @@ FTpair8 Ball_intersectCoord_cached8(const int n, const FT r, const FT* x,const i
    return tp;
 }
 
+ArbitraryExpNum ArbitraryExpNum_new(FT val) {
+   ArbitraryExpNum a;
+   a.num = val;
+   a.numLog = log(val);
+   return a;
+}
+ArbitraryExpNum ArbitraryExpNum_mul(ArbitraryExpNum a, FT val) {
+   ArbitraryExpNum b;
+   b.num = a.num * val;
+   b.numLog = a.numLog + log(val);
+   return b;
+}
+ArbitraryExpNum ArbitraryExpNum_mul2(ArbitraryExpNum a, ArbitraryExpNum b) {
+   ArbitraryExpNum c;
+   c.num = a.num * b.num;
+   c.numLog = a.numLog + b.numLog;
+   return c;
+}
+
+
+void ArbitraryExpNum_print(ArbitraryExpNum a) {
+   FT b10 = a.numLog / log(10);
+   int exp = floor(b10);
+   FT m = pow(10,b10-exp);
+   if(exp>300 || exp<-300 || a.num > (double)1e300 || a.num==0) {
+      printf("[m: %lf, e: %d]",m, exp);
+   }else{
+      printf("[%.10e, log: %.10e, m: %lf, e: %d]",a.num,a.numLog, m, exp);
+   }
+}
+
 
 
 

@@ -42,9 +42,9 @@ extern int volumeVerbose;
 
 // --------------------------------------------- Preprocessing
 
-typedef void (*preprocess_f_t)(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
+typedef void (*preprocess_f_t)(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, ArbitraryExpNum *det);
 extern preprocess_f_t preprocess_generic;
-void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, FT *det);
+void preprocess_ref(const int n, const int bcount, const void** body_in, void** body_out, const Body_T** type, ArbitraryExpNum *det);
 
 
 // --------------------------------------------- Volume estimation
@@ -73,22 +73,22 @@ extern walk_f_t walk_f;
 //   r0, r1: inner and outer radius
 //   bodies: convex body, guaranteed to contain B(0,r0) and be contained by B(0,r1)
 //   last 3 arguments: count of bodies, list of bodies, list of body types (member functions)
-typedef FT (*volume_f_t)(const int, const FT, const FT, const int, const void**,const Body_T**);
+typedef ArbitraryExpNum (*volume_f_t)(const int, const FT, const FT, const int, const void**,const Body_T**);
 
 extern volume_f_t volume;
 extern size_t pc_volume_l;// for performance_counter
 extern size_t pc_volume_steps;
 
-FT volume_ref(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
+ArbitraryExpNum volume_ref(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
 
 // based on intersectCoord, and ball intersect cached - find corresponding walk_f
-FT volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
+ArbitraryExpNum volume_coord_single(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
 void walkCoord_coord_single(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
 
-FT volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
+ArbitraryExpNum volume_coord_4(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
 void walkCoord_coord_4(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
 
-FT volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
+ArbitraryExpNum volume_coord_8(const int n, const FT r0, const FT r1, const int bcount, const void** body, const Body_T** type);
 void walkCoord_coord_8(const int n, const FT rk, int bcount, const void** body, const Body_T** type, FT* x, FT* d, void** cache);
 
 
@@ -115,7 +115,7 @@ VolumeAppInput* VolumeAppInput_new(int n, int bcount);
 void VolumeAppInput_free(VolumeAppInput* input);
 
 // run volume app, given a Volume App Input. Returns volume.
-FT volume_app_ref(const VolumeAppInput* input);
+ArbitraryExpNum volume_app_ref(const VolumeAppInput* input);
 
 // ---------- proof of concept:
 

@@ -43,7 +43,7 @@ class Benchmark_A2 : public Benchmark_base {
             // nothing to reset
 	}
         double run () {
-	    FT det;
+	    ArbitraryExpNum det;
 	    preprocess_generic(
 			    solved_body->n,
 			    solved_body->bcount,

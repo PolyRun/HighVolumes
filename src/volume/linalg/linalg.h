@@ -88,4 +88,16 @@ void squaredNorm_cached8_update(const FT* v, const int d, const FTset8 dx, const
 FTpair4 Ball_intersectCoord_cached4(const int n, const FT r, const FT* x,const int d, FT* cache);
 FTpair8 Ball_intersectCoord_cached8(const int n, const FT r, const FT* x,const int d, FT* cache);
 
+// ------------------------------- arbitrary exponent numbers:
+
+typedef struct ArbitraryExpNum {
+   FT num; // regular number, may go to inf or zero if out of range
+   FT numLog; // logarithm of number, should stay consistent, but loose a bit of precision.
+} ArbitraryExpNum;
+
+ArbitraryExpNum ArbitraryExpNum_new(FT val);
+ArbitraryExpNum ArbitraryExpNum_mul(ArbitraryExpNum a, FT val);
+ArbitraryExpNum ArbitraryExpNum_mul2(ArbitraryExpNum a, ArbitraryExpNum b);
+void ArbitraryExpNum_print(ArbitraryExpNum a);
+
 #endif
