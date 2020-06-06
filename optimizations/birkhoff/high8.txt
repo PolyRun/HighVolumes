@@ -1,0 +1,66 @@
+#-#-#-#-#-#-#-#-#-#-# Running 17
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 20531 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 2304
+Volume: [m: 2.584309, e: -203]
+Det: [m: 7.881507, e: -341]
+Vol: [3.2789533990e+137, log: 3.1664168203e+02, m: 3.278953, e: 137]
+
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.01926e+12', 'min': '1.01926e+12', 'max': '1.01926e+12', 'std_dev': '0', 'ci_low': '1.01926e+12', 'ci_high': '1.01926e+12', 'ci_median': '1.01926e+12', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+munmap_chunk(): invalid pointer
+Time: 393.2387025356293
+#-#-#-#-#-#-#-#-#-#-# Running 18
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 9286 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 2652
+Volume: [m: 1.243563, e: -236]
+Det: [m: 5.378875, e: -393]
+Vol: [2.3119383318e+156, log: 3.6004136078e+02, m: 2.311938, e: 156]
+
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.48284e+12', 'min': '1.48284e+12', 'max': '1.48284e+12', 'std_dev': '0', 'ci_low': '1.48284e+12', 'ci_high': '1.48284e+12', 'ci_median': '1.48284e+12', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+munmap_chunk(): invalid pointer
+Time: 571.9748458862305
+#-#-#-#-#-#-#-#-#-#-# Running 19
+initializing App data...
+sr_rand init
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+init_ellipsoid
+cut steps
+took 3289 steps.
+Static polytopeBody: 
+ - PolytopeT 
+Volume_coord_8: steps: 3027
+Volume: [m: 6.180169, e: -273]
+Det: [m: 3.611815, e: -448]
+Vol: [1.7110979057e+175, log: 4.0348952649e+02, m: 1.711098, e: 175]
+
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '2.13013e+12', 'min': '2.13013e+12', 'max': '2.13013e+12', 'std_dev': '0', 'ci_low': '2.13013e+12', 'ci_high': '2.13013e+12', 'ci_median': '2.13013e+12', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+double free or corruption (out)
+Time: 821.536906003952
