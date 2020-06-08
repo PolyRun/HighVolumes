@@ -10,7 +10,7 @@ import re
 from threading import Timer
 from plot import plot
 
-BENCH_MAX_TIME = 100	 #seconds
+BENCH_MAX_TIME = 180	 #seconds
 
 # --------------------------------- ADD YOUR BENCHMARKS HERE
 
@@ -731,17 +731,17 @@ sparse_intersect_funs = [
    (#default
       ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv'],
       2,
-      ["intersectSet={}".format(i) for i in [1]]
+      [""]
    ),
    (#cached squareNorm
-      ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv'],
+      ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv,walk_f=walkCoord_1'],
       2,
-      ["intersectSet={},walk_f=walkCoord_1".format(i) for i in [1]]
+      [""]
    ),
    (# cached squareNorm and fast random
-      ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv,rand_f=sr_rand,rd_0_1=fast'],
+      ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv,rand_f=sr_rand,rd_0_1=fast,walk_f=walkCoord_1'],
       2,
-      ["intersectSet={},walk_f=walkCoord_1".format(i) for i in [1]]
+      [""]
    ),
    (#default
       ['PolytopeJIT_gen=double_data'],
@@ -749,14 +749,14 @@ sparse_intersect_funs = [
       [""]
    ),
    (#cached squareNorm
-      ['PolytopeJIT_gen=double_data'],
+      ['PolytopeJIT_gen=double_data,walk_f=walkCoord_1'],
       3,
-      ["walk_f=walkCoord_1"]
+      [""]
    ),
    (#cached squareNorm and fast random
-      ['PolytopeJIT_gen=double_data,rand_f=sr_rand,rd_0_1=fast'],
+      ['PolytopeJIT_gen=double_data,rand_f=sr_rand,rd_0_1=fast,walk_f=walkCoord_1'],
       3,
-      ["walk_f=walkCoord_1"]
+      [""]
    ),
 ]
 
@@ -785,27 +785,17 @@ runtime_2var_bm = [
 # density benchmark
 allbest_funs = [
    (
-      ["PolytopeT_intersectCoord=cached_b_inv_vec,walk_f=walkCoord_1"],
+      ["PolytopeT_intersectCoord=cached_b_inv_vec,walk_f=walkCoord_{}".format(i) for i in [1,4,8]],
       1,
-      ["intersectSet=1"]
+      [""]
    ),
    (
-      ["PolytopeT_intersectCoord=cached_b_inv_vec,walk_f=walkCoord_4"],
-      1,
-      ["intersectSet=4"]
-   ),
-   (
-      ["PolytopeT_intersectCoord=cached_b_inv_vec,walk_f=walkCoord_8"],
-      1,
-      ["intersectSet=8"]
-   ),
-   (
-      ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv'],
+      ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv,walk_f=walkCoord_{}'.format(i) for i in [1,4,8]],
       2,
-      ["intersectSet={}".format(i) for i in [1,4,8]]
+      [""]
    ),
    (
-      ['PolytopeJIT_gen={}'.format(fun) for fun in
+      ['PolytopeJIT_gen={},walk_f=walkCoord_1'.format(fun) for fun in
        [
           "single_data",
           "double_data",
@@ -832,9 +822,9 @@ allbest_roofline_bm = [
     "executable": "benchmark_A1_volume",
     "config": [
        {
-          "const_configs": ["step_size=500"],
+          "const_configs": ["step_size=100"],
           "fun_configs": funs,
-          "run_configs": ['warmup=1,r=1,polytopeType={},polytopeOptimize=true,{}'.format(bodytype,bconf)],
+          "run_configs": ['warmup=1,r=10,polytopeType={},polytopeOptimize=true,{}'.format(bodytype,bconf)],
           "input_configs": [("generator", body)]
        }
        for funs, bodytype, bconfs in allbest_funs for bconf in bconfs
