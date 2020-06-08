@@ -15,7 +15,7 @@ jit_MemoryPages* jit_memoryPages() {
       
       size_t psize = sysconf(_SC_PAGE_SIZE);
       jit_memoryPages_->page_size = psize;
-      jit_memoryPages_->pages = 8000;
+      jit_memoryPages_->pages = 20000;
       jit_memoryPages_->head = 0;
       jit_memoryPages_->mem = jit_mmap(jit_memoryPages_->pages);;
    }
