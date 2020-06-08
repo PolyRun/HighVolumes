@@ -523,7 +523,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
             "200-dim polytope with density " + std::to_string(density) + " [normalized]",
             [density]()
             {
-                Solved_Body* sb = generate_kvariable_polytope(200,density,1.0,2000);//k=2, r=1.0
+                Solved_Body* sb = generate_kvariable_polytope(200,2*density,1.0,2000);//k=2, r=1.0
                 sb->is_normalized = true;
                 return sb;
             }
