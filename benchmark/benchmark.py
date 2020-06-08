@@ -782,6 +782,48 @@ runtime_2var_bm = [
 ]
 
 
+
+log_funs = [
+   (
+      ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv,rand_f=sr_rand,rd_0_1=fast,walk_f=walkCoord_1,log_f={}'.format(fun)
+       for fun in ['nocache', 'ref', 'binary']       
+      ],
+      2,
+      [""]
+   ),
+   (#cached squareNorm and fast random
+      ['PolytopeJIT_gen=double_data,rand_f=sr_rand,rd_0_1=fast,walk_f=walkCoord_1,log_f={}'.format(fun)
+       for fun in ['nocache', 'ref', 'binary']
+      ],
+      3,
+      [""]
+   ),
+]
+
+log_runtime_bm = [
+   {"name": 'log_runtime_bm',
+    "executable": "benchmark_A1_volume",
+    "config": [
+       {
+          "const_configs": ["step_size=100"],
+          "fun_configs": funs,
+          "run_configs": ['warmup=1,r=1,polytopeType={},polytopeOptimize=true,{}'.format(bodytype,bconf)],
+          "input_configs": [("generator", intersectSparseBodies)]
+       }
+       for funs, bodytype, bconfs in log_funs for bconf in bconfs
+    ],
+    "xoption": ("generator", intersectSparseDims),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
+   }   
+]
+
+
+
+
 # density benchmark
 allbest_funs = [
    (
@@ -845,6 +887,7 @@ BENCHMARKS += density_runtime_bm
 BENCHMARKS += runtime_2var_bm
 BENCHMARKS += polytopeT_bm
 BENCHMARKS += csc_jit_bm
+BENCHMARKS += log_runtime_bm
 
 
 assert(len(set(map(lambda t: t["name"], BENCHMARKS))) == len(BENCHMARKS) and "benchmarks don't have unique names!")

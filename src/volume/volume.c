@@ -709,7 +709,7 @@ ArbitraryExpNum volume_coord_single(const int n, const FT r0, const FT r1, const
          const FT x2 = squaredNorm_cached(x,n,(FT*)cache[bcount]);
 	 // normalized radius
 
-         int m = shell_idx(x2, r0, stepFac, shell_cache);
+         int m = shell_idx(x2, r0, stepFac, l, shell_cache);
 
          
 	 //printf("k %d  m %d\n",k,m);

@@ -109,12 +109,14 @@ extern shell_cache_init_f_t shell_cache_init;
 void shell_cache_init_nocache(FT *cache, FT r0, int l, FT stepFac);
 void shell_cache_init_ref(FT *cache, FT r0, int l, FT stepFac);
 
-typedef int (*shell_idx_f_t)(FT x2, FT r0, FT stepFac, FT *cache);
+typedef int (*shell_idx_f_t)(FT x2, FT r0, FT stepFac, int l, FT *cache);
 extern shell_idx_f_t shell_idx;
 
 // default, doesn't use shell_cache -> does nothing
-int shell_idx_nocache(FT x2, FT r0, FT stepFac, FT *cache);
+int shell_idx_nocache(FT x2, FT r0, FT stepFac, int l, FT *cache);
 // simple linear search over the shells to avoid logs
-int shell_idx_ref(FT x2, FT r0, FT stepFac, FT *cache);
+int shell_idx_ref(FT x2, FT r0, FT stepFac, int l, FT *cache);
+// binary search over shells
+int shell_idx_binary(FT x2, FT r0, FT stepFac, int l, FT *cache);
 
 #endif

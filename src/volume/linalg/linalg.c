@@ -296,17 +296,35 @@ void shell_cache_init_ref(FT *cache, FT r0, int l, FT stepFac){
 }
 
 
-inline int shell_idx_nocache(FT x2, FT r0, FT stepFac, FT *cache){
+int shell_idx_nocache(FT x2, FT r0, FT stepFac, int l, FT *cache){
     const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));
     const int mm = ceil(mmm);
     return (mm>0)?mm:0; // find index of balls
 }
 shell_idx_f_t shell_idx = shell_idx_nocache;
 
-inline int shell_idx_ref(FT x2, FT r0, FT stepFac, FT *cache){
+int shell_idx_ref(FT x2, FT r0, FT stepFac, int l, FT *cache){
     // do linear search in shell_cache for first index larger than x2
     int i = 0;
     while(cache[i] < x2){ i++; }
     return i;
        
 }
+
+int shell_idx_binary(FT x2, FT r0, FT stepFac, int l, FT *cache){
+    // do binary search in shell_cache for first index larger than x2
+    int hi = l;
+    int lo = 0;
+
+    while (hi - lo > 0) {
+        int mid = lo + (hi - lo)/2;
+        if (cache[mid] < x2){
+            lo = mid+1;
+        }
+        else {
+            hi = mid;
+        }
+    }
+    return lo;
+}
+

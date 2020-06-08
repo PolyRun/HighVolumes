@@ -218,7 +218,8 @@ public:
            'f', "log_f", "nocache",
            {
             {"nocache", {{shell_cache_init_nocache, shell_idx_nocache}, "no caching (ordinary logs)"}},
-            {"ref", {{shell_cache_init_ref, shell_idx_ref}, "linear search in cache"}}
+            {"ref", {{shell_cache_init_ref, shell_idx_ref}, "linear search in cache"}},
+            {"binary", {{shell_cache_init_ref, shell_idx_binary}, "binary search in cache"}},
            }));
 
                                                                      
