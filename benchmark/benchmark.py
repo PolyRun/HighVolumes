@@ -88,6 +88,8 @@ csc_jit_bodies_2var_vinci = [name for name in csc_jit_dims_2var_vinci.keys()]
 
 csc_jit_dims_dens = {'dens_{}'.format(i): str(min(int(1.55 ** i),100)) for i in range(1,12)}
 csc_jit_bodies_dens = [name for name in csc_jit_dims_dens.keys()]
+csc_jit_dims_dens200 = {'dens200_{}'.format(i): str(min(int(1.55 ** i),100)) for i in range(1,12)}
+csc_jit_bodies_dens200 = [name for name in csc_jit_dims_dens200.keys()]
 
 csc_jit_bodies = [
    ("2var", csc_jit_bodies_2var, csc_jit_dims_2var),
@@ -708,12 +710,12 @@ density_runtime_bm = [
        {
           "const_configs": [],
           "fun_configs": funs,
-          "run_configs": ['r=10000,polytopeType={},intersect=intersectCoord_only,polytopeOptimize=true,{}'.format(bodytype,bconf)],
-          "input_configs": [("generator", csc_jit_bodies_dens)]
+          "run_configs": ['r=100,polytopeType={},intersect=intersectCoord_only,polytopeOptimize=true,{}'.format(bodytype,bconf)],
+          "input_configs": [("generator", csc_jit_bodies_dens200)]
        }
        for funs, bodytype, bconfs in intersects_funs for bconf in bconfs
     ],
-    "xoption": ("generator", csc_jit_dims_dens),
+    "xoption": ("generator", csc_jit_dims_dens200),
     "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
     "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
     "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
