@@ -17,9 +17,9 @@ b'/PolytopeT_intersectCoord_ref 1     1     -     -     -     -     -           
 b"/PolytopeT_intersectCoord_ref -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
 b'/PolytopeT_intersectCoord_ref -     -     400   1680  400   1680  dotProduct implemented locally because column-format \n'
 b'/PolytopeT_intersectCoord_ref -     -     120   160   120   160   intersect                                            \n'
-b'Avg flops/cycle: 1.40725 (CI: 1.54303 - 1)\n'
-b'Avg bytes/cycle: 4.97952 (CI: 5.45994 - 3.53846)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '369.514', 'min': '333', 'max': '27058', 'std_dev': '116.99', 'ci_low': '337', 'ci_high': '520', 'ci_median': '363', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 520, 'bytes': 1840}}\n"
+b'Avg flops/cycle: 1.00035 (CI: 1.17117 - 0.582307)\n'
+b'Avg bytes/cycle: 3.53968 (CI: 4.14414 - 2.06047)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '519.82', 'min': '436', 'max': '13457', 'std_dev': '135.547', 'ci_low': '444', 'ci_high': '893', 'ci_median': '492', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 520, 'bytes': 1840}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -39,9 +39,9 @@ b'/PolytopeT_intersectCoord_ref 1     1     -     -     -     -     -           
 b"/PolytopeT_intersectCoord_ref -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
 b'/PolytopeT_intersectCoord_ref -     -     1600  6560  1600  6560  dotProduct implemented locally because column-format \n'
 b'/PolytopeT_intersectCoord_ref -     -     240   320   240   320   intersect                                            \n'
-b'Avg flops/cycle: 1.36119 (CI: 1.5144 - 1.24661)\n'
-b'Avg bytes/cycle: 5.08966 (CI: 5.66255 - 4.66125)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '1351.76', 'min': '1121', 'max': '28115', 'std_dev': '183.898', 'ci_low': '1215', 'ci_high': '1476', 'ci_median': '1349', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1840, 'bytes': 6880}}\n"
+b'Avg flops/cycle: 1.0203 (CI: 1.14144 - 0.934959)\n'
+b'Avg bytes/cycle: 3.81502 (CI: 4.26799 - 3.49593)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '1803.4', 'min': '1488', 'max': '27768', 'std_dev': '179.266', 'ci_low': '1612', 'ci_high': '1968', 'ci_median': '1796', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1840, 'bytes': 6880}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -61,9 +61,9 @@ b'/PolytopeT_intersectCoord_ref 1     1     -     -     -     -     -           
 b"/PolytopeT_intersectCoord_ref -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
 b'/PolytopeT_intersectCoord_ref -     -     6400  25920 6400  25920 dotProduct implemented locally because column-format \n'
 b'/PolytopeT_intersectCoord_ref -     -     480   640   480   640   intersect                                            \n'
-b'Avg flops/cycle: 1.34905 (CI: 1.37271 - 1.27691)\n'
-b'Avg bytes/cycle: 5.20797 (CI: 5.29928 - 4.92947)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '5099.88', 'min': '4952', 'max': '55273', 'std_dev': '332.536', 'ci_low': '5012', 'ci_high': '5388', 'ci_median': '5076', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 6880, 'bytes': 26560}}\n"
+b'Avg flops/cycle: 1.01928 (CI: 1.03552 - 1.00821)\n'
+b'Avg bytes/cycle: 3.93488 (CI: 3.99759 - 3.89215)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '6749.89', 'min': '6572', 'max': '35232', 'std_dev': '392.741', 'ci_low': '6644', 'ci_high': '6824', 'ci_median': '6724', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 6880, 'bytes': 26560}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -83,9 +83,9 @@ b'/PolytopeT_intersectCoord_ref 1     1     -     -     -     -     -           
 b"/PolytopeT_intersectCoord_ref -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
 b'/PolytopeT_intersectCoord_ref -     -     14400 58080 14400 58080 dotProduct implemented locally because column-format \n'
 b'/PolytopeT_intersectCoord_ref -     -     720   960   720   960   intersect                                            \n'
-b'Avg flops/cycle: 1.31538 (CI: 1.3377 - 1.29774)\n'
-b'Avg bytes/cycle: 5.13626 (CI: 5.22339 - 5.06738)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '11494.7', 'min': '11152', 'max': '97813', 'std_dev': '553.611', 'ci_low': '11303', 'ci_high': '11651', 'ci_median': '11463', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 15120, 'bytes': 59040}}\n"
+b'Avg flops/cycle: 0.985759 (CI: 1.00666 - 0.972723)\n'
+b'Avg bytes/cycle: 3.84915 (CI: 3.93076 - 3.79825)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '15338.4', 'min': '14804', 'max': '55868', 'std_dev': '787.362', 'ci_low': '15020', 'ci_high': '15544', 'ci_median': '15264', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 15120, 'bytes': 59040}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_100,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -105,9 +105,9 @@ b'/PolytopeT_intersectCoord_ref 1     1     -     -      -     -      -         
 b"/PolytopeT_intersectCoord_ref -     -     0     0      0     0      Note: early 'continue' can speed up things!          \n"
 b'/PolytopeT_intersectCoord_ref -     -     40000 160800 40000 160800 dotProduct implemented locally because column-format \n'
 b'/PolytopeT_intersectCoord_ref -     -     1200  1600   1200  1600   intersect                                            \n'
-b'Avg flops/cycle: 1.0136 (CI: 1.02807 - 1.00051)\n'
-b'Avg bytes/cycle: 3.99535 (CI: 4.0524 - 3.94376)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '40647.3', 'min': '39457', 'max': '113364', 'std_dev': '1417.19', 'ci_low': '40075', 'ci_high': '41179', 'ci_median': '40482', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 41200, 'bytes': 162400}}\n"
+b'Avg flops/cycle: 0.772577 (CI: 0.784045 - 0.753089)\n'
+b'Avg bytes/cycle: 3.0453 (CI: 3.09051 - 2.96849)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '53328', 'min': '51788', 'max': '291648', 'std_dev': '2062.43', 'ci_low': '52548', 'ci_high': '54708', 'ci_median': '53084', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 41200, 'bytes': 162400}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_10,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -123,9 +123,9 @@ b'PC_Stack: flops: 100, bytes: 320\n'
 b'Stack                                  split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_ref -     -     100   320   100   320   read cache, calculate \n'
-b'Avg flops/cycle: 0.612463 (CI: 0.769231 - 0.411523)\n'
-b'Avg bytes/cycle: 1.95988 (CI: 2.46154 - 1.31687)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '163.275', 'min': '121', 'max': '23270', 'std_dev': '104.514', 'ci_low': '130', 'ci_high': '243', 'ci_median': '158', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 100, 'bytes': 320}}\n"
+b'Avg flops/cycle: 0.484996 (CI: 0.568182 - 0.350877)\n'
+b'Avg bytes/cycle: 1.55199 (CI: 1.81818 - 1.12281)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '206.187', 'min': '164', 'max': '41063', 'std_dev': '138.315', 'ci_low': '176', 'ci_high': '285', 'ci_median': '200', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 100, 'bytes': 320}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -141,9 +141,9 @@ b'PC_Stack: flops: 200, bytes: 640\n'
 b'Stack                                  split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_ref -     -     200   640   200   640   read cache, calculate \n'
-b'Avg flops/cycle: 0.530649 (CI: 0.589971 - 0.381679)\n'
-b'Avg bytes/cycle: 1.69808 (CI: 1.88791 - 1.22137)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '376.897', 'min': '333', 'max': '29960', 'std_dev': '116.807', 'ci_low': '339', 'ci_high': '524', 'ci_median': '369', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 200, 'bytes': 640}}\n"
+b'Avg flops/cycle: 0.407804 (CI: 0.45045 - 0.308642)\n'
+b'Avg bytes/cycle: 1.30497 (CI: 1.44144 - 0.987654)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '490.432', 'min': '440', 'max': '7840', 'std_dev': '76.1754', 'ci_low': '444', 'ci_high': '648', 'ci_median': '480', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 200, 'bytes': 640}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -159,9 +159,9 @@ b'PC_Stack: flops: 400, bytes: 1280\n'
 b'Stack                                  split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_ref -     -     400   1280  400   1280  read cache, calculate \n'
-b'Avg flops/cycle: 0.415659 (CI: 0.501882 - 0.341006)\n'
-b'Avg bytes/cycle: 1.33011 (CI: 1.60602 - 1.09122)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '962.327', 'min': '764', 'max': '24276', 'std_dev': '137.366', 'ci_low': '797', 'ci_high': '1173', 'ci_median': '945', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 400, 'bytes': 1280}}\n"
+b'Avg flops/cycle: 0.320047 (CI: 0.381679 - 0.268097)\n'
+b'Avg bytes/cycle: 1.02415 (CI: 1.22137 - 0.857909)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '1249.82', 'min': '1012', 'max': '16056', 'std_dev': '149.509', 'ci_low': '1048', 'ci_high': '1492', 'ci_median': '1232', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 400, 'bytes': 1280}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -177,9 +177,9 @@ b'PC_Stack: flops: 600, bytes: 1920\n'
 b'Stack                                  split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_ref -     -     600   1920  600   1920  read cache, calculate \n'
-b'Avg flops/cycle: 0.382456 (CI: 0.436047 - 0.330579)\n'
-b'Avg bytes/cycle: 1.22386 (CI: 1.39535 - 1.05785)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '1568.81', 'min': '1230', 'max': '26158', 'std_dev': '157.137', 'ci_low': '1376', 'ci_high': '1815', 'ci_median': '1563', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 600, 'bytes': 1920}}\n"
+b'Avg flops/cycle: 0.291887 (CI: 0.331126 - 0.254237)\n'
+b'Avg bytes/cycle: 0.934037 (CI: 1.0596 - 0.813559)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '2055.59', 'min': '1628', 'max': '25064', 'std_dev': '204.549', 'ci_low': '1812', 'ci_high': '2360', 'ci_median': '2048', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 600, 'bytes': 1920}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_100,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -195,9 +195,9 @@ b'PC_Stack: flops: 1000, bytes: 3200\n'
 b'Stack                                  split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_ref -     -     1000  3200  1000  3200  read cache, calculate \n'
-b'Avg flops/cycle: 0.377133 (CI: 0.429738 - 0.339443)\n'
-b'Avg bytes/cycle: 1.20683 (CI: 1.37516 - 1.08622)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '2651.58', 'min': '2118', 'max': '18457', 'std_dev': '198.754', 'ci_low': '2327', 'ci_high': '2946', 'ci_median': '2654', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1000, 'bytes': 3200}}\n"
+b'Avg flops/cycle: 0.291456 (CI: 0.332889 - 0.261233)\n'
+b'Avg bytes/cycle: 0.932661 (CI: 1.06525 - 0.835946)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '3431.04', 'min': '2772', 'max': '26492', 'std_dev': '295.611', 'ci_low': '3004', 'ci_high': '3828', 'ci_median': '3428', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1000, 'bytes': 3200}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_10,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -213,9 +213,9 @@ b'PC_Stack: flops: 100, bytes: 320\n'
 b'Stack                                          split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     100   320   100   320   read cache, calculate \n'
-b'Avg flops/cycle: 1.78505 (CI: 2.08333 - 1.13636)\n'
-b'Avg bytes/cycle: 5.71215 (CI: 6.66667 - 3.63636)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '56.0209', 'min': '48', 'max': '41374', 'std_dev': '131.483', 'ci_low': '48', 'ci_high': '88', 'ci_median': '54', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 100, 'bytes': 320}}\n"
+b'Avg flops/cycle: 1.50863 (CI: 1.5625 - 1)\n'
+b'Avg bytes/cycle: 4.82761 (CI: 5 - 3.2)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '66.2854', 'min': '64', 'max': '610', 'std_dev': '7.41839', 'ci_low': '64', 'ci_high': '100', 'ci_median': '64', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 100, 'bytes': 320}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -231,9 +231,9 @@ b'PC_Stack: flops: 200, bytes: 640\n'
 b'Stack                                          split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     200   640   200   640   read cache, calculate \n'
-b'Avg flops/cycle: 2.41939 (CI: 2.98507 - 1.2987)\n'
-b'Avg bytes/cycle: 7.74206 (CI: 9.55224 - 4.15584)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '82.6654', 'min': '63', 'max': '4688', 'std_dev': '34.9186', 'ci_low': '67', 'ci_high': '154', 'ci_median': '73', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 200, 'bytes': 640}}\n"
+b'Avg flops/cycle: 2.02398 (CI: 2.27273 - 1.78571)\n'
+b'Avg bytes/cycle: 6.47673 (CI: 7.27273 - 5.71429)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '98.8153', 'min': '88', 'max': '782', 'std_dev': '9.19167', 'ci_low': '88', 'ci_high': '112', 'ci_median': '96', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 200, 'bytes': 640}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -249,9 +249,9 @@ b'PC_Stack: flops: 400, bytes: 1280\n'
 b'Stack                                          split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     400   1280  400   1280  read cache, calculate \n'
-b'Avg flops/cycle: 2.90359 (CI: 3.07692 - 2.73973)\n'
-b'Avg bytes/cycle: 9.29147 (CI: 9.84615 - 8.76712)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '137.761', 'min': '124', 'max': '3091', 'std_dev': '22.2871', 'ci_low': '130', 'ci_high': '146', 'ci_median': '136', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 400, 'bytes': 1280}}\n"
+b'Avg flops/cycle: 2.24711 (CI: 2.43902 - 2.12766)\n'
+b'Avg bytes/cycle: 7.19074 (CI: 7.80488 - 6.80851)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '178.007', 'min': '156', 'max': '5516', 'std_dev': '26.4871', 'ci_low': '164', 'ci_high': '188', 'ci_median': '176', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 400, 'bytes': 1280}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -267,9 +267,9 @@ b'PC_Stack: flops: 600, bytes: 1920\n'
 b'Stack                                          split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     600   1920  600   1920  read cache, calculate \n'
-b'Avg flops/cycle: 3.11216 (CI: 3.40909 - 2.6087)\n'
-b'Avg bytes/cycle: 9.95892 (CI: 10.9091 - 8.34783)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '192.792', 'min': '169', 'max': '5266', 'std_dev': '37.5895', 'ci_low': '176', 'ci_high': '230', 'ci_median': '185', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 600, 'bytes': 1920}}\n"
+b'Avg flops/cycle: 2.40759 (CI: 2.67857 - 2.02703)\n'
+b'Avg bytes/cycle: 7.70428 (CI: 8.57143 - 6.48649)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '249.212', 'min': '208', 'max': '5952', 'std_dev': '28.7624', 'ci_low': '224', 'ci_high': '296', 'ci_median': '248', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 600, 'bytes': 1920}}\n"
 # Running Benchmark 
 /home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_100,intersect=intersectCoord_only,polytopeType=1,r=100000"
 
@@ -285,9 +285,9 @@ b'PC_Stack: flops: 1000, bytes: 3200\n'
 b'Stack                                          split calls flops bytes Flops Bytes tag                   \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                     \n'
 b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     1000  3200  1000  3200  read cache, calculate \n'
-b'Avg flops/cycle: 3.08286 (CI: 3.43643 - 2.7248)\n'
-b'Avg bytes/cycle: 9.86514 (CI: 10.9966 - 8.71935)\n'
-b"{'time': {'name_t': 'intersectCoord', 'mean': '324.374', 'min': '266', 'max': '8466', 'std_dev': '66.4919', 'ci_low': '291', 'ci_high': '367', 'ci_median': '318', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1000, 'bytes': 3200}}\n"
+b'Avg flops/cycle: 2.21179 (CI: 2.45098 - 1.89394)\n'
+b'Avg bytes/cycle: 7.07774 (CI: 7.84314 - 6.06061)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '452.122', 'min': '364', 'max': '11300', 'std_dev': '86.8173', 'ci_low': '408', 'ci_high': '528', 'ci_median': '444', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1000, 'bytes': 3200}}\n"
 [(' "" -f "PolytopeT_intersectCoord=ref" -b '
   '"generator=cube_rot_r1.0_10,intersect=intersectCoord_only,polytopeType=1,r=100000"',
   {'convergence': {'ci_alpha': '0.95',
@@ -301,14 +301,14 @@ b"{'time': {'name_t': 'intersectCoord', 'mean': '324.374', 'min': '266', 'max': 
                    'std_dev': '0'},
    'performance_counter': {'bytes': 1840, 'flops': 520},
    'time': {'ci_alpha': '0.95',
-            'ci_high': '520',
-            'ci_low': '337',
-            'ci_median': '363',
-            'max': '27058',
-            'mean': '369.514',
-            'min': '333',
+            'ci_high': '893',
+            'ci_low': '444',
+            'ci_median': '492',
+            'max': '13457',
+            'mean': '519.82',
+            'min': '436',
             'name_t': 'intersectCoord',
-            'std_dev': '116.99'}},
+            'std_dev': '135.547'}},
   '10'),
  (' "" -f "PolytopeT_intersectCoord=ref" -b '
   '"generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"',
@@ -323,14 +323,14 @@ b"{'time': {'name_t': 'intersectCoord', 'mean': '324.374', 'min': '266', 'max': 
                    'std_dev': '0'},
    'performance_counter': {'bytes': 6880, 'flops': 1840},
    'time': {'ci_alpha': '0.95',
-            'ci_high': '1476',
-            'ci_low': '1215',
-            'ci_median': '1349',
-            'max': '28115',
-            'mean': '1351.76',
-            'min': '1121',
+            'ci_high': '1968',
+            'ci_low': '1612',
+            'ci_median': '1796',
+            'max': '27768',
+            'mean': '1803.4',
+            'min': '1488',
             'name_t': 'intersectCoord',
-            'std_dev': '183.898'}},
+            'std_dev': '179.266'}},
   '20'),
  (' "" -f "PolytopeT_intersectCoord=ref" -b '
   '"generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"',
@@ -345,14 +345,14 @@ b"{'time': {'name_t': 'intersectCoord', 'mean': '324.374', 'min': '266', 'max': 
                    'std_dev': '0'},
    'performance_counter': {'bytes': 26560, 'flops': 6880},
    'time': {'ci_alpha': '0.95',
-            'ci_high': '5388',
-            'ci_low': '5012',
-            'ci_median': '5076',
-            'max': '55273',
-            'mean': '5099.88',
-            'min': '4952',
+            'ci_high': '6824',
+            'ci_low': '6644',
+            'ci_median': '6724',
+            'max': '35232',
+            'mean': '6749.89',
+            'min': '6572',
             'name_t': 'intersectCoord',
-            'std_dev': '332.536'}},
+            'std_dev': '392.741'}},
   '40'),
  (' "" -f "PolytopeT_intersectCoord=ref" -b '
   '"generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"',
@@ -367,14 +367,14 @@ b"{'time': {'name_t': 'intersectCoord', 'mean': '324.374', 'min': '266', 'max': 
                    'std_dev': '0'},
    'performance_counter': {'bytes': 59040, 'flops': 15120},
    'time': {'ci_alpha': '0.95',
-            'ci_high': '11651',
-            'ci_low': '11303',
-            'ci_median': '11463',
-            'max': '97813',
-            'mean': '11494.7',
-            'min': '11152',
+            'ci_high': '15544',
+            'ci_low': '15020',
+            'ci_median': '15264',
+            'max': '55868',
+            'mean': '15338.4',
+            'min': '14804',
             'name_t': 'intersectCoord',
-            'std_dev': '553.611'}},
+            'std_dev': '787.362'}},
   '60'),
  (' "" -f "PolytopeT_intersectCoord=ref" -b '
   '"generator=cube_rot_r1.0_100,intersect=intersectCoord_only,polytopeType=1,r=100000"',
@@ -389,14 +389,14 @@ b"{'time': {'name_t': 'intersectCoord', 'mean': '324.374', 'min': '266', 'max': 
                    'std_dev': '0'},
    'performance_counter': {'bytes': 162400, 'flops': 41200},
    'time': {'ci_alpha': '0.95',
-            'ci_high': '41179',
-            'ci_low': '40075',
-            'ci_median': '40482',
-            'max': '113364',
-            'mean': '40647.3',
-            'min': '39457',
+            'ci_high': '54708',
+            'ci_low': '52548',
+            'ci_median': '53084',
+            'max': '291648',
+            'mean': '53328',
+            'min': '51788',
             'name_t': 'intersectCoord',
-            'std_dev': '1417.19'}},
+            'std_dev': '2062.43'}},
   '100'),
  (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
   '"generator=cube_rot_r1.0_10,intersect=intersectCoord_only,polytopeType=1,r=100000"',
@@ -411,190 +411,190 @@ b"{'time': {'name_t': 'intersectCoord', 'mean': '324.374', 'min': '266', 'max': 
                    'std_dev': '0'},
    'performance_counter': {'bytes': 320, 'flops': 100},
    'time': {'ci_alpha': '0.95',
-            'ci_high': '243',
-            'ci_low': '130',
-            'ci_median': '158',
-            'max': '23270',
-            'mean': '163.275',
-            'min': '121',
-            'name_t': 'intersectCoord',
-            'std_dev': '104.514'}},
-  '10'),
- (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
-  '"generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"',
-  {'convergence': {'ci_alpha': '0.95',
-                   'ci_high': '0',
-                   'ci_low': '0',
-                   'ci_median': '0',
-                   'max': '0',
-                   'mean': '0',
-                   'min': '0',
-                   'name_c': 'intersectCoord',
-                   'std_dev': '0'},
-   'performance_counter': {'bytes': 640, 'flops': 200},
-   'time': {'ci_alpha': '0.95',
-            'ci_high': '524',
-            'ci_low': '339',
-            'ci_median': '369',
-            'max': '29960',
-            'mean': '376.897',
-            'min': '333',
-            'name_t': 'intersectCoord',
-            'std_dev': '116.807'}},
-  '20'),
- (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
-  '"generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"',
-  {'convergence': {'ci_alpha': '0.95',
-                   'ci_high': '0',
-                   'ci_low': '0',
-                   'ci_median': '0',
-                   'max': '0',
-                   'mean': '0',
-                   'min': '0',
-                   'name_c': 'intersectCoord',
-                   'std_dev': '0'},
-   'performance_counter': {'bytes': 1280, 'flops': 400},
-   'time': {'ci_alpha': '0.95',
-            'ci_high': '1173',
-            'ci_low': '797',
-            'ci_median': '945',
-            'max': '24276',
-            'mean': '962.327',
-            'min': '764',
-            'name_t': 'intersectCoord',
-            'std_dev': '137.366'}},
-  '40'),
- (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
-  '"generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"',
-  {'convergence': {'ci_alpha': '0.95',
-                   'ci_high': '0',
-                   'ci_low': '0',
-                   'ci_median': '0',
-                   'max': '0',
-                   'mean': '0',
-                   'min': '0',
-                   'name_c': 'intersectCoord',
-                   'std_dev': '0'},
-   'performance_counter': {'bytes': 1920, 'flops': 600},
-   'time': {'ci_alpha': '0.95',
-            'ci_high': '1815',
-            'ci_low': '1376',
-            'ci_median': '1563',
-            'max': '26158',
-            'mean': '1568.81',
-            'min': '1230',
-            'name_t': 'intersectCoord',
-            'std_dev': '157.137'}},
-  '60'),
- (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
-  '"generator=cube_rot_r1.0_100,intersect=intersectCoord_only,polytopeType=1,r=100000"',
-  {'convergence': {'ci_alpha': '0.95',
-                   'ci_high': '0',
-                   'ci_low': '0',
-                   'ci_median': '0',
-                   'max': '0',
-                   'mean': '0',
-                   'min': '0',
-                   'name_c': 'intersectCoord',
-                   'std_dev': '0'},
-   'performance_counter': {'bytes': 3200, 'flops': 1000},
-   'time': {'ci_alpha': '0.95',
-            'ci_high': '2946',
-            'ci_low': '2327',
-            'ci_median': '2654',
-            'max': '18457',
-            'mean': '2651.58',
-            'min': '2118',
-            'name_t': 'intersectCoord',
-            'std_dev': '198.754'}},
-  '100'),
- (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
-  '"generator=cube_rot_r1.0_10,intersect=intersectCoord_only,polytopeType=1,r=100000"',
-  {'convergence': {'ci_alpha': '0.95',
-                   'ci_high': '0',
-                   'ci_low': '0',
-                   'ci_median': '0',
-                   'max': '0',
-                   'mean': '0',
-                   'min': '0',
-                   'name_c': 'intersectCoord',
-                   'std_dev': '0'},
-   'performance_counter': {'bytes': 320, 'flops': 100},
-   'time': {'ci_alpha': '0.95',
-            'ci_high': '88',
-            'ci_low': '48',
-            'ci_median': '54',
-            'max': '41374',
-            'mean': '56.0209',
-            'min': '48',
-            'name_t': 'intersectCoord',
-            'std_dev': '131.483'}},
-  '10'),
- (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
-  '"generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"',
-  {'convergence': {'ci_alpha': '0.95',
-                   'ci_high': '0',
-                   'ci_low': '0',
-                   'ci_median': '0',
-                   'max': '0',
-                   'mean': '0',
-                   'min': '0',
-                   'name_c': 'intersectCoord',
-                   'std_dev': '0'},
-   'performance_counter': {'bytes': 640, 'flops': 200},
-   'time': {'ci_alpha': '0.95',
-            'ci_high': '154',
-            'ci_low': '67',
-            'ci_median': '73',
-            'max': '4688',
-            'mean': '82.6654',
-            'min': '63',
-            'name_t': 'intersectCoord',
-            'std_dev': '34.9186'}},
-  '20'),
- (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
-  '"generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"',
-  {'convergence': {'ci_alpha': '0.95',
-                   'ci_high': '0',
-                   'ci_low': '0',
-                   'ci_median': '0',
-                   'max': '0',
-                   'mean': '0',
-                   'min': '0',
-                   'name_c': 'intersectCoord',
-                   'std_dev': '0'},
-   'performance_counter': {'bytes': 1280, 'flops': 400},
-   'time': {'ci_alpha': '0.95',
-            'ci_high': '146',
-            'ci_low': '130',
-            'ci_median': '136',
-            'max': '3091',
-            'mean': '137.761',
-            'min': '124',
-            'name_t': 'intersectCoord',
-            'std_dev': '22.2871'}},
-  '40'),
- (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
-  '"generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"',
-  {'convergence': {'ci_alpha': '0.95',
-                   'ci_high': '0',
-                   'ci_low': '0',
-                   'ci_median': '0',
-                   'max': '0',
-                   'mean': '0',
-                   'min': '0',
-                   'name_c': 'intersectCoord',
-                   'std_dev': '0'},
-   'performance_counter': {'bytes': 1920, 'flops': 600},
-   'time': {'ci_alpha': '0.95',
-            'ci_high': '230',
+            'ci_high': '285',
             'ci_low': '176',
-            'ci_median': '185',
-            'max': '5266',
-            'mean': '192.792',
-            'min': '169',
+            'ci_median': '200',
+            'max': '41063',
+            'mean': '206.187',
+            'min': '164',
             'name_t': 'intersectCoord',
-            'std_dev': '37.5895'}},
+            'std_dev': '138.315'}},
+  '10'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 640, 'flops': 200},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '648',
+            'ci_low': '444',
+            'ci_median': '480',
+            'max': '7840',
+            'mean': '490.432',
+            'min': '440',
+            'name_t': 'intersectCoord',
+            'std_dev': '76.1754'}},
+  '20'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 1280, 'flops': 400},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '1492',
+            'ci_low': '1048',
+            'ci_median': '1232',
+            'max': '16056',
+            'mean': '1249.82',
+            'min': '1012',
+            'name_t': 'intersectCoord',
+            'std_dev': '149.509'}},
+  '40'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 1920, 'flops': 600},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '2360',
+            'ci_low': '1812',
+            'ci_median': '2048',
+            'max': '25064',
+            'mean': '2055.59',
+            'min': '1628',
+            'name_t': 'intersectCoord',
+            'std_dev': '204.549'}},
+  '60'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_100,intersect=intersectCoord_only,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 3200, 'flops': 1000},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '3828',
+            'ci_low': '3004',
+            'ci_median': '3428',
+            'max': '26492',
+            'mean': '3431.04',
+            'min': '2772',
+            'name_t': 'intersectCoord',
+            'std_dev': '295.611'}},
+  '100'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_10,intersect=intersectCoord_only,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 320, 'flops': 100},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '100',
+            'ci_low': '64',
+            'ci_median': '64',
+            'max': '610',
+            'mean': '66.2854',
+            'min': '64',
+            'name_t': 'intersectCoord',
+            'std_dev': '7.41839'}},
+  '10'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_20,intersect=intersectCoord_only,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 640, 'flops': 200},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '112',
+            'ci_low': '88',
+            'ci_median': '96',
+            'max': '782',
+            'mean': '98.8153',
+            'min': '88',
+            'name_t': 'intersectCoord',
+            'std_dev': '9.19167'}},
+  '20'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_40,intersect=intersectCoord_only,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 1280, 'flops': 400},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '188',
+            'ci_low': '164',
+            'ci_median': '176',
+            'max': '5516',
+            'mean': '178.007',
+            'min': '156',
+            'name_t': 'intersectCoord',
+            'std_dev': '26.4871'}},
+  '40'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_60,intersect=intersectCoord_only,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 1920, 'flops': 600},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '296',
+            'ci_low': '224',
+            'ci_median': '248',
+            'max': '5952',
+            'mean': '249.212',
+            'min': '208',
+            'name_t': 'intersectCoord',
+            'std_dev': '28.7624'}},
   '60'),
  (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
   '"generator=cube_rot_r1.0_100,intersect=intersectCoord_only,polytopeType=1,r=100000"',
@@ -609,21 +609,21 @@ b"{'time': {'name_t': 'intersectCoord', 'mean': '324.374', 'min': '266', 'max': 
                    'std_dev': '0'},
    'performance_counter': {'bytes': 3200, 'flops': 1000},
    'time': {'ci_alpha': '0.95',
-            'ci_high': '367',
-            'ci_low': '291',
-            'ci_median': '318',
-            'max': '8466',
-            'mean': '324.374',
-            'min': '266',
+            'ci_high': '528',
+            'ci_low': '408',
+            'ci_median': '444',
+            'max': '11300',
+            'mean': '452.122',
+            'min': '364',
             'name_t': 'intersectCoord',
-            'std_dev': '66.4919'}},
+            'std_dev': '86.8173'}},
   '100')]
 [10, 20, 40, 60, 100]
-[369.514, 1351.76, 5099.88, 11494.7, 40647.3]
+[519.82, 1803.4, 6749.89, 15338.4, 53328.0]
 [10, 20, 40, 60, 100]
 [10, 20, 40, 60, 100]
-[163.275, 376.897, 962.327, 1568.81, 2651.58]
+[206.187, 490.432, 1249.82, 2055.59, 3431.04]
 [10, 20, 40, 60, 100]
 [10, 20, 40, 60, 100]
-[56.0209, 82.6654, 137.761, 192.792, 324.374]
+[66.2854, 98.8153, 178.007, 249.212, 452.122]
 [10, 20, 40, 60, 100]
