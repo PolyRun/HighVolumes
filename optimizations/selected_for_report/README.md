@@ -12,6 +12,8 @@ Very nice plots.
 
 Shows: 8-set, different effect for cube and cross, div bound, 5-flop bound
 
+ -> Performance for cubeRot
+
 ## 3
 A bit too jittery, should up step_size.
 
@@ -19,11 +21,13 @@ But shows 8-set well. And overheads of sparse bodies. Especially JIT and L1i.
 
  -> upped step_size to 500
  -> situation a bit better, but still has random kinks...
+ -> rerun, configs were wrong, step_size=100,r=10.
 
 ## 4
 ok, also a bit jittery, right?
 
 do they show what they should, Silvan?
+ -> inspect compiled code. see if can get more info/desc.
 
 ## 5
 Measurement mostly stable.
@@ -32,6 +36,8 @@ JIT performes worse than on old plot, why? Did we choose the right version?
 
  -> r=100 maybe was just too low? Upped it to 10000. Was even higher for prev plot.
  -> quite a bit better now. maybe run even a bit longer?
+ -> try bigger body, see if run into iCache issues for JIT? try n=200 - TODO
+ -> but new-plot for n=100 is ok already.
 
 ## 6
 looks very good
@@ -42,8 +48,12 @@ Look ok.
 coordWalk_1 makes JIT stronger, should check other bm to see if used there.
 Which plot should we use? Runtime?
 
+-> Fixed the configurations. Must rerun!
+
+
 ## 8
 Basically as good as old plots used to be. We wanted this, right?
+-> maybe not needed if 7 looks better now?
 
 ## 9
 Data looks promising, need to make table now.
