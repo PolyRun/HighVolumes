@@ -499,6 +499,7 @@ FT* volume_d_ptr = NULL;
 void* volume_cache_ptr = NULL;
 FT *dotproduct_store_d = NULL;
 FT *dotproduct_store_x = NULL;
+FT *shell_cache = NULL;
 
 void volume_lib_init(const int max_n, const int max_m, const int max_b) {
    if(volumeVerbose>0) {printf("volume_lib_init...\n");}
@@ -509,6 +510,10 @@ void volume_lib_init(const int max_n, const int max_m, const int max_b) {
    
    dotproduct_store_d = (FT *) aligned_alloc(32, max_m * sizeof(FT));
    dotproduct_store_x = (FT *) aligned_alloc(32, max_m * sizeof(FT));
+
+   // NOTE: this assumes r0 = 1, r1 = 2n!!!
+   int l = ceil(max_n*log(2*max_n)/log(2.0));
+   shell_cache = (FT *) aligned_alloc(32, l * sizeof(FT)); 
    
    int cache_size = 1000*max_n*max_b*sizeof(FT);
    volume_cache_ptr = (aligned_alloc(32, cache_size)); // align this to 32
@@ -658,14 +663,14 @@ ArbitraryExpNum volume_coord_single(const int n, const FT r0, const FT r1, const
    cache[bcount] = cache_base + cache_size;// cache for ball intersect
    squaredNorm_cached_reset(x,n,(FT*)cache[bcount]);
 
-   
+
    const int l = ceil(n*log(r1/r0) / log(2.0));
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
    if(volumeVerbose>0) { printf("Volume_coord_1: steps: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
-   for(int i=0;i<=l;i++){t[i]=0;}
+   for(int i=0;i<=l;i++){ t[i]=0; }
    
    // volume up to current step
    // start with B(0,r0)
@@ -676,6 +681,8 @@ ArbitraryExpNum volume_coord_single(const int n, const FT r0, const FT r1, const
    //   last round must end in rk = r0/stepFac
    //   first round must start with rk >= r1
    const FT stepFac = pow(2,-1.0/(FT)n);
+
+   shell_cache_init(shell_cache, r0, l, stepFac);
    
    FT rk = r0*pow(stepFac,-l);
    int count = 0;
@@ -701,10 +708,10 @@ ArbitraryExpNum volume_coord_single(const int n, const FT r0, const FT r1, const
          // find right Bm:
          const FT x2 = squaredNorm_cached(x,n,(FT*)cache[bcount]);
 	 // normalized radius
-         const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));
-         const int mm = ceil(mmm);
-	 const int m = (mm>0)?mm:0; // find index of balls
 
+         int m = shell_idx(x2, r0, stepFac, shell_cache);
+
+         
 	 //printf("k %d  m %d\n",k,m);
          assert(m <= k);
          t[m]++;

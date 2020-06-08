@@ -281,5 +281,32 @@ void ArbitraryExpNum_print(ArbitraryExpNum a) {
 }
 
 
+// default, doesn't use shell_cache -> does nothing
+void shell_cache_init_nocache(FT *cache, FT r0, int l, FT stepFac){}
+shell_cache_init_f_t shell_cache_init = shell_cache_init_nocache; 
+
+void shell_cache_init_ref(FT *cache, FT r0, int l, FT stepFac){
+    cache[0] = r0;
+    // store squaredNorms of shell radii
+    for (int i = 1; i <= l; i++){
+        cache[i] = cache[i-1]/stepFac;
+        cache[i-1] *= cache[i-1];
+    }
+    cache[l] *= cache[l];
+}
 
 
+inline int shell_idx_nocache(FT x2, FT r0, FT stepFac, FT *cache){
+    const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));
+    const int mm = ceil(mmm);
+    return (mm>0)?mm:0; // find index of balls
+}
+shell_idx_f_t shell_idx = shell_idx_nocache;
+
+inline int shell_idx_ref(FT x2, FT r0, FT stepFac, FT *cache){
+    // do linear search in shell_cache for first index larger than x2
+    int i = 0;
+    while(cache[i] < x2){ i++; }
+    return i;
+       
+}

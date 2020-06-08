@@ -100,4 +100,21 @@ ArbitraryExpNum ArbitraryExpNum_mul(ArbitraryExpNum a, FT val);
 ArbitraryExpNum ArbitraryExpNum_mul2(ArbitraryExpNum a, ArbitraryExpNum b);
 void ArbitraryExpNum_print(ArbitraryExpNum a);
 
+
+
+
+typedef void (*shell_cache_init_f_t)(FT *cache, FT r0, int l, FT stepFac);
+extern shell_cache_init_f_t shell_cache_init;
+
+void shell_cache_init_nocache(FT *cache, FT r0, int l, FT stepFac);
+void shell_cache_init_ref(FT *cache, FT r0, int l, FT stepFac);
+
+typedef int (*shell_idx_f_t)(FT x2, FT r0, FT stepFac, FT *cache);
+extern shell_idx_f_t shell_idx;
+
+// default, doesn't use shell_cache -> does nothing
+int shell_idx_nocache(FT x2, FT r0, FT stepFac, FT *cache);
+// simple linear search over the shells to avoid logs
+int shell_idx_ref(FT x2, FT r0, FT stepFac, FT *cache);
+
 #endif
