@@ -7,11 +7,250 @@ int min(int a, int b) {
 }
 
 
+void Pjit_intersectCoord4_body(const Polytope* p, const int i, jit_Table_8** t8, jit_Table_32** t32) {
+   // find relevant entries in column i:
+   for(int j=0;j<p->m;j++) {
+      FT aij = Polytope_get_a(p,j,i);
+      if(aij != 0.0) { // TODO: make epsilon
+         
+         // d*a = aij
+         double aijInv = 1.0/aij;
+	 ///  *t8 = jit_immediate_8_via_data(aijInv,4,*t8);
+         *t8 = jit_broadcast_sd_via_data(aijInv, 4, *t8);
+
+         ///  //printf("A j:%d i:%d a:%f aInv:%f bj:%f\n",j,i,aij, aijInv,bj);
+
+         ///  // aix = cache[j]   -- %rcx
+         ///  uint32_t cachej = 8*j;
+         ///  jit_vmulsd_mem(jit_rcx, cachej,4,2);
+         uint32_t cachej = 4*8*j;
+         jit_vmulpd_mem_ymm(jit_rcx, cachej, 4, 2);
+         
+         // we already know if min or max!
+         if(aij < 0.0) {
+            //printf("do max\n");
+            //c5 e9 5f c0          	vmaxpd %xmm0,%xmm2,%xmm0
+            //{const uint8_t instr[] = {0xc5,0xe9,0x5f,0xc0}; jit_push(instr,4);}
+            ///  jit_vmaxsd(0,2,0);
+            jit_vmaxpd_ymm(0,2,0);
+         } else {
+            //printf("do min\n");
+            //c5 e9 5d c9          	vminpd %xmm1,%xmm2,%xmm1
+            //{const uint8_t instr[] = {0xc5,0xe9,0x5d,0xc9}; jit_push(instr,4);}
+            ///  jit_vminsd(1,2,1);
+            jit_vminpd_ymm(1,2,1);
+	 }
+      }
+   }
+}
+
+
 void PolytopeJIT_generate_intersectCoord4_ref(const Polytope *p, PolytopeJIT *o) {
    o->intersectCoord4 = (pjit_intersectCoordX_f_t)jit_head();
 
+   // --------------------- set up code facilities:
+   jit_Table_8* t8 = NULL;
+   jit_Table_16* t16 = NULL;
+   jit_Table_32* t32 = NULL;
+
+   // ------------------------------------------- initialize t00,t11
+   double t00 = -FT_MAX;
+   double t11 = FT_MAX;
+   t32 = jit_immediate_32_via_data(t00,t00,t00,t00,0,t32);
+   t32 = jit_immediate_32_via_data(t11,t11,t11,t11,1,t32);
+
+   // ------ get ref to jump table
+   // 48 8d 05 xx xx xx xx 	lea    xxxx(%rip),%rax
+   {const uint8_t instr[] = {0x48,0x8d,0x05,0,0,0,0}; jit_push(instr,7);}
+   uint8_t* set_table = jit_head();// prepare to set L_table here
+   // 89 ff                	mov    %edi,%edi
+   {const uint8_t instr[] = {0x89,0xff}; jit_push(instr,2);}
+   // 4c 63 1c b8          	movslq (%rax,%rdi,4),%r11
+   {const uint8_t instr[] = {0x4c,0x63,0x1c,0xb8}; jit_push(instr,4);}
+   // 49 01 c3             	add    %rax,%r11
+   {const uint8_t instr[] = {0x49,0x01,0xc3}; jit_push(instr,3);}
+   // 41 ff e3             	jmpq   *%r11
+   {const uint8_t instr[] = {0x41,0xff,0xe3}; jit_push(instr,3);}
+
+
+   // -------------------------------------------------- Jump table
+   jit_allign(4);// allign for array of longs below
+   uint8_t* table = jit_head();
+   uint32_t L_table = jit_head() - set_table;
+   jit_write(set_table-4, (uint8_t*)&L_table,4);
+   for(int i=0;i<p->n;i++) {
+      {const uint8_t instr[] = {1,1,1,1}; jit_push(instr,4);}
+   }
+   
+   // ------------------------------ dump code for each i
+   uint8_t* jump[p->n];
+   for(int i=0;i<p->n;i++) {// generate code for each, register location in table
+      uint8_t* location = jit_head();
+      uint32_t entry = location - table;
+      jit_write(table+4*i, (uint8_t*)&entry, 4);
+      
+      Pjit_intersectCoord4_body(p,i,&t8,&t32);
+     
+      // jump to end:
+      // e9 xx xx xx xx       	jmpq xxxx
+      {const uint8_t instr[] = {0xe9,1,1,1,1}; jit_push(instr,5);}
+      jump[i] = jit_head();
+   }
+ 
+   // make all ends go here
+   for(int i=0;i<p->n;i++) {
+      uint32_t jump_offset = jit_head()-jump[i];
+      uint64_t jump_offset64 = (uint64_t)jit_head()-(uint64_t)jump[i];
+      jit_write(jump[i]-4, (uint8_t*)&jump_offset, 4);
+      //printf("jump offset: %d %x %lx \n",i,jump_offset,jump_offset64);
+      assert(((uint64_t)jump_offset) == jump_offset64);
+   }
+   
+
+   // -------------------------------------------- move t00, t11 back
+   ////f2 0f 11 06          	movsd  %xmm0,(%rsi)
+   //{ uint8_t instr[] = {0xf2,0x0f,0x11,0x06}; jit_push(instr,4); }
+   ////f2 0f 11 0a          	movsd  %xmm1,(%rdx)
+   //{ uint8_t instr[] = {0xf2,0x0f,0x11,0x0a}; jit_push(instr,4); }
+   jit_storeu_ymm(0,jit_rsi,0);
+   jit_storeu_ymm(1,jit_rdx,0);
+   
+   jit_emit_vzeroupper();// make sure to remove false dependencies!
+
    // ---- rep ret
    { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
+   
+   // -------------------------------- finish up code facilities:
+   jit_table_8_consume(t8);
+   jit_table_16_consume(t16);
+   jit_table_32_consume(t32);
+}
+
+
+void Pjit_intersectCoord8_body(const Polytope* p, const int i, jit_Table_8** t8, jit_Table_32** t32) {
+   // find relevant entries in column i:
+   for(int j=0;j<p->m;j++) {
+      FT aij = Polytope_get_a(p,j,i);
+      if(aij != 0.0) { // TODO: make epsilon
+         
+         // d*a = aij
+         double aijInv = 1.0/aij;
+	 ///  *t8 = jit_immediate_8_via_data(aijInv,4,*t8);
+         *t8 = jit_broadcast_sd_via_data(aijInv, 4, *t8);
+
+         ///  //printf("A j:%d i:%d a:%f aInv:%f bj:%f\n",j,i,aij, aijInv,bj);
+
+         ///  // aix = cache[j]   -- %rcx
+         ///  uint32_t cachej = 8*j;
+         ///  jit_vmulsd_mem(jit_rcx, cachej,4,2);
+         uint32_t cachej = 8*8*j;
+         jit_vmulpd_mem_ymm(jit_rcx, cachej,     4, 5);
+         jit_vmulpd_mem_ymm(jit_rcx, cachej+4*8, 4, 6);
+         
+         // we already know if min or max!
+         if(aij < 0.0) {
+            //printf("do max\n");
+            //c5 e9 5f c0          	vmaxpd %xmm0,%xmm2,%xmm0
+            //{const uint8_t instr[] = {0xc5,0xe9,0x5f,0xc0}; jit_push(instr,4);}
+            ///  jit_vmaxsd(0,2,0);
+            jit_vmaxpd_ymm(0,5,0);
+            jit_vmaxpd_ymm(1,6,1);
+         } else {
+            //printf("do min\n");
+            //c5 e9 5d c9          	vminpd %xmm1,%xmm2,%xmm1
+            //{const uint8_t instr[] = {0xc5,0xe9,0x5d,0xc9}; jit_push(instr,4);}
+            ///  jit_vminsd(1,2,1);
+            jit_vminpd_ymm(2,5,2);
+            jit_vminpd_ymm(3,6,3);
+	 }
+      }
+   }
+}
+
+
+void PolytopeJIT_generate_intersectCoord8_ref(const Polytope *p, PolytopeJIT *o) {
+   o->intersectCoord8 = (pjit_intersectCoordX_f_t)jit_head();
+
+   // --------------------- set up code facilities:
+   jit_Table_8* t8 = NULL;
+   jit_Table_16* t16 = NULL;
+   jit_Table_32* t32 = NULL;
+
+   // ------------------------------------------- initialize t00,t11
+   double t00 = -FT_MAX;
+   double t11 = FT_MAX;
+   t32 = jit_immediate_32_via_data(t00,t00,t00,t00,0,t32);
+   t32 = jit_immediate_32_via_data(t00,t00,t00,t00,1,t32);
+   t32 = jit_immediate_32_via_data(t11,t11,t11,t11,2,t32);
+   t32 = jit_immediate_32_via_data(t11,t11,t11,t11,3,t32);
+
+   // ------ get ref to jump table
+   // 48 8d 05 xx xx xx xx 	lea    xxxx(%rip),%rax
+   {const uint8_t instr[] = {0x48,0x8d,0x05,0,0,0,0}; jit_push(instr,7);}
+   uint8_t* set_table = jit_head();// prepare to set L_table here
+   // 89 ff                	mov    %edi,%edi
+   {const uint8_t instr[] = {0x89,0xff}; jit_push(instr,2);}
+   // 4c 63 1c b8          	movslq (%rax,%rdi,4),%r11
+   {const uint8_t instr[] = {0x4c,0x63,0x1c,0xb8}; jit_push(instr,4);}
+   // 49 01 c3             	add    %rax,%r11
+   {const uint8_t instr[] = {0x49,0x01,0xc3}; jit_push(instr,3);}
+   // 41 ff e3             	jmpq   *%r11
+   {const uint8_t instr[] = {0x41,0xff,0xe3}; jit_push(instr,3);}
+
+
+   // -------------------------------------------------- Jump table
+   jit_allign(4);// allign for array of longs below
+   uint8_t* table = jit_head();
+   uint32_t L_table = jit_head() - set_table;
+   jit_write(set_table-4, (uint8_t*)&L_table,4);
+   for(int i=0;i<p->n;i++) {
+      {const uint8_t instr[] = {1,1,1,1}; jit_push(instr,4);}
+   }
+   
+   // ------------------------------ dump code for each i
+   uint8_t* jump[p->n];
+   for(int i=0;i<p->n;i++) {// generate code for each, register location in table
+      uint8_t* location = jit_head();
+      uint32_t entry = location - table;
+      jit_write(table+4*i, (uint8_t*)&entry, 4);
+      
+      Pjit_intersectCoord8_body(p,i,&t8,&t32);
+     
+      // jump to end:
+      // e9 xx xx xx xx       	jmpq xxxx
+      {const uint8_t instr[] = {0xe9,1,1,1,1}; jit_push(instr,5);}
+      jump[i] = jit_head();
+   }
+ 
+   // make all ends go here
+   for(int i=0;i<p->n;i++) {
+      uint32_t jump_offset = jit_head()-jump[i];
+      uint64_t jump_offset64 = (uint64_t)jit_head()-(uint64_t)jump[i];
+      jit_write(jump[i]-4, (uint8_t*)&jump_offset, 4);
+      //printf("jump offset: %d %x %lx \n",i,jump_offset,jump_offset64);
+      assert(((uint64_t)jump_offset) == jump_offset64);
+   }
+   
+
+   // -------------------------------------------- move t00, t11 back
+   ////f2 0f 11 06          	movsd  %xmm0,(%rsi)
+   //{ uint8_t instr[] = {0xf2,0x0f,0x11,0x06}; jit_push(instr,4); }
+   ////f2 0f 11 0a          	movsd  %xmm1,(%rdx)
+   //{ uint8_t instr[] = {0xf2,0x0f,0x11,0x0a}; jit_push(instr,4); }
+   jit_storeu_ymm(0,jit_rsi,0);
+   jit_storeu_ymm(1,jit_rsi,4*8);
+   jit_storeu_ymm(2,jit_rdx,0);
+   jit_storeu_ymm(3,jit_rdx,04*8);
+   
+   jit_emit_vzeroupper();// make sure to remove false dependencies!
+
+   // ---- rep ret
+   { uint8_t instr[] = {0xf3,0xc3}; jit_push(instr,2); }
+   
+   // -------------------------------- finish up code facilities:
+   jit_table_8_consume(t8);
+   jit_table_16_consume(t16);
+   jit_table_32_consume(t32);
 }
 
 
@@ -662,6 +901,7 @@ void PolytopeJIT_generate_intersectCoord_ref(const Polytope *p, PolytopeJIT *o) 
    // ---------------------------- 4/8-set
 
    PolytopeJIT_generate_intersectCoord4_ref(p, o);
+   PolytopeJIT_generate_intersectCoord8_ref(p, o);
 }
 
 

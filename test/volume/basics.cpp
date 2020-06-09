@@ -936,7 +936,7 @@ int main(int argc, char** argv) {
    }
     
    {// PolytopeJIT - check intersectCoord - cached - set 4/8
-      std::cout << "set 4/8: PolytopeCSC_intersectCoord:\n";
+      std::cout << "set 4/8: PolytopeJIT_intersectCoord:\n";
       for(int n=4;n<20;n++) {
 	 std::cout << "test for n="<<n<<"\n";
          Polytope* boxx = Polytope_new_box(n,2);
