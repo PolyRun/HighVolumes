@@ -837,16 +837,21 @@ allbest_funs = [
       [""]
    ),
    (
-      ['PolytopeJIT_gen={},walk_f=walkCoord_1'.format(fun) for fun in
-       [
-          "single_data",
-          "double_data",
-          "quad_data",
-       ]
-      ],
+      ['PolytopeJIT_gen=quad_data,walk_f=walkCoord_{}'.format(i) for i in [1,4,8]],
       3,
       [""]
-   )
+   ),
+#   (
+#      ['PolytopeJIT_gen={},walk_f=walkCoord_1'.format(fun) for fun in
+#       [
+#          "single_data",
+#          "double_data",
+#          "quad_data",
+#       ]
+#      ],
+#      3,
+#      [""]
+#   )
 ]
 # - Detail analysis CSC, JIT. Diffent levels of sparsity 2var, 4var. 2var preprocessed? cross, cubeRot. - take sizes where you see performance decreasing.
 #   - separate intersect_only, cacheUpdateCoord. JIT will be better because different load instructions/patterns.
