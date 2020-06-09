@@ -31,6 +31,7 @@ export ERRBAR='Off'
 
 export XLOG='On'
 ## python benchmark/benchmark.py density_runtime_bm
+python benchmark/benchmark.py density8_runtime_bm
 export XLOG='Off'
 
 # 7) turn off errorbars, maybe increase step_size from 100 to 1000 (line 659) or do multiple runs (line 661)

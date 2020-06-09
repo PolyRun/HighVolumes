@@ -724,6 +724,53 @@ density_runtime_bm = [
    }
 ]
 
+# density8 benchmark
+intersects_funs8 = [
+   (
+      ["PolytopeT_intersectCoord=cached_b_inv_vec,walk_f=walkCoord_1"],
+      1,
+      ["intersectSet=8"]
+   ),
+   (
+      ['PolytopeCSC_intersectCoord=cached_b_vec_nan_inv'],
+      2,
+      ["intersectSet=8"]
+   ),
+   (
+      ['PolytopeJIT_gen={}'.format(fun) for fun in
+       [
+          "quad_data",
+       ]
+      ],
+      3,
+      ["intersectSet=8"]
+   )
+]
+# - Detail analysis CSC, JIT. Diffent levels of sparsity 2var, 4var. 2var preprocessed? cross, cubeRot. - take sizes where you see performance decreasing.
+#   - separate intersect_only, cacheUpdateCoord. JIT will be better because different load instructions/patterns.
+
+
+density8_runtime_bm = [
+   {"name": 'density8_runtime_bm',
+    "executable": "benchmark_intersect",
+    "config": [
+       {
+          "const_configs": [],
+          "fun_configs": funs,
+          "run_configs": ['r=2000,polytopeType={},intersect=intersectCoord_only,polytopeOptimize=true,{}'.format(bodytype,bconf)],
+          "input_configs": [("generator", csc_jit_bodies_dens200)]
+       }
+       for funs, bodytype, bconfs in intersects_funs8 for bconf in bconfs
+    ],
+    "xoption": ("generator", csc_jit_dims_dens200),
+    "title": ["Runtime Comparison", "Performance comparison", "I/O comparison", "Roofline measurements"],
+    "xlabel": ["dim", "dim", "dim", "Operational Intensity [Flops/Byte]"],
+    "ylabel": ["cycles(mean)", "flops/cylce(mean)", "bytes/cylce(mean)", "Performance [Flops/Cycle]"],
+    "perf_roofs": [],
+    "mem_roofs": []
+   }
+]
+
 
 
 
@@ -889,6 +936,7 @@ allbest_roofline_bm = [
 
 BENCHMARKS += allbest_roofline_bm
 BENCHMARKS += density_runtime_bm
+BENCHMARKS += density8_runtime_bm
 BENCHMARKS += runtime_2var_bm
 BENCHMARKS += polytopeT_bm
 BENCHMARKS += csc_jit_bm
