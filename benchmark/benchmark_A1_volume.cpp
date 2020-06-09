@@ -49,9 +49,9 @@ class Benchmark_A1 : public Benchmark_base {
             // nothing to reset
 	}
         double run () {
-	    FT res = volume(solved_body->n, r0, r1, solved_body->bcount, (const void**)solved_body->body, (const Body_T**)solved_body->type);
+	    ArbitraryExpNum res = volume(solved_body->n, r0, r1, solved_body->bcount, (const void**)solved_body->body, (const Body_T**)solved_body->type);
 	    FT exact = solved_body->volume;
-	    return (res - exact)/exact;
+	    return (res.num - exact)/exact;
 	}
 	void finalize() {
 	    pc_stack().reset();

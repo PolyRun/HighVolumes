@@ -4,7 +4,7 @@
 Body_T Ellipsoid_T = {
         .print = Ellipsoid_print,
 	.free = Ellipsoid_free,
-	.clone = Ellipsoid_clone,
+	.clone = Ellipsoid_clone_with_T,
 	.inside = Ellipsoid_inside_ref,
 	.intersect = Ellipsoid_intersect_ref,
 	.intersectCoord = Ellipsoid_intersectCoord_ref,

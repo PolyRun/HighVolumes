@@ -249,6 +249,82 @@ FTpair8 Ball_intersectCoord_cached8(const int n, const FT r, const FT* x,const i
    return tp;
 }
 
+ArbitraryExpNum ArbitraryExpNum_new(FT val) {
+   ArbitraryExpNum a;
+   a.num = val;
+   a.numLog = log(val);
+   return a;
+}
+ArbitraryExpNum ArbitraryExpNum_mul(ArbitraryExpNum a, FT val) {
+   ArbitraryExpNum b;
+   b.num = a.num * val;
+   b.numLog = a.numLog + log(val);
+   return b;
+}
+ArbitraryExpNum ArbitraryExpNum_mul2(ArbitraryExpNum a, ArbitraryExpNum b) {
+   ArbitraryExpNum c;
+   c.num = a.num * b.num;
+   c.numLog = a.numLog + b.numLog;
+   return c;
+}
 
 
+void ArbitraryExpNum_print(ArbitraryExpNum a) {
+   FT b10 = a.numLog / log(10);
+   int exp = floor(b10);
+   FT m = pow(10,b10-exp);
+   if(exp>300 || exp<-300 || a.num > (double)1e300 || a.num==0) {
+      printf("[m: %lf, e: %d]",m, exp);
+   }else{
+      printf("[%.10e, log: %.10e, m: %lf, e: %d]",a.num,a.numLog, m, exp);
+   }
+}
+
+
+// default, doesn't use shell_cache -> does nothing
+void shell_cache_init_nocache(FT *cache, FT r0, int l, FT stepFac){}
+shell_cache_init_f_t shell_cache_init = shell_cache_init_nocache; 
+
+void shell_cache_init_ref(FT *cache, FT r0, int l, FT stepFac){
+    cache[0] = r0;
+    // store squaredNorms of shell radii
+    for (int i = 1; i <= l; i++){
+        cache[i] = cache[i-1]/stepFac;
+        cache[i-1] *= cache[i-1];
+    }
+    cache[l] *= cache[l];
+}
+
+
+int shell_idx_nocache(FT x2, FT r0, FT stepFac, int l, FT *cache){
+    const FT mmm = log(x2/(r0*r0))*0.5/(-log(stepFac));
+    const int mm = ceil(mmm);
+    return (mm>0)?mm:0; // find index of balls
+}
+shell_idx_f_t shell_idx = shell_idx_nocache;
+
+int shell_idx_ref(FT x2, FT r0, FT stepFac, int l, FT *cache){
+    // do linear search in shell_cache for first index larger than x2
+    int i = 0;
+    while(cache[i] < x2){ i++; }
+    return i;
+       
+}
+
+int shell_idx_binary(FT x2, FT r0, FT stepFac, int l, FT *cache){
+    // do binary search in shell_cache for first index larger than x2
+    int hi = l;
+    int lo = 0;
+
+    while (hi - lo > 0) {
+        int mid = lo + (hi - lo)/2;
+        if (cache[mid] < x2){
+            lo = mid+1;
+        }
+        else {
+            hi = mid;
+        }
+    }
+    return lo;
+}
 

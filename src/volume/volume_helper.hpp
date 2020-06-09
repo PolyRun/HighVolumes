@@ -212,6 +212,18 @@ public:
                         {"ref",       {{squaredNorm_cached_refc, {squaredNorm_cached_reset_refc,squaredNorm_cached_update_refc}}, "cacheing (ref)"}},
 		       	}));
 
+      add(new CLIF_DoubleOption<shell_cache_init_f_t, shell_idx_f_t>
+          (
+           &shell_cache_init, &shell_idx,
+           'f', "log_f", "nocache",
+           {
+            {"nocache", {{shell_cache_init_nocache, shell_idx_nocache}, "no caching (ordinary logs)"}},
+            {"ref", {{shell_cache_init_ref, shell_idx_ref}, "linear search in cache"}},
+            {"binary", {{shell_cache_init_ref, shell_idx_binary}, "binary search in cache"}},
+           }));
+
+                                                                     
+
 
       add(new CLIF_DoubleOption<walk_f_t,volume_f_t>(&walk_f,&volume,'f',"walk_f","walkCoord_ref", {
                                                      {"walk_ref",          {{walk_ref,               volume_ref},          "random direction walk (ref)"}},

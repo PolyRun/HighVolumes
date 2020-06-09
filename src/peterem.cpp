@@ -60,6 +60,18 @@ int main(int argc, char** argv) {
    std::cout << "choice "<< v1 << " " << v2 << "\n";
    std::cout << "choice "<< v3 << " " << v4 << " " << v5 << "\n";
    
+   auto a = ArbitraryExpNum_new(10);
+   ArbitraryExpNum_print(a); printf(" - start\n");
+
+   for(int i=0;i<400; i++) {
+      a = ArbitraryExpNum_mul(a,1.0/11);
+      ArbitraryExpNum_print(a); printf(" - %d\n",i);
+   }
+   for(int i=0;i<400; i++) {
+      a = ArbitraryExpNum_mul(a,11);
+      ArbitraryExpNum_print(a); printf(" - %d\n",i);
+   }
+
    optimize_test(generator);
 
    Solved_Body* solved_body = solved_body_generator()->get(generator,polytopeTranspose);

@@ -121,7 +121,7 @@ void test_preprocess_random_polytopes(int ntests, int dim, int nconstraints){
 }
 
 void test_preprocess_generic_box(const int n, Body_T* type_, void* box, void* box_out) {
-   FT det;
+   ArbitraryExpNum det;
    void* body_in[1] = {box};
    void* body_out[1] = {box_out};
    Body_T* type[1] = {type_};
@@ -158,7 +158,7 @@ void test_preprocess_generic_box(const int n, Body_T* type_, void* box, void* bo
    
    free(x);
    free(cache);
-   std::cout << "det: " << det << std::endl;
+   std::cout << "det: " << det.num << std::endl;
 }
    
 void test_preprocess_generic() {
@@ -199,7 +199,7 @@ void test_preprocess_generic() {
     
     {
         const int n = 10;
-        FT det;
+        ArbitraryExpNum det;
         Ellipsoid* e1 = Ellipsoid_new_with_T(n);
         Ellipsoid* e2 = Ellipsoid_new_with_T(n);
         for(int i=0; i<n; i++) {
@@ -249,7 +249,7 @@ void test_preprocess_generic() {
             }
 	}
 
-	std::cout << "det: " << det << std::endl;
+	std::cout << "det: " << det.num << std::endl;
         
 	free(x);
 	Ellipsoid_T.free(e1);
@@ -260,7 +260,7 @@ void test_preprocess_generic() {
 
     {
         const int n = 10;
-        FT det;
+        ArbitraryExpNum det;
 	Polytope* box = Polytope_new_box(n,1.0);
         Ellipsoid* e = Ellipsoid_new_with_T(n);
         for(int i=0; i<n; i++) {
@@ -278,7 +278,7 @@ void test_preprocess_generic() {
 
         preprocess_generic(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
         
-	std::cout << "det: " << det << std::endl;
+	std::cout << "det: " << det.num << std::endl;
 
 	std::cout << "e_out:\n";
         Ellipsoid_T.print(e_out);
@@ -311,7 +311,7 @@ void test_preprocess_generic() {
 
     for(int s=0;s<8;s++){
 	const int n = 10;
-        FT det;
+        ArbitraryExpNum det;
 
         void* body_in[2];// take box and ellipse, invert order too!
 	void* body_out[2];
@@ -394,7 +394,7 @@ void test_preprocess_generic() {
 
         preprocess_generic(n, 2, (const void**) body_in, (void**) body_out, (const Body_T**) type, &det);
         
-	std::cout << "det: " << det << std::endl;
+	std::cout << "det: " << det.num << std::endl;
 
 	std::cout << "\nOutput Bodies for setting " << s << "\n";
 	for(int b=0;b<2;b++) {

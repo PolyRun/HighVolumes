@@ -458,7 +458,7 @@ void Polyvest_p::Preprocess(){
         exit(1);		
     }
 	
-    cout << Trans << endl;
+    //cout << Trans << endl;
     b = beta_r * (b - A * ori);
     A = A * Trans.t();
 

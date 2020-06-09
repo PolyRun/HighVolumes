@@ -40,24 +40,24 @@ void test() {
       FT rx = 0.1*i;
       FT r0 = 1.5 - rx;
       FT r1 = 5.0 + rx;
-      FT vbox = volume(n,r0,r1,  1,(const void**)&box,  (const Body_T**)&type);
-      FT vboxT = volume(n,r0,r1,  1,(const void**)&body3,  (const Body_T**)&type3);
-      FT vs   = volume(n,r0,r1,  1,(const void**)&e,    (const Body_T**)&type[1]);
-      FT v    = volume(n,r0,r1,  2,(const void**)&body, (const Body_T**)&type);
-      FT vbox2 = volume(n,r0*0.5,r1,  2,(const void**)&body2, (const Body_T**)&type2);
+      ArbitraryExpNum vbox = volume(n,r0,r1,  1,(const void**)&box,  (const Body_T**)&type);
+      ArbitraryExpNum vboxT = volume(n,r0,r1,  1,(const void**)&body3,  (const Body_T**)&type3);
+      ArbitraryExpNum vs   = volume(n,r0,r1,  1,(const void**)&e,    (const Body_T**)&type[1]);
+      ArbitraryExpNum v    = volume(n,r0,r1,  2,(const void**)&body, (const Body_T**)&type);
+      ArbitraryExpNum vbox2 = volume(n,r0*0.5,r1,  2,(const void**)&body2, (const Body_T**)&type2);
       
-      std::cout << "\nbox: " << vbox << "\n";
-      std::cout << "\nboxT: " << vboxT << "\n";
+      std::cout << "\nbox: " << vbox.num << "\n";
+      std::cout << "\nboxT: " << vboxT.num << "\n";
       FT vs_ref = Ball_volume(n,3.0);
-      std::cout << "sphere: " << vs << " vs " << vs_ref << "\n";
-      std::cout << "intersection: " << v << "\n";
-      std::cout << "\nbox2: " << vbox2 << "\n";
+      std::cout << "sphere: " << vs.num << " vs " << vs_ref << "\n";
+      std::cout << "intersection: " << v.num << "\n";
+      std::cout << "\nbox2: " << vbox2.num << "\n";
 
-      assert(std::abs(vbox - std::pow(4,n)) <= 10); // Not great, want to get more accuracy
-      assert(std::abs(vboxT - std::pow(4,n)) <= 10); 
-      assert(std::abs(vs_ref - vs) <= 10);
-      assert(vbox > v && vs > v);
-      assert(std::abs(vbox2 - std::pow(2,n)) <= 1.0);
+      assert(std::abs(vbox.num - std::pow(4,n)) <= 10); // Not great, want to get more accuracy
+      assert(std::abs(vboxT.num - std::pow(4,n)) <= 10); 
+      assert(std::abs(vs_ref - vs.num) <= 10);
+      assert(vbox.num > v.num && vs.num > v.num);
+      assert(std::abs(vbox2.num - std::pow(2,n)) <= 1.0);
    }
 
 

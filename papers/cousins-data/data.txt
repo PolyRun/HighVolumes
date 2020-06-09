@@ -1,0 +1,492 @@
+
+for i = 3:15
+    fprintf("# # # # # # # # # %d\n",i);
+    [body,volume] = makeBody('birkhoff',i);
+    tic
+    [estim] = Volume(body,[],0.2,'-num_t 8 -round mve');
+    toc
+end
+
+-------------------------------
+
+>> experiment
+# # # # # # # # # 3
+--------4-Dimension Convex Body------
+
+here
+Removed 9 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   1.0e-16   2.3e-16   6.7e-01  -5.0e-01
+  iter.   1:   1.5e-16   9.9e-15   3.3e-03   4.9e-01
+  iter.   2:   4.4e-17   1.3e-16   1.9e-06   5.0e-01
+  iter.   3:   3.8e-17   4.5e-16   5.7e-13   5.0e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 4
+Phase 0 Volume: 3.609256e-02,   sigma_0=3.477719e-01
+Phase 1 Volume: 9.596008e-02,   sigma_2=4.636959e-01
+Phase 2 Volume: 4.225867e-01,   sigma_6=8.243483e-01
+------Volume Complete------
+
+Final Volume: 1.026681e+00,  final sigma=Inf
+Total steps: 4489
+Elapsed time is 0.294789 seconds.
+# # # # # # # # # 4
+--------9-Dimension Convex Body------
+
+here
+Removed 16 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   1.3e-16   4.5e-17   6.0e-01  -6.7e-01
+  iter.   1:   1.3e-16   9.8e-15   3.8e-03   3.3e-01
+  iter.   2:   7.1e-17   2.3e-16   1.2e-06   3.3e-01
+  iter.   3:   4.1e-17   3.3e-16   1.1e-13   3.3e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 6
+Phase 0 Volume: 8.695452e-06,   sigma_0=3.278918e-01
+Phase 1 Volume: 6.174052e-05,   sigma_4=4.149880e-01
+Phase 2 Volume: 1.192629e-03,   sigma_12=6.647306e-01
+Phase 3 Volume: 4.056682e-03,   sigma_16=8.412997e-01
+Phase 4 Volume: 3.906130e-02,   sigma_48=5.538486e+00
+------Volume Complete------
+
+Final Volume: 4.171867e-02,  final sigma=Inf
+Total steps: 12562
+Elapsed time is 0.646908 seconds.
+# # # # # # # # # 5
+--------16-Dimension Convex Body------
+
+here
+Removed 25 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   2.3e-16   2.2e-16   5.7e-01  -7.5e-01
+  iter.   1:   2.4e-16   1.0e-14   4.0e-03   2.4e-01
+  iter.   2:   2.1e-17   1.1e-16   8.0e-07   2.5e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 9
+Phase 0 Volume: 5.180196e-12,   sigma_0=3.144972e-01
+Phase 1 Volume: 3.892361e-11,   sigma_4=3.578280e-01
+Phase 2 Volume: 3.354004e-10,   sigma_8=4.071287e-01
+Phase 3 Volume: 1.998697e-09,   sigma_12=4.632220e-01
+Phase 4 Volume: 1.077665e-08,   sigma_16=5.270437e-01
+Phase 5 Volume: 4.949835e-08,   sigma_20=5.996586e-01
+Phase 6 Volume: 6.099330e-07,   sigma_28=7.762810e-01
+Phase 7 Volume: 1.464640e-05,   sigma_44=1.300914e+00
+------Volume Complete------
+
+Final Volume: 1.521195e-04,  final sigma=Inf
+Total steps: 37141
+Elapsed time is 1.588570 seconds.
+# # # # # # # # # 6
+--------25-Dimension Convex Body------
+
+here
+Removed 36 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   1.0e-16   2.2e-16   5.6e-01  -8.0e-01
+  iter.   1:   1.3e-16   1.1e-14   4.2e-03   1.9e-01
+  iter.   2:   2.8e-17   8.9e-16   5.8e-07   2.0e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 8
+Phase 0 Volume: 3.956683e-21,   sigma_0=3.046306e-01
+Phase 1 Volume: 2.068397e-19,   sigma_8=3.586646e-01
+Phase 2 Volume: 8.335007e-18,   sigma_16=4.222830e-01
+Phase 3 Volume: 5.192841e-17,   sigma_20=4.582064e-01
+Phase 4 Volume: 1.603175e-15,   sigma_28=5.394811e-01
+Phase 5 Volume: 4.490192e-13,   sigma_44=7.478360e-01
+Phase 6 Volume: 1.971213e-11,   sigma_60=1.036660e+00
+------Volume Complete------
+
+Final Volume: 5.653277e-09,  final sigma=Inf
+Total steps: 86534
+Elapsed time is 3.223799 seconds.
+# # # # # # # # # 7
+--------36-Dimension Convex Body------
+
+here
+Removed 49 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   1.5e-16   6.7e-16   5.5e-01  -8.3e-01
+  iter.   1:   1.6e-16   1.0e-14   4.3e-03   1.6e-01
+  iter.   2:   6.9e-17   1.1e-16   4.4e-07   1.7e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 12
+Phase 0 Volume: 2.343281e-33,   sigma_0=2.969394e-01
+Phase 1 Volume: 1.288418e-31,   sigma_8=3.323576e-01
+Phase 2 Volume: 6.423995e-30,   sigma_16=3.720004e-01
+Phase 3 Volume: 2.756608e-28,   sigma_24=4.163717e-01
+Phase 4 Volume: 1.039801e-26,   sigma_32=4.660356e-01
+Phase 5 Volume: 3.488125e-25,   sigma_40=5.216232e-01
+Phase 6 Volume: 8.607728e-24,   sigma_48=5.838412e-01
+Phase 7 Volume: 1.998801e-21,   sigma_64=7.314260e-01
+Phase 8 Volume: 1.619461e-19,   sigma_80=9.163176e-01
+Phase 9 Volume: 4.231509e-18,   sigma_96=1.147947e+00
+Phase 10 Volume: 2.020375e-16,   sigma_128=1.801661e+00
+------Volume Complete------
+
+Final Volume: 4.688993e-15,  final sigma=Inf
+Total steps: 290268
+Elapsed time is 10.584711 seconds.
+# # # # # # # # # 8
+--------49-Dimension Convex Body------
+
+here
+Removed 64 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   2.8e-16   2.7e-17   5.4e-01  -8.6e-01
+  iter.   1:   2.9e-16   8.8e-15   4.4e-03   1.4e-01
+  iter.   2:   4.1e-17   2.0e-15   3.4e-07   1.4e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 13
+Phase 0 Volume: 7.157201e-49,   sigma_0=2.907047e-01
+Phase 1 Volume: 3.926369e-47,   sigma_8=3.156977e-01
+Phase 2 Volume: 2.158137e-45,   sigma_16=3.428395e-01
+Phase 3 Volume: 4.882550e-42,   sigma_32=4.043241e-01
+Phase 4 Volume: 2.036518e-40,   sigma_40=4.390854e-01
+Phase 5 Volume: 7.515160e-39,   sigma_48=4.768352e-01
+Phase 6 Volume: 6.039487e-36,   sigma_64=5.623505e-01
+Phase 7 Volume: 2.108485e-33,   sigma_80=6.632020e-01
+Phase 8 Volume: 2.681554e-31,   sigma_96=7.821401e-01
+Phase 9 Volume: 1.867091e-29,   sigma_112=9.224085e-01
+Phase 10 Volume: 9.386754e-27,   sigma_144=1.282924e+00
+Phase 11 Volume: 3.289980e-24,   sigma_208=2.481737e+00
+------Volume Complete------
+
+Final Volume: 3.806919e-23,  final sigma=Inf
+Total steps: 537729
+Elapsed time is 20.458858 seconds.
+# # # # # # # # # 9
+--------64-Dimension Convex Body------
+
+here
+Removed 81 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   8.8e-17   2.2e-15   5.3e-01  -8.8e-01
+  iter.   1:   1.8e-16   1.3e-14   4.5e-03   1.2e-01
+  iter.   2:   3.8e-17   2.2e-16   2.7e-07   1.2e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 15
+Phase 0 Volume: 8.001277e-68,   sigma_0=2.855040e-01
+Phase 1 Volume: 3.800843e-66,   sigma_8=3.040674e-01
+Phase 2 Volume: 2.081978e-64,   sigma_16=3.238378e-01
+Phase 3 Volume: 1.010386e-62,   sigma_24=3.448937e-01
+Phase 4 Volume: 2.111715e-59,   sigma_40=3.912017e-01
+Phase 5 Volume: 8.775619e-58,   sigma_48=4.166375e-01
+Phase 6 Volume: 1.202301e-54,   sigma_64=4.725783e-01
+Phase 7 Volume: 3.712538e-53,   sigma_72=5.033053e-01
+Phase 8 Volume: 2.570012e-50,   sigma_88=5.708827e-01
+Phase 9 Volume: 8.977071e-48,   sigma_104=6.475336e-01
+Phase 10 Volume: 1.703604e-45,   sigma_120=7.344761e-01
+Phase 11 Volume: 1.202079e-41,   sigma_152=9.449492e-01
+Phase 12 Volume: 3.569456e-40,   sigma_168=1.071825e+00
+Phase 13 Volume: 2.394716e-36,   sigma_232=1.774130e+00
+------Volume Complete------
+
+Final Volume: 1.318172e-33,  final sigma=Inf
+Total steps: 948899
+Elapsed time is 37.089609 seconds.
+# # # # # # # # # 10
+--------81-Dimension Convex Body------
+
+here
+Removed 100 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   3.3e-16   6.7e-16   5.3e-01  -8.9e-01
+  iter.   1:   3.3e-16   1.0e-14   4.5e-03   1.1e-01
+  iter.   2:   2.6e-17   3.3e-16   2.3e-07   1.1e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 18
+Phase 0 Volume: 2.435409e-90,   sigma_0=2.810699e-01
+Phase 1 Volume: 1.279833e-88,   sigma_8=2.953891e-01
+Phase 2 Volume: 6.680412e-87,   sigma_16=3.104378e-01
+Phase 3 Volume: 3.454981e-85,   sigma_24=3.262531e-01
+Phase 4 Volume: 1.879528e-83,   sigma_32=3.428742e-01
+Phase 5 Volume: 9.577485e-82,   sigma_40=3.603420e-01
+Phase 6 Volume: 4.511038e-80,   sigma_48=3.786998e-01
+Phase 7 Volume: 8.893920e-77,   sigma_64=4.182686e-01
+Phase 8 Volume: 3.683448e-75,   sigma_72=4.395775e-01
+Phase 9 Volume: 4.457729e-72,   sigma_88=4.855072e-01
+Phase 10 Volume: 3.927881e-69,   sigma_104=5.362360e-01
+Phase 11 Volume: 1.975339e-66,   sigma_120=5.922652e-01
+Phase 12 Volume: 7.013942e-64,   sigma_136=6.541486e-01
+Phase 13 Volume: 1.922544e-59,   sigma_168=7.979891e-01
+Phase 14 Volume: 6.723238e-56,   sigma_200=9.734585e-01
+Phase 15 Volume: 3.616436e-53,   sigma_232=1.187512e+00
+Phase 16 Volume: 1.302526e-49,   sigma_296=1.767173e+00
+------Volume Complete------
+
+Final Volume: 5.357302e-46,  final sigma=Inf
+Total steps: 2165668
+Elapsed time is 96.305524 seconds.
+# # # # # # # # # 11
+--------100-Dimension Convex Body------
+
+here
+Removed 121 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   1.5e-16   2.4e-15   5.3e-01  -9.0e-01
+  iter.   1:   2.2e-16   5.9e-15   4.6e-03   9.5e-02
+  iter.   2:   4.9e-17   2.3e-15   1.9e-07   1.0e-01
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 20
+Phase 0 Volume: 1.555893e-116,   sigma_0=2.772236e-01
+Phase 1 Volume: 4.502816e-113,   sigma_16=3.004337e-01
+Phase 2 Volume: 1.292727e-109,   sigma_32=3.255870e-01
+Phase 3 Volume: 3.439492e-106,   sigma_48=3.528463e-01
+Phase 4 Volume: 8.075990e-103,   sigma_64=3.823878e-01
+Phase 5 Volume: 1.804805e-99,   sigma_80=4.144026e-01
+Phase 6 Volume: 3.077595e-96,   sigma_96=4.490977e-01
+Phase 7 Volume: 3.818878e-93,   sigma_112=4.866977e-01
+Phase 8 Volume: 3.566344e-90,   sigma_128=5.274457e-01
+Phase 9 Volume: 2.460259e-87,   sigma_144=5.716052e-01
+Phase 10 Volume: 9.625430e-85,   sigma_160=6.194620e-01
+Phase 11 Volume: 2.683396e-82,   sigma_176=6.713254e-01
+Phase 12 Volume: 5.267553e-80,   sigma_192=7.275310e-01
+Phase 13 Volume: 6.713236e-78,   sigma_208=7.884424e-01
+Phase 14 Volume: 5.909541e-76,   sigma_224=8.544535e-01
+Phase 15 Volume: 1.350213e-72,   sigma_256=1.003518e+00
+Phase 16 Volume: 7.209703e-70,   sigma_288=1.178588e+00
+Phase 17 Volume: 5.895937e-66,   sigma_352=1.625683e+00
+Phase 18 Volume: 3.209086e-62,   sigma_480=3.093026e+00
+------Volume Complete------
+
+Final Volume: 1.196393e-60,  final sigma=Inf
+Total steps: 3404602
+Elapsed time is 161.449577 seconds.
+# # # # # # # # # 12
+--------121-Dimension Convex Body------
+
+here
+Removed 144 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   4.4e-16   2.6e-15   5.2e-01  -9.1e-01
+  iter.   1:   4.6e-16   5.8e-15   4.6e-03   8.6e-02
+  iter.   2:   4.4e-17   3.0e-15   1.6e-07   9.1e-02
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 25
+Phase 0 Volume: 1.654057e-146,   sigma_0=2.738405e-01
+Phase 1 Volume: 9.420317e-145,   sigma_8=2.830833e-01
+Phase 2 Volume: 2.772486e-141,   sigma_24=3.025152e-01
+Phase 3 Volume: 7.443393e-138,   sigma_40=3.232810e-01
+Phase 4 Volume: 3.674124e-136,   sigma_48=3.341925e-01
+Phase 5 Volume: 9.994709e-133,   sigma_64=3.571328e-01
+Phase 6 Volume: 2.267073e-129,   sigma_80=3.816478e-01
+Phase 7 Volume: 4.405304e-126,   sigma_96=4.078455e-01
+Phase 8 Volume: 7.686156e-123,   sigma_112=4.358416e-01
+Phase 9 Volume: 1.119354e-119,   sigma_128=4.657595e-01
+Phase 10 Volume: 1.280715e-116,   sigma_144=4.977310e-01
+Phase 11 Volume: 1.071796e-113,   sigma_160=5.318972e-01
+Phase 12 Volume: 6.747818e-111,   sigma_176=5.684087e-01
+Phase 13 Volume: 3.310756e-108,   sigma_192=6.074264e-01
+Phase 14 Volume: 1.136537e-105,   sigma_208=6.491225e-01
+Phase 15 Volume: 2.761240e-103,   sigma_224=6.936808e-01
+Phase 16 Volume: 4.939623e-101,   sigma_240=7.412977e-01
+Phase 17 Volume: 6.559613e-99,   sigma_256=7.921833e-01
+Phase 18 Volume: 6.017658e-97,   sigma_272=8.465618e-01
+Phase 19 Volume: 1.864840e-93,   sigma_304=9.667733e-01
+Phase 20 Volume: 5.462042e-88,   sigma_368=1.260830e+00
+Phase 21 Volume: 6.384323e-86,   sigma_400=1.439868e+00
+Phase 22 Volume: 6.285360e-83,   sigma_464=1.877823e+00
+Phase 23 Volume: 5.415159e-81,   sigma_528=2.448987e+00
+------Volume Complete------
+
+Final Volume: 5.900875e-78,  final sigma=Inf
+Total steps: 5632088
+Elapsed time is 275.565671 seconds.
+# # # # # # # # # 13
+--------144-Dimension Convex Body------
+
+here
+Removed 169 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   4.8e-16   1.6e-15   5.2e-01  -9.2e-01
+  iter.   1:   5.1e-16   1.3e-14   4.6e-03   7.8e-02
+  iter.   2:   5.7e-17   2.4e-15   1.4e-07   8.3e-02
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 26
+Phase 0 Volume: 2.372778e-180,   sigma_0=2.708306e-01
+Phase 1 Volume: 6.712280e-177,   sigma_16=2.863580e-01
+Phase 2 Volume: 2.104974e-173,   sigma_32=3.027756e-01
+Phase 3 Volume: 5.634230e-170,   sigma_48=3.201346e-01
+Phase 4 Volume: 1.543850e-166,   sigma_64=3.384887e-01
+Phase 5 Volume: 3.975338e-163,   sigma_80=3.578952e-01
+Phase 6 Volume: 9.333320e-160,   sigma_96=3.784142e-01
+Phase 7 Volume: 1.871645e-156,   sigma_112=4.001097e-01
+Phase 8 Volume: 3.445172e-153,   sigma_128=4.230491e-01
+Phase 9 Volume: 5.648913e-150,   sigma_144=4.473036e-01
+Phase 10 Volume: 7.666592e-147,   sigma_160=4.729487e-01
+Phase 11 Volume: 8.675196e-144,   sigma_176=5.000641e-01
+Phase 12 Volume: 7.773155e-141,   sigma_192=5.287341e-01
+Phase 13 Volume: 5.298959e-138,   sigma_208=5.590478e-01
+Phase 14 Volume: 2.818277e-135,   sigma_224=5.910995e-01
+Phase 15 Volume: 1.148707e-132,   sigma_240=6.249888e-01
+Phase 16 Volume: 3.699947e-130,   sigma_256=6.608210e-01
+Phase 17 Volume: 1.632363e-125,   sigma_288=7.387664e-01
+Phase 18 Volume: 2.211797e-121,   sigma_320=8.259056e-01
+Phase 19 Volume: 9.968895e-118,   sigma_352=9.233230e-01
+Phase 20 Volume: 1.631024e-114,   sigma_384=1.032231e+00
+Phase 21 Volume: 9.290470e-112,   sigma_416=1.153985e+00
+Phase 22 Volume: 2.266481e-109,   sigma_448=1.290100e+00
+Phase 23 Volume: 1.314429e-105,   sigma_512=1.612390e+00
+Phase 24 Volume: 3.729484e-99,   sigma_768=3.934198e+00
+------Volume Complete------
+
+Final Volume: 1.091806e-97,  final sigma=Inf
+Total steps: 8695547
+Elapsed time is 450.417854 seconds.
+# # # # # # # # # 14
+--------169-Dimension Convex Body------
+
+here
+Removed 196 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   3.2e-16   4.4e-15   5.2e-01  -9.2e-01
+  iter.   1:   3.8e-16   8.5e-15   4.7e-03   7.2e-02
+  iter.   2:   5.2e-17   4.0e-15   1.2e-07   7.7e-02
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 28
+Phase 0 Volume: 3.794433e-218,   sigma_0=2.681266e-01
+Phase 1 Volume: 1.134531e-214,   sigma_16=2.811637e-01
+Phase 2 Volume: 3.298544e-211,   sigma_32=2.948347e-01
+Phase 3 Volume: 9.469660e-208,   sigma_48=3.091705e-01
+Phase 4 Volume: 2.687929e-204,   sigma_64=3.242033e-01
+Phase 5 Volume: 7.422353e-201,   sigma_80=3.399670e-01
+Phase 6 Volume: 1.940936e-197,   sigma_96=3.564973e-01
+Phase 7 Volume: 4.558756e-194,   sigma_112=3.738312e-01
+Phase 8 Volume: 1.036337e-190,   sigma_128=3.920080e-01
+Phase 9 Volume: 2.097281e-187,   sigma_144=4.110686e-01
+Phase 10 Volume: 5.500658e-181,   sigma_176=4.520153e-01
+Phase 11 Volume: 7.242535e-178,   sigma_192=4.739936e-01
+Phase 12 Volume: 7.632170e-175,   sigma_208=4.970406e-01
+Phase 13 Volume: 5.006535e-169,   sigma_240=5.465509e-01
+Phase 14 Volume: 3.069033e-166,   sigma_256=5.731259e-01
+Phase 15 Volume: 6.250291e-161,   sigma_288=6.302151e-01
+Phase 16 Volume: 1.921146e-158,   sigma_304=6.608580e-01
+Phase 17 Volume: 8.505399e-154,   sigma_336=7.266863e-01
+Phase 18 Volume: 1.261590e-151,   sigma_352=7.620199e-01
+Phase 19 Volume: 1.419648e-147,   sigma_384=8.379249e-01
+Phase 20 Volume: 6.340717e-144,   sigma_416=9.213908e-01
+Phase 21 Volume: 1.163671e-140,   sigma_448=1.013171e+00
+Phase 22 Volume: 9.000608e-138,   sigma_480=1.114093e+00
+Phase 23 Volume: 3.284497e-135,   sigma_512=1.225068e+00
+Phase 24 Volume: 5.191969e-131,   sigma_576=1.481282e+00
+Phase 25 Volume: 7.020055e-128,   sigma_640=1.791081e+00
+Phase 26 Volume: 6.541237e-122,   sigma_896=3.828471e+00
+------Volume Complete------
+
+Final Volume: 4.630765e-120,  final sigma=Inf
+Total steps: 13063218
+Elapsed time is 741.377991 seconds.
+# # # # # # # # # 15
+--------196-Dimension Convex Body------
+
+here
+Removed 225 zero rows
+Rounding...
+
+  Residuals:   Primal     Dual     Duality    Obj
+  --------------------------------------------------
+  iter.   0:   2.4e-16   1.8e-15   5.2e-01  -9.3e-01
+  iter.   1:   3.9e-16   1.4e-14   4.2e-03   6.7e-02
+  iter.   2:   4.8e-17   6.2e-15   8.2e-08   7.1e-02
+  Converged!
+Maximum volume ellipsoid found, and the origin is inside the transformed polytope.
+------Volume Start------
+Num Phases: 33
+Phase 0 Volume: 5.675768e-260,   sigma_0=2.656776e-01
+Phase 1 Volume: 1.668012e-256,   sigma_16=2.767749e-01
+Phase 2 Volume: 4.969951e-253,   sigma_32=2.883356e-01
+Phase 3 Volume: 1.505249e-249,   sigma_48=3.003793e-01
+Phase 4 Volume: 4.354921e-246,   sigma_64=3.129260e-01
+Phase 5 Volume: 1.183679e-242,   sigma_80=3.259968e-01
+Phase 6 Volume: 3.151107e-239,   sigma_96=3.396136e-01
+Phase 7 Volume: 8.185364e-236,   sigma_112=3.537991e-01
+Phase 8 Volume: 2.053684e-232,   sigma_128=3.685772e-01
+Phase 9 Volume: 4.705757e-229,   sigma_144=3.839725e-01
+Phase 10 Volume: 1.039407e-225,   sigma_160=4.000109e-01
+Phase 11 Volume: 2.004764e-222,   sigma_176=4.167191e-01
+Phase 12 Volume: 3.439250e-219,   sigma_192=4.341253e-01
+Phase 13 Volume: 5.174284e-216,   sigma_208=4.522586e-01
+Phase 14 Volume: 7.092081e-213,   sigma_224=4.711492e-01
+Phase 15 Volume: 8.244000e-210,   sigma_240=4.908290e-01
+Phase 16 Volume: 7.827744e-207,   sigma_256=5.113307e-01
+Phase 17 Volume: 6.708263e-204,   sigma_272=5.326888e-01
+Phase 18 Volume: 2.676760e-198,   sigma_304=5.781185e-01
+Phase 19 Volume: 1.312663e-195,   sigma_320=6.022663e-01
+Phase 20 Volume: 5.243856e-193,   sigma_336=6.274227e-01
+Phase 21 Volume: 1.732606e-190,   sigma_352=6.536299e-01
+Phase 22 Volume: 1.038181e-185,   sigma_384=7.093740e-01
+Phase 23 Volume: 2.661182e-181,   sigma_416=7.698722e-01
+Phase 24 Volume: 2.959571e-177,   sigma_448=8.355299e-01
+Phase 25 Volume: 1.516430e-173,   sigma_480=9.067872e-01
+Phase 26 Volume: 3.582121e-170,   sigma_512=9.841215e-01
+Phase 27 Volume: 2.138756e-164,   sigma_576=1.159139e+00
+Phase 28 Volume: 9.290990e-160,   sigma_640=1.365281e+00
+Phase 29 Volume: 3.938856e-156,   sigma_704=1.608085e+00
+Phase 30 Volume: 4.040588e-151,   sigma_832=2.230911e+00
+Phase 31 Volume: 1.043304e-146,   sigma_1088=4.293675e+00
+------Volume Complete------
+
+Final Volume: 6.332391e-145,  final sigma=Inf
+Total steps: 20110671
+Elapsed time is 1218.109258 seconds.
+>> 

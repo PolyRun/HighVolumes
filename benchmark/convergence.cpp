@@ -68,9 +68,9 @@ int main(int argc, char *argv[]){
 
             FT rel_eps = 0;
             for (int i = 0; i < nsamples; i++){
-                FT vol = volume(b->n, 1.0, (FT) 2*b->n, b->bcount,(const void **) b->body, (const Body_T **) b->type);
+                ArbitraryExpNum vol = volume(b->n, 1.0, (FT) 2*b->n, b->bcount,(const void **) b->body, (const Body_T **) b->type);
 
-                rel_eps += abs(vol - b->volume)/b->volume;
+                rel_eps += abs(vol.num - b->volume)/b->volume;
             }
 
             std::cout << ",\t" << rel_eps/nsamples;

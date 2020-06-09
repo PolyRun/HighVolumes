@@ -29,10 +29,10 @@ class Benchmark_App : public Benchmark_base {
             // nothing to reset
 	}
         double run () {
-	    FT res = volume_app_ref(input);
+	    ArbitraryExpNum res = volume_app_ref(input);
 		
 	    FT exact = solved_body->volume;
-	    return (res - exact)/exact;
+	    return (res.num - exact)/exact;
 	}
 	void finalize() {
 	    pc_stack().reset();

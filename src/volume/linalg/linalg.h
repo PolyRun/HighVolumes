@@ -88,4 +88,35 @@ void squaredNorm_cached8_update(const FT* v, const int d, const FTset8 dx, const
 FTpair4 Ball_intersectCoord_cached4(const int n, const FT r, const FT* x,const int d, FT* cache);
 FTpair8 Ball_intersectCoord_cached8(const int n, const FT r, const FT* x,const int d, FT* cache);
 
+// ------------------------------- arbitrary exponent numbers:
+
+typedef struct ArbitraryExpNum {
+   FT num; // regular number, may go to inf or zero if out of range
+   FT numLog; // logarithm of number, should stay consistent, but loose a bit of precision.
+} ArbitraryExpNum;
+
+ArbitraryExpNum ArbitraryExpNum_new(FT val);
+ArbitraryExpNum ArbitraryExpNum_mul(ArbitraryExpNum a, FT val);
+ArbitraryExpNum ArbitraryExpNum_mul2(ArbitraryExpNum a, ArbitraryExpNum b);
+void ArbitraryExpNum_print(ArbitraryExpNum a);
+
+
+
+
+typedef void (*shell_cache_init_f_t)(FT *cache, FT r0, int l, FT stepFac);
+extern shell_cache_init_f_t shell_cache_init;
+
+void shell_cache_init_nocache(FT *cache, FT r0, int l, FT stepFac);
+void shell_cache_init_ref(FT *cache, FT r0, int l, FT stepFac);
+
+typedef int (*shell_idx_f_t)(FT x2, FT r0, FT stepFac, int l, FT *cache);
+extern shell_idx_f_t shell_idx;
+
+// default, doesn't use shell_cache -> does nothing
+int shell_idx_nocache(FT x2, FT r0, FT stepFac, int l, FT *cache);
+// simple linear search over the shells to avoid logs
+int shell_idx_ref(FT x2, FT r0, FT stepFac, int l, FT *cache);
+// binary search over shells
+int shell_idx_binary(FT x2, FT r0, FT stepFac, int l, FT *cache);
+
 #endif

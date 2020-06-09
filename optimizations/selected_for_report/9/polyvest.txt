@@ -1,0 +1,153 @@
+#-#-#-#-#-#-#-#-#-#-# Running 3
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 70
+Polyvest did 56436 steps
+There are 14 shells
+Volume: 1.0843075114e+00
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.79054e+08', 'min': '1.79054e+08', 'max': '1.79054e+08', 'std_dev': '0', 'ci_low': '1.79054e+08', 'ci_high': '1.79054e+08', 'ci_median': '1.79054e+08', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 0.07573199272155762
+#-#-#-#-#-#-#-#-#-#-# Running 4
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 385
+Polyvest did 433499 steps
+There are 39 shells
+Volume: 6.0261555198e-02
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '8.78519e+08', 'min': '8.78519e+08', 'max': '8.78519e+08', 'std_dev': '0', 'ci_low': '8.78519e+08', 'ci_high': '8.78519e+08', 'ci_median': '8.78519e+08', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 0.3453516960144043
+#-#-#-#-#-#-#-#-#-#-# Running 5
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 1149
+Polyvest did 1966147 steps
+There are 82 shells
+Volume: 1.3088306613e-04
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '4.86364e+09', 'min': '4.86364e+09', 'max': '4.86364e+09', 'std_dev': '0', 'ci_low': '4.86364e+09', 'ci_high': '4.86364e+09', 'ci_median': '4.86364e+09', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 1.882673740386963
+#-#-#-#-#-#-#-#-#-#-# Running 6
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 2779
+Polyvest did 6296069 steps
+There are 143 shells
+Volume: 7.5157086395e-09
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.92671e+10', 'min': '1.92671e+10', 'max': '1.92671e+10', 'std_dev': '0', 'ci_low': '1.92671e+10', 'ci_high': '1.92671e+10', 'ci_median': '1.92671e+10', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 7.438355922698975
+#-#-#-#-#-#-#-#-#-#-# Running 7
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 5150
+Polyvest did 16017582 steps
+There are 224 shells
+Volume: 6.0056103707e-15
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '7.05636e+10', 'min': '7.05636e+10', 'max': '7.05636e+10', 'std_dev': '0', 'ci_low': '7.05636e+10', 'ci_high': '7.05636e+10', 'ci_median': '7.05636e+10', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 27.22007703781128
+#-#-#-#-#-#-#-#-#-#-# Running 8
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 8336
+Polyvest did 34417203 steps
+There are 326 shells
+Volume: 4.7443593175e-23
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.99284e+11', 'min': '1.99284e+11', 'max': '1.99284e+11', 'std_dev': '0', 'ci_low': '1.99284e+11', 'ci_high': '1.99284e+11', 'ci_median': '1.99284e+11', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 76.84529757499695
+#-#-#-#-#-#-#-#-#-#-# Running 9
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 12922
+Polyvest did 66319604 steps
+There are 450 shells
+Volume: 2.7946498086e-33
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '5.5158e+11', 'min': '5.5158e+11', 'max': '5.5158e+11', 'std_dev': '0', 'ci_low': '5.5158e+11', 'ci_high': '5.5158e+11', 'ci_median': '5.5158e+11', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 212.66259789466858
+#-#-#-#-#-#-#-#-#-#-# Running 10
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 17042
+Polyvest did 117925083 steps
+There are 596 shells
+Volume: 8.8982583568e-46
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '1.34579e+12', 'min': '1.34579e+12', 'max': '1.34579e+12', 'std_dev': '0', 'ci_low': '1.34579e+12', 'ci_high': '1.34579e+12', 'ci_median': '1.34579e+12', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 518.8445792198181
+#-#-#-#-#-#-#-#-#-#-# Running 11
+initializing Polyvest data...
+Benchmark Warmup (0)
+Benchmark Measurement (1)
+find init ellipsoid...
+start stepping...
+Steps: 27430
+Polyvest did 196549124 steps
+There are 766 shells
+Volume: 1.3477746229e-60
+stepsize of 1600
+   (0 0)  (0 0) TODO
+PC_Stack: flops: 0, bytes: 0
+Stack split calls flops bytes Flops Bytes tag  
+      -     -     0     0     0     0     TODO 
+{'time': {'name_t': 'A1_volume', 'mean': '7.16224e+12', 'min': '7.16224e+12', 'max': '7.16224e+12', 'std_dev': '0', 'ci_low': '7.16224e+12', 'ci_high': '7.16224e+12', 'ci_median': '7.16224e+12', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'A1_volume', 'mean': 'inf', 'min': 'inf', 'max': 'inf', 'std_dev': '-nan', 'ci_low': 'inf', 'ci_high': 'inf', 'ci_median': 'inf', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 0, 'bytes': 0}}
+Time: 2761.128684282303
