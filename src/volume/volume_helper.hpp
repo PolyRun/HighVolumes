@@ -158,7 +158,14 @@ public:
       pc_stack().add((void*)PolytopeJIT_intersectCoord_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeJIT_intersectCoord_cost_ref,"PolytopeJIT_intersectCoord_ref"));
       pc_stack().add((void*)PolytopeJIT_cacheUpdateCoord_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeJIT_cacheUpdateCoord_cost_ref,"PolytopeJIT_cacheUpdateCoord_ref"));
       pc_stack().add((void*)PolytopeJIT_cacheReset_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeJIT_cacheReset_cost_ref,"PolytopeJIT_cacheReset_ref"));
-      
+
+      pc_stack().add((void*)PolytopeJIT_intersectCoord4_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeJIT_intersectCoord4_cost_ref,"PolytopeJIT_intersectCoord4_ref"));
+      pc_stack().add((void*)PolytopeJIT_intersectCoord8_ref, new PC_Cost_Wrapper<intersectCoord_cost_f>(PolytopeJIT_intersectCoord8_cost_ref,"PolytopeJIT_intersectCoord8_ref"));
+      pc_stack().add((void*)PolytopeJIT_cacheUpdateCoord4_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeJIT_cacheUpdateCoord4_cost_ref,"PolytopeJIT_cacheUpdateCoord4_ref"));
+      pc_stack().add((void*)PolytopeJIT_cacheUpdateCoord8_ref, new PC_Cost_Wrapper<cacheUpdateCoord_cost_f>(PolytopeJIT_cacheUpdateCoord8_cost_ref,"PolytopeJIT_cacheUpdateCoord8_ref"));
+      pc_stack().add((void*)PolytopeJIT_cacheReset4_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeJIT_cacheReset4_cost_ref,"PolytopeJIT_cacheReset4_ref"));
+      pc_stack().add((void*)PolytopeJIT_cacheReset8_ref, new PC_Cost_Wrapper<cacheReset_cost_f>(PolytopeJIT_cacheReset8_cost_ref,"PolytopeJIT_cacheReset8_ref"));
+
       // volume
       pc_stack().add((void*)volume_ref, new PC_Cost_Wrapper<volume_cost_f>(volume_cost_ref,"volume_ref"));
       pc_stack().add((void*)volume_coord_single, new PC_Cost_Wrapper<volume_cost_f>(volume_coord_1_cost_ref,"volume_coord_1"));

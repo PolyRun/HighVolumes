@@ -112,6 +112,13 @@ void PolytopeJIT_intersectCoord_cost_ref(const void* o);
 void PolytopeJIT_cacheUpdateCoord_cost_ref(const void* o);
 void PolytopeJIT_cacheReset_cost_ref(const void* o);
 
+void PolytopeJIT_intersectCoord4_cost_ref(const void* o);
+void PolytopeJIT_intersectCoord8_cost_ref(const void* o);
+void PolytopeJIT_cacheUpdateCoord4_cost_ref(const void* o);
+void PolytopeJIT_cacheUpdateCoord8_cost_ref(const void* o);
+void PolytopeJIT_cacheReset4_cost_ref(const void* o);
+void PolytopeJIT_cacheReset8_cost_ref(const void* o);
+
 // ----------------------------------------------- volume
 
 typedef void (*volume_cost_f)(const int, const int, const void**,const Body_T**);

@@ -731,6 +731,59 @@ void PolytopeJIT_cacheReset_cost_ref(const void* o) {
    pc_stack().log(p->nzA*2,(p->nzA + 3*p->m + p->n)*sizeof(FT),"recompute cache, dot prod");
 }
 
+void PolytopeJIT_intersectCoord4_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   const int n = p->n;
+   pc_stack().log(0,0,"init, switch case jmpq");
+   
+   double nzAavg = p->nzA / (double)n;
+   double flops = nzAavg*2*4; // mul, min/max  *4
+   double data = nzAavg*5; // read cache*4 + A
+   pc_stack().log(flops,data*sizeof(FT),"rd cache+const, mul, min/max");
+}
+void PolytopeJIT_cacheUpdateCoord4_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   const int n = p->n;
+   pc_stack().log(0,0,"switch case jmpq");
+
+   double nzAavg = p->nzA / (double)n;
+   double flops = nzAavg*2*4; // fmadd
+   double data = nzAavg*9; // rd/wr cache*8, A
+   pc_stack().log(flops,data*sizeof(FT),"rd/wr cache, rd const, fmadd");
+}
+void PolytopeJIT_cacheReset4_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   // read A, b, x, rw c
+   // fmsub for nz
+   pc_stack().log(p->nzA*2*4,(p->nzA + (1+8)*p->m + 4*p->n)*sizeof(FT),"recompute cache, dot prod");
+}
+
+void PolytopeJIT_intersectCoord8_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   const int n = p->n;
+   pc_stack().log(0,0,"init, switch case jmpq");
+   
+   double nzAavg = p->nzA / (double)n;
+   double flops = nzAavg*2*8; // mul, min/max  *8
+   double data = nzAavg*8; // read cache*8 + A
+   pc_stack().log(flops,data*sizeof(FT),"rd cache+const, mul, min/max");
+}
+void PolytopeJIT_cacheUpdateCoord8_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   const int n = p->n;
+   pc_stack().log(0,0,"switch case jmpq");
+
+   double nzAavg = p->nzA / (double)n;
+   double flops = nzAavg*2*8; // fmadd
+   double data = nzAavg*17; // rd/wr cache*16, A
+   pc_stack().log(flops,data*sizeof(FT),"rd/wr cache, rd const, fmadd");
+}
+void PolytopeJIT_cacheReset8_cost_ref(const void* o) {
+   const PolytopeJIT* p = (PolytopeJIT*)o;
+   // read A, b, x, rw c
+   // fmsub for nz
+   pc_stack().log(p->nzA*2*8,(p->nzA + (1+16)*p->m + 8*p->n)*sizeof(FT),"recompute cache, dot prod");
+}
 
 void volume_cost_ref(const int n, const int bcount, const void** body, const Body_T** type) {
 
