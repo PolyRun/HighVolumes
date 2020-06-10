@@ -112,7 +112,7 @@ Solved_Body* generate_simplex(int dims);
 
 // generate a polytope where each constraint touches at most k variables
 // this produces a sparse matrix with at most k non-zero entries per row/constraint
-Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r, const int num_constraints);
+Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r, const int num_constraints, const bool boundingBox=true);
 
 // Generates an ellipse with predefined ranges for each axis
 Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds);

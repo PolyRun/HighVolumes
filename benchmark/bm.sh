@@ -30,7 +30,7 @@ export ERRBAR='On'
 export ERRBAR='Off'
 
 export XLOG='On'
-## python benchmark/benchmark.py density_runtime_bm
+python benchmark/benchmark.py density_runtime_bm
 python benchmark/benchmark.py density8_runtime_bm
 export XLOG='Off'
 

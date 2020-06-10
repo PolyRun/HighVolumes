@@ -513,7 +513,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
             "100-dim polytope with density " + std::to_string(density) + " [normalized]",
             [density]()
             {
-                Solved_Body* sb = generate_kvariable_polytope(100,density,1.0,1000);//k=2, r=1.0
+                Solved_Body* sb = generate_kvariable_polytope(100,density,1.0,1000,false);//k=2, r=1.0
                 sb->is_normalized = true;
                 return sb;
             }
@@ -523,7 +523,7 @@ Solved_Body_Generator::Solved_Body_Generator() {
             "200-dim polytope with density " + std::to_string(density) + " [normalized]",
             [density]()
             {
-                Solved_Body* sb = generate_kvariable_polytope(200,2*density,1.0,2000);//k=2, r=1.0
+                Solved_Body* sb = generate_kvariable_polytope(200,2*density,1.0,2000,false);//k=2, r=1.0
                 sb->is_normalized = true;
                 return sb;
             }
@@ -866,13 +866,13 @@ void choosek(const int n, const int k, std::vector<int> &choice) {
     for(int i=0;i<k;i++) {choice[i] = e[i].index;}
 }
 
-Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r, const int num_constraints) {
+Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r, const int num_constraints, const bool boundingBox) {
     //assert(k>=2);
     assert(num_constraints >= 2*dims);
     Polytope *p = Polytope_new(dims, num_constraints);
     
     // add cube at the end to make sure polytope is bounded.
-    const int rand_constr = num_constraints - 2*dims;
+    const int rand_constr = num_constraints - boundingBox*2*dims;
 
     int j = 0;
     std::vector<int> choice;
@@ -889,14 +889,16 @@ Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r
     }
     free(d);
     
-    // add the cube:
-    for(int i=0;i<dims;i++) {
-        Polytope_set_a(p, j, i, -1);
-	Polytope_set_b(p, j, r);
-        j++;
-        Polytope_set_a(p, j, i, 1);
-	Polytope_set_b(p, j, r);
-        j++;
+    if(boundingBox) {
+       // add the cube:
+       for(int i=0;i<dims;i++) {
+           Polytope_set_a(p, j, i, -1);
+           Polytope_set_b(p, j, r);
+           j++;
+           Polytope_set_a(p, j, i, 1);
+           Polytope_set_b(p, j, r);
+           j++;
+       }
     }
     assert(j==num_constraints);
     
@@ -908,7 +910,6 @@ Solved_Body* generate_kvariable_polytope(const int dims, const int k, const FT r
     result->type[0] = &Polytope_T;
     result->volume = volume;
     return result;
-
 }
 
 Solved_Body* generate_ellipsoid(int dims, FT *lower_bounds, FT *upper_bounds) {
