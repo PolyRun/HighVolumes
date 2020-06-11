@@ -250,7 +250,7 @@ BENCHMARKS = [
                           "PolytopeT_intersectCoord=cached_b_ref",
                           "PolytopeT_intersectCoord=cached_b_inv_vec",
                           ],
-          "run_configs": ["intersect=intersectCoord_only,polytopeType=1,r=100000"],
+          "run_configs": ["intersect=intersectCoord,polytopeType=1,r=100000"],
           "input_configs": [("generator", mbintersectbodies)]
        },
     ],
