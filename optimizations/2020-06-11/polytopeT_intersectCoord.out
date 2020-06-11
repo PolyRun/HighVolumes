@@ -1,0 +1,884 @@
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_10,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (400 1680)  (400 1680) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (120 160)  (120 160) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_ref (40 480)  (40 480) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_ref\n'
+b'PC_Stack: flops: 573, bytes: 2330\n'
+b'Stack                              split calls flops bytes Flops Bytes tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref      1     1     -     -     -     -     -                                                    \n'
+b"/PolytopeT_intersectCoord_ref      -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref      -     -     400   1680  400   1680  dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref      -     -     120   160   120   160   intersect                                            \n'
+b'/Random double_in_range            1     1     -     -     -     -     -                                                    \n'
+b'/Random double_in_range/Random int 1     1     -     -     -     -     -                                                    \n'
+b'/Random double_in_range/Random int -     -     7     8     7     8     random int                                           \n'
+b'/Random double_in_range            -     -     5     0     5     0     random double_in_range                               \n'
+b'                                   -     -     1     2     1     2     x[dd] +=\xc2\xa0t;                                         \n'
+b'/PolytopeT_cacheUpdateCoord_ref    1     1     -     -     -     -     -                                                    \n'
+b'/PolytopeT_cacheUpdateCoord_ref    -     -     40    480   40    480   update cached dotProduct                             \n'
+b'Avg flops/cycle: 0.971619 (CI: 1.1369 - 0.531047)\n'
+b'Avg bytes/cycle: 3.95091 (CI: 4.62302 - 2.15941)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '589.737', 'min': '496', 'max': '9096', 'std_dev': '144.535', 'ci_low': '504', 'ci_high': '1079', 'ci_median': '556', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 573, 'bytes': 2330}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_20,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (1600 6560)  (1600 6560) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (240 320)  (240 320) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_ref (80 960)  (80 960) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_ref\n'
+b'PC_Stack: flops: 1933, bytes: 7850\n'
+b'Stack                              split calls flops bytes Flops Bytes tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref      1     1     -     -     -     -     -                                                    \n'
+b"/PolytopeT_intersectCoord_ref      -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref      -     -     1600  6560  1600  6560  dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref      -     -     240   320   240   320   intersect                                            \n'
+b'/Random double_in_range            1     1     -     -     -     -     -                                                    \n'
+b'/Random double_in_range/Random int 1     1     -     -     -     -     -                                                    \n'
+b'/Random double_in_range/Random int -     -     7     8     7     8     random int                                           \n'
+b'/Random double_in_range            -     -     5     0     5     0     random double_in_range                               \n'
+b'                                   -     -     1     2     1     2     x[dd] +=\xc2\xa0t;                                         \n'
+b'/PolytopeT_cacheUpdateCoord_ref    1     1     -     -     -     -     -                                                    \n'
+b'/PolytopeT_cacheUpdateCoord_ref    -     -     80    960   80    960   update cached dotProduct                             \n'
+b'Avg flops/cycle: 1.05988 (CI: 1.16446 - 0.976263)\n'
+b'Avg bytes/cycle: 4.30422 (CI: 4.72892 - 3.96465)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '1823.79', 'min': '1568', 'max': '22128', 'std_dev': '157.576', 'ci_low': '1660', 'ci_high': '1980', 'ci_median': '1816', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1933, 'bytes': 7850}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_40,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (6400 25920)  (6400 25920) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (480 640)  (480 640) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_ref (160 1920)  (160 1920) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_ref\n'
+b'PC_Stack: flops: 7053, bytes: 28490\n'
+b'Stack                              split calls flops bytes Flops Bytes tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref      1     1     -     -     -     -     -                                                    \n'
+b"/PolytopeT_intersectCoord_ref      -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref      -     -     6400  25920 6400  25920 dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref      -     -     480   640   480   640   intersect                                            \n'
+b'/Random double_in_range            1     1     -     -     -     -     -                                                    \n'
+b'/Random double_in_range/Random int 1     1     -     -     -     -     -                                                    \n'
+b'/Random double_in_range/Random int -     -     7     8     7     8     random int                                           \n'
+b'/Random double_in_range            -     -     5     0     5     0     random double_in_range                               \n'
+b'                                   -     -     1     2     1     2     x[dd] +=\xc2\xa0t;                                         \n'
+b'/PolytopeT_cacheUpdateCoord_ref    1     1     -     -     -     -     -                                                    \n'
+b'/PolytopeT_cacheUpdateCoord_ref    -     -     160   1920  160   1920  update cached dotProduct                             \n'
+b'Avg flops/cycle: 1.03431 (CI: 1.05458 - 1.0204)\n'
+b'Avg bytes/cycle: 4.17802 (CI: 4.25987 - 4.12182)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '6819.02', 'min': '6608', 'max': '25540', 'std_dev': '336.308', 'ci_low': '6688', 'ci_high': '6912', 'ci_median': '6784', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 7053, 'bytes': 28490}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_60,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (14400 58080)  (14400 58080) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (720 960)  (720 960) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_ref (240 2880)  (240 2880) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_ref\n'
+b'PC_Stack: flops: 15373, bytes: 61930\n'
+b'Stack                              split calls flops bytes Flops Bytes tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref      1     1     -     -     -     -     -                                                    \n'
+b"/PolytopeT_intersectCoord_ref      -     -     0     0     0     0     Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref      -     -     14400 58080 14400 58080 dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref      -     -     720   960   720   960   intersect                                            \n'
+b'/Random double_in_range            1     1     -     -     -     -     -                                                    \n'
+b'/Random double_in_range/Random int 1     1     -     -     -     -     -                                                    \n'
+b'/Random double_in_range/Random int -     -     7     8     7     8     random int                                           \n'
+b'/Random double_in_range            -     -     5     0     5     0     random double_in_range                               \n'
+b'                                   -     -     1     2     1     2     x[dd] +=\xc2\xa0t;                                         \n'
+b'/PolytopeT_cacheUpdateCoord_ref    1     1     -     -     -     -     -                                                    \n'
+b'/PolytopeT_cacheUpdateCoord_ref    -     -     240   2880  240   2880  update cached dotProduct                             \n'
+b'Avg flops/cycle: 0.982249 (CI: 1.00241 - 0.971008)\n'
+b'Avg bytes/cycle: 3.95698 (CI: 4.03821 - 3.9117)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '15650.8', 'min': '15096', 'max': '50312', 'std_dev': '906.968', 'ci_low': '15336', 'ci_high': '15832', 'ci_median': '15580', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 15373, 'bytes': 61930}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=ref" -b "generator=cube_rot_r1.0_100,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_ref 1 1\n'
+b"  /PolytopeT_intersectCoord_ref (0 0)  (0 0) Note: early 'continue' can speed up things!\n"
+b'  /PolytopeT_intersectCoord_ref (40000 160800)  (40000 160800) dotProduct implemented locally because column-format\n'
+b'  /PolytopeT_intersectCoord_ref (1200 1600)  (1200 1600) intersect\n'
+b'< /PolytopeT_intersectCoord_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_ref (400 4800)  (400 4800) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_ref\n'
+b'PC_Stack: flops: 41613, bytes: 167210\n'
+b'Stack                              split calls flops bytes  Flops Bytes  tag                                                  \n'
+b'/PolytopeT_intersectCoord_ref      1     1     -     -      -     -      -                                                    \n'
+b"/PolytopeT_intersectCoord_ref      -     -     0     0      0     0      Note: early 'continue' can speed up things!          \n"
+b'/PolytopeT_intersectCoord_ref      -     -     40000 160800 40000 160800 dotProduct implemented locally because column-format \n'
+b'/PolytopeT_intersectCoord_ref      -     -     1200  1600   1200  1600   intersect                                            \n'
+b'/Random double_in_range            1     1     -     -      -     -      -                                                    \n'
+b'/Random double_in_range/Random int 1     1     -     -      -     -      -                                                    \n'
+b'/Random double_in_range/Random int -     -     7     8      7     8      random int                                           \n'
+b'/Random double_in_range            -     -     5     0      5     0      random double_in_range                               \n'
+b'                                   -     -     1     2      1     2      x[dd] +=\xc2\xa0t;                                         \n'
+b'/PolytopeT_cacheUpdateCoord_ref    1     1     -     -      -     -      -                                                    \n'
+b'/PolytopeT_cacheUpdateCoord_ref    -     -     400   4800   400   4800   update cached dotProduct                             \n'
+b'Avg flops/cycle: 0.765342 (CI: 0.775899 - 0.753422)\n'
+b'Avg bytes/cycle: 3.07531 (CI: 3.11773 - 3.02741)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '54371.8', 'min': '53036', 'max': '123675', 'std_dev': '1517.6', 'ci_low': '53632', 'ci_high': '55232', 'ci_median': '54192', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 41613, 'bytes': 167210}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_10,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_ref 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_ref (100 320)  (100 320) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_ref (40 480)  (40 480) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_ref\n'
+b'PC_Stack: flops: 153, bytes: 810\n'
+b'Stack                                  split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_ref -     -     100   320   100   320   read cache, calculate    \n'
+b'/Random double_in_range                1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                -     -     5     0     5     0     random double_in_range   \n'
+b'                                       -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      -     -     40    480   40    480   update cached dotProduct \n'
+b'Avg flops/cycle: 0.393717 (CI: 0.434659 - 0.275676)\n'
+b'Avg bytes/cycle: 2.08438 (CI: 2.30114 - 1.45946)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '388.604', 'min': '344', 'max': '1452', 'std_dev': '43.6179', 'ci_low': '352', 'ci_high': '555', 'ci_median': '380', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 153, 'bytes': 810}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_20,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_ref 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_ref (200 640)  (200 640) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_ref (80 960)  (80 960) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_ref\n'
+b'PC_Stack: flops: 293, bytes: 1610\n'
+b'Stack                                  split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_ref -     -     200   640   200   640   read cache, calculate    \n'
+b'/Random double_in_range                1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                -     -     5     0     5     0     random double_in_range   \n'
+b'                                       -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      -     -     80    960   80    960   update cached dotProduct \n'
+b'Avg flops/cycle: 0.432494 (CI: 0.457813 - 0.406944)\n'
+b'Avg bytes/cycle: 2.3765 (CI: 2.51562 - 2.23611)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '677.466', 'min': '636', 'max': '22819', 'std_dev': '107.952', 'ci_low': '640', 'ci_high': '720', 'ci_median': '672', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 293, 'bytes': 1610}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_40,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_ref 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_ref (400 1280)  (400 1280) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_ref (160 1920)  (160 1920) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_ref\n'
+b'PC_Stack: flops: 573, bytes: 3210\n'
+b'Stack                                  split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_ref -     -     400   1280  400   1280  read cache, calculate    \n'
+b'/Random double_in_range                1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                -     -     5     0     5     0     random double_in_range   \n'
+b'                                       -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      -     -     160   1920  160   1920  update cached dotProduct \n'
+b'Avg flops/cycle: 0.412875 (CI: 0.459135 - 0.343525)\n'
+b'Avg bytes/cycle: 2.31296 (CI: 2.57212 - 1.92446)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '1387.83', 'min': '1232', 'max': '19864', 'std_dev': '153.942', 'ci_low': '1248', 'ci_high': '1668', 'ci_median': '1356', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 573, 'bytes': 3210}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_60,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_ref 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_ref (600 1920)  (600 1920) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_ref (240 2880)  (240 2880) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_ref\n'
+b'PC_Stack: flops: 853, bytes: 4810\n'
+b'Stack                                  split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_ref -     -     600   1920  600   1920  read cache, calculate    \n'
+b'/Random double_in_range                1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                -     -     5     0     5     0     random double_in_range   \n'
+b'                                       -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      -     -     240   2880  240   2880  update cached dotProduct \n'
+b'Avg flops/cycle: 0.397116 (CI: 0.454691 - 0.343952)\n'
+b'Avg bytes/cycle: 2.23931 (CI: 2.56397 - 1.93952)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '2147.98', 'min': '1820', 'max': '14468', 'std_dev': '194.29', 'ci_low': '1876', 'ci_high': '2480', 'ci_median': '2140', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 853, 'bytes': 4810}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_ref" -b "generator=cube_rot_r1.0_100,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_ref 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_ref (1000 3200)  (1000 3200) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_ref\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_ref 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_ref (400 4800)  (400 4800) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_ref\n'
+b'PC_Stack: flops: 1413, bytes: 8010\n'
+b'Stack                                  split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_ref 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_ref -     -     1000  3200  1000  3200  read cache, calculate    \n'
+b'/Random double_in_range                1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int     -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                -     -     5     0     5     0     random double_in_range   \n'
+b'                                       -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_ref      -     -     400   4800  400   4800  update cached dotProduct \n'
+b'Avg flops/cycle: 0.396133 (CI: 0.449427 - 0.356818)\n'
+b'Avg bytes/cycle: 2.24559 (CI: 2.54771 - 2.02273)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '3566.98', 'min': '3020', 'max': '33932', 'std_dev': '422.558', 'ci_low': '3144', 'ci_high': '3960', 'ci_median': '3556', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1413, 'bytes': 8010}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_10,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_inv_vec_inl 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_inv_vec_inl (100 320)  (100 320) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_inv_vec_inl\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_vec 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_vec (40 480)  (40 480) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_vec\n'
+b'PC_Stack: flops: 153, bytes: 810\n'
+b'Stack                                          split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     100   320   100   320   read cache, calculate    \n'
+b'/Random double_in_range                        1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                        -     -     5     0     5     0     random double_in_range   \n'
+b'                                               -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              -     -     40    480   40    480   update cached dotProduct \n'
+b'Avg flops/cycle: 1.28753 (CI: 1.36607 - 1.03378)\n'
+b'Avg bytes/cycle: 6.81632 (CI: 7.23214 - 5.47297)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '118.832', 'min': '112', 'max': '1042', 'std_dev': '12.2515', 'ci_low': '112', 'ci_high': '148', 'ci_median': '116', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 153, 'bytes': 810}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_20,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_inv_vec_inl 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_inv_vec_inl (200 640)  (200 640) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_inv_vec_inl\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_vec 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_vec (80 960)  (80 960) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_vec\n'
+b'PC_Stack: flops: 293, bytes: 1610\n'
+b'Stack                                          split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     200   640   200   640   read cache, calculate    \n'
+b'/Random double_in_range                        1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                        -     -     5     0     5     0     random double_in_range   \n'
+b'                                               -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              -     -     80    960   80    960   update cached dotProduct \n'
+b'Avg flops/cycle: 1.85627 (CI: 2.03472 - 1.66477)\n'
+b'Avg bytes/cycle: 10.2 (CI: 11.1806 - 9.14773)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '157.844', 'min': '144', 'max': '10632', 'std_dev': '53.2084', 'ci_low': '144', 'ci_high': '176', 'ci_median': '156', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 293, 'bytes': 1610}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_40,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_inv_vec_inl 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_inv_vec_inl (400 1280)  (400 1280) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_inv_vec_inl\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_vec 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_vec (160 1920)  (160 1920) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_vec\n'
+b'PC_Stack: flops: 573, bytes: 3210\n'
+b'Stack                                          split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     400   1280  400   1280  read cache, calculate    \n'
+b'/Random double_in_range                        1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                        -     -     5     0     5     0     random double_in_range   \n'
+b'                                               -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              -     -     160   1920  160   1920  update cached dotProduct \n'
+b'Avg flops/cycle: 2.31079 (CI: 2.42797 - 2.10662)\n'
+b'Avg bytes/cycle: 12.9453 (CI: 13.6017 - 11.8015)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '247.967', 'min': '228', 'max': '7204', 'std_dev': '35.9234', 'ci_low': '236', 'ci_high': '272', 'ci_median': '244', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 573, 'bytes': 3210}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_60,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_inv_vec_inl 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_inv_vec_inl (600 1920)  (600 1920) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_inv_vec_inl\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_vec 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_vec (240 2880)  (240 2880) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_vec\n'
+b'PC_Stack: flops: 853, bytes: 4810\n'
+b'Stack                                          split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     600   1920  600   1920  read cache, calculate    \n'
+b'/Random double_in_range                        1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                        -     -     5     0     5     0     random double_in_range   \n'
+b'                                               -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              -     -     240   2880  240   2880  update cached dotProduct \n'
+b'Avg flops/cycle: 2.45609 (CI: 2.69937 - 2.07039)\n'
+b'Avg bytes/cycle: 13.8497 (CI: 15.2215 - 11.6748)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '347.3', 'min': '296', 'max': '7200', 'std_dev': '45.3212', 'ci_low': '316', 'ci_high': '412', 'ci_median': '340', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 853, 'bytes': 4810}}\n"
+# Running Benchmark 
+/home/jonathan/team014/build/benchmark/benchmark_intersect  "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b "generator=cube_rot_r1.0_100,intersect=intersectCoord,polytopeType=1,r=100000"
+
+we are here
+b'initializing intersect data...\n'
+b'std_rand init\n'
+b'Benchmark Warmup (0)\n'
+b'Benchmark Measurement (100000)\n'
+b'> /PolytopeT_intersectCoord_cached_b_inv_vec_inl 1 1\n'
+b'  /PolytopeT_intersectCoord_cached_b_inv_vec_inl (1000 3200)  (1000 3200) read cache, calculate\n'
+b'< /PolytopeT_intersectCoord_cached_b_inv_vec_inl\n'
+b'> /Random double_in_range 1 1\n'
+b'> /Random double_in_range/Random int 1 1\n'
+b'  /Random double_in_range/Random int (7 8)  (7 8) random int\n'
+b'< /Random double_in_range/Random int\n'
+b'  /Random double_in_range (5 0)  (5 0) random double_in_range\n'
+b'< /Random double_in_range\n'
+b'   (1 2)  (1 2) x[dd] +=\xc2\xa0t;\n'
+b'> /PolytopeT_cacheUpdateCoord_b_vec 1 1\n'
+b'  /PolytopeT_cacheUpdateCoord_b_vec (400 4800)  (400 4800) update cached dotProduct\n'
+b'< /PolytopeT_cacheUpdateCoord_b_vec\n'
+b'PC_Stack: flops: 1413, bytes: 8010\n'
+b'Stack                                          split calls flops bytes Flops Bytes tag                      \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl 1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_intersectCoord_cached_b_inv_vec_inl -     -     1000  3200  1000  3200  read cache, calculate    \n'
+b'/Random double_in_range                        1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             1     1     -     -     -     -     -                        \n'
+b'/Random double_in_range/Random int             -     -     7     8     7     8     random int               \n'
+b'/Random double_in_range                        -     -     5     0     5     0     random double_in_range   \n'
+b'                                               -     -     1     2     1     2     x[dd] +=\xc2\xa0t;             \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              1     1     -     -     -     -     -                        \n'
+b'/PolytopeT_cacheUpdateCoord_b_vec              -     -     400   4800  400   4800  update cached dotProduct \n'
+b'Avg flops/cycle: 2.4447 (CI: 2.75977 - 2.11527)\n'
+b'Avg bytes/cycle: 13.8585 (CI: 15.6445 - 11.991)\n'
+b"{'time': {'name_t': 'intersectCoord', 'mean': '577.986', 'min': '464', 'max': '7920', 'std_dev': '73.0171', 'ci_low': '512', 'ci_high': '668', 'ci_median': '572', 'ci_alpha': '0.95'}, 'convergence': {'name_c': 'intersectCoord', 'mean': '0', 'min': '0', 'max': '0', 'std_dev': '0', 'ci_low': '0', 'ci_high': '0', 'ci_median': '0', 'ci_alpha': '0.95'}, 'performance_counter': {'flops': 1413, 'bytes': 8010}}\n"
+[(' "" -f "PolytopeT_intersectCoord=ref" -b '
+  '"generator=cube_rot_r1.0_10,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 2330, 'flops': 573},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '1079',
+            'ci_low': '504',
+            'ci_median': '556',
+            'max': '9096',
+            'mean': '589.737',
+            'min': '496',
+            'name_t': 'intersectCoord',
+            'std_dev': '144.535'}},
+  '10'),
+ (' "" -f "PolytopeT_intersectCoord=ref" -b '
+  '"generator=cube_rot_r1.0_20,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 7850, 'flops': 1933},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '1980',
+            'ci_low': '1660',
+            'ci_median': '1816',
+            'max': '22128',
+            'mean': '1823.79',
+            'min': '1568',
+            'name_t': 'intersectCoord',
+            'std_dev': '157.576'}},
+  '20'),
+ (' "" -f "PolytopeT_intersectCoord=ref" -b '
+  '"generator=cube_rot_r1.0_40,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 28490, 'flops': 7053},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '6912',
+            'ci_low': '6688',
+            'ci_median': '6784',
+            'max': '25540',
+            'mean': '6819.02',
+            'min': '6608',
+            'name_t': 'intersectCoord',
+            'std_dev': '336.308'}},
+  '40'),
+ (' "" -f "PolytopeT_intersectCoord=ref" -b '
+  '"generator=cube_rot_r1.0_60,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 61930, 'flops': 15373},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '15832',
+            'ci_low': '15336',
+            'ci_median': '15580',
+            'max': '50312',
+            'mean': '15650.8',
+            'min': '15096',
+            'name_t': 'intersectCoord',
+            'std_dev': '906.968'}},
+  '60'),
+ (' "" -f "PolytopeT_intersectCoord=ref" -b '
+  '"generator=cube_rot_r1.0_100,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 167210, 'flops': 41613},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '55232',
+            'ci_low': '53632',
+            'ci_median': '54192',
+            'max': '123675',
+            'mean': '54371.8',
+            'min': '53036',
+            'name_t': 'intersectCoord',
+            'std_dev': '1517.6'}},
+  '100'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_10,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 810, 'flops': 153},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '555',
+            'ci_low': '352',
+            'ci_median': '380',
+            'max': '1452',
+            'mean': '388.604',
+            'min': '344',
+            'name_t': 'intersectCoord',
+            'std_dev': '43.6179'}},
+  '10'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_20,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 1610, 'flops': 293},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '720',
+            'ci_low': '640',
+            'ci_median': '672',
+            'max': '22819',
+            'mean': '677.466',
+            'min': '636',
+            'name_t': 'intersectCoord',
+            'std_dev': '107.952'}},
+  '20'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_40,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 3210, 'flops': 573},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '1668',
+            'ci_low': '1248',
+            'ci_median': '1356',
+            'max': '19864',
+            'mean': '1387.83',
+            'min': '1232',
+            'name_t': 'intersectCoord',
+            'std_dev': '153.942'}},
+  '40'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_60,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 4810, 'flops': 853},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '2480',
+            'ci_low': '1876',
+            'ci_median': '2140',
+            'max': '14468',
+            'mean': '2147.98',
+            'min': '1820',
+            'name_t': 'intersectCoord',
+            'std_dev': '194.29'}},
+  '60'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_ref" -b '
+  '"generator=cube_rot_r1.0_100,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 8010, 'flops': 1413},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '3960',
+            'ci_low': '3144',
+            'ci_median': '3556',
+            'max': '33932',
+            'mean': '3566.98',
+            'min': '3020',
+            'name_t': 'intersectCoord',
+            'std_dev': '422.558'}},
+  '100'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_10,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 810, 'flops': 153},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '148',
+            'ci_low': '112',
+            'ci_median': '116',
+            'max': '1042',
+            'mean': '118.832',
+            'min': '112',
+            'name_t': 'intersectCoord',
+            'std_dev': '12.2515'}},
+  '10'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_20,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 1610, 'flops': 293},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '176',
+            'ci_low': '144',
+            'ci_median': '156',
+            'max': '10632',
+            'mean': '157.844',
+            'min': '144',
+            'name_t': 'intersectCoord',
+            'std_dev': '53.2084'}},
+  '20'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_40,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 3210, 'flops': 573},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '272',
+            'ci_low': '236',
+            'ci_median': '244',
+            'max': '7204',
+            'mean': '247.967',
+            'min': '228',
+            'name_t': 'intersectCoord',
+            'std_dev': '35.9234'}},
+  '40'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_60,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 4810, 'flops': 853},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '412',
+            'ci_low': '316',
+            'ci_median': '340',
+            'max': '7200',
+            'mean': '347.3',
+            'min': '296',
+            'name_t': 'intersectCoord',
+            'std_dev': '45.3212'}},
+  '60'),
+ (' "" -f "PolytopeT_intersectCoord=cached_b_inv_vec" -b '
+  '"generator=cube_rot_r1.0_100,intersect=intersectCoord,polytopeType=1,r=100000"',
+  {'convergence': {'ci_alpha': '0.95',
+                   'ci_high': '0',
+                   'ci_low': '0',
+                   'ci_median': '0',
+                   'max': '0',
+                   'mean': '0',
+                   'min': '0',
+                   'name_c': 'intersectCoord',
+                   'std_dev': '0'},
+   'performance_counter': {'bytes': 8010, 'flops': 1413},
+   'time': {'ci_alpha': '0.95',
+            'ci_high': '668',
+            'ci_low': '512',
+            'ci_median': '572',
+            'max': '7920',
+            'mean': '577.986',
+            'min': '464',
+            'name_t': 'intersectCoord',
+            'std_dev': '73.0171'}},
+  '100')]
+[10, 20, 40, 60, 100]
+[589.737, 1823.79, 6819.02, 15650.8, 54371.8]
+[10, 20, 40, 60, 100]
+[10, 20, 40, 60, 100]
+[388.604, 677.466, 1387.83, 2147.98, 3566.98]
+[10, 20, 40, 60, 100]
+[10, 20, 40, 60, 100]
+[118.832, 157.844, 247.967, 347.3, 577.986]
+[10, 20, 40, 60, 100]
