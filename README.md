@@ -2,17 +2,19 @@
 
 ASL group project
 
-[Sources we use for the Algorithm.](./papers/README.md)
+[Final project report](./14_report.pdf)
 
-<img src="./img/cross.gif" width="300">
-<img src="./img/2ellipsoid.gif" width="300">
-<img src="./img/2n_sphere3.gif" width="300">
-<img src="./img/2var_3.gif" width="300">
+[Sources we use for the Algorithm.](./doc/papers/README.md)
 
-<img src="./img/2var_4.gif" width="300">
-<img src="./img/2var_10.gif" width="300">
-<img src="./img/cross_3.gif" width="300">
-<img src="./img/cross_5.gif" width="300">
+<img src="./doc/img/cross.gif" width="300">
+<img src="./doc/img/2ellipsoid.gif" width="300">
+<img src="./doc/img/2n_sphere3.gif" width="300">
+<img src="./doc/img/2var_3.gif" width="300">
+
+<img src="./doc/img/2var_4.gif" width="300">
+<img src="./doc/img/2var_10.gif" width="300">
+<img src="./doc/img/cross_3.gif" width="300">
+<img src="./doc/img/cross_5.gif" width="300">
 
 # Optimizations
 

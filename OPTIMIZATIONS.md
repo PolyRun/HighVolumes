@@ -1,5 +1,7 @@
 # Optimizations
 
+Note: Please read the report for the most up to date analysis.
+
 [Analysis Polytope and PolytopeT](./optimizations/analysis_polytope.md)
 
 [Analysis PolytopeCSC](./optimizations/analysis_polytopeCSC.md)
