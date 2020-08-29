@@ -80,3 +80,8 @@ Or for a single benchmark:
 ```
 
 The output will be written into a file named after the corresponding test in directory build/benchmark/out
+
+
+# Estimating the volume of a polytope
+
+Polytopes should be provided in the standardized vinci format [pdf](https://www.math.u-bordeaux.fr/~aenge/software/vinci/manual.pdf), [website](https://www.math.u-bordeaux.fr/~aenge/index.php?category=software&page=vinci)
