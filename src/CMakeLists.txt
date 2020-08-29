@@ -137,3 +137,17 @@ set_target_properties(silaeubl PROPERTIES
 
 # ---------------------- random poly to file
 add_subdirectory(util)
+
+
+# ---------------------- estimate
+project(estimate)
+
+add_executable(estimate estimate.cpp)
+
+target_link_libraries(estimate PUBLIC volume_helper)
+
+set_target_properties(silaeubl PROPERTIES
+   CXX_STANDARD 11
+   CXX_STANDARD_REQUIRED YES
+   CXX_EXTENSIONS NO
+)

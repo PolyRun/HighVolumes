@@ -363,7 +363,7 @@ void make_random_poly(const std::vector<double> &ell, int m, Polytope **ret);
  * \param P a *P will be filled with the example polytope from file
  **/
 int read_polyvest_p(std::string filename, Polytope **P);
-FT read_vinci(string filename, Polytope **P, FT *vol);
+int read_vinci(string filename, Polytope **P, FT *vol);
 
 
 /**

@@ -37,6 +37,30 @@ public:
    const std::string val_; // default value for parameter
 };
 
+
+class CLIF_MandatoryString : public CLIF_OptionBase{
+
+public:
+    CLIF_MandatoryString(std::string *var, const signed char opt, const std::string &name)
+        : var_(var), CLIF_OptionBase(opt, name, "") {}
+
+    void virtual postParse(CLI &cli){
+        std::string key = cli.parameters(opt_).get(name_,"");
+        // string was provided
+        if (key.compare("")){
+            *var_ = key;
+        }
+        else {
+            std::cout << "Please provide a choice for " << name_ << "\n";
+        }
+    }
+
+private:
+    std::string *var_;
+};
+
+
+
 template <class F_t>
 class CLIF_Option : public CLIF_OptionBase {
 public:
@@ -49,11 +73,11 @@ public:
       const auto it = fmap.find(key);
       if(it==fmap.end()) {
           std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
-	 std::cout << "       viable options:\n";
-	 for(const auto it : fmap) {
-	    std::cout << "           " << it.first << " - " << it.second.second << "\n";
-	 }
-	 std::exit(0);
+          std::cout << "       viable options:\n";
+          for(const auto it : fmap) {
+              std::cout << "           " << it.first << " - " << it.second.second << "\n";
+          }
+          std::exit(0);
       }
       *var_ = fmap.at(cli.parameters(opt_).get(name_,"")).first;
    }

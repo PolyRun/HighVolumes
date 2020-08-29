@@ -211,7 +211,7 @@ FT read_vinci_nr(string in, string type){
 }
 
 
-FT read_vinci(string filename, Polytope **P, FT *vol){
+int read_vinci(string filename, Polytope **P, FT *vol){
     ifstream file;
     file.open(filename);
 
