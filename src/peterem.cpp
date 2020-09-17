@@ -22,16 +22,51 @@ void optimize_test(const std::string& generator) {
 int main(int argc, char** argv) {
    {
       CLI_LONG cli(argc,argv,"peterem");
-      cli.addFlag('x',"xopt","Some test flag");
-      cli.addFlag('y',"yopt","Some test flag");
-      cli.addOption('z',"zopt","defaultv","Some test option");
-      cli.addOption('Z',"z-opt-two","defaultv","Some test option");
-      cli.parse();
+      //  cli.addFlag('x',"xopt","Some test flag");
+      //  cli.addFlag('y',"yopt","Some test flag");
+      //  cli.addOption('z',"zopt","defaultv","Some test option");
+      //  cli.addOption('Z',"z-opt-two","defaultv","Some test option");
+      //  cli.parse();
 
-      std::cout << "flag x: " << cli.flag('x') << "\n";
-      std::cout << "flag y: " << cli.flag('y') << "\n";
-      std::cout << "option z: " << cli.option('z') << "\n";
-      std::cout << "option Z: " << cli.option('Z') << "\n";
+      //  std::cout << "flag x: " << cli.flag('x') << "\n";
+      //  std::cout << "flag y: " << cli.flag('y') << "\n";
+      //  std::cout << "option z: " << cli.option('z') << "\n";
+      //  std::cout << "option Z: " << cli.option('Z') << "\n";
+   
+      CLI_LONG_Functions cliFun(cli);
+      
+      std::string test = "defv";
+      std::string test2 = "defv";
+      cliFun.add(new CLIF_Option<std::string>(&test,'t',"test","t1", {{"t1",{"t1","desc t1"}},{"t2",{"t2","desc t2"}}}));
+      cliFun.add(new CLIF_Option<std::string>(&test2,'s',"sup","s1", {{"s1",{"sss1","desc s1"}},{"s2",{"sss2","desc s2"}}}));
+
+ 
+      int v1;
+      double v2;
+      cliFun.add(new CLIF_DoubleOption<int,double>(&v1,&v2,'e',"choice","c1", {
+      			   {"c1", {{1,1.1}, "desc c1"}},
+      			   {"c2", {{2,2.1}, "desc c2"}},
+      			   }));
+      
+      int v3;
+      double v4;
+      size_t v5;
+      cliFun.add(new CLIF_TrippleOption<int,double,size_t>(&v3,&v4,&v5,'f',"choice2","c1", {
+      			   {"c1", {{1,{1.1, (size_t)0x1 << 35}}, "desc c1"}},
+      			   {"c2", {{2,{2.1, (size_t)0x2 << 35}}, "desc c2"}},
+      			   }));
+  
+      int vvx = 0;
+      cliFun.add(new CLIF_OptionNumber<int>(&vvx,'v',"vvx","10",0,100));
+     
+      if (!cli.parse()) {return -1;}
+      cliFun.postParse();
+   
+      std::cout << "test: " << test << "\n";
+      std::cout << "test2: " << test2 << "\n";
+      std::cout << "choice "<< v1 << " " << v2 << "\n";
+      std::cout << "choice2 "<< v3 << " " << v4 << " " << v5 << "\n";
+      std::cout << "vvx: " << vvx << "\n";
    }
    std::exit(0);
   
@@ -66,16 +101,13 @@ int main(int argc, char** argv) {
 			   {"c2", {{1,{2.1, (size_t)0x2 << 35}}, "desc c2"}},
 			   }));
 
-
-
-
    cliFun.preParse();
    if (!cli.parse()) {return -1;}
    cliFun.postParse();
    
    std::cout << "choice "<< v1 << " " << v2 << "\n";
    std::cout << "choice "<< v3 << " " << v4 << " " << v5 << "\n";
-   
+
    auto a = ArbitraryExpNum_new(10);
    ArbitraryExpNum_print(a); printf(" - start\n");
 

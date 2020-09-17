@@ -28,6 +28,21 @@
 // std::cout << cli.parameters('p') << std::endl; // print all
 // cli.parameters('p').get("p1","default");
 
+// -------------------- How to use CLI_LONG:
+// CLI_LONG cli(argc,argv,"peterem");
+// cli.addFlag('x',"xopt","Some test flag");
+// cli.addFlag('y',"yopt","Some test flag");
+// cli.addOption('z',"zopt","defaultv","Some test option");
+// cli.addOption('Z',"z-opt-two","defaultv","Some test option");
+// cli.parse();
+// 
+// std::cout << "flag x: " << cli.flag('x') << "\n";
+// std::cout << "flag y: " << cli.flag('y') << "\n";
+// std::cout << "option z: " << cli.option('z') << "\n";
+// std::cout << "option Z: " << cli.option('Z') << "\n";
+//
+// ---- disabled parameters (dict) because ugly.
+
 
 #ifndef HEADER_CLI_HPP
 #define HEADER_CLI_HPP
@@ -393,7 +408,8 @@ public:
       }
    }
 
-   ///  bool isUsed(signed char opt) {return desc_.find(opt)!=desc_.end();}
+   bool isUsed(signed char opt) {return opt2long_.find(opt)!=opt2long_.end();}
+   bool isUsedLong(const std::string &optlong) {return long2opt_.find(optlong)!=long2opt_.end();}
 
    std::string getPath(){
        std::string s(argv_[0]);

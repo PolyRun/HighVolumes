@@ -31,6 +31,15 @@ public:
    // called by CLIFunctions in postParse
    // sets function pointer to option chosen by cli
    void virtual postParse(CLI &cli) {}
+   
+   // register with cli
+   void virtual preParseLong(CLI_LONG &cli) {
+      std::cout << "preParseLong not implemented! " << name_ << "\n";
+   }
+   // read info from cli, set to ptr
+   void virtual postParseLong(CLI_LONG &cli) {
+      std::cout << "postParseLong not implemented! " << name_ <<"\n";
+   }
 
    const signed char opt_; // opt char for cli input
    const std::string name_; // name of parameter under opt
@@ -81,6 +90,26 @@ public:
       }
       *var_ = fmap.at(cli.parameters(opt_).get(name_,"")).first;
    }
+  
+   // register with cli
+   void virtual preParseLong(CLI_LONG &cli) {
+      cli.addOption(opt_,name_,val_,"DESC???");
+   }
+   // read info from cli, set to ptr
+   void virtual postParseLong(CLI_LONG &cli) {
+      std::string key = cli.option(opt_);
+      const auto it = fmap.find(key);
+      if(it==fmap.end()) {
+          std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
+          std::cout << "       viable options:\n";
+          for(const auto it : fmap) {
+              std::cout << "           " << it.first << " - " << it.second.second << "\n";
+          }
+          std::exit(0);
+      }
+      *var_ = fmap.at(key).first;
+   }
+
    std::map<std::string, std::pair<F_t,std::string>> fmap; // map holding all the options
    // maps name to {value, description}
 private:
@@ -109,6 +138,27 @@ public:
       *varF_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.first;
       *varG_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.second;
    }
+   
+   // register with cli
+   void virtual preParseLong(CLI_LONG &cli) {
+      cli.addOption(opt_,name_,val_,"DESC???");
+   }
+   // read info from cli, set to ptr
+   void virtual postParseLong(CLI_LONG &cli) {
+      std::string key = cli.option(opt_);
+      const auto it = fmap.find(key);
+      if(it==fmap.end()) {
+          std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
+	 std::cout << "       viable options:\n";
+	 for(const auto it : fmap) {
+	    std::cout << "           " << it.first << " - " << it.second.second << "\n";
+	 }
+	 std::exit(0);
+      }
+      *varF_ = fmap.at(key).first.first;
+      *varG_ = fmap.at(key).first.second;
+   }
+ 
    std::map<std::string, std::pair<std::pair<F_t,G_t>,std::string>> fmap; // map holding all the options
    // maps name to {value, description}
 private:
@@ -139,6 +189,28 @@ public:
       *varG_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.second.first;
       *varH_ = fmap.at(cli.parameters(opt_).get(name_,"")).first.second.second;
    }
+
+   // register with cli
+   void virtual preParseLong(CLI_LONG &cli) {
+      cli.addOption(opt_,name_,val_,"DESC???");
+   }
+   // read info from cli, set to ptr
+   void virtual postParseLong(CLI_LONG &cli) {
+      std::string key = cli.option(opt_);
+      const auto it = fmap.find(key);
+      if(it==fmap.end()) {
+          std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
+	 std::cout << "       viable options:\n";
+	 for(const auto it : fmap) {
+	    std::cout << "           " << it.first << " - " << it.second.second << "\n";
+	 }
+	 std::exit(0);
+      }
+      *varF_ = fmap.at(key).first.first;
+      *varG_ = fmap.at(key).first.second.first;
+      *varH_ = fmap.at(key).first.second.second;
+   }
+ 
    std::map<std::string, std::pair<std::pair<F_t,std::pair<G_t,H_t>>,std::string>> fmap; // map holding all the options
    // maps name to {value, description}
 private:
@@ -171,6 +243,27 @@ public:
       }
       *var_ = value;
    }
+
+   // register with cli
+   void virtual preParseLong(CLI_LONG &cli) {
+      cli.addOption(opt_,name_,val_,"DESC???");
+   }
+   // read info from cli, set to ptr
+   void virtual postParseLong(CLI_LONG &cli) {
+      std::string in = cli.option(opt_);
+      
+      T value;
+      std::stringstream convert(in);
+      convert >> value;
+      
+      if(value > maxVal_ or value < minVal_) {
+         std::cout << "Error: parameter out of limits for: " << opt_ << " " << name_ << "\n";
+	 std::cout << "       viable range: " << minVal_ << " to " << maxVal_ << "\n";
+	 std::exit(0);
+      }
+      *var_ = value;
+   }
+
    T minVal_, maxVal_;
 private:
    T* var_; // global variable that will hold final choice
@@ -253,6 +346,49 @@ private:
    std::map<signed char,std::string> desc_; 
    std::set<CLIF_OptionBase*> options_;
 };
+
+
+class CLI_LONG_Functions {
+public:
+   // initialized this before cli is parsed
+   CLI_LONG_Functions(CLI_LONG &cli) : cli_(cli) {
+      // initialize function lists
+      // set cli parameters accordingly
+   }
+
+   // call this after cli was parsed
+   void postParse() {
+      // read cli -> set function ptrs
+   
+      for(auto o : options_) {
+         o->postParseLong(cli_);
+      }
+   }
+   
+   // register function ptr
+   // char + name
+   // list of functions + their names
+   void add(CLIF_OptionBase *o) {
+      if(cli_.isUsed(o->opt_)) {
+         std::cout << "cliFun.add: opt code " << o->opt_ << " already used!\n";
+	 std::exit(0);
+      }
+      if(cli_.isUsedLong(o->name_)) {
+         std::cout << "cliFun.add: optlong code " << o->name_ << " already used!\n";
+	 std::exit(0);
+      }
+
+      // register with cli:
+      o->preParseLong(cli_);
+      options_.insert(o);
+   }
+
+private:
+   CLI_LONG &cli_;
+   std::set<CLIF_OptionBase*> options_;
+};
+
+
 
 #endif // HEADER_CLI_FUNCTIONS_HPP
 
