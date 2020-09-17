@@ -97,7 +97,7 @@ public:
    }
    // read info from cli, set to ptr
    void virtual postParseLong(CLI_LONG &cli) {
-      std::string key = cli.option(opt_);
+      std::string key = cli.option(name_);
       const auto it = fmap.find(key);
       if(it==fmap.end()) {
           std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
@@ -145,7 +145,7 @@ public:
    }
    // read info from cli, set to ptr
    void virtual postParseLong(CLI_LONG &cli) {
-      std::string key = cli.option(opt_);
+      std::string key = cli.option(name_);
       const auto it = fmap.find(key);
       if(it==fmap.end()) {
           std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
@@ -196,7 +196,7 @@ public:
    }
    // read info from cli, set to ptr
    void virtual postParseLong(CLI_LONG &cli) {
-      std::string key = cli.option(opt_);
+      std::string key = cli.option(name_);
       const auto it = fmap.find(key);
       if(it==fmap.end()) {
           std::cout << "Error: bad choice " << key << " for: " << opt_ << " " << name_ << "\n";
@@ -250,7 +250,7 @@ public:
    }
    // read info from cli, set to ptr
    void virtual postParseLong(CLI_LONG &cli) {
-      std::string in = cli.option(opt_);
+      std::string in = cli.option(name_);
       
       T value;
       std::stringstream convert(in);

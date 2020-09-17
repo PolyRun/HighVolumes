@@ -306,14 +306,14 @@ public:
          std::exit(0);
       }
       {// try find flag:
-         auto it = flags_.find(opt);
+         auto it = flags_.find(opt2long_[opt]);
          if(it!=flags_.end()) {
             it->second = !(it->second);
             return true;
          }
       }
       {// try find option:
-         auto it = option_.find(opt);
+         auto it = option_.find(opt2long_[opt]);
          if(it!=option_.end()) {
             it->second = std::string(opt_arg);
             return true;
@@ -331,9 +331,9 @@ public:
       for(std::map<std::string, signed char>::iterator it = long2opt_.begin(); it!=long2opt_.end(); it++) {
 	 std::cout << " -" << it->second << " --";
 	 std::cout << std::left << std::setw(15) << it->first;
-	 std::cout << " " << desc_[it->second];
+	 std::cout << " " << desc_[it->first];
 	 
-	 auto itf = flags_.find(it->second);
+	 auto itf = flags_.find(it->first);
 	 if(itf!=flags_.end()) {
 	    std::cout << " (flag)";
 	 }
@@ -343,8 +343,8 @@ public:
    }
    
    void checkOpt(signed char opt) {
-      auto it = desc_.find(opt);
-      if(it!=desc_.end()) {
+      auto it = opt2long_.find(opt);
+      if(it!=opt2long_.end()) {
          std::cout << "Error: -" << opt << " already exists!\n";
          std::exit(0);
       }
@@ -360,8 +360,8 @@ public:
    void addFlag(signed char opt, const std::string &optlong, std::string desc) {
       checkOpt(opt);
       checkOptLong(optlong);
-      desc_.insert(std::pair<signed char,std::string>(opt,desc));
-      flags_.insert(std::pair<signed char,bool>(opt,false));
+      desc_.insert(std::pair<std::string,std::string>(optlong,desc));
+      flags_.insert(std::pair<std::string,bool>(optlong,false));
       parse_ += opt;
       
       opt2long_.insert(std::pair<signed char,std::string>(opt,optlong));
@@ -371,12 +371,12 @@ public:
       long_options_.push_back({opt2long_[opt].c_str(),no_argument,0,opt});
    }
 
-   bool flag(signed char opt) {
-      auto it = flags_.find(opt);
+   bool flag(const std::string &optlong) {
+      auto it = flags_.find(optlong);
       if(it!=flags_.end()) {
          return it->second;
       } else {
-         std::cout << "Error: flag " << opt << " never declared!\n";
+         std::cout << "Error: flag " << optlong << " never declared!\n";
          return false;
       }
    }
@@ -386,8 +386,8 @@ public:
       checkOptLong(optlong);
          
       desc += " (default: " + def + ")";
-      desc_.insert(std::pair<signed char,std::string>(opt,desc));
-      option_.insert(std::pair<signed char,std::string>(opt,def));
+      desc_.insert(std::pair<std::string,std::string>(optlong,desc));
+      option_.insert(std::pair<std::string,std::string>(optlong,def));
       parse_ += opt;
       parse_ += ":";
    
@@ -398,12 +398,12 @@ public:
       long_options_.push_back({opt2long_[opt].c_str(),required_argument,0,opt});
    }
 
-   std::string option(signed char opt) {
-      auto it = option_.find(opt);
+   std::string option(const std::string &optlong) {
+      auto it = option_.find(optlong);
       if(it!=option_.end()) {
          return it->second;
       } else {
-         std::cout << "Error: option " << opt << " never declared!\n";
+         std::cout << "Error: option " << optlong << " never declared!\n";
          return "";
       }
    }
@@ -442,11 +442,11 @@ protected:
    // array of structs for long options
    std::vector<struct option> long_options_;
    
-   std::map<signed char, std::string> desc_; // desc for usage display
+   std::map<std::string, std::string> desc_; // desc for usage display
    std::map<signed char, std::string> opt2long_; // long option name
    std::map<std::string, signed char> long2opt_; // long option name
-   std::map<signed char, bool> flags_; // bool for flags, only exists if flag exists
-   std::map<signed char, std::string> option_; /// string for a option, exists if option exists
+   std::map<std::string, bool> flags_; // bool for flags, only exists if flag exists
+   std::map<std::string, std::string> option_; /// string for a option, exists if option exists
 };
 
 
