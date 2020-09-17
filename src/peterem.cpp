@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
  
       int v1;
       double v2;
-      cliFun.add(new CLIF_DoubleOption<int,double>(&v1,&v2,'e',"choice","c1", {
+      cliFun.add(new CLIF_DoubleOption<int,double>(&v1,&v2,0,"choice","c1", {
       			   {"c1", {{1,1.1}, "desc c1"}},
       			   {"c2", {{2,2.1}, "desc c2"}},
       			   }));
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
       int v3;
       double v4;
       size_t v5;
-      cliFun.add(new CLIF_TrippleOption<int,double,size_t>(&v3,&v4,&v5,'f',"choice2","c1", {
+      cliFun.add(new CLIF_TrippleOption<int,double,size_t>(&v3,&v4,&v5,0,"choice2","c1", {
       			   {"c1", {{1,{1.1, (size_t)0x1 << 35}}, "desc c1"}},
       			   {"c2", {{2,{2.1, (size_t)0x2 << 35}}, "desc c2"}},
       			   }));

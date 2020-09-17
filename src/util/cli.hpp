@@ -273,17 +273,36 @@ public:
    bool parse() {
       signed char c; // character
       extern char *optarg; // getopt - optional string
-      int option_index = 0;
+      int option_index = -1;
 
       long_options_.push_back({0,0,0,0});
       
       while ((c = getopt_long(argc_, argv_, parse_.c_str(),
 		              long_options_.data(), &option_index)) != -1) {
-	 // std::cout << "getopt " << c << "\n";
-	 if(c=='?' || !handleArg(c,optarg)) {
+	 if(c=='?') {
 	    usage();
 	    std::exit(0);
 	 }
+	 std::string key = "";
+	 if(option_index >= 0) {
+            key = long_options_[option_index].name;
+	 } else {
+	    auto it = opt2long_.find(c);
+	    if(it!=opt2long_.end()) {
+	       key = it->second;
+	    } else {
+	       usage();
+	       std::exit(0);
+	    }
+	 }
+
+	 std::cout << "getopt " << c << " idx: " << option_index << " key: " << key << "\n";
+	 
+	 if(!handleArg(key,optarg)) {
+	    usage();
+	    std::exit(0);
+	 }
+	 option_index = -1;
       }
       
      
@@ -300,27 +319,27 @@ public:
    }
    
    // internal: handles input from cl, assigns to flags, options, params
-   bool virtual handleArg(signed char opt, char* opt_arg) {
-      if(opt=='h') {
+   bool virtual handleArg(const std::string &optlong, char* opt_arg) {
+      if(optlong.compare("help")==0) {
 	 usage();
          std::exit(0);
       }
       {// try find flag:
-         auto it = flags_.find(opt2long_[opt]);
+         auto it = flags_.find(optlong);
          if(it!=flags_.end()) {
             it->second = !(it->second);
             return true;
          }
       }
       {// try find option:
-         auto it = option_.find(opt2long_[opt]);
+         auto it = option_.find(optlong);
          if(it!=option_.end()) {
             it->second = std::string(opt_arg);
             return true;
          }
       }
       
-      std::cout << "arg not found: " << opt << "\n";
+      std::cout << "arg not found: " << optlong << "\n";
       return false; // nothing found.
    }
    
@@ -328,10 +347,14 @@ public:
    void usage() {
       std::cout << "Usage: " << name_ << std::endl;
 
-      for(std::map<std::string, signed char>::iterator it = long2opt_.begin(); it!=long2opt_.end(); it++) {
-	 std::cout << " -" << it->second << " --";
+      for(std::map<std::string, std::string>::iterator it = desc_.begin(); it!=desc_.end(); it++) {
+	 if(long2opt_.find(it->first)!=long2opt_.end()) {
+	    std::cout << " -" << long2opt_[it->first] << " --";
+	 } else {
+	    std::cout << "    --";
+	 }
 	 std::cout << std::left << std::setw(15) << it->first;
-	 std::cout << " " << desc_[it->first];
+	 std::cout << " " << it->second;
 	 
 	 auto itf = flags_.find(it->first);
 	 if(itf!=flags_.end()) {
@@ -343,6 +366,7 @@ public:
    }
    
    void checkOpt(signed char opt) {
+      if(opt==0) {return;}
       auto it = opt2long_.find(opt);
       if(it!=opt2long_.end()) {
          std::cout << "Error: -" << opt << " already exists!\n";
@@ -362,13 +386,15 @@ public:
       checkOptLong(optlong);
       desc_.insert(std::pair<std::string,std::string>(optlong,desc));
       flags_.insert(std::pair<std::string,bool>(optlong,false));
-      parse_ += opt;
       
-      opt2long_.insert(std::pair<signed char,std::string>(opt,optlong));
+      if(opt!=0) {
+         parse_ += opt;
+         opt2long_.insert(std::pair<signed char,std::string>(opt,optlong));
+      }
       long2opt_.insert(std::pair<std::string,signed char>(optlong,opt));
       
       // did not just take optlong, because it may disappear. opt2long_[opt] should persist.
-      long_options_.push_back({opt2long_[opt].c_str(),no_argument,0,opt});
+      long_options_.push_back({flags_.find(optlong)->first.c_str(),no_argument,0,opt});
    }
 
    bool flag(const std::string &optlong) {
@@ -388,14 +414,17 @@ public:
       desc += " (default: " + def + ")";
       desc_.insert(std::pair<std::string,std::string>(optlong,desc));
       option_.insert(std::pair<std::string,std::string>(optlong,def));
-      parse_ += opt;
-      parse_ += ":";
+      
+      if(opt!=0) {
+         parse_ += opt;
+         parse_ += ":";
+         opt2long_.insert(std::pair<signed char,std::string>(opt,optlong));
+      }
    
-      opt2long_.insert(std::pair<signed char,std::string>(opt,optlong));
       long2opt_.insert(std::pair<std::string,signed char>(optlong,opt));
       
       // did not just take optlong, because it may disappear. opt2long_[opt] should persist.
-      long_options_.push_back({opt2long_[opt].c_str(),required_argument,0,opt});
+      long_options_.push_back({flags_.find(optlong)->first.c_str(),required_argument,0,opt});
    }
 
    std::string option(const std::string &optlong) {
@@ -409,7 +438,7 @@ public:
    }
 
    bool isUsed(signed char opt) {return opt2long_.find(opt)!=opt2long_.end();}
-   bool isUsedLong(const std::string &optlong) {return long2opt_.find(optlong)!=long2opt_.end();}
+   bool isUsedLong(const std::string &optlong) {return desc_.find(optlong)!=desc_.end();}
 
    std::string getPath(){
        std::string s(argv_[0]);
