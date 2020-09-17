@@ -20,6 +20,22 @@ void optimize_test(const std::string& generator) {
 
 
 int main(int argc, char** argv) {
+   {
+      CLI_LONG cli(argc,argv,"peterem");
+      cli.addFlag('x',"xopt","Some test flag");
+      cli.addFlag('y',"yopt","Some test flag");
+      cli.addOption('z',"zopt","defaultv","Some test option");
+      cli.addOption('Z',"z-opt-two","defaultv","Some test option");
+      cli.parse();
+
+      std::cout << "flag x: " << cli.flag('x') << "\n";
+      std::cout << "flag y: " << cli.flag('y') << "\n";
+      std::cout << "option z: " << cli.option('z') << "\n";
+      std::cout << "option Z: " << cli.option('Z') << "\n";
+   }
+   std::exit(0);
+  
+   
    CLI cli(argc,argv,"peterem");
    CLIFunctionsVolume cliFun(cli);
    
