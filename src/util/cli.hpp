@@ -296,7 +296,7 @@ public:
 	    }
 	 }
 
-	 std::cout << "getopt " << c << " idx: " << option_index << " key: " << key << "\n";
+	 //std::cout << "getopt " << c << " idx: " << option_index << " key: " << key << "\n";
 	 
 	 if(!handleArg(key,optarg)) {
 	    usage();
@@ -348,7 +348,7 @@ public:
       std::cout << "Usage: " << name_ << std::endl;
 
       for(std::map<std::string, std::string>::iterator it = desc_.begin(); it!=desc_.end(); it++) {
-	 if(long2opt_.find(it->first)!=long2opt_.end()) {
+	 if(long2opt_[it->first]>0) {
 	    std::cout << " -" << long2opt_[it->first] << " --";
 	 } else {
 	    std::cout << "    --";
@@ -394,7 +394,7 @@ public:
       long2opt_.insert(std::pair<std::string,signed char>(optlong,opt));
       
       // did not just take optlong, because it may disappear. opt2long_[opt] should persist.
-      long_options_.push_back({flags_.find(optlong)->first.c_str(),no_argument,0,opt});
+      long_options_.push_back({desc_.find(optlong)->first.c_str(),no_argument,0,opt});
    }
 
    bool flag(const std::string &optlong) {
@@ -424,7 +424,7 @@ public:
       long2opt_.insert(std::pair<std::string,signed char>(optlong,opt));
       
       // did not just take optlong, because it may disappear. opt2long_[opt] should persist.
-      long_options_.push_back({flags_.find(optlong)->first.c_str(),required_argument,0,opt});
+      long_options_.push_back({desc_.find(optlong)->first.c_str(),required_argument,0,opt});
    }
 
    std::string option(const std::string &optlong) {
