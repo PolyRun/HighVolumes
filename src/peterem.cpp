@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
       std::string test = "defv";
       std::string test2 = "defv";
       cliFun.add(new CLIF_Option<std::string>(&test,'t',"test","t1", {{"t1",{"t1","desc t1"}},{"t2",{"t2","desc t2"}}}));
-      cliFun.add(new CLIF_Option<std::string>(&test2,'s',"sup","s1", {{"s1",{"sss1","desc s1"}},{"s2",{"sss2","desc s2"}}}));
+      cliFun.add(new CLIF_Option<std::string>(&test2,'s',"sup","s1", {{"s1",{"sss1","desc s1"}},{"s2",{"sss2","desc s2"}}}, "desc sup"));
 
  
       int v1;

@@ -26,8 +26,8 @@
 
 class CLIF_OptionBase {
 public:
-   CLIF_OptionBase(const signed char opt, const std::string &name, const std::string &val)
-	   : name_(name), opt_(opt), val_(val) {}
+   CLIF_OptionBase(const signed char opt, const std::string &name, const std::string &val, const std::string &desc="DESC ???")
+	   : name_(name), opt_(opt), val_(val), desc_(desc) {}
    // called by CLIFunctions in postParse
    // sets function pointer to option chosen by cli
    void virtual postParse(CLI &cli) {}
@@ -44,14 +44,15 @@ public:
    const signed char opt_; // opt char for cli input
    const std::string name_; // name of parameter under opt
    const std::string val_; // default value for parameter
+   const std::string desc_; // description for option
 };
 
 
 class CLIF_MandatoryString : public CLIF_OptionBase{
 
 public:
-    CLIF_MandatoryString(std::string *var, const signed char opt, const std::string &name)
-        : var_(var), CLIF_OptionBase(opt, name, "") {}
+    CLIF_MandatoryString(std::string *var, const signed char opt, const std::string &name, const std::string &desc="DESC ???")
+        : var_(var), CLIF_OptionBase(opt, name, "", desc) {}
 
     void virtual postParse(CLI &cli){
         std::string key = cli.parameters(opt_).get(name_,"");
@@ -74,8 +75,8 @@ template <class F_t>
 class CLIF_Option : public CLIF_OptionBase {
 public:
    CLIF_Option(F_t* var, const signed char opt, const std::string &name, const std::string &val,
-	       const std::map<std::string, std::pair<F_t,std::string>> &m)
-   : var_(var), CLIF_OptionBase(opt,name,val), fmap(m) {}
+	       const std::map<std::string, std::pair<F_t,std::string>> &m, const std::string &desc="DESC ???")
+   : var_(var), CLIF_OptionBase(opt,name,val,desc), fmap(m) {}
    
    void virtual postParse(CLI &cli) {
       std::string key = cli.parameters(opt_).get(name_,"");
@@ -93,7 +94,7 @@ public:
   
    // register with cli
    void virtual preParseLong(CLI_LONG &cli) {
-      cli.addOption(opt_,name_,val_,"DESC???");
+      cli.addOption(opt_,name_,val_,desc_);
    }
    // read info from cli, set to ptr
    void virtual postParseLong(CLI_LONG &cli) {
@@ -121,8 +122,8 @@ template <class F_t, class G_t>
 class CLIF_DoubleOption : public CLIF_OptionBase {
 public:
    CLIF_DoubleOption(F_t* varF,G_t* varG, const signed char opt, const std::string &name, const std::string &val,
-	       const std::map<std::string, std::pair<std::pair<F_t,G_t>,std::string>> &m)
-   : varF_(varF), varG_(varG), CLIF_OptionBase(opt,name,val), fmap(m) {}
+	       const std::map<std::string, std::pair<std::pair<F_t,G_t>,std::string>> &m, const std::string &desc="DESC ???")
+   : varF_(varF), varG_(varG), CLIF_OptionBase(opt,name,val,desc), fmap(m) {}
    
    void virtual postParse(CLI &cli) {
       std::string key = cli.parameters(opt_).get(name_,"");
@@ -141,7 +142,7 @@ public:
    
    // register with cli
    void virtual preParseLong(CLI_LONG &cli) {
-      cli.addOption(opt_,name_,val_,"DESC???");
+      cli.addOption(opt_,name_,val_,desc_);
    }
    // read info from cli, set to ptr
    void virtual postParseLong(CLI_LONG &cli) {
@@ -171,8 +172,8 @@ template <class F_t, class G_t, class H_t>
 class CLIF_TrippleOption : public CLIF_OptionBase {
 public:
    CLIF_TrippleOption(F_t* varF,G_t* varG,H_t* varH, const signed char opt, const std::string &name, const std::string &val,
-	       const std::map<std::string, std::pair<std::pair<F_t,std::pair<G_t,H_t>>,std::string>> &m)
-   : varF_(varF), varG_(varG), varH_(varH), CLIF_OptionBase(opt,name,val), fmap(m) {}
+	       const std::map<std::string, std::pair<std::pair<F_t,std::pair<G_t,H_t>>,std::string>> &m, const std::string &desc="DESC ???")
+   : varF_(varF), varG_(varG), varH_(varH), CLIF_OptionBase(opt,name,val,desc), fmap(m) {}
    
    void virtual postParse(CLI &cli) {
       std::string key = cli.parameters(opt_).get(name_,"");
@@ -192,7 +193,7 @@ public:
 
    // register with cli
    void virtual preParseLong(CLI_LONG &cli) {
-      cli.addOption(opt_,name_,val_,"DESC???");
+      cli.addOption(opt_,name_,val_,desc_);
    }
    // read info from cli, set to ptr
    void virtual postParseLong(CLI_LONG &cli) {
@@ -226,8 +227,8 @@ template <class T>
 class CLIF_OptionNumber : public CLIF_OptionBase {
 public:
    CLIF_OptionNumber(T* var, const signed char opt, const std::string &name, const std::string &val,
-	       T minVal, T maxVal)
-   : var_(var), CLIF_OptionBase(opt,name,val), minVal_(minVal), maxVal_(maxVal) {}
+	       T minVal, T maxVal, const std::string &desc="DESC ???")
+   : var_(var), CLIF_OptionBase(opt,name,val,desc), minVal_(minVal), maxVal_(maxVal) {}
    
    void virtual postParse(CLI &cli) {
       std::string in = cli.parameters(opt_).get(name_,"");
@@ -246,7 +247,7 @@ public:
 
    // register with cli
    void virtual preParseLong(CLI_LONG &cli) {
-      cli.addOption(opt_,name_,val_,"DESC???");
+      cli.addOption(opt_,name_,val_,desc_);
    }
    // read info from cli, set to ptr
    void virtual postParseLong(CLI_LONG &cli) {
