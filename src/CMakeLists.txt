@@ -146,7 +146,7 @@ add_executable(estimate estimate.cpp)
 
 target_link_libraries(estimate PUBLIC volume_helper)
 
-set_target_properties(silaeubl PROPERTIES
+set_target_properties(estimate PROPERTIES
    CXX_STANDARD 11
    CXX_STANDARD_REQUIRED YES
    CXX_EXTENSIONS NO
