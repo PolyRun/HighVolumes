@@ -568,7 +568,7 @@ ArbitraryExpNum volume_ref(const int n, const FT r0, const FT r1, const int bcou
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
-   if(volumeVerbose>0) { printf("Volume_ref: steps: %d\n",l); }
+   if(volumeVerbose>0) { printf("Volume_ref: zones: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
    
@@ -668,7 +668,7 @@ ArbitraryExpNum volume_coord_single(const int n, const FT r0, const FT r1, const
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
-   if(volumeVerbose>0) { printf("Volume_coord_1: steps: %d\n",l); }
+   if(volumeVerbose>0) { printf("Volume_coord_1: zones: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){ t[i]=0; }
    
@@ -773,7 +773,7 @@ ArbitraryExpNum volume_coord_4(const int n, const FT r0, const FT r1, const int 
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
-   if(volumeVerbose>0) { printf("Volume_coord_4: steps: %d\n",l); }
+   if(volumeVerbose>0) { printf("Volume_coord_4: zones: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
    
@@ -878,7 +878,7 @@ ArbitraryExpNum volume_coord_8(const int n, const FT r0, const FT r1, const int 
    pc_volume_l = l; // performance_counter
    pc_volume_steps = 0; // performance_counter
    //printf("steps: %d\n",l);
-   if(volumeVerbose>0) { printf("Volume_coord_8: steps: %d\n",l); }
+   if(volumeVerbose>0) { printf("Volume_coord_8: zones: %d\n",l); }
    int t[l+1];// counts how many were thrown into Bi
    for(int i=0;i<=l;i++){t[i]=0;}
    

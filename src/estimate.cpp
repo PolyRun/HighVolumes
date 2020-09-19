@@ -16,11 +16,7 @@ int main(int argc, char *argv[]){
     //                                                 {"false",{false,"-"}},
     // 						     {"true", {true, "Sort constraints to optimize access pattern"}} }));
 
-    bool printBody = false;
-    cliFun.add_long(new CLIF_Option<bool>(&printBody,0,"printBody","false", {
-                                                     {"false",{false,"-"}},
-						     {"true", {true, "Print body."}} },
-						     "If true: body is printed to stdout after preprocessing and before estimation is performed."));
+    cli.addFlag(0,"printBody", "Body printed after preprocessing, before estimation.");
     
     double densityThreashold = 0.1;
     cliFun.add_long(new CLIF_OptionNumber<double>(&densityThreashold,'d',"densityThreashold","0.1", 0, 1,
@@ -93,7 +89,7 @@ int main(int argc, char *argv[]){
         solved_body->polytopeJIT();
         break;
     }
-    if(printBody) {solved_body->print();}
+    if(cli.flag("printBody")) {solved_body->print();}
     assert(solved_body->is_normalized);
     FT r0 = 1.0;
     FT r1 = 2*solved_body->n;
