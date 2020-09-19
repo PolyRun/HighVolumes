@@ -31,7 +31,7 @@ uint64_t xorshift64() {
 }
 
 void sr_init(void *seed_){
-    printf("sr_rand init\n");
+    //printf("sr_rand init\n");
     if (seed_ != NULL) {
         uint32_t seed_32 = *((uint32_t*) seed_);
         uint64_t seed_64 = *((uint64_t*) seed_);
@@ -59,7 +59,7 @@ inline void sr_refill_chunk() {
 }
 
 void sr_init_chunked(void *seed) {
-    printf("sr_rand_chunked init\n");
+    //printf("sr_rand_chunked init\n");
     if (seed != NULL) {
         uint32_t seed_32 = *((uint32_t*) seed);
         state_32 = seed_32;
@@ -103,7 +103,7 @@ void print_vec(__m256i vec) {
 }
 
 void sr_init_vec(void *seed) {
-    printf("sr_rand_vec init\n");
+    //printf("sr_rand_vec init\n");
     // Ignore seed for simplicity
     srand((unsigned) time(NULL));
     int r[8];

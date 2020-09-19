@@ -997,6 +997,10 @@ Solved_Body *generate_read_vinci_polytope(const std::string &filename){
     Polytope *P;
     FT vol;
     int err = read_vinci(filename, &P, &vol);
+    if(err) {
+       std::cout << "Error while reading vinci input file: " << filename << "\n";
+       std::exit(0);
+    }
     assert(!err && "couldn't read vinci polytope");
     Solved_Body *res = new Solved_Body(1, P->n);
     res->body[0] = P;

@@ -627,9 +627,6 @@ FT read_vinci_nr(string in, string type){
 
     assert(0 && "not a valid number");
     return 0.0;
-
-    
-
 }
 
 
@@ -638,7 +635,7 @@ int read_vinci(string filename, Polytope **P, FT *vol){
     file.open(filename);
 
     if (!file.is_open()){
-        printf("failed to read polytope");
+	std::cout << "Error: could not open file: " << filename << "\n";
         return 1;
     }
 
@@ -653,7 +650,7 @@ int read_vinci(string filename, Polytope **P, FT *vol){
     }
 
     if (!found){
-        printf("no begin found in vinci file\n");
+	std::cout << "Error: no begin found in vinci file: " << filename << "\n";
         return 1;
     }
 
