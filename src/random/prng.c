@@ -11,7 +11,7 @@ rand256d_f_t rand256d_f = std_rand256d;
 
 rd_0_1_f_t prng_get_random_double_0_1 = prng_get_random_double_0_1_ref;
 
-int rand_chunk_size = 1024;
+int rand_chunk_size = 512;
 
 union hack {
     long l;

@@ -7,28 +7,20 @@ int main(int argc, char *argv[]){
     CLI_LONG_Functions cliFun(cli);
     initVolumeFunctions(cliFun);
     
-    int r = 100;
-    int warmup = 0;
-    double time_ci_alpha;
-    double results_ci_alpha;
-    cliFun.add_long(new CLIF_OptionNumber<int>(&r,'r',"r","100", 1, 100000));
-    cliFun.add_long(new CLIF_OptionNumber<int>(&warmup,'w',"warmup","0", 0, 100000));
-    cliFun.add_long(new CLIF_OptionNumber<double>(&time_ci_alpha,0,"time_ci_alpha","0.95", 0, 1));
-    cliFun.add_long(new CLIF_OptionNumber<double>(&results_ci_alpha,0,"results_ci_alpha","0.95", 0, 1));
-
     std::string filename = "";
-    cliFun.add_long(new CLIF_MandatoryString(&filename, 'f', "filename"));
+    cliFun.add_long(new CLIF_MandatoryString(&filename, 'f', "filename", "Input filename, file of .ine format."));
 
     
-    bool polytopeOptimize = false;
-    cliFun.add_long(new CLIF_Option<bool>(&polytopeOptimize,'o',"polytopeOptimize","false", {
-                                                     {"false",{false,"-"}},
-						     {"true", {true, "Sort constraints to optimize access pattern"}} }));
+    bool polytopeOptimize = false; // does not do much anyway, so just drop it
+    //cliFun.add_long(new CLIF_Option<bool>(&polytopeOptimize,'o',"polytopeOptimize","false", {
+    //                                                 {"false",{false,"-"}},
+    // 						     {"true", {true, "Sort constraints to optimize access pattern"}} }));
 
     bool printBody = false;
-    cliFun.add_long(new CLIF_Option<bool>(&printBody,'b',"printBody","false", {
+    cliFun.add_long(new CLIF_Option<bool>(&printBody,0,"printBody","false", {
                                                      {"false",{false,"-"}},
-						     {"true", {true, "Print body before benchmark is run."}} }));
+						     {"true", {true, "Print body."}} },
+						     "If true: body is printed to stdout before estimation is performed."));
 
     int polytopeType = 0;
     cliFun.add_long(new CLIF_Option<int>(&polytopeType,'t',"polytopeType","dense",
@@ -39,12 +31,15 @@ int main(int argc, char *argv[]){
                                      {"sparse_jit",{3, "PolytopeJIT format"}},
                                      //{"polyvest",{4, "Polyvest: alternative lib, only for single body polytopes - will preprocess first!"}},
 				     // TODO: check that correct other settings are used, bc if walkCoord_8 is chosen, this seg-faults
-                                    }));
+                                     // TODO: do this automatic, or in some other pattern
+				     },
+				     "TODO!!!"));
 
     bool doPreprocess = false;
     cliFun.add_long(new CLIF_Option<bool>(&doPreprocess,'p',"doPreprocess","false", {
                                                      {"false",{false,"no preprocessing (may assert)."}},
-						     {"true", {true, "Preprocess before running benchmark (could take a while)."}} }));
+						     {"true", {true, "Preprocess before running benchmark (could take a while)."}} },
+						     "TODO: make this isNormalized, a promise. if false -> perform preprocessing"));
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
@@ -52,8 +47,8 @@ int main(int argc, char *argv[]){
     
     prng_init();
     
+    // we now only load from file
     //Solved_Body* solved_body = solved_body_generator()->get(generator,false);
-
     Solved_Body *solved_body = generate_read_vinci_polytope(filename);
 
     if(doPreprocess) {

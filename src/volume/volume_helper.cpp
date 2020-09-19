@@ -417,14 +417,15 @@ void initVolumeFunctions(CLIFunctions &clif) {
    // number parameters:
    clif.claimOpt('c',"Algorithm Constants");
    clif.add(new CLIF_OptionNumber<int>(&step_size,'c',"step_size","100000", 100, 1e7));
-   clif.add_long(new CLIF_OptionNumber<int>(&step_size,0,"step_size","100000", 100, 1e7));
+   clif.add_long(new CLIF_OptionNumber<int>(&step_size,0,"step_size","100000", 100, 1e7,
+			   "Number of steps per zone. Set higher to increase precision and runtime."));
    
    clif.add(new CLIF_OptionNumber<int>(&walk_size,'c',"walk_size","1", 1, 1e6));
-   clif.add_long(new CLIF_OptionNumber<int>(&walk_size,0,"walk_size","1", 1, 1e6));
+   clif.add_long(new CLIF_OptionNumber<int>(&walk_size,0,"walk_size","1", 1, 1e6, "Number of walks per step (sample point). Not much benefit if >1."));
    
    clif.add(new CLIF_OptionNumber<int>(&rand_chunk_size,'c',"rand_chunk_size","512", 1, 524288)); // Max: 1 page(4096KB) of doubles
-   clif.add_long(new CLIF_OptionNumber<int>(&rand_chunk_size,0,"rand_chunk_size","512", 1, 524288)); // Max: 1 page(4096KB) of doubles
-    
+   // no for add_long
+
    clif.add(new CLIF_Option<int>(&volumeVerbose,'c',"verbose","0", {
                     {"0",  {0, "Nothing"}},
                     {"1",  {1, "important steps"}},
