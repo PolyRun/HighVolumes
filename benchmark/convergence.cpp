@@ -4,7 +4,8 @@
 int main(int argc, char *argv[]){
 
     CLI cli(argc, argv, "convergence");
-    CLIFunctionsVolume cliFun(cli);
+    CLIFunctions cliFun(cli);
+    initVolumeFunctions(cliFun);
 
     cliFun.claimOpt('b', "benchmark configuration");
     std::string body = "cube_r1.0_10";

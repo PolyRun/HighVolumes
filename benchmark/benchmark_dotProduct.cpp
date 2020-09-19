@@ -46,8 +46,9 @@ class Benchmark_dotProduct : public Benchmark_base {
 
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
-    CLIFunctionsVolume cliFun(cli);
-    
+    CLIFunctions cliFun(cli);
+    initVolumeFunctions(cliFun);
+   
     int n = 20;
     int r = 100;
     int warmup = 0;

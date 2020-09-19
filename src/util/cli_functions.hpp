@@ -54,16 +54,35 @@ public:
     CLIF_MandatoryString(std::string *var, const signed char opt, const std::string &name, const std::string &desc="DESC ???")
         : var_(var), CLIF_OptionBase(opt, name, "", desc) {}
 
-    void virtual postParse(CLI &cli){
-        std::string key = cli.parameters(opt_).get(name_,"");
-        // string was provided
-        if (key.compare("")){
-            *var_ = key;
-        }
-        else {
-            std::cout << "Please provide a choice for " << name_ << "\n";
-        }
-    }
+   void virtual postParse(CLI &cli){
+      std::string key = cli.parameters(opt_).get(name_,"");
+      // string was provided
+      if (key.compare("")){
+         *var_ = key;
+      }
+      else {
+         std::cout << "Please provide a choice for " << name_ << "\n";
+         std::exit(0);
+      }
+   }
+
+   // register with cli
+   void virtual preParseLong(CLI_LONG &cli) {
+      cli.addOption(opt_,name_,val_,desc_);
+   }
+   // read info from cli, set to ptr
+   void virtual postParseLong(CLI_LONG &cli) {
+      std::string key = cli.option(name_);
+      // string was provided
+      if (key.compare("")){
+         *var_ = key;
+      }
+      else {
+         std::cout << "Please provide a choice for " << name_ << "\n";
+         std::exit(0);
+      }
+   }
+
 
 private:
     std::string *var_;
@@ -280,7 +299,7 @@ public:
    }
 
    // call this after cli was parsed
-   void postParse() {
+   virtual void postParse() {
       // read cli -> set function ptrs
    
       for(auto o : options_) {
@@ -289,7 +308,7 @@ public:
    }
    
    // claim opt code for a specific description
-   void claimOpt(const signed char opt, const std::string &desc) {
+   virtual void claimOpt(const signed char opt, const std::string &desc) {
       auto it = params_.find(opt);
       if(it==params_.end()) {
          // check if opt is still available:
@@ -308,7 +327,7 @@ public:
    // register function ptr
    // char + name
    // list of functions + their names
-   void add(CLIF_OptionBase *o) {
+   virtual void add(CLIF_OptionBase *o) {
       auto it = params_.find(o->opt_);
       if(it==params_.end()) {
          // check if opt is still available:
@@ -325,16 +344,24 @@ public:
       
       options_.insert(o);
    }
-   
+
+   // register function ptr
+   // char + name
+   // list of functions + their names
+   virtual void add_long(CLIF_OptionBase *o) {
+      //ignore
+   }
+ 
+
    // call before cli.parse, to commit all registered functions
-   void preParse() {
+   virtual void preParse() {
       for(auto it : params_) {
 	 // register the CLIParameters for opt
 	 cli_.addParameters(it.first,it.second, desc_[it.first]);
       }
    }
 
-   CLIF_OptionBase* getOption(const std::string &name) {
+   virtual CLIF_OptionBase* getOption(const std::string &name) {
       for(auto it : options_) {
          if(it->name_ == name) {return it;}
       }
@@ -349,43 +376,69 @@ private:
 };
 
 
-class CLI_LONG_Functions {
+class CLI_LONG_Functions : public CLIFunctions {
 public:
    // initialized this before cli is parsed
-   CLI_LONG_Functions(CLI_LONG &cli) : cli_(cli) {
+   CLI_LONG_Functions(CLI_LONG &cli)
+   : CLIFunctions(*(new CLI(0,0,""))), // ugly hack
+     clil_(cli) {
       // initialize function lists
       // set cli parameters accordingly
    }
 
    // call this after cli was parsed
-   void postParse() {
+   virtual void postParse() {
       // read cli -> set function ptrs
    
       for(auto o : options_) {
-         o->postParseLong(cli_);
+         o->postParseLong(clil_);
       }
    }
+
+   // claim opt code for a specific description - ignore!
+   virtual void claimOpt(const signed char opt, const std::string &desc) {
+     // nothing
+   }
+
    
    // register function ptr
    // char + name
    // list of functions + their names
-   void add(CLIF_OptionBase *o) {
-      if(cli_.isUsed(o->opt_)) {
+   virtual void add(CLIF_OptionBase *o) {
+      //ignore
+   }
+  
+   // register function ptr
+   // char + name
+   // list of functions + their names
+   virtual void add_long(CLIF_OptionBase *o) {
+      if(clil_.isUsed(o->opt_)) {
          std::cout << "cliFun.add: opt code " << o->opt_ << " already used!\n";
 	 std::exit(0);
       }
-      if(cli_.isUsedLong(o->name_)) {
+      if(clil_.isUsedLong(o->name_)) {
          std::cout << "cliFun.add: optlong code " << o->name_ << " already used!\n";
 	 std::exit(0);
       }
 
       // register with cli:
-      o->preParseLong(cli_);
+      o->preParseLong(clil_);
       options_.insert(o);
    }
 
+   // call before cli.parse, to commit all registered functions - ignore
+   virtual void preParse() {
+   }
+
+   virtual CLIF_OptionBase* getOption(const std::string &name) {
+      for(auto it : options_) {
+         if(it->name_ == name) {return it;}
+      }
+      return NULL;
+   }
+
 private:
-   CLI_LONG &cli_;
+   CLI_LONG &clil_;
    std::set<CLIF_OptionBase*> options_;
 };
 

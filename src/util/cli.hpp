@@ -353,7 +353,7 @@ public:
 	 } else {
 	    std::cout << "    --";
 	 }
-	 std::cout << std::left << std::setw(15) << it->first;
+	 std::cout << std::left << std::setw(30) << it->first;
 	 std::cout << " " << it->second;
 	 
 	 auto itf = flags_.find(it->first);

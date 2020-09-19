@@ -142,8 +142,10 @@ class Benchmark_Polyvest_Prep : public Benchmark_base {
 
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
-    CLIFunctionsVolume cliFun(cli);
-    
+    CLIFunctions cliFun(cli);
+    initVolumeFunctions(cliFun);
+
+   
     int r = 100;
     int warmup = 0;
     double time_ci_alpha;

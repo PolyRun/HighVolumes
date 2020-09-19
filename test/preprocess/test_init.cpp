@@ -66,7 +66,8 @@ void test_init_against_polyvest(Polytope *P){
 int main(int argc, char **argv){
 
     CLI cli(argc, argv, "test preprocess");
-    CLIFunctionsVolume cliFun(cli);
+    CLIFunctions cliFun(cli);
+    initVolumeFunctions(cliFun);
     cliFun.preParse();
     if (!cli.parse()){
         return -1;

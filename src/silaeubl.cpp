@@ -9,7 +9,8 @@ extern "C" { // must be included C stlye
 
 int main(int argc, char *argv[]) {
     CLI cli(argc,argv,"benchmark");
-    CLIFunctionsVolume cliFun(cli);
+    CLIFunctions cliFun(cli);
+    initVolumeFunctions(cliFun);
 
     cliFun.preParse();
     if (!cli.parse()) {return -1;}

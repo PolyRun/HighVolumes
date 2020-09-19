@@ -3,35 +3,35 @@
 
 
 int main(int argc, char *argv[]){
-    CLI cli(argc,argv,"main");
-    CLIFunctionsVolume cliFun(cli);
+    CLI_LONG cli(argc,argv,"main");
+    CLI_LONG_Functions cliFun(cli);
+    initVolumeFunctions(cliFun);
     
     int r = 100;
     int warmup = 0;
     double time_ci_alpha;
     double results_ci_alpha;
-    cliFun.claimOpt('b',"Benchmarking configuration");
-    cliFun.add(new CLIF_OptionNumber<int>(&r,'b',"r","100", 1, 100000));
-    cliFun.add(new CLIF_OptionNumber<int>(&warmup,'b',"warmup","0", 0, 100000));
-    cliFun.add(new CLIF_OptionNumber<double>(&time_ci_alpha,'b',"time_ci_alpha","0.95", 0, 1));
-    cliFun.add(new CLIF_OptionNumber<double>(&results_ci_alpha,'b',"results_ci_alpha","0.95", 0, 1));
+    cliFun.add_long(new CLIF_OptionNumber<int>(&r,'r',"r","100", 1, 100000));
+    cliFun.add_long(new CLIF_OptionNumber<int>(&warmup,'w',"warmup","0", 0, 100000));
+    cliFun.add_long(new CLIF_OptionNumber<double>(&time_ci_alpha,0,"time_ci_alpha","0.95", 0, 1));
+    cliFun.add_long(new CLIF_OptionNumber<double>(&results_ci_alpha,0,"results_ci_alpha","0.95", 0, 1));
 
     std::string filename = "";
-    cliFun.add(new CLIF_MandatoryString(&filename, 'b', "filename"));
+    cliFun.add_long(new CLIF_MandatoryString(&filename, 'f', "filename"));
 
     
     bool polytopeOptimize = false;
-    cliFun.add(new CLIF_Option<bool>(&polytopeOptimize,'b',"polytopeOptimize","false", {
+    cliFun.add_long(new CLIF_Option<bool>(&polytopeOptimize,'o',"polytopeOptimize","false", {
                                                      {"false",{false,"-"}},
 						     {"true", {true, "Sort constraints to optimize access pattern"}} }));
 
     bool printBody = false;
-    cliFun.add(new CLIF_Option<bool>(&printBody,'b',"printBody","false", {
+    cliFun.add_long(new CLIF_Option<bool>(&printBody,'b',"printBody","false", {
                                                      {"false",{false,"-"}},
 						     {"true", {true, "Print body before benchmark is run."}} }));
 
     int polytopeType = 0;
-    cliFun.add(new CLIF_Option<int>(&polytopeType,'b',"polytopeType","0",
+    cliFun.add_long(new CLIF_Option<int>(&polytopeType,'t',"polytopeType","0",
                                     {
                                      {"0",{0, "Polytope format / rows"}},
                                      {"1",{1, "PolytopeT format / columns"}},
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
                                     }));
 
     bool doPreprocess = false;
-    cliFun.add(new CLIF_Option<bool>(&doPreprocess,'b',"doPreprocess","false", {
+    cliFun.add_long(new CLIF_Option<bool>(&doPreprocess,'p',"doPreprocess","false", {
                                                      {"false",{false,"no preprocessing (may assert)."}},
 						     {"true", {true, "Preprocess before running benchmark (could take a while)."}} }));
 

@@ -610,8 +610,10 @@ void test_body_intersectCoord8(const int n, Body_T* type, void* body) {
 
 int main(int argc, char** argv) {
    CLI cli(argc,argv,"test_volume_basics");
-   CLIFunctionsVolume cliFun(cli);
-   
+   CLIFunctions cliFun(cli);
+   initVolumeFunctions(cliFun);
+
+
    bool runLongTests = true;
    cliFun.claimOpt('t',"Test flags: turn off tests you don't want to run!");
 

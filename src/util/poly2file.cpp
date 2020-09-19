@@ -5,7 +5,8 @@
 int main(int argc, char **argv){
 
     CLI cli(argc,argv,"random poly to file");
-    CLIFunctionsVolume cliFun(cli);
+    CLIFunctions cliFun(cli);
+    initVolumeFunctions(cliFun);
     
     int n = 12;
     int m = 30;

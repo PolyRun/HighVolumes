@@ -58,8 +58,8 @@ private:
 
 int main(int argc, char *argv[]){
     CLI cli(argc,argv,"benchmark");
-    CLIFunctionsVolume cliFun(cli);
-
+    CLIFunctions cliFun(cli);
+    initVolumeFunctions(cliFun);
     
     int r = 100;
     cliFun.claimOpt('b',"Benchmarking configuration");
