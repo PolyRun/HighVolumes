@@ -93,25 +93,6 @@ set_target_properties(volume_helper PROPERTIES
    CXX_EXTENSIONS NO
 )
 
-# ----------------------- peterem
-project(peterem)
-
-set(PETEREM_HEADER_FILES
-   peterem.hpp
-)
-set(PETEREM_SOURCE_FILE
-   peterem.cpp
-)
-add_executable(peterem ${PETEREM_SOURCE_FILE} ${PETEREM_HEADER_FILES})
-
-target_link_libraries(peterem PUBLIC volume_helper)
-
-set_target_properties(peterem PROPERTIES
-   CXX_STANDARD 11
-   CXX_STANDARD_REQUIRED YES
-   CXX_EXTENSIONS NO
-)
-
 
 # ----------------------- silaeubl
 project(silaeubl)
