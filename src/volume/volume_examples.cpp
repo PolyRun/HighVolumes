@@ -720,7 +720,26 @@ Solved_Body::optimize() {
     body[0] = q;
 }
 
-
+double
+Solved_Body::density() {
+    size_t entries = 0;
+    size_t nzz = 0;
+    for(int b=0; b<bcount; b++) {
+       if(type[b]==&Polytope_T) {
+          Polytope* p = (Polytope*)body[b];
+          int n = p->n;
+	  int m = p->m;
+          for(int i=0; i<m; i++) {
+             for(int j=0; j<n; j++) {
+                double v = Polytope_get_a(p,i,j);
+		if(v!=0) {nzz++;}
+		entries++;
+             }
+          }
+       }
+    }
+    return (double)nzz/(double)entries;
+}
 
 
 Solved_Body_Generator* solved_body_generator_ = NULL;

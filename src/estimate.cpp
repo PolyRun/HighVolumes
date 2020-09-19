@@ -20,20 +20,21 @@ int main(int argc, char *argv[]){
     cliFun.add_long(new CLIF_Option<bool>(&printBody,0,"printBody","false", {
                                                      {"false",{false,"-"}},
 						     {"true", {true, "Print body."}} },
-						     "If true: body is printed to stdout before estimation is performed."));
+						     "If true: body is printed to stdout after preprocessing and before estimation is performed."));
+    
+    double densityThreashold = 0.1;
+    cliFun.add_long(new CLIF_OptionNumber<double>(&densityThreashold,'d',"densityThreashold","0.1", 0, 1,
+			    "Compared to density after preprocessing. If higher: dense, if lower: sparse."));
 
-    int polytopeType = 0;
-    cliFun.add_long(new CLIF_Option<int>(&polytopeType,'t',"polytopeType","dense",
+    int sparseType = 0;
+    cliFun.add_long(new CLIF_Option<int>(&sparseType,0,"sparseType","CSC",
                                     {
-                                     //{"0",{0, "Polytope format / rows"}}, // took this out, not all functions are implemented for it! (eg walkCoord_8)
-                                     {"dense",{1, "PolytopeT format / columns"}},
-                                     {"sparse",{2, "PolytopeCSC format"}},
-                                     {"sparse_jit",{3, "PolytopeJIT format"}},
-                                     //{"polyvest",{4, "Polyvest: alternative lib, only for single body polytopes - will preprocess first!"}},
-				     // TODO: check that correct other settings are used, bc if walkCoord_8 is chosen, this seg-faults
-                                     // TODO: do this automatic, or in some other pattern
+                                     {"CSC",{2, "PolytopeCSC format"}},
+                                     {"JIT",{3, "PolytopeJIT format"}},
 				     },
-				     "TODO!!!"));
+				     "Data type for sparse case estimation."));
+
+    int denseType = 1;
 
     bool doPreprocess = false;
     cliFun.add_long(new CLIF_Option<bool>(&doPreprocess,'p',"doPreprocess","false", {
@@ -63,16 +64,32 @@ int main(int argc, char *argv[]){
         solved_body->optimize();
     }
 
+    // check density:
+    double density = solved_body->density();
+    std::cout << "Body Density after preprocessing: " << density << " (vs threashold: "<< densityThreashold<<")\n";
+    int polytopeType = 1;
+    if(density <= densityThreashold) {
+       // sparse
+       polytopeType = sparseType;
+    } else {
+       // dense
+       polytopeType = denseType;
+    }
+
     switch(polytopeType) {
     case 1: // column major
+	std::cout << "Estimation on PolytopeT Datatype.\n";
         solved_body->polytopeTranspose();
         break;
     case 0: // row major
+	std::cout << "Estimation on Polytope Datatype.\n";
         break;
     case 2: // CSC format
+	std::cout << "Estimation on PolytopeCSC sparse Datatype.\n";
         solved_body->polytopeCSC();
         break;
     case 3: // JIT format
+	std::cout << "Estimation on PolytopeJIT sparse Datatype.\n";
         solved_body->polytopeJIT();
         break;
     }

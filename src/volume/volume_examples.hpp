@@ -49,6 +49,8 @@ public:
     void polytopeJIT(); // make all Polytope to PolytopeJIT 
     void optimize(); // resort dimensions for better access patterns (only single polytope)
     
+    double density();
+
     void **body;
     Body_T **type;
     int bcount;
