@@ -4,9 +4,6 @@
 
 #include "../util/performance_counter.hpp"
 
-typedef void (*xyz_cost_f) (const int);
-void xyz_f1_cost(const int n);
-
 // ----------------------------------------------- random
 typedef void (*random_int_cost_f)(const void* o);
 typedef void (*random_int_in_range_cost_f)(const void* o);

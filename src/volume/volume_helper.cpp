@@ -197,12 +197,6 @@ void initVolumeFunctions(CLIFunctions &clif) {
    // map: function name -> function ptr
    
    clif.claimOpt('f',"Algorithm Functions");
-   clif.add(new CLIF_Option<xyz_f_t>(&xyz_f,'f',"xyz_f","xyz_f1", {
-                                                  {"xyz_f1", {xyz_f1, "test 1"}},
-     					     {"xyz_f2", {xyz_f2, "test 2"}} }));
-   clif.add_long(new CLIF_Option<xyz_f_t>(&xyz_f,0,"xyz_f","xyz_f1", {
-                                                  {"xyz_f1", {xyz_f1, "test 1"}},
-     					     {"xyz_f2", {xyz_f2, "test 2"}} }));
  
    clif.add(new CLIF_Option<dotProduct_f_t>(&dotProduct,'f',"dotProduct","2acc", {
                                                   {"ref",  {dotProduct_ref, "ref"}},

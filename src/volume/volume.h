@@ -117,16 +117,5 @@ void VolumeAppInput_free(VolumeAppInput* input);
 // run volume app, given a Volume App Input. Returns volume.
 ArbitraryExpNum volume_app_ref(const VolumeAppInput* input);
 
-// ---------- proof of concept:
-
-typedef FT (*xyz_f_t)(const Polytope*,const FT,const int);
-FT xyz_f1(const Polytope* body, const FT r, const int n);
-FT xyz_f2(const Polytope* body, const FT r, const int n);
-
-extern xyz_f_t xyz_f;
-
-// --- end proof of concept.
-
-
 
 #endif // HEADER_VOLUMES_H

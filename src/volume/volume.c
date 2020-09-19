@@ -1087,6 +1087,3 @@ ArbitraryExpNum volume_app_ref(const VolumeAppInput* input) {
    return total;
 }
 
-FT xyz_f1(const Polytope* body, const FT r, const int n) {return body->n;}
-FT xyz_f2(const Polytope* body, const FT r, const int n) {return n;}
-xyz_f_t xyz_f = xyz_f1;
