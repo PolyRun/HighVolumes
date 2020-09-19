@@ -94,27 +94,8 @@ set_target_properties(volume_helper PROPERTIES
 )
 
 
-# ----------------------- silaeubl
-project(silaeubl)
-
-set(SILAEUBL_HEADER_FILES
-   silaeubl.hpp
-)
-set(SILAEUBL_SOURCE_FILE
-   silaeubl.cpp
-)
-add_executable(silaeubl ${SILAEUBL_SOURCE_FILE} ${SILAEUBL_HEADER_FILES})
-
-target_link_libraries(silaeubl PUBLIC volume_helper prng)
-
+# ----------------------- random
 add_subdirectory(random)
-
-set_target_properties(silaeubl PROPERTIES
-   CXX_STANDARD 11
-   CXX_STANDARD_REQUIRED YES
-   CXX_EXTENSIONS NO
-)
-
 
 # ---------------------- random poly to file
 add_subdirectory(util)
