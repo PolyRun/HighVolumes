@@ -242,7 +242,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"walkCoord_1",       {{walkCoord_coord_single, volume_coord_single}, "coordinate walk, cached squaredNorm"}},
      					     {"walkCoord_4",       {{walkCoord_coord_4,      volume_coord_4},      "coordinate walk, cached squaredNorm, 4-way parallel x"}},
      					     {"walkCoord_8",       {{walkCoord_coord_8,      volume_coord_8},      "coordinate walk, cached squaredNorm, 8-way parallel x"}},
-     					     }));
+     					     },
+					     "Walk function: random direction, coordinate, or even multiple points in parallel (up to 8)."));
 
 
    clif.add(new CLIF_Option<intersectCoord_f_t>(&Polytope_T.intersectCoord,'f',"Polytope_intersectCoord","cached_ref", {
@@ -250,7 +251,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"cached_ref", {Polytope_intersectCoord_cached_ref, "with cache (ref)"}} }));
    clif.add_long(new CLIF_Option<intersectCoord_f_t>(&Polytope_T.intersectCoord,0,"Polytope_intersectCoord","cached_ref", {
                                                   {"ref",        {Polytope_intersectCoord_ref, "no cache (ref)"}},
-     					     {"cached_ref", {Polytope_intersectCoord_cached_ref, "with cache (ref)"}} }));
+     					     {"cached_ref", {Polytope_intersectCoord_cached_ref, "with cache (ref)"}} },
+					     "Intersect function for Polytope, does not apply if walk_f does points in parallel."));
 
 
    clif.add(new CLIF_TrippleOption<intersectCoord_f_t,cacheReset_f_t,cacheUpdateCoord_f_t>(
@@ -282,7 +284,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
                      {"cached_b_inv_ref", {{PolytopeT_intersectCoord_cached_b_inv_ref, {PolytopeT_cacheReset_b_ref,PolytopeT_cacheUpdateCoord_b_ref}}, "with cache b, and inv used for intersect (ref)"}},
                      {"cached_b_inv_vec", {{PolytopeT_intersectCoord_cached_b_inv_vec, {PolytopeT_cacheReset_b_vec,PolytopeT_cacheUpdateCoord_b_vec}}, "with cache b, and inv used for intersect, vectorized"}},
                      {"cached_b_inv_vec_inl", {{PolytopeT_intersectCoord_cached_b_inv_vec_inl, {PolytopeT_cacheReset_b_vec,PolytopeT_cacheUpdateCoord_b_vec}}, "with cache b, and inv used for intersect, vectorized and 2x loop unrolling"}},
-     	       	}));
+     	       	},
+		"Intersect function for PolytopeT (dense), does not apply if walk_f does points in parallel."));
 
 
    clif.add(new CLIF_TrippleOption<intersectCoord_f_t, cacheReset_f_t, cacheUpdateCoord_f_t>
@@ -318,7 +321,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
          {"cached_b_vec_inl_2accs", {{PolytopeCSC_intersectCoord_cached_vec_inline_2accs, {PolytopeCSC_cacheReset_fma, PolytopeCSC_cacheUpdateCoord_fma}}, "vectorized inlined 2 accs, with cache, b in cache"}},
          // onlyread is meant for testing io bound, doesn't compute the right thing
          {"cached_vec_onlyread", {{PolytopeCSC_intersectCoord_cached_vec_onlyread, {PolytopeCSC_cacheReset_fma, PolytopeCSC_cacheUpdateCoord_vec}}, "only read!"}},
-        }));
+        },
+	"Intersect function for PolytopeCSC (sparse), does not apply if walk_f does points in parallel."));
 
 
    clif.add(new CLIF_Option<PolytopeJIT_Generator>(&PolytopeJIT_generator,'f',"PolytopeJIT_gen","single_rax", {
@@ -336,7 +340,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"double_data",       {pjit_double_data,     "two aij at time (if possible), load via data table"}},
      					     {"quad_data",         {pjit_quad_data,       "four aij at time (if possible), load via data table"}},
      					     {"quad_data_acc",     {pjit_quad_data_acc,   "four aij at time (if possible), load via data table, more than one acc"}},
-     					  }));
+     					  },
+	"Code generator for PolytopeJIT (sparse), does not apply if walk_f does points in parallel."));
 
 
    clif.add(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,'f',"Ellipsoid_intersectCoord","cached_ref", {
@@ -352,7 +357,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"cached_reord", {Ellipsoid_intersectCoord_cached_reord, "with cache (reord)"}},
      					     {"cached_reord2", {Ellipsoid_intersectCoord_cached_reord2, "with cache (reord2)"}},
      					     {"cached_reord3", {Ellipsoid_intersectCoord_cached_reord3, "with cache (reord3)"}},
-     					     {"cached_reord_fma", {Ellipsoid_intersectCoord_cached_reord_fma, "with cache (reord_fma)"}} }));
+     					     {"cached_reord_fma", {Ellipsoid_intersectCoord_cached_reord_fma, "with cache (reord_fma)"}} },
+	"Intersect function for Ellipsoids, does not apply if walk_f does points in parallel."));
 
 
    clif.add(new CLIF_Option<cacheUpdateCoord_f_t>(&Ellipsoid_T.cacheUpdateCoord,'f',"Ellipsoid_cacheUpdateCoord","ref", {
@@ -374,7 +380,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"vec_u4",           {Ellipsoid_cacheUpdateCoord_vec_u4, "cacheUpdateCoord (vec_u4)"}},
      					     {"vec2",           {Ellipsoid_cacheUpdateCoord_vec2, "cacheUpdateCoord (vec2)"}},
      					     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
-     					     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
+     					     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} },
+	"Update (after intersect) function for Ellipsoids, does not apply if walk_f does points in parallel."));
 
 
    clif.add(new CLIF_Option<cacheReset_f_t>(&Ellipsoid_T.cacheReset,'f',"Ellipsoid_cacheReset","ref", {
@@ -384,7 +391,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
    clif.add_long(new CLIF_Option<cacheReset_f_t>(&Ellipsoid_T.cacheReset,0,"Ellipsoid_cacheReset","fma", {
                     {"ref",         {Ellipsoid_cacheReset_ref, "cacheReset (ref)"}},
      					     {"reord",       {Ellipsoid_cacheReset_reord, "cacheReset (reord)"}},
-     					     {"fma",       {Ellipsoid_cacheReset_fma, "cacheReset (fma)"}} }));
+     					     {"fma",       {Ellipsoid_cacheReset_fma, "cacheReset (fma)"}} },
+	"Reset (before intersect) function for Ellipsoids, does not apply if walk_f does points in parallel."));
 
 
    clif.add(new CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256d_f_t>(&rand_init_f, &rand_f, &rand256d_f,'f',"rand_f","std_rand", {
@@ -402,7 +410,8 @@ void initVolumeFunctions(CLIFunctions &clif) {
                     {"sr_rand_chunked",   {{sr_init_chunked,   {sr_rand_chunked,  sr_rand256d}},  "shift register rand (chunked)"}},
                     {"sr_rand_vec",       {{sr_init_vec,       {sr_rand_vec,      sr_rand256d}},  "shift register rand (vec)"}},
      	       {"mt_rand",           {{mt_init,           {mt_rand,          std_rand256d}}, "mersenne twister rand"}} // 256i version missing!
-                  }));
+                  },
+	"Random number generator"));
 
    clif.add(new CLIF_Option<rd_0_1_f_t>(&prng_get_random_double_0_1,'f',"rd_0_1","ref", {
                     {"ref",   {prng_get_random_double_0_1, "prng_get_random_double_0_1 (ref)"}},
@@ -411,13 +420,14 @@ void initVolumeFunctions(CLIFunctions &clif) {
    clif.add_long(new CLIF_Option<rd_0_1_f_t>(&prng_get_random_double_0_1,0,"rd_0_1","fast", {
                     {"ref",   {prng_get_random_double_0_1, "prng_get_random_double_0_1 (ref)"}},
                     {"fast",  {prng_fast_32_get_random_double_0_1, "prng_get_random_double_0_1 (fast)"}}
-                  }));
+                  },
+	"Transformation from random int to random double in [0,1)"));
 
 
    // number parameters:
    clif.claimOpt('c',"Algorithm Constants");
    clif.add(new CLIF_OptionNumber<int>(&step_size,'c',"step_size","100000", 100, 1e7));
-   clif.add_long(new CLIF_OptionNumber<int>(&step_size,0,"step_size","100000", 100, 1e7,
+   clif.add_long(new CLIF_OptionNumber<int>(&step_size,'s',"step_size","100000", 100, 1e7,
 			   "Number of steps per zone. Set higher to increase precision and runtime."));
    
    clif.add(new CLIF_OptionNumber<int>(&walk_size,'c',"walk_size","1", 1, 1e6));
@@ -439,7 +449,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
                     {"2",  {2, "also less important steps"}},
                     {"3",  {3, "most things"}},
                     {"4",  {4, "all / heavy debug"}},
-                  }));
+                  }, "Verbosity"));
 }
 
 
