@@ -31,13 +31,14 @@ int main(int argc, char *argv[]){
 						     {"true", {true, "Print body before benchmark is run."}} }));
 
     int polytopeType = 0;
-    cliFun.add_long(new CLIF_Option<int>(&polytopeType,'t',"polytopeType","0",
+    cliFun.add_long(new CLIF_Option<int>(&polytopeType,'t',"polytopeType","dense",
                                     {
-                                     {"0",{0, "Polytope format / rows"}},
-                                     {"1",{1, "PolytopeT format / columns"}},
-                                     {"2",{2, "PolytopeCSC format"}},
-                                     {"3",{3, "PolytopeJIT format"}},
-                                     {"4",{4, "Polyvest: alternative lib, only for single body polytopes - will preprocess first!"}},
+                                     //{"0",{0, "Polytope format / rows"}}, // took this out, not all functions are implemented for it! (eg walkCoord_8)
+                                     {"dense",{1, "PolytopeT format / columns"}},
+                                     {"sparse",{2, "PolytopeCSC format"}},
+                                     {"sparse_jit",{3, "PolytopeJIT format"}},
+                                     //{"polyvest",{4, "Polyvest: alternative lib, only for single body polytopes - will preprocess first!"}},
+				     // TODO: check that correct other settings are used, bc if walkCoord_8 is chosen, this seg-faults
                                     }));
 
     bool doPreprocess = false;
@@ -48,7 +49,8 @@ int main(int argc, char *argv[]){
     cliFun.preParse();
     if (!cli.parse()) {return -1;}
     cliFun.postParse();
-
+    
+    prng_init();
     
     //Solved_Body* solved_body = solved_body_generator()->get(generator,false);
 

@@ -63,9 +63,9 @@ int ceil_cache(const int n, const int b) {
 }
 
 
-squaredNorm_cached_f_t squaredNorm_cached = squaredNorm_cached_ref;
-squaredNorm_cached_reset_f_t squaredNorm_cached_reset = squaredNorm_cached_reset_ref;
-squaredNorm_cached_update_f_t squaredNorm_cached_update = squaredNorm_cached_update_ref;
+squaredNorm_cached_f_t        squaredNorm_cached        = squaredNorm_cached_refc;
+squaredNorm_cached_reset_f_t  squaredNorm_cached_reset  = squaredNorm_cached_reset_refc;
+squaredNorm_cached_update_f_t squaredNorm_cached_update = squaredNorm_cached_update_refc;
 
 
 FT squaredNorm_cached_ref(const FT* v, const int n, const FT* cache) {

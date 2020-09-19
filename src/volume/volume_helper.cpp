@@ -204,19 +204,11 @@ void initVolumeFunctions(CLIFunctions &clif) {
                                                   {"auto1",{dotProduct_auto1,"auto gen 1"}},
                                                   {"auto2",{dotProduct_auto2,"auto gen 2"}},
      					     {"vec1", {dotProduct_vec1,"vectorize"}} }));
-   clif.add_long(new CLIF_Option<dotProduct_f_t>(&dotProduct,0,"dotProduct","2acc", {
-                                                  {"ref",  {dotProduct_ref, "ref"}},
-                                                  {"2acc", {dotProduct_2acc, "2 accumulators"}},
-                                                  {"auto1",{dotProduct_auto1,"auto gen 1"}},
-                                                  {"auto2",{dotProduct_auto2,"auto gen 2"}},
-     					     {"vec1", {dotProduct_vec1,"vectorize"}} }));
-   
-  
+   // no for add_long
+
    clif.add(new CLIF_Option<squaredNorm_f_t>(&squaredNorm,'f',"squaredNorm","ref", {
      					     {"ref", {squaredNorm_ref, "ref"}} }));
-   clif.add_long(new CLIF_Option<squaredNorm_f_t>(&squaredNorm,0,"squaredNorm","ref", {
-     					     {"ref", {squaredNorm_ref, "ref"}} }));
-
+   // no for add_long - there is no choice anyway
 
    clif.add(new CLIF_TrippleOption<squaredNorm_cached_f_t,squaredNorm_cached_reset_f_t,squaredNorm_cached_update_f_t>(
      	 &squaredNorm_cached,&squaredNorm_cached_reset,&squaredNorm_cached_update,
@@ -224,12 +216,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
                      {"no",        {{squaredNorm_cached_ref,  {squaredNorm_cached_reset_ref, squaredNorm_cached_update_ref }}, "no cacheing (pre-ref)"}},
                      {"ref",       {{squaredNorm_cached_refc, {squaredNorm_cached_reset_refc,squaredNorm_cached_update_refc}}, "cacheing (ref)"}},
      	       	}));
-   clif.add_long(new CLIF_TrippleOption<squaredNorm_cached_f_t,squaredNorm_cached_reset_f_t,squaredNorm_cached_update_f_t>(
-     	 &squaredNorm_cached,&squaredNorm_cached_reset,&squaredNorm_cached_update,
-     	 0,"squaredNorm_cached","ref", {
-                     {"no",        {{squaredNorm_cached_ref,  {squaredNorm_cached_reset_ref, squaredNorm_cached_update_ref }}, "no cacheing (pre-ref)"}},
-                     {"ref",       {{squaredNorm_cached_refc, {squaredNorm_cached_reset_refc,squaredNorm_cached_update_refc}}, "cacheing (ref)"}},
-     	       	}));
+   // no for add_long
 
    clif.add(new CLIF_DoubleOption<shell_cache_init_f_t, shell_idx_f_t>
        (
@@ -240,19 +227,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
          {"ref", {{shell_cache_init_ref, shell_idx_ref}, "linear search in cache"}},
          {"binary", {{shell_cache_init_ref, shell_idx_binary}, "binary search in cache"}},
         }));
-   clif.add_long(new CLIF_DoubleOption<shell_cache_init_f_t, shell_idx_f_t>
-       (
-        &shell_cache_init, &shell_idx,
-        0, "log_f", "nocache",
-        {
-         {"nocache", {{shell_cache_init_nocache, shell_idx_nocache}, "no caching (ordinary logs)"}},
-         {"ref", {{shell_cache_init_ref, shell_idx_ref}, "linear search in cache"}},
-         {"binary", {{shell_cache_init_ref, shell_idx_binary}, "binary search in cache"}},
-        }));
-
-
-                                                                  
-
+   // no for add_long
 
    clif.add(new CLIF_DoubleOption<walk_f_t,volume_f_t>(&walk_f,&volume,'f',"walk_f","walkCoord_ref", {
                                                   {"walk_ref",          {{walk_ref,               volume_ref},          "random direction walk (ref)"}},
@@ -261,7 +236,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"walkCoord_4",       {{walkCoord_coord_4,      volume_coord_4},      "coordinate walk, cached squaredNorm, 4-way parallel x"}},
      					     {"walkCoord_8",       {{walkCoord_coord_8,      volume_coord_8},      "coordinate walk, cached squaredNorm, 8-way parallel x"}},
      					     }));
-   clif.add_long(new CLIF_DoubleOption<walk_f_t,volume_f_t>(&walk_f,&volume,0,"walk_f","walkCoord_ref", {
+   clif.add_long(new CLIF_DoubleOption<walk_f_t,volume_f_t>(&walk_f,&volume,0,"walk_f","walkCoord_8", {
                                                   {"walk_ref",          {{walk_ref,               volume_ref},          "random direction walk (ref)"}},
      					     {"walkCoord_ref",     {{walkCoord_ref,          volume_ref},          "coordinate walk (ref)"}},
      					     {"walkCoord_1",       {{walkCoord_coord_single, volume_coord_single}, "coordinate walk, cached squaredNorm"}},
@@ -295,7 +270,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
      	       	}));
    clif.add_long(new CLIF_TrippleOption<intersectCoord_f_t,cacheReset_f_t,cacheUpdateCoord_f_t>(
      	 &PolytopeT_T.intersectCoord,&PolytopeT_T.cacheReset,&PolytopeT_T.cacheUpdateCoord,
-     	 0,"PolytopeT_intersectCoord","cached_b_ref", {
+     	 0,"PolytopeT_intersectCoord","cached_b_inv_vec", {
                      {"ref",        {{PolytopeT_intersectCoord_ref, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "no cache (ref)"}},
                      {"cached_ref",        {{PolytopeT_intersectCoord_cached_ref, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache (ref)"}},
                      {"cached_nc1",        {{PolytopeT_intersectCoord_cached_nc1, {PolytopeT_cacheReset_ref,PolytopeT_cacheUpdateCoord_ref}}, "with cache, no condition - failed though"}},
@@ -329,7 +304,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
         }));
    clif.add_long(new CLIF_TrippleOption<intersectCoord_f_t, cacheReset_f_t, cacheUpdateCoord_f_t>
        (&PolytopeCSC_T.intersectCoord, &PolytopeCSC_T.cacheReset, &PolytopeCSC_T.cacheUpdateCoord,
-        0, "PolytopeCSC_intersectCoord", "cached_b_ref",
+        0, "PolytopeCSC_intersectCoord", "cached_b_vec_nan_inv",
         {
          {"ref", {{PolytopeCSC_intersectCoord_ref, {PolytopeCSC_cacheReset_ref, PolytopeCSC_cacheUpdateCoord_ref}}, "no cche (ref)"}},
          {"cached_ref", {{PolytopeCSC_intersectCoord_cached_ref, {PolytopeCSC_cacheReset_ref, PolytopeCSC_cacheUpdateCoord_ref}}, "with cache (ref)"}},
@@ -354,7 +329,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"quad_data",         {pjit_quad_data,       "four aij at time (if possible), load via data table"}},
      					     {"quad_data_acc",     {pjit_quad_data_acc,   "four aij at time (if possible), load via data table, more than one acc"}},
      					  }));
-   clif.add_long(new CLIF_Option<PolytopeJIT_Generator>(&PolytopeJIT_generator,0,"PolytopeJIT_gen","single_rax", {
+   clif.add_long(new CLIF_Option<PolytopeJIT_Generator>(&PolytopeJIT_generator,0,"PolytopeJIT_gen","single_data", {
      					     {"single_rax",        {pjit_single_rax,      "single aij at time, load via rax"}},
      					     {"single_data",       {pjit_single_data,     "single aij at time, load via data table"}},
      					     {"single_data_acc",   {pjit_single_data_acc, "single aij at time, load via data table, more than one acc"}},
@@ -371,7 +346,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"cached_reord2", {Ellipsoid_intersectCoord_cached_reord2, "with cache (reord2)"}},
      					     {"cached_reord3", {Ellipsoid_intersectCoord_cached_reord3, "with cache (reord3)"}},
      					     {"cached_reord_fma", {Ellipsoid_intersectCoord_cached_reord_fma, "with cache (reord_fma)"}} }));
-   clif.add_long(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,0,"Ellipsoid_intersectCoord","cached_ref", {
+   clif.add_long(new CLIF_Option<intersectCoord_f_t>(&Ellipsoid_T.intersectCoord,0,"Ellipsoid_intersectCoord","cached_reord_fma", {
                                                   {"ref",        {Ellipsoid_intersectCoord_ref, "no cache (ref)"}},
      					     {"cached_ref", {Ellipsoid_intersectCoord_cached_ref, "with cache (ref)"}},
      					     {"cached_reord", {Ellipsoid_intersectCoord_cached_reord, "with cache (reord)"}},
@@ -390,7 +365,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
      					     {"vec2",           {Ellipsoid_cacheUpdateCoord_vec2, "cacheUpdateCoord (vec2)"}},
      					     {"vec2_u2",           {Ellipsoid_cacheUpdateCoord_vec2_u2, "cacheUpdateCoord (vec2_u2)"}},
      					     {"vec2_u4",           {Ellipsoid_cacheUpdateCoord_vec2_u4, "cacheUpdateCoord (vec2_u4)"}} }));
-   clif.add_long(new CLIF_Option<cacheUpdateCoord_f_t>(&Ellipsoid_T.cacheUpdateCoord,0,"Ellipsoid_cacheUpdateCoord","ref", {
+   clif.add_long(new CLIF_Option<cacheUpdateCoord_f_t>(&Ellipsoid_T.cacheUpdateCoord,0,"Ellipsoid_cacheUpdateCoord","vec2_u2", {
                                                   {"ref",         {Ellipsoid_cacheUpdateCoord_ref, "cacheUpdateCoord (ref)"}},
      					     {"c",           {Ellipsoid_cacheUpdateCoord_c, "cacheUpdateCoord (c)"}},
      					     {"fma",           {Ellipsoid_cacheUpdateCoord_fma, "cacheUpdateCoord (fma)"}},
@@ -406,7 +381,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
                     {"ref",         {Ellipsoid_cacheReset_ref, "cacheReset (ref)"}},
      					     {"reord",       {Ellipsoid_cacheReset_reord, "cacheReset (reord)"}},
      					     {"fma",       {Ellipsoid_cacheReset_fma, "cacheReset (fma)"}} }));
-   clif.add_long(new CLIF_Option<cacheReset_f_t>(&Ellipsoid_T.cacheReset,0,"Ellipsoid_cacheReset","ref", {
+   clif.add_long(new CLIF_Option<cacheReset_f_t>(&Ellipsoid_T.cacheReset,0,"Ellipsoid_cacheReset","fma", {
                     {"ref",         {Ellipsoid_cacheReset_ref, "cacheReset (ref)"}},
      					     {"reord",       {Ellipsoid_cacheReset_reord, "cacheReset (reord)"}},
      					     {"fma",       {Ellipsoid_cacheReset_fma, "cacheReset (fma)"}} }));
@@ -420,7 +395,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
                     {"sr_rand_vec",       {{sr_init_vec,       {sr_rand_vec,      sr_rand256d}},  "shift register rand (vec)"}},
      	       {"mt_rand",           {{mt_init,           {mt_rand,          std_rand256d}}, "mersenne twister rand"}} // 256i version missing!
                   }));
-   clif.add_long(new CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256d_f_t>(&rand_init_f, &rand_f, &rand256d_f,0,"rand_f","std_rand", {
+   clif.add_long(new CLIF_TrippleOption<rand_init_f_t,rand_f_t,rand256d_f_t>(&rand_init_f, &rand_f, &rand256d_f,0,"rand_f","sr_rand_vec", {
                     {"std_rand",          {{std_init,          {std_rand,         std_rand256d}}, "standard rand"}},
                     {"std_rand_chunked",  {{std_init_chunked,  {std_rand_chunked, std_rand256d}}, "standard rand (chunked)"}},
                     {"sr_rand",           {{sr_init,           {sr_random_uint32, sr_rand256d}},  "shift register rand"}},
@@ -433,7 +408,7 @@ void initVolumeFunctions(CLIFunctions &clif) {
                     {"ref",   {prng_get_random_double_0_1, "prng_get_random_double_0_1 (ref)"}},
                     {"fast",  {prng_fast_32_get_random_double_0_1, "prng_get_random_double_0_1 (fast)"}}
                   }));
-   clif.add_long(new CLIF_Option<rd_0_1_f_t>(&prng_get_random_double_0_1,0,"rd_0_1","ref", {
+   clif.add_long(new CLIF_Option<rd_0_1_f_t>(&prng_get_random_double_0_1,0,"rd_0_1","fast", {
                     {"ref",   {prng_get_random_double_0_1, "prng_get_random_double_0_1 (ref)"}},
                     {"fast",  {prng_fast_32_get_random_double_0_1, "prng_get_random_double_0_1 (fast)"}}
                   }));

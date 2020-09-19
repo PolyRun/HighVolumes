@@ -3,7 +3,7 @@
 int volumeVerbose = 0;
 
 // dotProduct:
-dotProduct_f_t dotProduct = dotProduct_ref;
+dotProduct_f_t dotProduct = dotProduct_2acc;
 #include "linalg/dotProduct/dotProduct.c"
 
 
